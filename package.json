@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:setup": "bash scripts/dynamodb-setup.sh",
+    "db:local": "bash scripts/dynamodb-local.sh",
+    "db:tables": "aws dynamodb list-tables --endpoint-url http://localhost:8000 --region ap-south-1"
   },
   "dependencies": {
     "next": "16.3.5",
