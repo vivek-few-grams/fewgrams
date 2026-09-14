@@ -1,26 +1,162 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─────────────────────────────────────────────────────────────
+   Design tokens — SPEC §17.1–17.4
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --color-forest: #033923;
+  --color-forest-deep: #0c3a26;
+  --color-sage: #a8cf8e;
+  --color-mint: #abe1cc;
+  --color-cream: #fbf9f3;
+  --color-sand: #f2ebe3;
+  --color-ink: #1a1a1a;
+  --color-stone: #6b7268;
+  --color-terracotta: #c7452f;
+
+  --font-display: var(--font-quicksand), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-kannada: var(--font-noto-kannada), sans-serif;
+
+  /* The single most important detail of the Don Molinico feel.
+     Same movements with a default ease look cheap. */
+  --ease-brand: cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+  ::selection {
+    background-color: var(--color-sage);
+    color: var(--color-forest);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─────────────────────────────────────────────────────────────
+   Product card hover — SPEC §17.4
+   Reverse-engineered from donmolinico.es. Two opposing motions
+   from one hover: the panel pulls INWARD 4% while the image
+   scales OUTWARD 10%. No animation library required.
+   ───────────────────────────────────────────────────────────── */
+.mcard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.mcard__media {
+  position: relative;
+  z-index: 15;
+  transition: transform 1250ms var(--ease-brand);
+  will-change: transform;
+}
+
+.mcard__marquee {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  clip-path: inset(0 round 20px);
+  transition:
+    clip-path 1000ms var(--ease-brand),
+    opacity 500ms var(--ease-brand);
+  will-change: clip-path, opacity;
+}
+
+.mcard__marquee-inner {
+  display: flex;
+  flex-direction: column;
+  animation: mcard-marquee 8s linear infinite;
+  will-change: transform;
+}
+
+.mcard__marquee-line {
+  display: block;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 0.95;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+@keyframes mcard-marquee {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+/* Every hover effect above is desktop-only, exactly as the
+   reference does it. Touch devices get no hover state. */
+@media (pointer: fine) {
+  .mcard:hover .mcard__media {
+    transform: scale(1.1) rotate(-4deg);
+  }
+  .mcard:hover .mcard__marquee {
+    opacity: 1;
+    clip-path: inset(4% round 20px);
+  }
+}
+
+/* SPEC §17.4 accessibility requirement. The marquee is continuous
+   motion, which is a genuine problem if it cannot be stopped. */
+@media (prefers-reduced-motion: reduce) {
+  .mcard__media,
+  .mcard__marquee { transition: none !important; }
+  .mcard__marquee-inner { animation: none !important; }
+  .mcard:hover .mcard__media { transform: none !important; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Page loader — SPEC §17.5
+
+   State lives in `html[data-loader]`, set by a synchronous inline
+   script in layout.tsx before first paint. That is what keeps repeat
+   visitors from seeing a flash of the panel: if the script does not
+   set the attribute, the panel is `display: none` and never renders.
+   React only ever flips the attribute to retract it.
+   ───────────────────────────────────────────────────────────── */
+.loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  place-items: center;
+  background-color: var(--color-forest);
+  clip-path: inset(0);
+  transition: clip-path 800ms var(--ease-brand);
+}
+
+html[data-loader="in"] .loader,
+html[data-loader="out"] .loader {
+  display: grid;
+}
+
+html[data-loader="out"] .loader {
+  clip-path: inset(0 0 100% 0);
+}
+
+.loader__mark {
+  transition:
+    transform 800ms var(--ease-brand),
+    opacity 500ms var(--ease-brand);
+}
+
+html[data-loader="out"] .loader__mark {
+  transform: scale(0.85);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader { display: none !important; }
 }

@@ -43,3 +43,4 @@ next-env.d.ts
 # DynamoDB Local (jar + data, ~50MB — never commit)
 /.dynamodb/bin/
 /.dynamodb/data/
+.screens/

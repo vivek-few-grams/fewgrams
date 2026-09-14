@@ -83,3 +83,59 @@ Single table `fewgrams`, per SPEC §4: `PK`/`SK` plus `GSI1` (`GSI1PK`/`GSI1SK`)
 Define this schema **once in TypeScript** and have both the local create-table script and the future
 CDK stack read from it. Otherwise local and production drift, and you end up debugging a GSI that
 only exists in one of them.
+
+---
+
+## Auth (added 14 Sep 2026)
+
+No AWS account and no Google project are needed to sign in locally.
+
+```bash
+npm run db:local      # DynamoDB Local (terminal 1)
+npm run db:table      # create the table, idempotent
+npm run dev           # terminal 2
+```
+
+Then open `/login`, enter any email, and **the sign-in link is printed in the terminal running
+`npm run dev`** — no email is sent. Paste it into the browser.
+
+Set `ADMIN_EMAILS` in `.env.local` before your first sign-in to become an admin; it is applied on
+sign-in. To change a role afterwards, edit the table:
+
+```bash
+U=<user-id>
+aws dynamodb update-item --table-name fewgrams \
+  --endpoint-url http://localhost:8000 --region ap-south-1 \
+  --key "{\"PK\":{\"S\":\"USER#$U\"},\"SK\":{\"S\":\"USER#$U\"}}" \
+  --update-expression "SET #r = :r" \
+  --expression-attribute-names '{"#r":"role"}' \
+  --expression-attribute-values '{":r":{"S":"admin"}}'
+```
+
+The change takes effect on the **next request** — no re-login — because `requireRole` reads the role
+from DynamoDB rather than from the session (SPEC §8.1).
+
+### Traps
+
+- **`src/proxy.ts`, not `/proxy.ts`.** Next.js 16 renamed `middleware.ts` to `proxy.ts`, and it must
+  sit beside `app/`. Ours is under `src/`, so the file belongs at `src/proxy.ts`. Placed at the repo
+  root it is silently ignored — no error, the matcher simply never runs.
+- **Run `npx next typegen` after adding a route.** `PageProps<"/login">` fails to typecheck until
+  the route types are regenerated.
+- **DynamoDB Local does not enforce IAM**, so SPEC §8 role isolation cannot be verified against real
+  IAM here. The application-level checks can be, and are (see below).
+- Node 20 works, but the AWS SDK warns that releases after early January 2027 will require Node ≥22.
+
+### Verifying the role gate locally
+
+```bash
+# 1. sign in as a non-admin, then:
+curl -s -b jar.txt -o /dev/null -w "%{http_code} %{redirect_url}\n" localhost:3000/admin
+#    → 307 http://localhost:3000/forbidden
+
+# 2. promote in the table (command above), same cookie, no re-login:
+#    → 200
+
+# 3. demote again, same cookie:
+#    → 307 http://localhost:3000/forbidden
+```

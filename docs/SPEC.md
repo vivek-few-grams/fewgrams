@@ -231,7 +231,8 @@ One table `fewgrams`, keys `PK` / `SK`, with two GSIs.
 
 | Entity | PK | SK | GSI1PK | GSI1SK |
 |---|---|---|---|---|
-| User profile | `USER#<id>` | `PROFILE` | `EMAIL#<email>` | `USER` |
+| Auth.js user | `USER#<id>` | `USER#<id>` | `USER#<email>` | `USER#<email>` |
+| User profile | `USER#<id>` | `PROFILE` | — | — |
 | Address | `USER#<id>` | `ADDR#<addrId>` | — | — |
 | Variety | `VARIETY#<id>` | `META` | `VARIETY` | `<slug>` |
 | Product (seed/rack/value-add) | `PRODUCT#<id>` | `META` | `CAT#<category>` | `<slug>` |
@@ -248,6 +249,16 @@ One table `fewgrams`, keys `PK` / `SK`, with two GSIs.
 | Payment | `PAYMENT#<id>` | `META` | `ORDER#<orderId>` | `PAYMENT#<id>` |
 | PIN code | `PIN#<pincode>` | `META` | — | — |
 | Settings | `CONFIG` | `SETTINGS` | — | — |
+
+**Amendment, 14 Sep 2026 (§8.1).** The user row is written by `@auth/dynamodb-adapter` at
+`USER#<id> / USER#<id>`, with email lookup on `GSI1PK = USER#<email>`. The adapter's keys are
+configurable and are mapped onto `PK`/`SK`/`GSI1PK`/`GSI1SK`, so auth items share each user's
+partition with their profile and addresses. The originally planned `EMAIL#<email>` convention is
+**dropped** in favour of the adapter's, so there is a single email-lookup path. The adapter also
+writes `USER#<id> / ACCOUNT#<provider>#<id>` and `USER#<id> / SESSION#<token>`.
+
+Note: the adapter's `deleteUser` removes **every item in the user's partition**, which takes
+addresses and profile with it. That is the correct behaviour for a deletion request.
 
 **GSI2** (`GSI2PK` = `STATUS#<status>`, `GSI2SK` = `<createdAt>`) serves admin list screens filtered
 by order or subscription status.
@@ -464,12 +475,122 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
 Enforce roles in **server-side middleware and every server action**, not just by hiding UI. The
 staff role in particular must be a genuine data restriction.
 
-### 8.1 Authentication
+### 8.1 Authentication — DECIDED & IMPLEMENTED 14 Sep 2026
 
-- Auth.js (NextAuth) with the DynamoDB adapter. **Google SSO + email/password.** Zero recurring cost.
-- Guest checkout auto-provisions a passwordless account from the delivery details; the claim email
-  lets them set a password and see their order.
-- **AWS Cognito magic link** to be explored during the build as an alternative — not a blocker.
+**Auth.js (`next-auth@5.0.0-beta.32`) + `@auth/dynamodb-adapter@2.11.3`. Google SSO + email
+magic link. No passwords. Database sessions.**
+
+#### Why not Cognito
+
+The deciding factor was not cost — Cognito is free to 10,000 MAU ($0.0055/MAU on Lite thereafter),
+which this business will never exceed. It was **local development**: AWS ships no official Cognito
+emulator, so building against it means either opening an AWS account immediately or developing
+against a community reimplementation (`cognito-local`, self-described as "a Good Enough offline
+emulator") and switching to the real service at launch. Note also that LocalStack archived its free
+community edition in March 2026.
+
+Two further points: Cognito puts the user directory **outside** the single table, so profiles must
+be mirrored in via a post-confirmation Lambda and kept in step forever; and **Cognito will not
+export password hashes**, so migrating off it later forces every customer to reset their password.
+
+Auth.js requires no AWS account at all. Combined with DynamoDB Local, the entire application can be
+built and tested before the AWS account is opened.
+
+*Better Auth was also evaluated and rejected: stable at 1.7.4 with good ergonomics, but it has no
+official DynamoDB adapter — only immature community packages (v1.0.1 and v0.2.2) — which would mean
+a second datastore or writing an adapter.*
+
+#### Why no passwords
+
+The Credentials provider **forces the JWT session strategy app-wide**. This is enforced, not
+advisory — `@auth/core/lib/utils/assert.js`:
+
+> `"Signing in with credentials only supported if JWT strategy is enabled"`
+
+Database sessions are worth more than password convenience here, because they make revoking an
+admin or staff member take effect on their **next request**. With a JWT, a demoted admin keeps admin
+until the token expires.
+
+**Adding passwords later is possible and bounded:** flip `session.strategy` to `"jwt"`, which logs
+everyone out once. It changes **no authorisation code**, because `requireRole` reads the role from
+DynamoDB rather than from the session. That property is the reason to keep it that way.
+
+#### Google OAuth — verified facts
+
+For the `email` / `profile` / `openid` scopes there is an explicit carve-out in Google's rules:
+
+| | Reality for our scopes |
+|---|---|
+| Cost | **₹0 at any volume.** No per-login charge |
+| User limit in production | **None** |
+| Verification to publish | **Not required** |
+| "Unverified app" warning | **Never shown** |
+| 100-test-user cap | Does not apply |
+| 7-day consent expiry | Does not apply |
+
+So **publish the consent screen straight to production** — free, instant, no review queue. Localhost
+keeps working because Google exempts loopback from its HTTPS rule:
+
+> "Redirect URIs must use the HTTPS scheme, not plain HTTP. Localhost URIs (including localhost IP
+> address URIs) are exempt from this rule."
+
+**This carve-out is conditional on staying on those three scopes.** Adding any Google API — reading a
+customer's Calendar, sending through their Gmail — moves the app into sensitive-scope territory and
+the verification requirement and user cap reappear.
+
+`allowDangerousEmailAccountLinking: true` is set **on Google only**. Without it, a user who first
+signs in by magic link and later clicks "Continue with Google" on the same address is refused with
+`OAuthAccountNotLinked` (`handle-login.js:250`), which reads to them as a broken site. It is
+defensible for Google because Google verifies email ownership itself. **Do not copy this flag to a
+provider that does not.**
+
+#### Email delivery
+
+Magic links are defined as an inline provider rather than via the Nodemailer provider. `nodemailer`
+is an *optional* peer dependency and `EmailConfig` only requires `sendVerificationRequest`, so:
+
+- **Development:** the link is printed to the terminal. No SMTP, no email service, no credentials.
+- **Launch:** send through SPEC §11's `NotificationProvider` — Resend free tier (3,000/month,
+  100/day, 3 domains, no AWS account) or SES once the AWS account exists.
+
+#### Roles
+
+Three stored roles — `customer`, `staff`, `admin` (guest is the *absence* of a session, not a stored
+role). Ranked as a total order, which is valid while SPEC §8's roles nest cleanly. If that ever
+stops being true, replace the ranking with explicit capabilities rather than bending it.
+
+`role` is stored as an attribute on the adapter's own user item (`USER#<id> / USER#<id>`), so
+reading it is a single `GetItem` on the primary key.
+
+**The first admin comes from `ADMIN_EMAILS`.** There is no seeded account and no way to self-promote
+through the UI. `ensureUserRole` uses `attribute_not_exists(#r)`, so a deliberate demotion in the
+table is never silently undone by a later sign-in.
+
+#### Three layers, and only one of them is the security boundary
+
+| Layer | Purpose | Is it a gate? |
+|---|---|---|
+| `src/proxy.ts` | Redirect signed-out visitors to `/login` | **No** — checks only cookie presence |
+| `requireRole()` in the admin layout | Block insufficient rank, redirect to `/forbidden` | **Yes** — reads DynamoDB |
+| `assertRole()` in every server action | Block direct invocation | **Yes** — reads DynamoDB |
+
+`middleware.ts` is **deprecated in Next.js 16 and renamed to `proxy.ts`**, which defaults to the
+Node.js runtime. It must live at `src/proxy.ts`, beside `app/` — not the repository root. The
+framework's own warning is why it cannot be the gate:
+
+> "A matcher change or a refactor that moves a Server Function to a different route can silently
+> remove Proxy coverage. Always verify authentication and authorization inside each Server Function
+> rather than relying on Proxy alone."
+
+`session.user.role` exists for **rendering only** — showing or hiding an Admin link. Never gate on
+it.
+
+#### Still to do
+
+- Guest checkout auto-provisioning and the `/account/claim` flow (SPEC §8) — the magic-link
+  machinery is in place and is the same mechanism.
+- Staff role assignment UI. Roles are currently changed by editing the table.
+- `/staff/*` and `/account/*` pages; `src/proxy.ts` already matches them.
 - Phone number is collected at checkout for delivery coordination, never used as the login.
 
 ---

@@ -9,10 +9,17 @@
     "lint": "eslint",
     "db:setup": "bash scripts/dynamodb-setup.sh",
     "db:local": "bash scripts/dynamodb-local.sh",
-    "db:tables": "aws dynamodb list-tables --endpoint-url http://localhost:8000 --region ap-south-1"
+    "db:tables": "aws dynamodb list-tables --endpoint-url http://localhost:8000 --region ap-south-1",
+    "db:table": "node --env-file=.env.local scripts/create-table.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@auth/dynamodb-adapter": "^2.11.3",
+    "@aws-sdk/client-dynamodb": "^3.1131.0",
+    "@aws-sdk/lib-dynamodb": "^3.1131.0",
+    "lucide-react": "^1.46.0",
     "next": "16.3.5",
+    "next-auth": "^5.0.0-beta.32",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
@@ -24,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.11"
   }
 }
