@@ -170,7 +170,7 @@ Five categories with genuinely different commerce rules — this is the heart of
 
 | Category | How it sells | Inventory |
 |---|---|---|
-| **Microgreens** | Subscription only. Weekly delivery, min 1 month, prepaid | **No stock.** Variety catalogue carrying yield + grow-day metadata |
+| **Microgreens** | Weekly subscription (min 1 month, prepaid) **and** one-off by the 100 g — see §18.6 | **No stock.** Variety catalogue carrying yield + grow-day metadata |
 | **Seeds** | One-off, buy anytime | **Real stock in grams.** Orders blocked above stock on hand |
 | **Racks** | One-off, buy anytime | **None** — outsourced, assumed always available |
 | **Trays** | One-off, buy anytime. **Variants:** virgin plastic / PP plastic | **None** — same as racks, assumed always available |
@@ -560,8 +560,8 @@ real blocker is Meta Business verification and per-template approval, not the mo
 | `/subscribe` | The three plans compared side by side |
 | `/subscribe/essential`, `/subscribe/exotic` | What arrives in each of the 4 rotation weeks, price, first-delivery date |
 | `/subscribe/build` | **BYO builder** — variety picker with quantities, live price, grow-group segregation, week-by-week schedule preview |
-| `/microgreens` | Variety library (informational — greens are not individually buyable) |
-| `/microgreens/[slug]` | Variety detail: flavour, nutrition, grow days, linked recipes |
+| `/microgreens` | Variety grid — a shopping surface, not a library (§18.6). Each block shows grow days |
+| `/microgreens/[slug]` | Variety detail: flavour, nutrition, grow days, linked recipes, **plus 100 g quantity selector and add-to-cart** (§18.6) |
 | `/shop` | Seeds, racks, trays, value-added items |
 | `/shop/[slug]` | Product detail with variant selector (e.g. tray material); seeds show available grams |
 | `/cart` | Line items, delivery estimate, coupon field |
@@ -700,6 +700,15 @@ Then:
   version and verify Amplify supports it first.
 - **Amplify Hosting cost** is billed on build minutes and data served. Harmless at launch; if it
   becomes material, the CDK + OpenNext route is effectively free at this scale (§2.2).
+- **Mixed-cart delivery dates unresolved (§18.6).** Ad-hoc orders spanning 7-day and 14-day
+  varieties are ready on different Saturdays. Needs a rule before the variety page is built.
+- **Ad-hoc vs subscription price gap not set (§18.6).** Without a deliberate gap, one-off 100 g
+  buying undercuts the subscription, which is the only recurring revenue.
+- **PIN serviceability check has no home on the home page (§18.3).** A visitor outside the
+  delivery zone can currently reach checkout before being refused.
+- **"How we grow" — 3D models vs photography undecided (§18.5).**
+- **Bundle prices do not exist yet.** §18.4 is built against a typed placeholder until Phase 2
+  ships the admin UI.
 - **Tray delivery rate not set.** Racks are a flat ₹500; trays are bulky but lighter, so they need
   their own rule in the `ShippingRateProvider`.
 - **Trays carry no stock count**, so an order can be accepted that the supplier cannot fill by
@@ -708,3 +717,281 @@ Then:
   needs a second content file or it silently falls back to English.
 - Brand name and logo should come from **one config file** so the visual identity can change
   cheaply.
+
+---
+
+## 17. Visual design system
+
+Decided 14 Sep 2026. Reference: `organicmandya.com` for palette and type; `donmolinico.es`
+for card motion and the page loader; `ripeplanet.com` for the full-screen menu overlay.
+
+### 17.1 Palette
+
+Extracted from Organic Mandya's stylesheet, then deliberately shifted so Fewgrams is adjacent
+rather than a clone — they are an established Bengaluru organic-food brand with 22+ stores, and an
+identical identity in the same city and category would read as derivative.
+
+| Token | Hex | Use |
+|---|---|---|
+| `forest` | `#033923` | Primary. Dark bands, footer, menu overlay, primary buttons |
+| `forest-deep` | `#0C3A26` | Hover state on forest surfaces |
+| `sage` | `#A8CF8E` | Accent. Icon badges, tags, the Essential card panel |
+| `mint` | `#ABE1CC` | Soft highlight on dark backgrounds |
+| `cream` | `#FBF9F3` | Default page background |
+| `sand` | `#F2EBE3` | Alternating section band, the BYO card panel |
+| `ink` | `#1A1A1A` | Body text on light |
+| `stone` | `#6B7268` | Muted / secondary text |
+| `terracotta` | `#C7452F` | Errors only — including "we don't deliver to your PIN yet" |
+
+**Deliberately dropped:** Organic Mandya's signature teal `#108474`. It is their most recognisable
+colour, and it measures **4.36:1 on cream — below the 4.5:1 WCAG AA minimum for body text** anyway.
+
+**Verified contrast ratios** (computed, not assumed):
+
+| Pair | Ratio | Body 4.5:1 | Large/UI 3:1 |
+|---|---|---|---|
+| `ink` on `cream` | 16.53 | PASS | PASS |
+| `forest` on `cream` | 12.36 | PASS | PASS |
+| `forest` on `sand` | 11.01 | PASS | PASS |
+| `cream` on `forest` | 13.02 | PASS | PASS |
+| `forest` on `sage` | 7.43 | PASS | PASS |
+| `mint` on `forest` | 8.91 | PASS | PASS |
+| `stone` on `cream` | 4.71 | PASS | PASS |
+| `terracotta` on `cream` | 4.62 | PASS | PASS |
+
+`stone` at 4.71 clears body text with little margin — do not darken the background behind it or
+lighten the token without re-checking.
+
+### 17.2 Typography
+
+| Role | Family | Weights |
+|---|---|---|
+| Headings / display | **Quicksand** | 500, 600, 700 |
+| Body / UI | **Montserrat** | 400, 500, 600 |
+| Kannada (`kn` locale) | **Noto Sans Kannada** | 400, 600 |
+
+All three are free Google Fonts, self-hosted via `next/font` — no runtime request to Google, and
+no layout shift.
+
+### 17.3 Iconography
+
+Line-art icons inside a filled circular badge — `sage` badge with `forest` icon on light sections,
+`sage` icon on `forest` in dark bands. `lucide-react` at `stroke-width: 1.5` in a `rounded-full`
+container. No custom icon set is needed.
+
+### 17.4 Motion
+
+One shared easing token everywhere: **`cubic-bezier(.19, 1, .22, 1)`** (expo-out). This is the
+single most important detail of the Don Molinico feel — the same movements with a default ease look
+cheap. Register it in the Tailwind config as `ease-brand`.
+
+**Product / variety card hover, reverse-engineered from Don Molinico's stylesheet:**
+
+```
+.card             aspect-ratio 580/660; overflow hidden; position relative
+                  flat colour panel, border-radius 20px
+
+.card__media      cut-out PNG, 80% width, aspect-ratio 1/1, z-index 15
+  :hover          transform: scale(1.1) rotate(-4deg)   1.25s ease-brand
+
+.card__marquee    absolute, full-bleed, BEHIND the media, pointer-events: none
+  rest            clip-path: inset(0  round 20px);  opacity 0
+  :hover          clip-path: inset(4% round 20px);  opacity 1     1s ease-brand
+
+.card__marquee__inner
+                  oversized display type, repeated, scrolling vertically
+                  animation: marquee 8s linear infinite
+
+@media (pointer: fine)   /* every hover effect above is desktop-only */
+```
+
+Two opposing motions from one hover: the panel pulls **inward** 4% while the image scales
+**outward** 10%. No animation library is required — this is `clip-path`, `transform` and one
+keyframe. (Don Molinico loads GSAP and Lenis, but only for smooth scroll and the custom cursor.)
+
+**Custom cursor:** on hoverable product cards, the cursor becomes a filled `cream` circle with
+`ORDER` in `forest`. Desktop only; must not break keyboard or touch interaction.
+
+**Accessibility requirement:** every animation in this section must be disabled under
+`@media (prefers-reduced-motion: reduce)`. The marquee in particular is continuous motion, which is
+a genuine accessibility problem if it cannot be stopped.
+
+### 17.5 Page loader
+
+Don Molinico pattern: on first load, a full-screen `forest` panel carrying the Fewgrams mark,
+which then shrinks/wipes to reveal the page.
+
+**Constraints, because loaders are usually a net loss:**
+- Show it on **first visit only**, persisted in `sessionStorage`. Never on internal navigation.
+- Hard cap the duration — around 800ms. It must never gate content on a network request.
+- The page beneath must be fully rendered and interactive before the loader retracts, so the
+  loader hides work rather than adding delay.
+- Skip it entirely under `prefers-reduced-motion`.
+
+---
+
+## 18. Home page & global chrome
+
+### 18.1 Header
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│ ⊞ FEWGRAMS   PRODUCTS   PLANS   HOW WE GROW                      │
+│                            like our website?  EN|ಕನ್ನಡ  ⌂⁰  ◯     │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+| Item | Behaviour |
+|---|---|
+| Logo | Brand mark, left. Links to `/` |
+| `PRODUCTS` | Opens the full-screen overlay (§18.2) |
+| `PLANS` | Anchors to the bundles section (`/#plans`) on the home page |
+| `HOW WE GROW` | The animated process page (§18.5) |
+| `like our website?` | Small, right-aligned. On hover the label swaps in place to "we can build one for you →". A deliberate, quiet B2B lead capture |
+| `EN｜ಕನ್ನಡ` | Locale switch |
+| Cart | Persistent count badge |
+| Account | Sign in / account menu |
+
+Sticky, `cream` background with `forest` type.
+
+### 18.2 The PRODUCTS overlay — two levels
+
+RipePlanet pattern: full-bleed `forest`, oversized Quicksand in `cream`, with a quiet secondary
+column on the right. A subtle leaf-vein texture plays the role RipePlanet's contour lines do.
+
+```
+Level 1                                    Level 2 — click MICROGREENS
+┌─────────────────────────────────┐        ┌─────────────────────────────────┐
+│ ⊞ FEWGRAMS                  ✕   │        │ ← BACK                      ✕   │
+│                                 │        │                                 │
+│  MICROGREENS      Our story     │        │  ▓▓▓▓  ▓▓▓▓  ▓▓▓▓  ▓▓▓▓        │
+│  RACKS            Recipes       │        │ RADISH  PEA  MUSTARD BEET       │
+│  TRAYS            FAQ           │        │ 7 days  9d    7d     14d        │
+│  SEEDS            Contact       │        │                                 │
+│  SNACKS           Account       │        │  ▓▓▓▓  ▓▓▓▓  ▓▓▓▓  ▓▓▓▓        │
+│                   ─────────     │        │ SUNFLR  KALE AMARNTH BASIL      │
+│  Like our         Instagram     │        │ 12 days 10d   8d     14d        │
+│  website?         info@…        │        │                                 │
+│                   FSSAI ·····   │        │ click a block → /microgreens/…  │
+└─────────────────────────────────┘        └─────────────────────────────────┘
+```
+
+**Grow days appear on every variety block.** This is the cheapest possible fix for the biggest
+expectation problem in the model — it tells the visitor this is not next-day delivery before they
+ever reach a product page.
+
+### 18.3 Home page section order
+
+| # | Section | Purpose |
+|---|---|---|
+| 0 | **Loader** (§17.5) | First visit only |
+| 1 | **Header** (§18.1) | |
+| 2 | **Hero** — full-bleed microgreens image, full viewport width | Says what this is in three seconds |
+| 3 | **Our process** — non-treated seeds → quality checked → sown only on your order → harvested to deliver. No freezing, no storing | The core differentiator, and the answer to "is this safe to eat" |
+| 4 | **Bundles** (`#plans`, §18.4) | The conversion surface |
+| 5 | **Other products** — racks · trays · seeds · snacks, four tiles | One-off revenue, clearly secondary. Same card motion as §17.4 |
+| 6 | **Trust tags** — organically grown · no chemicals · trusted seed sources · fresh, never frozen | Icon badges, `sage` on `forest` |
+| 7 | **Footer** | Org details, legal, contact, FSSAI number |
+
+**Dropped from §12's original list:** testimonials. There are no customers yet; an empty carousel
+signals that nobody buys this, and inventing quotes is an unacceptable trade for a food brand. The
+trust band does the same job honestly. Add testimonials when they are real.
+
+**Still unplaced: the PIN serviceability check.** Not in the layout above. Delivery is restricted
+to an allowlist of Bengaluru PIN codes, so a visitor outside the zone can currently read the whole
+page, choose a bundle and reach checkout before being refused. It needs a home — recommended as a
+single quiet line in the hero. **Open decision.**
+
+### 18.4 Bundle cards
+
+Three vertical cards. Anatomy follows the Le Boat price-bundle pattern, adapted because a Fewgrams
+bundle **rotates over four weeks** and so cannot be described by a flat feature list.
+
+```
+┌──────────────────────┐  ┌────────────────────── RECOMMENDED
+│ ░░░░░░░░░░░░░░░░░░░░ │  │ ░░░░░░░░░░░░░░░░░░░░
+│ ░  cut-out greens  ░ │  │ ░  cut-out greens  ░   ← marquee of the
+│ ░  on sage panel   ░ │  │ ░  on forest panel ░     variety names
+│ ░░░░░░░░░░░░░░░░░░░░ │  │ ░░░░░░░░░░░░░░░░░░░░     scrolls behind
+│                      │  │                          on hover
+│ ESSENTIAL            │  │ EXOTIC
+│ The daily basics,    │  │ Premium greens, plus
+│ every week.          │  │ all the basics.
+│                      │  │
+│ 6 varieties          │  │ 10 varieties
+│ 4 weekly boxes       │  │ 4 weekly boxes
+│ ~500 g per box       │  │ ~650 g per box
+│                      │  │
+│ ✓ Sown only on your  │  │ ✓ Everything in
+│   order              │  │   Essential
+│ ✓ Cut the morning it │  │ ✓ Amaranth, basil,
+│   reaches you        │  │   wheatgrass
+│ ✓ Delivery included  │  │ ✓ Delivery included
+│                      │  │
+│ ₹1,200 /month        │  │ ₹1,800 /month
+│ ₹60 per 100 g        │  │ ₹69 per 100 g
+│                      │  │
+│ First box: Sat 26 Sep│  │ First box: Sat 26 Sep
+│                      │  │
+│ [    SUBSCRIBE    ]  │  │ [   SUBSCRIBE   ]
+│ See the 4-week       │  │ See the 4-week
+│ rotation →           │  │ rotation →
+└──────────────────────┘  └──────────────────────
+```
+
+Panel colours and marquee contrast, all verified in §17.1:
+
+| Bundle | Panel | Marquee type | Ratio |
+|---|---|---|---|
+| Essential | `sage` `#A8CF8E` | `forest` | 7.43:1 |
+| Exotic | `forest` `#033923` | `mint` | 8.91:1 |
+| Build Your Own | `sand` `#F2EBE3` | `forest` | 11.01:1 |
+
+**Three things the reference pattern does not carry, and this card must:**
+
+1. **First delivery date**, computed live against the Friday 23:59 cutoff (§5.3). The spec already
+   requires this at checkout; showing it on the card is materially better, because the person
+   deciding is the person who needs to know.
+2. **Price per 100 g** alongside the monthly price. This is what stops ad-hoc buying (§18.6) from
+   cannibalising subscriptions — the plan has to be *visibly* the cheaper way to buy.
+3. **"Everything in Essential"** on the Exotic card, per §5.1's cumulative tiering.
+
+The four-week rotation is **not** printed on the card — three dense week-by-week tables side by
+side is unreadable. A "See the 4-week rotation →" link opens a drawer with the full schedule and
+real dates. Cards stay equal height and scannable.
+
+**Build Your Own is a third card**, not the de-emphasised link the reference uses — it is a
+differentiator no local competitor offers. Styled lighter (outline button, not filled) so most
+visitors land on a curated pack, which is also easier to operate.
+
+**Subscribe buttons live in the cards**, not in the header. `PLANS` in the header anchors here.
+
+**Data dependency:** no bundle data exists yet and the admin UI is Phase 2. Build this section
+against a typed placeholder module so the same component later swaps to a DynamoDB read with no
+rework.
+
+### 18.5 How we grow
+
+The animated process page: seed procurement → quality check → soak → sow → germinate → harvest →
+deliver.
+
+Requested as rotating 3D models. **Recommendation: a scroll-driven sequence of Fewgrams' own
+photographs instead.** Rotating 3D needs modelled assets (a seed, a tray, a sprout) — either paid
+asset work or a large time cost — and for a food brand real photographs of your own trays read as
+more credible than a synthetic seed, while loading faster. **Open decision.**
+
+### 18.6 Model change: microgreens are individually buyable
+
+**This supersedes §3 and §12, which state that microgreens are subscription-only.**
+
+A visitor can order a single variety ad-hoc from `/microgreens/[slug]`, in **100 g units**, with a
+quantity selector. The order is sown on the next sow Sunday and delivered after that variety's
+`growDays`. This is the low-commitment entry point the site otherwise lacks.
+
+| Consequence | Status |
+|---|---|
+| Pricing | **No schema change.** `Variety.pricePer100g` already exists for BYO and is reused |
+| Mixed carts split across dates | Radish is 7 days, sunflower 14. Ordered together, they are ready on different Saturdays. Either hold one for a week (contradicts "no storing") or make two trips for one order. **Rule needed.** Recommended: deliver together on the later date, stated clearly at cart |
+| Subscription cannibalisation | If ad-hoc 100 g costs the same per gram as a plan, nobody commits to a month. The plan must be visibly cheaper per 100 g, or ad-hoc carries a convenience premium. **Pricing gap to be set** |
+| §3 catalogue table | Microgreens row must change from "Subscription only" to "Subscription **and** one-off by 100 g" |
+| §12 page inventory | `/microgreens` is a shopping surface, not an informational library. `/microgreens/[slug]` gains a quantity selector and add-to-cart |
