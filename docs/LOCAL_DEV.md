@@ -139,3 +139,38 @@ curl -s -b jar.txt -o /dev/null -w "%{http_code} %{redirect_url}\n" localhost:30
 # 3. demote again, same cookie:
 #    → 307 http://localhost:3000/forbidden
 ```
+
+---
+
+## Browsing the data
+
+```bash
+npm run db:gui     # dynamodb-admin → http://localhost:8001
+```
+
+Three terminals in normal use: `npm run db:local`, `npm run dev`, `npm run db:gui`.
+
+**The DynamoDB Local shell is gone.** `http://localhost:8000/shell` shipped with the 1.x line and
+returns HTTP 400 on 3.x — AWS removed it. Don't go looking for it.
+
+### Reading the single table
+
+Key patterns, so the rows are legible (SPEC §4, §8.1):
+
+| PK | SK | Entity |
+|---|---|---|
+| `USER#<id>` | `USER#<id>` | Auth.js user — carries `email` and `role` |
+| `USER#<id>` | `ACCOUNT#<provider>#<id>` | Linked OAuth identity |
+| `USER#<id>` | `SESSION#<token>` | Active session. **Delete the row to log that session out instantly** |
+| `USER#<id>` | `PROFILE` / `ADDR#<id>` | Ours (SPEC §4) |
+| `VT#<email>` | `VT#<hash>` | Unused magic-link token. Auth.js deletes it on use |
+| `VARIETY#<id>` | `META` | Microgreen variety |
+| `PRODUCT#<id>` | `META` | Rack / tray / seed / snack |
+| `PLAN#<id>` | `META` / `WEEK#<1..4>` | Plan and its rotation weeks |
+
+Useful filters: `PK begins_with VARIETY#`, or switch Scan → Query and select `GSI1` / `GSI2` to
+exercise the indexes.
+
+**Alternative:** NoSQL Workbench (`brew install --cask nosql-workbench`) is AWS's own free desktop
+app. Heavier, but it does visual single-table modelling and can emit CDK — worth installing when the
+CDK stack is written.

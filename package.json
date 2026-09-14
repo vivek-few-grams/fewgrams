@@ -11,7 +11,8 @@
     "db:local": "bash scripts/dynamodb-local.sh",
     "db:tables": "aws dynamodb list-tables --endpoint-url http://localhost:8000 --region ap-south-1",
     "db:table": "node --env-file=.env.local scripts/create-table.mjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:gui": "DYNAMO_ENDPOINT=http://localhost:8000 AWS_REGION=ap-south-1 AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local npx --yes dynamodb-admin@5 --port 8001"
   },
   "dependencies": {
     "@auth/dynamodb-adapter": "^2.11.3",
