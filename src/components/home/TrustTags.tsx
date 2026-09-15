@@ -1,4 +1,5 @@
 import { Leaf, ShieldCheck, Snowflake, Sprout as SproutIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 /**
  * Trust band — SPEC §18.3 section 6. Icon badges, sage on forest, matching the
@@ -10,26 +11,28 @@ import { Leaf, ShieldCheck, Snowflake, Sprout as SproutIcon } from "lucide-react
  * does the same job honestly.
  */
 const tags = [
-  { icon: Leaf, title: "Organically grown", note: "Soil and water, nothing else" },
-  { icon: ShieldCheck, title: "No chemicals", note: "No pesticides, no growth agents" },
-  { icon: SproutIcon, title: "Trusted seed sources", note: "Untreated seed only" },
-  { icon: Snowflake, title: "Never frozen", note: "Cut and delivered the same morning" },
-];
+  { key: "organic", icon: Leaf },
+  { key: "noChemicals", icon: ShieldCheck },
+  { key: "seed", icon: SproutIcon },
+  { key: "neverFrozen", icon: Snowflake },
+] as const;
 
-export function TrustTags() {
+export async function TrustTags() {
+  const tr = await getTranslations("home.trust");
+
   return (
     <section className="bg-forest">
       <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
         <ul className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-cream/15">
           {tags.map((t) => (
-            <li key={t.title} className="lg:px-8 lg:first:pl-0 lg:last:pr-0">
+            <li key={t.key} className="lg:px-8 lg:first:pl-0 lg:last:pr-0">
               <span className="grid size-12 place-items-center rounded-full bg-sage text-forest">
                 <t.icon size={22} strokeWidth={1.5} />
               </span>
               <h3 className="mt-5 font-display text-base font-semibold text-cream">
-                {t.title}
+                {tr(`${t.key}.title`)}
               </h3>
-              <p className="mt-1.5 font-body text-sm text-mint/70">{t.note}</p>
+              <p className="mt-1.5 font-body text-sm text-mint/70">{tr(`${t.key}.note`)}</p>
             </li>
           ))}
         </ul>

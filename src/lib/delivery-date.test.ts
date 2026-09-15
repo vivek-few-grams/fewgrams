@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  adhocOrderReadyDate,
+  adhocReadyDate,
+  adhocSowDate,
   deliverySchedule,
   firstDeliveryDate,
   formatDeliveryDate,
@@ -92,5 +95,67 @@ describe("display formatting", () => {
     expect(formatDeliveryDate(new Date("2026-09-25T23:00:00Z"))).toBe(
       "Sat 26 Sept",
     );
+  });
+});
+
+describe("one-off orders sow next day, not Sunday — SPEC §18.6", () => {
+  /* The owner's correction, 15 Sep 2026: individual orders are sown the next
+     day; only subscriptions wait for the Sunday cycle. These cases pin the
+     difference so nobody "unifies" the two rules later. */
+
+  it("sows tomorrow, whatever day of the week it is", () => {
+    const cases = [
+      ["2026-09-14T10:00:00", "2026-09-15"], // Mon -> Tue
+      ["2026-09-18T10:00:00", "2026-09-19"], // Fri -> Sat
+      ["2026-09-19T10:00:00", "2026-09-20"], // Sat -> Sun
+      ["2026-09-20T10:00:00", "2026-09-21"], // Sun -> Mon
+    ] as const;
+    for (const [when, expected] of cases) {
+      expect(fmt(adhocSowDate(ist(when)))).toBe(expected);
+    }
+  });
+
+  it("does NOT wait for the subscription cutoff", () => {
+    // A Saturday order has missed the weekly cutoff, so a subscription would
+    // not be sown until 27 Sept. A one-off is sown the next morning.
+    const now = ist("2026-09-19T09:00:00"); // Sat
+    expect(fmt(sowSunday(now))).toBe("2026-09-27");
+    expect(fmt(adhocSowDate(now))).toBe("2026-09-20");
+  });
+
+  it("is day-granular: 00:05 and 23:55 on the same day sow together", () => {
+    expect(fmt(adhocSowDate(ist("2026-09-14T00:05:00")))).toBe("2026-09-15");
+    expect(fmt(adhocSowDate(ist("2026-09-14T23:55:00")))).toBe("2026-09-15");
+  });
+
+  it("is ready growDays after the sow, not after the order", () => {
+    const now = ist("2026-09-15T15:00:00"); // Tue
+    // Sown Wed 16th; broccoli is 10 grow days.
+    expect(fmt(adhocSowDate(now))).toBe("2026-09-16");
+    expect(fmt(adhocReadyDate(10, now))).toBe("2026-09-26");
+  });
+
+  it("crosses a month boundary correctly", () => {
+    const now = ist("2026-09-28T12:00:00");
+    expect(fmt(adhocReadyDate(10, now))).toBe("2026-10-09");
+  });
+
+  it("clamps a nonsense growDays rather than printing a nonsense date", () => {
+    const now = ist("2026-09-15T12:00:00");
+    expect(fmt(adhocReadyDate(0, now))).toBe("2026-09-17"); // floored to 1
+    expect(fmt(adhocReadyDate(9999, now))).toBe(fmt(adhocReadyDate(60, now)));
+  });
+
+  it("a mixed order is ready on its slowest variety's date", () => {
+    const now = ist("2026-09-15T12:00:00"); // sown 16th
+    // 7-day mustard would be ready 23rd; 10-day broccoli on the 26th.
+    expect(fmt(adhocReadyDate(7, now))).toBe("2026-09-23");
+    expect(fmt(adhocOrderReadyDate([7, 10], now)!)).toBe("2026-09-26");
+    // Order of the list must not matter.
+    expect(fmt(adhocOrderReadyDate([10, 7], now)!)).toBe("2026-09-26");
+  });
+
+  it("has no ready date for an empty order", () => {
+    expect(adhocOrderReadyDate([], ist("2026-09-15T12:00:00"))).toBeNull();
   });
 });

@@ -1,0 +1,166 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "gallery": [
+      "bunch.jpg"
+    ]
+  },
+  "en": {
+    "name": "Broccoli",
+    "shortDescription": "The one people grow for sulforaphane. Mild, fresh, nothing like the vegetable.",
+    "description": "Broccoli microgreens are the most researched green on this list, and the reason is a compound called glucoraphanin. When you chew the raw leaf, an enzyme in the plant converts it to sulforaphane — the molecule that has made broccoli sprouts a subject of nutrition research for thirty years. Young broccoli carries far more glucoraphanin than a mature head, which is why a handful of these is not the same thing as a serving of the vegetable. The taste surprises people: soft, fresh and faintly sweet, with none of the sulphury note of cooked broccoli. Harvested when the first true leaves are just showing.",
+    "flavourNotes": "Fresh and mild with a clean, faintly cabbage-sweet finish. No bitterness and no heat.",
+    "growingTips": "Sow evenly and not too dense — broccoli is prone to damping off if the canopy stays wet. Good airflow, and cut when the first true leaves appear.",
+    "nutrition": [
+      {
+        "label": "Glucoraphanin (sulforaphane precursor)",
+        "value": "High — much higher than mature broccoli"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin E",
+        "value": "Good source"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Potassium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Manganese",
+        "value": "Moderate"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin C contributes to normal immune function and to normal collagen formation for healthy skin, gums and blood vessels.",
+      "Vitamin C also protects cells from oxidative stress and increases iron absorption from plant foods.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin A contributes to the maintenance of normal vision and to normal immune function.",
+      "Vitamin E protects cells from oxidative stress.",
+      "Folate contributes to normal blood formation and to normal psychological function.",
+      "Potassium contributes to normal muscle function and to the maintenance of normal blood pressure."
+    ],
+    "cautions": [
+      "Broccoli is a brassica and contains goitrogens, which in large regular amounts can interfere with thyroid function. If you have a thyroid condition, keep portions moderate and ask your doctor.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Should I cook these to get the sulforaphane?",
+        "answer": "No — cooking is what destroys it. Sulforaphane is not present in the leaf; it forms when an enzyme called myrosinase meets glucoraphanin as you chew. Heat denatures that enzyme, so a cooked microgreen gives you the vitamins but far less sulforaphane. Eat them raw, and chew properly."
+      },
+      {
+        "question": "How is this different from eating broccoli?",
+        "answer": "Concentration and form. Young broccoli carries substantially more glucoraphanin per gram than a mature head, and you eat it raw rather than boiled, which preserves both the vitamin C and the enzyme. It is not a replacement for the vegetable in a meal — it is a different thing you eat by the handful."
+      },
+      {
+        "question": "My kids refuse broccoli. Will they eat this?",
+        "answer": "Often, yes. The sulphury smell of cooked broccoli comes from heat breaking down its sulphur compounds, and that does not happen here. Raw broccoli microgreens taste mild and slightly sweet, closer to a salad leaf."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. Broccoli microgreens are a little more delicate than mustard or radish, so keep the box away from the coldest back wall of the fridge."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Anything raw and cold. Into a sandwich or wrap, folded through a salad, over avocado toast, blended into a smoothie, or piled on a bowl of curd rice. Add it to hot food only at the table, after the plate has left the stove."
+      }
+    ],
+    "imageAlt": "Dense tray of green broccoli microgreens with rounded first leaves"
+  },
+  "kn": {
+    "name": "ಬ್ರೊಕೊಲಿ",
+    "shortDescription": "ಸಲ್ಫೊರಾಫೇನ್‌ಗಾಗಿ ಜನರು ಬೆಳೆಸುವ ಸೊಪ್ಪು. ಸೌಮ್ಯ, ತಾಜಾ — ತರಕಾರಿಯಂತೆ ಅಲ್ಲವೇ ಅಲ್ಲ.",
+    "description": "ಈ ಪಟ್ಟಿಯಲ್ಲಿ ಅತಿ ಹೆಚ್ಚು ಸಂಶೋಧನೆಯಾದ ಸೊಪ್ಪು ಬ್ರೊಕೊಲಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್, ಮತ್ತು ಕಾರಣ ಗ್ಲುಕೊರಾಫನಿನ್ ಎಂಬ ಸಂಯುಕ್ತ. ಹಸಿ ಎಲೆಯನ್ನು ಅಗಿಯುವಾಗ ಗಿಡದಲ್ಲಿರುವ ಕಿಣ್ವ ಅದನ್ನು ಸಲ್ಫೊರಾಫೇನ್ ಆಗಿ ಪರಿವರ್ತಿಸುತ್ತದೆ — ಮೂವತ್ತು ವರ್ಷಗಳಿಂದ ಪೋಷಣಾ ಸಂಶೋಧನೆಯ ವಿಷಯವಾಗಿರುವ ಅಣು. ಎಳೆಯ ಬ್ರೊಕೊಲಿಯಲ್ಲಿ ಬೆಳೆದ ಹೂವಿಗಿಂತ ಬಹಳ ಹೆಚ್ಚು ಗ್ಲುಕೊರಾಫನಿನ್ ಇರುತ್ತದೆ, ಆದ್ದರಿಂದ ಒಂದು ಹಿಡಿ ಇವು ಒಂದು ಸೇವೆಯ ತರಕಾರಿಗೆ ಸಮಾನವಲ್ಲ. ರುಚಿ ಜನರನ್ನು ಆಶ್ಚರ್ಯಗೊಳಿಸುತ್ತದೆ: ಮೃದು, ತಾಜಾ ಮತ್ತು ಸ್ವಲ್ಪ ಸಿಹಿ, ಬೇಯಿಸಿದ ಬ್ರೊಕೊಲಿಯ ಗಂಧಕದ ವಾಸನೆ ಇಲ್ಲವೇ ಇಲ್ಲ. ಮೊದಲ ನಿಜವಾದ ಎಲೆಗಳು ಕಾಣುವಾಗ ಕಟಾವು.",
+    "flavourNotes": "ತಾಜಾ ಮತ್ತು ಸೌಮ್ಯ, ಸ್ವಚ್ಛವಾದ ಸ್ವಲ್ಪ ಸಿಹಿ ಕೊನೆ. ಕಹಿಯಿಲ್ಲ, ಖಾರವಿಲ್ಲ.",
+    "growingTips": "ಸಮನಾಗಿ ಮತ್ತು ಹೆಚ್ಚು ದಟ್ಟವಾಗಿ ಬಿತ್ತಬೇಡಿ — ಮೇಲ್ಪದರ ಒದ್ದೆಯಾಗಿದ್ದರೆ ಬ್ರೊಕೊಲಿ ಕೊಳೆಯುತ್ತದೆ. ಒಳ್ಳೆಯ ಗಾಳಿ, ಮತ್ತು ಮೊದಲ ನಿಜವಾದ ಎಲೆಗಳು ಬಂದಾಗ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ಗ್ಲುಕೊರಾಫನಿನ್ (ಸಲ್ಫೊರಾಫೇನ್ ಪೂರ್ವಗಾಮಿ)",
+        "value": "ಅಧಿಕ — ಬೆಳೆದ ಬ್ರೊಕೊಲಿಗಿಂತ ಬಹಳ ಹೆಚ್ಚು"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ E",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಮ್ಯಾಂಗನೀಸ್",
+        "value": "ಮಧ್ಯಮ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಆರೋಗ್ಯಕರ ಚರ್ಮ, ವಸಡು ಹಾಗೂ ರಕ್ತನಾಳಗಳಿಗಾಗಿ ಸಾಮಾನ್ಯ ಕಾಲಜನ್ ರಚನೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಸ್ಯ ಆಹಾರಗಳಿಂದ ಕಬ್ಬಿಣದ ಹೀರಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ — ಸಸ್ಯಾಹಾರಿ ಆಹಾರದಲ್ಲಿ ಇದು ಉಪಯುಕ್ತ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿಯ ನಿರ್ವಹಣೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ E ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮಾನಸಿಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಪೊಟ್ಯಾಸಿಯಂ ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಸಾಮಾನ್ಯ ರಕ್ತದೊತ್ತಡದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಇದು ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು ಮತ್ತು ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳನ್ನು ಹೊಂದಿದೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು. ಥೈರಾಯ್ಡ್ ಸಮಸ್ಯೆ ಇದ್ದರೆ ಪ್ರಮಾಣವನ್ನು ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ — ಹಠಾತ್ತನೆ ಹೆಚ್ಚು ತಿನ್ನಬೇಡಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಸಲ್ಫೊರಾಫೇನ್ ಸಿಗಲು ಬೇಯಿಸಬೇಕೇ?",
+        "answer": "ಇಲ್ಲ — ಬೇಯಿಸುವುದೇ ಅದನ್ನು ನಾಶ ಮಾಡುತ್ತದೆ. ಸಲ್ಫೊರಾಫೇನ್ ಎಲೆಯಲ್ಲಿ ಮೊದಲೇ ಇರುವುದಿಲ್ಲ; ಅಗಿಯುವಾಗ ಮೈರೊಸಿನೇಸ್ ಕಿಣ್ವ ಗ್ಲುಕೊರಾಫನಿನ್‌ನೊಂದಿಗೆ ಸೇರಿದಾಗ ಅದು ರೂಪುಗೊಳ್ಳುತ್ತದೆ. ಶಾಖ ಆ ಕಿಣ್ವವನ್ನು ನಾಶ ಮಾಡುತ್ತದೆ. ಹಸಿಯಾಗಿ ತಿನ್ನಿ, ಚೆನ್ನಾಗಿ ಅಗಿಯಿರಿ."
+      },
+      {
+        "question": "ಬ್ರೊಕೊಲಿ ತರಕಾರಿ ತಿನ್ನುವುದಕ್ಕಿಂತ ಇದು ಹೇಗೆ ಬೇರೆ?",
+        "answer": "ಸಾಂದ್ರತೆ ಮತ್ತು ರೂಪ. ಎಳೆಯ ಬ್ರೊಕೊಲಿಯಲ್ಲಿ ಪ್ರತಿ ಗ್ರಾಂಗೆ ಬೆಳೆದ ಹೂವಿಗಿಂತ ಹೆಚ್ಚು ಗ್ಲುಕೊರಾಫನಿನ್ ಇರುತ್ತದೆ, ಮತ್ತು ಇದನ್ನು ಬೇಯಿಸದೆ ಹಸಿಯಾಗಿ ತಿನ್ನುತ್ತೀರಿ — ಇದು ವಿಟಮಿನ್ C ಮತ್ತು ಕಿಣ್ವ ಎರಡನ್ನೂ ಉಳಿಸುತ್ತದೆ. ಇದು ಊಟದಲ್ಲಿ ತರಕಾರಿಗೆ ಬದಲಿಯಲ್ಲ — ಹಿಡಿಯಷ್ಟು ತಿನ್ನುವ ಬೇರೆಯ ವಸ್ತು."
+      },
+      {
+        "question": "ನನ್ನ ಮಕ್ಕಳು ಬ್ರೊಕೊಲಿ ತಿನ್ನುವುದಿಲ್ಲ. ಇದನ್ನು ತಿನ್ನುತ್ತಾರೆಯೇ?",
+        "answer": "ಸಾಮಾನ್ಯವಾಗಿ ಹೌದು. ಬೇಯಿಸಿದ ಬ್ರೊಕೊಲಿಯ ಗಂಧಕದ ವಾಸನೆ ಶಾಖದಿಂದ ಅದರ ಸಲ್ಫರ್ ಸಂಯುಕ್ತಗಳು ಒಡೆಯುವುದರಿಂದ ಬರುತ್ತದೆ, ಮತ್ತು ಇಲ್ಲಿ ಅದು ಆಗುವುದಿಲ್ಲ. ಹಸಿ ಬ್ರೊಕೊಲಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಸೌಮ್ಯ ಮತ್ತು ಸ್ವಲ್ಪ ಸಿಹಿ, ಸಲಾಡ್ ಎಲೆಗೆ ಹತ್ತಿರ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಬ್ರೊಕೊಲಿ ಸಾಸಿವೆ ಅಥವಾ ಮೂಲಂಗಿಗಿಂತ ಸ್ವಲ್ಪ ಸೂಕ್ಷ್ಮ, ಆದ್ದರಿಂದ ಡಬ್ಬಿಯನ್ನು ಫ್ರಿಜ್‌ನ ಅತಿ ತಣ್ಣನೆಯ ಹಿಂಭಾಗದಿಂದ ದೂರ ಇಡಿ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಹಸಿ ಮತ್ತು ತಣ್ಣನೆಯ ಯಾವುದಕ್ಕೂ. ಸ್ಯಾಂಡ್‌ವಿಚ್ ಅಥವಾ ರ‍್ಯಾಪ್‌ನಲ್ಲಿ, ಸಲಾಡ್‌ನಲ್ಲಿ, ಅವಕಾಡೊ ಟೋಸ್ಟ್ ಮೇಲೆ, ಸ್ಮೂದಿಯಲ್ಲಿ, ಅಥವಾ ಮೊಸರನ್ನದ ಬಟ್ಟಲಿನ ಮೇಲೆ. ಬಿಸಿ ಅಡುಗೆಗೆ ಊಟದ ಮೇಜಿನಲ್ಲಿ ಮಾತ್ರ ಸೇರಿಸಿ."
+      }
+    ],
+    "imageAlt": "ದುಂಡು ಮೊದಲ ಎಲೆಗಳ ಹಸಿರು ಬ್ರೊಕೊಲಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ತುಂಬಿದ ಟ್ರೇ"
+  }
+}

@@ -1,69 +1,46 @@
-import {
-  BatchWriteCommand,
-  DeleteCommand,
-  PutCommand,
-  QueryCommand,
-} from "@aws-sdk/lib-dynamodb";
-import { TABLE, ddb, stripKeys } from "@/lib/ddb";
+import { LIST_OPTS, READ_OPTS } from "@/lib/db/client";
+import { PlanEntity, PlanWeekEntity } from "@/lib/db/entities";
 import type { Plan, PlanWeek } from "@/lib/types";
 
 /**
- * Plan definitions and their rotation weeks — SPEC §4:
- *   PK = PLAN#<planId>  SK = META           (the plan)
- *   PK = PLAN#<planId>  SK = WEEK#<1..4>    (one rotation week each)
+ * Plan repository — plan definitions and their rotation weeks (SPEC §4 /
+ * §5.2). The key layout, including the documented GSI1 deviation and the
+ * `sortOrder` padding, lives in src/lib/db/entities.ts.
  *
- * Rotation weeks share the plan's partition, so one Query with
- * `begins_with(SK, "WEEK#")` returns the whole rotation.
- *
- * DEVIATION FROM SPEC §4, deliberate: the spec's table gives the plan
- * definition no GSI1 entry, but the home page has to list every plan. Without
- * an index that is a full-table Scan. Plans therefore also write
- * `GSI1PK = "PLAN"` / `GSI1SK = <sortOrder>#<slug>`, which makes listing a
- * Query and gives the admin control over card order for free.
+ * The one translation this layer performs: SPEC §5.1 spells "Build Your Own"
+ * as `monthlyPrice: null`, because a domain type wants an explicit "priced by
+ * weight, not by the month" value. DynamoDB stores its absence instead —
+ * a stored `null` would have to be special-cased in every filter expression.
+ * The mapping is confined to these two functions.
  */
 
-const planKey = (id: string) => ({ PK: `PLAN#${id}`, SK: "META" });
-
-const toRow = (p: Plan) => ({
+const toDomain = (p: Omit<Plan, "monthlyPrice"> & { monthlyPrice?: number }): Plan => ({
   ...p,
-  ...planKey(p.id),
-  GSI1PK: "PLAN",
-  GSI1SK: `${String(p.sortOrder).padStart(3, "0")}#${p.slug}`,
+  monthlyPrice: p.monthlyPrice ?? null,
 });
-
-const strip = <T,>(r: Record<string, unknown>): T => stripKeys<T>(r);
 
 export async function listPlans(
   opts: { activeOnly?: boolean } = {},
 ): Promise<Plan[]> {
-  const res = await ddb.send(
-    new QueryCommand({
-      TableName: TABLE,
-      IndexName: "GSI1",
-      KeyConditionExpression: "GSI1PK = :pk",
-      ExpressionAttributeValues: { ":pk": "PLAN" },
-    }),
-  );
-  const all = (res.Items ?? []).map((i) => strip<Plan>(i));
+  const { data } = await PlanEntity.query.byCatalogue({}).go(LIST_OPTS);
+  const all = data.map(toDomain);
   return opts.activeOnly ? all.filter((p) => p.active) : all;
 }
 
+export async function getPlan(id: string): Promise<Plan | null> {
+  const { data } = await PlanEntity.get({ id }).go(READ_OPTS);
+  return data ? toDomain(data) : null;
+}
+
 export async function getPlanWeeks(planId: string): Promise<PlanWeek[]> {
-  const res = await ddb.send(
-    new QueryCommand({
-      TableName: TABLE,
-      KeyConditionExpression: "PK = :pk AND begins_with(SK, :sk)",
-      ExpressionAttributeValues: { ":pk": `PLAN#${planId}`, ":sk": "WEEK#" },
-    }),
-  );
-  return (res.Items ?? [])
-    .map((i) => strip<PlanWeek>(i))
-    .sort((a, b) => a.week - b.week);
+  const { data } = await PlanWeekEntity.query.byPlan({ planId }).go(LIST_OPTS);
+  return [...data].sort((a, b) => a.week - b.week);
 }
 
 /** Every plan with its rotation attached. One Query for the plans, then one
  *  per plan for its weeks — fine at three or four plans, and the home page is
- *  statically rendered anyway. */
+ *  statically rendered anyway. A collection would fold this into a single
+ *  Query; see the note in src/lib/db/entities.ts for why we do not use one. */
 export async function listPlansWithWeeks(opts: { activeOnly?: boolean } = {}) {
   const plans = await listPlans(opts);
   return Promise.all(
@@ -71,40 +48,41 @@ export async function listPlansWithWeeks(opts: { activeOnly?: boolean } = {}) {
   );
 }
 
+/**
+ * Write a plan and **replace** its rotation.
+ *
+ * Replace, not merge. The admin form posts the whole rotation every time, so
+ * unticking every variety in week 3 means week 3 is gone — and a `put` of
+ * only the remaining weeks would leave the old row behind, with the card still
+ * counting a week the operator had just emptied. Any week not in `weeks` is
+ * therefore deleted.
+ */
 export async function putPlan(plan: Plan, weeks: PlanWeek[]): Promise<void> {
-  await ddb.send(new PutCommand({ TableName: TABLE, Item: toRow(plan) }));
+  const { monthlyPrice, ...rest } = plan;
+  await PlanEntity.put({
+    ...rest,
+    ...(monthlyPrice !== null && { monthlyPrice }),
+  }).go();
 
-  if (weeks.length === 0) return;
-  await ddb.send(
-    new BatchWriteCommand({
-      RequestItems: {
-        [TABLE]: weeks.map((w) => ({
-          PutRequest: {
-            Item: {
-              PK: `PLAN#${plan.id}`,
-              SK: `WEEK#${w.week}`,
-              planId: plan.id,
-              week: w.week,
-              varietySlugs: w.varietySlugs,
-            },
-          },
-        })),
-      },
-    }),
-  );
+  const existing = await getPlanWeeks(plan.id);
+  const kept = new Set(weeks.map((w) => w.week));
+  const stale = existing.filter((w) => !kept.has(w.week));
+
+  if (weeks.length > 0) {
+    await PlanWeekEntity.put(weeks.map((w) => ({ ...w, planId: plan.id }))).go();
+  }
+  if (stale.length > 0) {
+    await PlanWeekEntity.delete(
+      stale.map((w) => ({ planId: plan.id, week: w.week })),
+    ).go();
+  }
 }
 
 export async function deletePlan(id: string): Promise<void> {
   const weeks = await getPlanWeeks(id);
-  await ddb.send(new DeleteCommand({ TableName: TABLE, Key: planKey(id) }));
+  await PlanEntity.delete({ id }).go();
   if (weeks.length === 0) return;
-  await ddb.send(
-    new BatchWriteCommand({
-      RequestItems: {
-        [TABLE]: weeks.map((w) => ({
-          DeleteRequest: { Key: { PK: `PLAN#${id}`, SK: `WEEK#${w.week}` } },
-        })),
-      },
-    }),
-  );
+  await PlanWeekEntity.delete(
+    weeks.map((w) => ({ planId: id, week: w.week })),
+  ).go();
 }

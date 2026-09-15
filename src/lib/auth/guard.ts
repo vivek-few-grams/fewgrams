@@ -23,7 +23,16 @@ import { getUserRole } from "./users";
  *
  *    The proxy exists for the redirect, not for security.
  */
-export type Actor = { userId: string; email: string | null; role: Role };
+export type Actor = {
+  userId: string;
+  email: string | null;
+  role: Role;
+  /** Whatever the identity provider gave us. The customer's own name lives on
+   *  `USER#<id> / PROFILE` and takes precedence wherever both exist — a magic
+   *  link supplies neither, so both are nullable. */
+  name: string | null;
+  image: string | null;
+};
 
 /** Current actor, or null when not signed in. Does not redirect. */
 export async function currentActor(): Promise<Actor | null> {
@@ -34,7 +43,13 @@ export async function currentActor(): Promise<Actor | null> {
   const role = await getUserRole(userId);
   if (!role) return null;
 
-  return { userId, email: session.user.email ?? null, role };
+  return {
+    userId,
+    email: session.user.email ?? null,
+    role,
+    name: session.user.name ?? null,
+    image: session.user.image ?? null,
+  };
 }
 
 /**

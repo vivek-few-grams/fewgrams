@@ -1,0 +1,59 @@
+{
+  "nav": {
+    "microgreens": "ಮೈಕ್ರೋಗ್ರೀನ್ಸ್",
+    "plans": "ಯೋಜನೆಗಳು",
+    "shop": "ಅಂಗಡಿ",
+    "howWeGrow": "ನಾವು ಹೇಗೆ ಬೆಳೆಸುತ್ತೇವೆ",
+    "ariaLabel": "ಮುಖ್ಯ"
+  },
+  "header": {
+    "cart": "ಬುಟ್ಟಿ",
+    "signIn": "ಸೈನ್ ಇನ್",
+    "account": "ಖಾತೆ",
+    "staff": "ಸಿಬ್ಬಂದಿ",
+    "admin": "ನಿರ್ವಾಹಕ",
+    "signedInAs": "{label} — {who} ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದೆ",
+    "cartWithCount": "ಬುಟ್ಟಿ, {count, plural, one {# ವಸ್ತು} other {# ವಸ್ತುಗಳು}}"
+  },
+  "language": {
+    "label": "ಭಾಷೆ",
+    "current": "ಭಾಷೆ: {language}",
+    "switchTo": "{language} ಗೆ ಬದಲಾಯಿಸಿ"
+  },
+  "categories": {
+    "microgreens": "ಮೈಕ್ರೋಗ್ರೀನ್ಸ್",
+    "racks": "ರ್ಯಾಕ್‌ಗಳು",
+    "seeds": "ಬೀಜಗಳು",
+    "trays": "ಟ್ರೇಗಳು",
+    "snacks": "ತಿಂಡಿಗಳು"
+  },
+  "categoryStrip": {
+    "ariaLabel": "ಉತ್ಪನ್ನ ವರ್ಗಗಳು",
+    "all": "ಎಲ್ಲಾ"
+  },
+  "counts": {
+    "products": "{count, plural, =0 {ಶೀಘ್ರದಲ್ಲೇ} one {# ಉತ್ಪನ್ನ} other {# ಉತ್ಪನ್ನಗಳು}}",
+    "varieties": "{count, plural, =0 {ಶೀಘ್ರದಲ್ಲೇ} one {# ತಳಿ} other {# ತಳಿಗಳು}}"
+  },
+  "footer": {
+    "deliveryNote": "ಶನಿವಾರಗಳಂದು {city} ನಗರದಾದ್ಯಂತ.",
+    "shop": "ಅಂಗಡಿ",
+    "brand": "ಫ್ಯೂಗ್ರಾಮ್ಸ್",
+    "legal": "ಕಾನೂನು",
+    "ourStory": "ನಮ್ಮ ಕಥೆ",
+    "howWeGrow": "ನಾವು ಹೇಗೆ ಬೆಳೆಸುತ್ತೇವೆ",
+    "recipes": "ಪಾಕವಿಧಾನಗಳು",
+    "faq": "ಪ್ರಶ್ನೋತ್ತರ",
+    "contact": "ಸಂಪರ್ಕಿಸಿ",
+    "plans": "ಯೋಜನೆಗಳು",
+    "terms": "ನಿಯಮಗಳು",
+    "privacy": "ಗೌಪ್ಯತೆ",
+    "refunds": "ಮರುಪಾವತಿ",
+    "shipping": "ಸಾಗಣೆ",
+    "copyright": "© {year} {brand}",
+    "fssaiPending": "FSSAI ನೋಂದಣಿ ಪ್ರಗತಿಯಲ್ಲಿದೆ — ಪ್ರಾರಂಭಕ್ಕೂ ಮೊದಲು ಅಗತ್ಯ",
+    "fssaiLicence": "FSSAI ಪರವಾನಗಿ {number}",
+    "b2bPrompt": "ನಮ್ಮ ವೆಬ್‌ಸೈಟ್ ಇಷ್ಟವಾಯಿತೆ?",
+    "b2bHover": "ನಿಮಗಾಗಿ ಒಂದನ್ನು ನಿರ್ಮಿಸಬಲ್ಲೆವು →"
+  }
+}

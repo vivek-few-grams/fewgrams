@@ -1,0 +1,50 @@
+{
+  "hero": {
+    "placeholder": "placeholder — hero photograph needed"
+  },
+  "pinCheck": {
+    "prompt": "Delivering across {city}",
+    "checkYourPin": "check your PIN",
+    "inputLabel": "Your PIN code",
+    "inputPlaceholder": "560001",
+    "check": "Check",
+    "served": "Yes — we deliver to {pin}. Your first box would arrive",
+    "notServed": "We don't reach {pin} yet.",
+    "emailPlaceholder": "your@email.com",
+    "notifyMe": "Tell me when you do",
+    "tryAnother": "Try another PIN"
+  },
+  "process": {
+    "heading": "Grown for your order, not for a shelf.",
+    "aside": "No freezing. No storing.",
+    "steps": {
+      "seed": {
+        "title": "Untreated seed",
+        "body": "We buy only non-treated seed — no chemical coating, nothing you would not want on a plate."
+      },
+      "quality": {
+        "title": "Checked for quality",
+        "body": "Every batch is examined before it goes anywhere near a tray. Poor seed means poor greens."
+      },
+      "sown": {
+        "title": "Sown on your order",
+        "body": "Nothing is sown speculatively. Your order decides what goes into the trays that Sunday."
+      },
+      "harvest": {
+        "title": "Harvested to deliver",
+        "body": "Cut on Saturday morning and taken straight to your door. No cold room in between."
+      }
+    }
+  },
+  "otherProducts": {
+    "eyebrow": "Everything else",
+    "heading": "Grow your own, or eat them ready-made.",
+    "body": "Ordered any time and delivered on the same Saturday run as the greens."
+  },
+  "trust": {
+    "organic": { "title": "Organically grown", "note": "Soil and water, nothing else" },
+    "noChemicals": { "title": "No chemicals", "note": "No pesticides, no growth agents" },
+    "seed": { "title": "Trusted seed sources", "note": "Untreated seed only" },
+    "neverFrozen": { "title": "Never frozen", "note": "Cut and delivered the same morning" }
+  }
+}

@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { brand } from "@/lib/brand";
 import { Sprout } from "@/components/ui/Sprout";
 import { PinCheck } from "./PinCheck";
@@ -12,7 +13,9 @@ import { PinCheck } from "./PinCheck";
  * without `sizes` a 4000px photo gets shipped to a phone. The image must also
  * be decoded before the loader (§17.5) retracts, or the reveal flashes empty.
  */
-export function Hero() {
+export async function Hero() {
+  const t = await getTranslations("home.hero");
+
   return (
     <section>
       <div className="relative flex h-[52vh] min-h-[320px] w-full items-center justify-center overflow-hidden bg-forest md:h-[68vh]">
@@ -35,7 +38,7 @@ export function Hero() {
           ))}
         </div>
         <p className="absolute bottom-4 right-5 font-body text-[10px] uppercase tracking-widest text-mint/40">
-          placeholder — hero photograph needed
+          {t("placeholder")}
         </p>
       </div>
 

@@ -1,5 +1,5 @@
 import { GetCommand, UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import { TABLE, ddb } from "@/lib/ddb";
+import { TABLES, ddb } from "@/lib/ddb";
 import { DEFAULT_ROLE, isRole, type Role } from "./roles";
 
 /**
@@ -26,7 +26,7 @@ const userKey = (id: string) => ({ PK: `USER#${id}`, SK: `USER#${id}` });
 export async function getUserRole(userId: string): Promise<Role | undefined> {
   const res = await ddb.send(
     new GetCommand({
-      TableName: TABLE,
+      TableName: TABLES.users,
       Key: userKey(userId),
       ProjectionExpression: "#r",
       ExpressionAttributeNames: { "#r": "role" },
@@ -40,7 +40,7 @@ export async function getUserRole(userId: string): Promise<Role | undefined> {
 export async function setUserRole(userId: string, role: Role): Promise<void> {
   await ddb.send(
     new UpdateCommand({
-      TableName: TABLE,
+      TableName: TABLES.users,
       Key: userKey(userId),
       UpdateExpression: "SET #r = :r",
       ExpressionAttributeNames: { "#r": "role" },
@@ -60,7 +60,7 @@ export async function ensureUserRole(userId: string, role: Role = DEFAULT_ROLE) 
   try {
     await ddb.send(
       new UpdateCommand({
-        TableName: TABLE,
+        TableName: TABLES.users,
         Key: userKey(userId),
         UpdateExpression: "SET #r = :r",
         ConditionExpression: "attribute_not_exists(#r)",

@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import { DynamoDBAdapter } from "@auth/dynamodb-adapter";
-import { TABLE, ddb } from "@/lib/ddb";
+import { TABLES, ddb } from "@/lib/ddb";
 import { brand } from "@/lib/brand";
 import { DEFAULT_ROLE, isBootstrapAdmin } from "@/lib/auth/roles";
 import { ensureUserRole, setUserRole } from "@/lib/auth/users";
@@ -37,7 +37,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     // Mapped onto the existing single table (SPEC §4) rather than the
     // adapter's defaults of `pk`/`sk` in a `next-auth` table. Auth items then
     // share each user's partition with their profile and addresses.
-    tableName: TABLE,
+    tableName: TABLES.users,
     partitionKey: "PK",
     sortKey: "SK",
     indexName: "GSI1",

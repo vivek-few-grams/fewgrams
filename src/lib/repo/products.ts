@@ -1,41 +1,24 @@
-import { DeleteCommand, PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
-import { TABLE, ddb, stripKeys } from "@/lib/ddb";
+import { LIST_OPTS, READ_OPTS } from "@/lib/db/client";
+import { ProductEntity } from "@/lib/db/entities";
 import { CATEGORIES, type Category, type Product } from "@/lib/types";
 
 /**
- * Product records — SPEC §4:
- *   PK = PRODUCT#<id>  SK = META
- *   GSI1PK = CAT#<category>   GSI1SK = <slug>
+ * Product repository — seeds, racks, trays and snacks (SPEC §3 / §4). The key
+ * layout lives in src/lib/db/entities.ts.
  *
- * Listing a category is therefore a Query on GSI1, and listing everything is
- * one Query per category — four in total, not a Scan.
+ * Listing one category is a Query on GSI1; listing everything is four
+ * Queries, one per category, rather than a Scan. See src/lib/db/client.ts
+ * for why every read passes options.
  */
-
-const key = (id: string) => ({ PK: `PRODUCT#${id}`, SK: "META" });
-
-const toRow = (p: Product) => ({
-  ...p,
-  ...key(p.id),
-  GSI1PK: `CAT#${p.category}`,
-  GSI1SK: p.slug,
-});
-
-const strip = (r: Record<string, unknown>) => stripKeys<Product>(r);
 
 export async function listByCategory(
   category: Category,
   opts: { activeOnly?: boolean } = {},
 ): Promise<Product[]> {
-  const res = await ddb.send(
-    new QueryCommand({
-      TableName: TABLE,
-      IndexName: "GSI1",
-      KeyConditionExpression: "GSI1PK = :pk",
-      ExpressionAttributeValues: { ":pk": `CAT#${category}` },
-    }),
-  );
-  const all = (res.Items ?? []).map(strip);
-  return opts.activeOnly ? all.filter((p) => p.active) : all;
+  const { data } = await ProductEntity.query
+    .byCategory({ category })
+    .go(LIST_OPTS);
+  return opts.activeOnly ? data.filter((p) => p.active) : data;
 }
 
 export async function listProducts(
@@ -47,18 +30,26 @@ export async function listProducts(
   return groups.flat();
 }
 
+export async function getProduct(id: string): Promise<Product | null> {
+  const { data } = await ProductEntity.get({ id }).go(READ_OPTS);
+  return data;
+}
+
 /** Active product count per category, for the home page tiles. */
 export async function countsByCategory(): Promise<Record<Category, number>> {
   const groups = await Promise.all(
-    CATEGORIES.map(async (c) => [c, (await listByCategory(c, { activeOnly: true })).length] as const),
+    CATEGORIES.map(
+      async (c) =>
+        [c, (await listByCategory(c, { activeOnly: true })).length] as const,
+    ),
   );
   return Object.fromEntries(groups) as Record<Category, number>;
 }
 
 export async function putProduct(p: Product): Promise<void> {
-  await ddb.send(new PutCommand({ TableName: TABLE, Item: toRow(p) }));
+  await ProductEntity.put(p).go();
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  await ddb.send(new DeleteCommand({ TableName: TABLE, Key: key(id) }));
+  await ProductEntity.delete({ id }).go();
 }

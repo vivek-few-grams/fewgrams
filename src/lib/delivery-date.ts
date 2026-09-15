@@ -1,5 +1,20 @@
 /**
- * Weekly cycle date arithmetic — SPEC §5.3.
+ * Delivery date arithmetic. **Two different rules, deliberately.**
+ *
+ * | | Sown | Delivered |
+ * |---|---|---|
+ * | Subscription (§5.3) | the Sunday after the Friday cutoff | the Saturday after that |
+ * | One-off order (§18.6) | **the next day** | `growDays` after the sow |
+ *
+ * Corrected 15 Sep 2026 on the owner's instruction: *"We don't sow on Sundays
+ * for individual order, it will be done next day only. Only for subscription,
+ * it will be done on Sundays."* The weekly cycle exists to batch a month of
+ * committed subscription demand into one sow; a single 100 g order has nothing
+ * to batch with, so making it wait up to six days for a Sunday would add most
+ * of a week to the promise for no operational gain.
+ *
+ * Everything below the `nextCutoff` / `sowSunday` / `firstDeliveryDate` group
+ * is subscription-only. Ad-hoc uses `adhocSowDate` / `adhocReadyDate`.
  *
  *   Fri 23:59 IST  ─ CUTOFF (i.e. Saturday 00:00). The cycle locks.
  *   Sun AM         ─ SOW.
@@ -77,6 +92,57 @@ export function deliverySchedule(now: Date = new Date(), weeks = 4): Date[] {
   return Array.from(
     { length: weeks },
     (_, i) => new Date(first.getTime() + i * 7 * DAY_MS),
+  );
+}
+
+/* ── One-off orders — SPEC §18.6 ─────────────────────────────────────
+   Not on the weekly cycle. Sown the next morning, cut on the grow day. */
+
+/** Largest sensible grow window, guarding against a bad `growDays` in the
+ *  table turning into a nonsense date on a customer-facing page. */
+const MAX_GROW_DAYS = 60;
+
+/**
+ * The morning a one-off order is sown: 00:00 IST on the **next** IST calendar
+ * day. Order at 23:55 tonight and it is sown tomorrow; order at 00:05 tonight
+ * and it is still sown tomorrow, not in 24 hours.
+ *
+ * Deliberately day-granular rather than "24 hours from now": sowing is a
+ * morning job, so the unit the customer cares about is the day.
+ */
+export function adhocSowDate(now: Date = new Date()): Date {
+  return new Date(istMidnight(now).getTime() + DAY_MS);
+}
+
+/**
+ * When a one-off order of one variety is ready: `growDays` after it is sown.
+ *
+ * `growDays` is sow-to-harvest (SPEC §3.1) and greens are cut the morning they
+ * travel, so harvest date and delivery date are the same day.
+ */
+export function adhocReadyDate(growDays: number, now: Date = new Date()): Date {
+  const days = Math.min(Math.max(Math.ceil(growDays), 1), MAX_GROW_DAYS);
+  return new Date(adhocSowDate(now).getTime() + days * DAY_MS);
+}
+
+/**
+ * When a **mixed** one-off order is ready: the latest of its varieties.
+ *
+ * SPEC §18.6 left this open — radish at 7 days and sunflower at 14 cannot both
+ * arrive on their own day without two trips for one order. This takes the
+ * spec's own recommendation: one delivery, on the later date, stated plainly in
+ * the cart rather than discovered afterwards. The alternative (holding the fast
+ * crop for a week) contradicts "nothing is stored".
+ *
+ * Returns null for an empty cart — there is no date for nothing.
+ */
+export function adhocOrderReadyDate(
+  growDaysList: number[],
+  now: Date = new Date(),
+): Date | null {
+  if (growDaysList.length === 0) return null;
+  return new Date(
+    Math.max(...growDaysList.map((d) => adhocReadyDate(d, now).getTime())),
   );
 }
 

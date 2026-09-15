@@ -1,0 +1,158 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "gallery": [
+      "bunch.jpg"
+    ]
+  },
+  "en": {
+    "name": "Mustard",
+    "shortDescription": "Real wasabi-like heat that blooms and then fades. The fastest green we grow.",
+    "description": "Mustard microgreens bite. The heat comes from glucosinolates in the leaf converting to allyl isothiocyanate the moment you chew — the same chemistry as wasabi and horseradish — and it arrives a second late, blooms in the nose rather than the mouth, then disappears. That timing is what makes it a seasoning as much as a salad leaf: a small pinch changes a dish the way a spice does. Sasive is already in every Karnataka kitchen as a seed; this is the same plant as a young leaf, when it is tender and the heat is at its brightest. It is also the quickest thing on our list, which makes it the one most likely to be in your first box.",
+    "flavourNotes": "Sharp and pungent, wasabi-like, rising into the nose. Strong raw, and the heat softens within seconds of hitting anything hot.",
+    "growingTips": "Germinates fast and unevenly if sown thick. Moderate density, and harvest promptly — left longer the leaf toughens and the heat turns harsh rather than bright.",
+    "nutrition": [
+      {
+        "label": "Glucosinolates (source of the pungency)",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Good source"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Calcium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Manganese",
+        "value": "Moderate"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin C contributes to normal immune function and protects cells from oxidative stress.",
+      "Vitamin C also increases the absorption of iron from plant foods, which matters in a vegetarian diet.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin A contributes to the maintenance of normal vision, skin and mucous membranes.",
+      "Folate contributes to normal blood formation and to normal amino acid synthesis.",
+      "Calcium contributes to normal muscle function and to the maintenance of normal bones and teeth."
+    ],
+    "cautions": [
+      "The heat is genuine. Young children, and anyone with acidity, reflux or a sensitive stomach, should start with a small amount.",
+      "Mustard is a brassica and contains goitrogens, which in large regular amounts can interfere with thyroid function. If you have a thyroid condition, keep portions moderate and ask your doctor.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "How hot is it, really?",
+        "answer": "Think fresh wasabi rather than chilli. It is a mustard-oil heat that goes up the nose instead of burning the tongue, it peaks about two seconds after you chew, and it is gone within ten. A pinch is a seasoning; a full handful raw is a lot for most people."
+      },
+      {
+        "question": "Can I reduce the heat?",
+        "answer": "Yes — heat and fat both tame it. Thirty seconds in a hot pan turns it into a mild leafy green, and dressing it with curd, coconut or oil rounds the sharpness considerably. Chopping it finely, oddly, makes it hotter, because more cells are broken."
+      },
+      {
+        "question": "Is this the same as sasive, the mustard seed we cook with?",
+        "answer": "Same plant, different stage and different chemistry in practice. The seed releases its flavour when you temper it in hot oil; the leaf releases it when you chew it raw. Tempering seeds makes them nutty and mild — eating the young leaf raw makes it sharp."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. Mustard holds up better than most — it is the sturdiest leaf we grow — but the heat does fade a little each day, so eat it early if the bite is why you bought it."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Treat it as a condiment. A pinch in a sandwich in place of mustard sauce, scattered over dal or rasam rice, folded into a raita, on top of eggs, or stirred through a potato palya at the very end. It also cuts through anything fried."
+      }
+    ],
+    "imageAlt": "Tray of green mustard microgreens with broad rounded leaves on pale stems"
+  },
+  "kn": {
+    "name": "ಸಾಸಿವೆ",
+    "shortDescription": "ವಸಾಬಿಯಂತಹ ನಿಜವಾದ ಖಾರ — ಏರಿ ಬಂದು ಬೇಗ ಇಳಿಯುತ್ತದೆ. ನಮ್ಮ ಅತಿ ವೇಗದ ಸೊಪ್ಪು.",
+    "description": "ಸಾಸಿವೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಕಚ್ಚುತ್ತದೆ. ಅಗಿಯುವ ಕ್ಷಣ ಎಲೆಯ ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು ಅಲೈಲ್ ಐಸೊಥಿಯೊಸೈನೇಟ್ ಆಗಿ ಪರಿವರ್ತನೆಯಾಗುವುದರಿಂದ ಖಾರ ಬರುತ್ತದೆ — ವಸಾಬಿ ಮತ್ತು ಹಾರ್ಸ್‌ರಾಡಿಶ್‌ನ ಅದೇ ರಸಾಯನಶಾಸ್ತ್ರ. ಅದು ಒಂದು ಕ್ಷಣ ತಡವಾಗಿ ಬಂದು, ಬಾಯಿಗಿಂತ ಮೂಗಿನಲ್ಲಿ ಅರಳಿ, ನಂತರ ಮಾಯವಾಗುತ್ತದೆ. ಆ ಸಮಯದ ಆಟವೇ ಇದನ್ನು ಸಲಾಡ್ ಎಲೆಯಷ್ಟೇ ಮಸಾಲೆಯೂ ಆಗಿಸುತ್ತದೆ: ಚಿಟಿಕೆಯಷ್ಟು ಸಾಕು, ಒಂದು ಮಸಾಲೆಯಂತೆ ಅಡುಗೆಯನ್ನು ಬದಲಿಸುತ್ತದೆ. ಸಾಸಿವೆ ಈಗಾಗಲೇ ಪ್ರತಿ ಕರ್ನಾಟಕದ ಅಡುಗೆಮನೆಯಲ್ಲಿ ಬೀಜವಾಗಿದೆ; ಇದು ಅದೇ ಗಿಡದ ಎಳೆಯ ಎಲೆ, ಮೃದುವಾಗಿದ್ದು ಖಾರ ಅತ್ಯಂತ ಪ್ರಕಾಶಮಾನವಾಗಿರುವಾಗ. ಇದು ನಮ್ಮ ಪಟ್ಟಿಯಲ್ಲಿ ಅತಿ ವೇಗದ್ದೂ ಹೌದು, ಆದ್ದರಿಂದ ನಿಮ್ಮ ಮೊದಲ ಪೆಟ್ಟಿಗೆಯಲ್ಲಿ ಇದು ಇರುವ ಸಾಧ್ಯತೆ ಹೆಚ್ಚು.",
+    "flavourNotes": "ಚುರುಕು ಮತ್ತು ಖಾರ, ಮೂಗಿಗೆ ಏರುವ ವಸಾಬಿ ಶೈಲಿ. ಹಸಿಯಾಗಿ ತೀಕ್ಷ್ಣ, ಬಿಸಿ ಸೇರಿದ ಕೆಲವೇ ಕ್ಷಣಗಳಲ್ಲಿ ಖಾರ ಸೌಮ್ಯವಾಗುತ್ತದೆ.",
+    "growingTips": "ಬೇಗ ಮೊಳಕೆಯೊಡೆಯುತ್ತದೆ, ದಟ್ಟವಾಗಿ ಬಿತ್ತಿದರೆ ಅಸಮವಾಗಿ. ಮಧ್ಯಮ ಸಾಂದ್ರತೆ, ಮತ್ತು ಸಮಯಕ್ಕೆ ಕಟಾವು — ತಡವಾದರೆ ಎಲೆ ಗಟ್ಟಿಯಾಗಿ ಖಾರ ಕಹಿಯಾಗುತ್ತದೆ.",
+    "nutrition": [
+      {
+        "label": "ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು (ಖಾರದ ಮೂಲ)",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಮ್ಯಾಂಗನೀಸ್",
+        "value": "ಮಧ್ಯಮ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಸ್ಯ ಆಹಾರಗಳಿಂದ ಕಬ್ಬಿಣದ ಹೀರಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ — ಸಸ್ಯಾಹಾರಿ ಆಹಾರದಲ್ಲಿ ಇದು ಮುಖ್ಯ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ, ಚರ್ಮ ಮತ್ತು ಲೋಳೆಪಟಲಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಅಮೈನೋ ಆಮ್ಲ ಸಂಶ್ಲೇಷಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕ್ಯಾಲ್ಸಿಯಂ ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆ ಹಾಗೂ ಹಲ್ಲುಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಖಾರ ನಿಜವಾದದ್ದು. ಸಣ್ಣ ಮಕ್ಕಳು ಮತ್ತು ಆಸಿಡಿಟಿ, ಎದೆಯುರಿ ಅಥವಾ ಸೂಕ್ಷ್ಮ ಹೊಟ್ಟೆ ಇರುವವರು ಸ್ವಲ್ಪದಿಂದ ಆರಂಭಿಸಬೇಕು.",
+      "ಇದು ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು ಮತ್ತು ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳನ್ನು ಹೊಂದಿದೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು. ಥೈರಾಯ್ಡ್ ಸಮಸ್ಯೆ ಇದ್ದರೆ ಪ್ರಮಾಣವನ್ನು ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ — ಹಠಾತ್ತನೆ ಹೆಚ್ಚು ತಿನ್ನಬೇಡಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ನಿಜವಾಗಿ ಎಷ್ಟು ಖಾರ?",
+        "answer": "ಮೆಣಸಿನಕಾಯಿಗಿಂತ ತಾಜಾ ವಸಾಬಿ ಎಂದು ಯೋಚಿಸಿ. ಇದು ನಾಲಿಗೆಯನ್ನು ಸುಡುವ ಬದಲು ಮೂಗಿಗೆ ಏರುವ ಸಾಸಿವೆ ಎಣ್ಣೆಯ ಖಾರ, ಅಗಿದ ಸುಮಾರು ಎರಡು ಕ್ಷಣಗಳ ನಂತರ ಉತ್ತುಂಗಕ್ಕೆ ಬಂದು ಹತ್ತು ಕ್ಷಣಗಳಲ್ಲಿ ಇಳಿಯುತ್ತದೆ. ಚಿಟಿಕೆ ಒಂದು ಮಸಾಲೆ; ಹಿಡಿಯಷ್ಟು ಹಸಿಯಾಗಿ ಬಹುತೇಕರಿಗೆ ಹೆಚ್ಚು."
+      },
+      {
+        "question": "ಖಾರ ಕಡಿಮೆ ಮಾಡಬಹುದೇ?",
+        "answer": "ಹೌದು — ಶಾಖ ಮತ್ತು ಕೊಬ್ಬು ಎರಡೂ ಅದನ್ನು ಮೆತ್ತಗಾಗಿಸುತ್ತವೆ. ಬಿಸಿ ಬಾಣಲೆಯಲ್ಲಿ ಮೂವತ್ತು ಕ್ಷಣ ಸಾಕು, ಸೌಮ್ಯ ಸೊಪ್ಪಾಗುತ್ತದೆ. ಮೊಸರು, ತೆಂಗಿನಕಾಯಿ ಅಥವಾ ಎಣ್ಣೆ ಸೇರಿಸಿದರೆ ತೀಕ್ಷ್ಣತೆ ಬಹಳ ಕಡಿಮೆಯಾಗುತ್ತದೆ. ಆದರೆ ಸಣ್ಣಗೆ ಹೆಚ್ಚಿದರೆ ಖಾರ ಹೆಚ್ಚುತ್ತದೆ, ಏಕೆಂದರೆ ಹೆಚ್ಚು ಜೀವಕೋಶಗಳು ಒಡೆಯುತ್ತವೆ."
+      },
+      {
+        "question": "ಇದು ನಾವು ಒಗ್ಗರಣೆಗೆ ಬಳಸುವ ಸಾಸಿವೆಯೇ?",
+        "answer": "ಅದೇ ಗಿಡ, ಆದರೆ ಬೇರೆ ಹಂತ ಮತ್ತು ವ್ಯವಹಾರದಲ್ಲಿ ಬೇರೆ ರಸಾಯನಶಾಸ್ತ್ರ. ಬೀಜ ಬಿಸಿ ಎಣ್ಣೆಯಲ್ಲಿ ಒಗ್ಗರಣೆ ಹಾಕಿದಾಗ ರುಚಿ ಬಿಡುತ್ತದೆ; ಎಲೆ ಹಸಿಯಾಗಿ ಅಗಿದಾಗ ಬಿಡುತ್ತದೆ. ಒಗ್ಗರಣೆ ಬೀಜವನ್ನು ಸೌಮ್ಯ ಮತ್ತು ಕಾಯಿಯ ರುಚಿಯಾಗಿಸುತ್ತದೆ — ಎಳೆಯ ಎಲೆಯನ್ನು ಹಸಿಯಾಗಿ ತಿಂದರೆ ಚುರುಕಾಗಿರುತ್ತದೆ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಸಾಸಿವೆ ಇತರವುಗಳಿಗಿಂತ ಗಟ್ಟಿ — ನಾವು ಬೆಳೆಸುವ ಅತಿ ಗಟ್ಟಿ ಎಲೆ — ಆದರೆ ಖಾರ ಪ್ರತಿ ದಿನ ಸ್ವಲ್ಪ ಇಳಿಯುತ್ತದೆ. ಖಾರಕ್ಕಾಗಿಯೇ ಕೊಂಡಿದ್ದರೆ ಬೇಗ ತಿನ್ನಿ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಒಂದು ಚಟ್ನಿ ಅಥವಾ ಸಾಸ್‌ನಂತೆ ಬಳಸಿ. ಮಸ್ಟರ್ಡ್ ಸಾಸ್ ಬದಲು ಸ್ಯಾಂಡ್‌ವಿಚ್‌ನಲ್ಲಿ ಚಿಟಿಕೆ, ಬೇಳೆ ಅಥವಾ ರಸಂ ಅನ್ನದ ಮೇಲೆ, ರಾಯತದಲ್ಲಿ, ಮೊಟ್ಟೆಯ ಮೇಲೆ, ಅಥವಾ ಆಲೂಗಡ್ಡೆ ಪಲ್ಯಕ್ಕೆ ಕೊನೆಯಲ್ಲಿ. ಕರಿದ ಯಾವುದೇ ತಿಂಡಿಯ ಜಿಡ್ಡನ್ನೂ ಕತ್ತರಿಸುತ್ತದೆ."
+      }
+    ],
+    "imageAlt": "ತೆಳು ಕಾಂಡಗಳ ಮೇಲೆ ಅಗಲ ದುಂಡು ಎಲೆಗಳ ಹಸಿರು ಸಾಸಿವೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

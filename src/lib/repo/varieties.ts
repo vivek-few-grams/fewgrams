@@ -1,79 +1,46 @@
-import {
-  DeleteCommand,
-  GetCommand,
-  PutCommand,
-  QueryCommand,
-} from "@aws-sdk/lib-dynamodb";
-import { TABLE, ddb, stripKeys } from "@/lib/ddb";
+import { LIST_OPTS, READ_OPTS } from "@/lib/db/client";
+import { VarietyEntity } from "@/lib/db/entities";
 import type { Variety } from "@/lib/types";
 
 /**
- * Variety records — SPEC §4:
- *   PK = VARIETY#<id>   SK = META   GSI1PK = VARIETY   GSI1SK = <slug>
+ * Variety repository — the operational record only.
  *
- * GSI1 is what makes "list every variety, ordered by slug" a Query rather
- * than a Scan.
+ * The key layout lives in src/lib/db/entities.ts; this file is only the
+ * access patterns (SPEC §4). See src/lib/db/client.ts for why every read
+ * passes options.
+ *
+ * **There is no text here.** A variety's name and copy come from
+ * `content/varieties/<contentKey>.json` via src/lib/content/varieties.ts
+ * (SPEC §4.3). Anything that needs to display a variety reads both and joins
+ * them with `attachContent`.
  */
-
-type Row = Variety & {
-  PK: string;
-  SK: string;
-  GSI1PK: string;
-  GSI1SK: string;
-};
-
-const toRow = (v: Variety): Row => ({
-  ...v,
-  PK: `VARIETY#${v.id}`,
-  SK: "META",
-  GSI1PK: "VARIETY",
-  GSI1SK: v.slug,
-});
-
-const strip = (r: Record<string, unknown>) => stripKeys<Variety>(r);
 
 export async function listVarieties(
   opts: { activeOnly?: boolean } = {},
 ): Promise<Variety[]> {
-  const res = await ddb.send(
-    new QueryCommand({
-      TableName: TABLE,
-      IndexName: "GSI1",
-      KeyConditionExpression: "GSI1PK = :pk",
-      ExpressionAttributeValues: { ":pk": "VARIETY" },
-    }),
-  );
-  const all = (res.Items ?? []).map(strip);
-  return opts.activeOnly ? all.filter((v) => v.active) : all;
+  const { data } = await VarietyEntity.query.byCatalogue({}).go(LIST_OPTS);
+  return opts.activeOnly ? data.filter((v) => v.active) : data;
 }
 
-export async function getVarietyBySlug(slug: string): Promise<Variety | null> {
-  const res = await ddb.send(
-    new QueryCommand({
-      TableName: TABLE,
-      IndexName: "GSI1",
-      KeyConditionExpression: "GSI1PK = :pk AND GSI1SK = :sk",
-      ExpressionAttributeValues: { ":pk": "VARIETY", ":sk": slug },
-      Limit: 1,
-    }),
-  );
-  const item = res.Items?.[0];
-  return item ? strip(item) : null;
+/**
+ * Look a variety up by its content key, which is also its URL segment — this
+ * is what `/microgreens/[key]` resolves with. A Query on GSI1 rather than a
+ * Scan, because `contentKey` is the index's sort key.
+ */
+export async function getVarietyByKey(contentKey: string): Promise<Variety | null> {
+  const { data } = await VarietyEntity.query.byCatalogue({ contentKey }).go(LIST_OPTS);
+  return data[0] ?? null;
 }
 
 export async function getVariety(id: string): Promise<Variety | null> {
-  const res = await ddb.send(
-    new GetCommand({ TableName: TABLE, Key: { PK: `VARIETY#${id}`, SK: "META" } }),
-  );
-  return res.Item ? strip(res.Item) : null;
+  const { data } = await VarietyEntity.get({ id }).go(READ_OPTS);
+  return data;
 }
 
 export async function putVariety(v: Variety): Promise<void> {
-  await ddb.send(new PutCommand({ TableName: TABLE, Item: toRow(v) }));
+  await VarietyEntity.put(v).go();
 }
 
 export async function deleteVariety(id: string): Promise<void> {
-  await ddb.send(
-    new DeleteCommand({ TableName: TABLE, Key: { PK: `VARIETY#${id}`, SK: "META" } }),
-  );
+  await VarietyEntity.delete({ id }).go();
 }

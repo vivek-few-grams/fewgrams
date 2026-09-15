@@ -13,13 +13,45 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
  */
 const local = !!process.env.DYNAMODB_ENDPOINT;
 
-export const TABLE = process.env.DYNAMODB_TABLE ?? "fewgrams";
+/**
+ * Three tables, grouped by operational policy rather than by entity — SPEC
+ * §4.6. Split from a single `fewgrams` table on 14 Sep 2026.
+ *
+ * The grouping is the point: these three want different backup, TTL, stream
+ * and IAM settings, all of which DynamoDB configures per table.
+ *
+ * - `users`      — Auth.js user / account / session / verification-token
+ *                  items, plus the profile and addresses that share each
+ *                  user's partition. Wants a TTL on sessions; needs no
+ *                  point-in-time recovery, since it is all re-creatable by
+ *                  signing in again. Named for the partition, not for auth,
+ *                  because delivery addresses live here too.
+ * - `catalogue`  — varieties, products, plans and their rotation weeks, PIN
+ *                  allowlist, coupons, settings. Admin-written, read-mostly,
+ *                  cheap to re-enter.
+ * - `orders`     — subscriptions, subscription weeks, one-off orders, order
+ *                  items, payments, cycles, sow plans. Real money: PITR on,
+ *                  and the only table that needs a stream. This is also the
+ *                  only table where single-table design still earns its keep
+ *                  — the `DELIVERY#<date>` index (SPEC §4.1) deliberately
+ *                  returns subscription weeks and one-off orders together.
+ *
+ * One env var sets all three so nothing can drift between them.
+ */
+const prefix = process.env.DYNAMODB_TABLE_PREFIX ?? "fewgrams";
+
+export const TABLES = {
+  users: `${prefix}-users`,
+  catalogue: `${prefix}-catalogue`,
+  orders: `${prefix}-orders`,
+} as const;
 
 /**
  * `DynamoDBDocument` rather than `DynamoDBDocumentClient` because
  * @auth/dynamodb-adapter requires the aggregated-client type. It extends
  * DynamoDBDocumentClient, so `.send(SomeCommand)` still works everywhere and
- * one client serves both the adapter and our own repositories.
+ * one client serves the adapter and every ElectroDB entity
+ * (src/lib/db/client.ts) alike.
  */
 export const ddb = DynamoDBDocument.from(
   new DynamoDBClient({
@@ -31,19 +63,3 @@ export const ddb = DynamoDBDocument.from(
   }),
   { marshallOptions: { removeUndefinedValues: true } },
 );
-
-/** The key and index attributes every item carries — SPEC §4. */
-const KEY_ATTRS = ["PK", "SK", "GSI1PK", "GSI1SK", "GSI2PK", "GSI2SK"] as const;
-
-/**
- * Drop the key attributes from a stored item, leaving the domain record.
- *
- * Single-table design means keys are stored alongside the entity's own fields,
- * so every read has to strip them or they leak into the UI and into anything
- * that spreads the object back into a write.
- */
-export function stripKeys<T>(item: Record<string, unknown>): T {
-  const out = { ...item };
-  for (const k of KEY_ATTRS) delete out[k];
-  return out as T;
-}

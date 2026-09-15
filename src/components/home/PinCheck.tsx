@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Check, MapPin, X } from "lucide-react";
-import { isServiceable } from "@/lib/brand";
+import { brand, isServiceable } from "@/lib/brand";
 import { firstDeliveryDate, formatDeliveryDate } from "@/lib/delivery-date";
 
 type Result = { pin: string; served: boolean } | null;
@@ -20,6 +21,7 @@ type Result = { pin: string; served: boolean } | null;
  * the UI — this client check is convenience, never the gate.
  */
 export function PinCheck() {
+  const t = useTranslations("home.pinCheck");
   const [open, setOpen] = useState(false);
   const [pin, setPin] = useState("");
   const [result, setResult] = useState<Result>(null);
@@ -34,7 +36,7 @@ export function PinCheck() {
     return (
       <p className="flex items-center gap-2 font-body text-sm text-forest">
         <Check size={16} strokeWidth={2} className="text-forest" />
-        Yes — we deliver to {result.pin}. Your first box would arrive{" "}
+        {t("served", { pin: result.pin })}{" "}
         <strong className="font-semibold">
           {formatDeliveryDate(firstDeliveryDate())}
         </strong>
@@ -48,20 +50,20 @@ export function PinCheck() {
       <div className="font-body text-sm">
         <p className="flex items-center gap-2 text-terracotta">
           <X size={16} strokeWidth={2} />
-          We don&apos;t reach {result.pin} yet.
+          {t("notServed", { pin: result.pin })}
         </p>
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <input
             type="email"
             required
-            placeholder="your@email.com"
+            placeholder={t("emailPlaceholder")}
             className="w-56 rounded-full border border-forest/25 bg-cream px-4 py-2 text-sm outline-none placeholder:text-stone/60 focus:border-forest"
           />
           <button
             type="button"
             className="rounded-full bg-forest px-5 py-2 text-sm font-medium text-cream transition-colors hover:bg-forest-deep"
           >
-            Tell me when you do
+            {t("notifyMe")}
           </button>
           <button
             type="button"
@@ -71,7 +73,7 @@ export function PinCheck() {
             }}
             className="text-sm text-stone underline underline-offset-4 hover:text-forest"
           >
-            Try another PIN
+            {t("tryAnother")}
           </button>
         </div>
       </div>
@@ -85,9 +87,9 @@ export function PinCheck() {
         className="group flex items-center gap-2 font-body text-sm text-stone transition-colors hover:text-forest"
       >
         <MapPin size={16} strokeWidth={1.5} className="text-forest" />
-        Delivering across {"Bengaluru"} ·{" "}
+        {t("prompt", { city: brand.city })} ·{" "}
         <span className="text-forest underline underline-offset-4 group-hover:decoration-2">
-          check your PIN
+          {t("checkYourPin")}
         </span>
       </button>
     );
@@ -102,15 +104,15 @@ export function PinCheck() {
         maxLength={6}
         value={pin}
         onChange={(e) => setPin(e.target.value.replace(/\D/g, ""))}
-        placeholder="560001"
-        aria-label="Your PIN code"
+        placeholder={t("inputPlaceholder")}
+        aria-label={t("inputLabel")}
         className="w-32 rounded-full border border-forest/25 bg-cream px-4 py-2 font-body text-sm tabular-nums outline-none placeholder:text-stone/50 focus:border-forest"
       />
       <button
         type="submit"
         className="rounded-full bg-forest px-5 py-2 font-body text-sm font-medium text-cream transition-colors hover:bg-forest-deep"
       >
-        Check
+        {t("check")}
       </button>
     </form>
   );

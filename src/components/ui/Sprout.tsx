@@ -21,12 +21,30 @@ export function Sprout({
   className = "",
   stroke = "currentColor",
   seed = 0,
+  stems = STEMS.length,
 }: {
   className?: string;
   stroke?: string;
   seed?: number;
+  /**
+   * How many of the five stems to draw, 1–5. Defaults to all of them, so no
+   * existing call site changes.
+   *
+   * Added for the bundle-card watermarks (SPEC §18.4). `seed` only varies the
+   * lean, and a lean is not a different drawing — three cards carrying the same
+   * five-stem fan tilted a few degrees apart differentiated nothing. Dropping
+   * stems does: one, three and five read as a single green, a seedling and a
+   * full tray.
+   *
+   * The paths are ordered centre, inner pair, outer pair, so an **odd** count
+   * is a symmetrical fan. 2 and 4 draw a plant missing one side — occasionally
+   * what you want from an organic mark, never what you want by accident, so
+   * prefer 1, 3 or 5. Out-of-range values clamp rather than throw.
+   */
+  stems?: number;
 }) {
   const lean = [0, -7, 6, -4, 8][seed % 5];
+  const drawn = STEMS.slice(0, Math.max(1, Math.min(stems, STEMS.length)));
 
   return (
     <svg
@@ -37,7 +55,7 @@ export function Sprout({
       style={{ transform: `rotate(${lean}deg)` }}
     >
       <g stroke={stroke} strokeWidth="2.1" strokeLinecap="round">
-        {STEMS.map((s, i) => {
+        {drawn.map((s, i) => {
           const [x, y] = s.tip;
           const spread = i === 0 ? 11 : 9;
           const ry = i === 0 ? 5 : 4.2;

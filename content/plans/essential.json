@@ -1,0 +1,26 @@
+{
+  "en": {
+    "name": "Everyday Essentials",
+    "badge": "Recommended",
+    "tagline": "The greens you cook with every week.",
+    "description": "The basics, on rotation. No two boxes in a month are the same — the quick crops arrive first and the slower ones the week after, because both went into the soil on the same Sunday. This is the plan for a household that wants greens on the plate as a habit rather than as an occasion.",
+    "highlights": [
+      "Sown only once you order — never stored",
+      "Cut on the morning of your delivery",
+      "Delivery included, on the Saturday run",
+      "A different mix every week of the month"
+    ]
+  },
+  "kn": {
+    "name": "ದಿನನಿತ್ಯದ ಮೂಲ ಸೊಪ್ಪು",
+    "badge": "ಶಿಫಾರಸು",
+    "tagline": "ನೀವು ಪ್ರತಿ ವಾರ ಅಡುಗೆಗೆ ಬಳಸುವ ಸೊಪ್ಪು.",
+    "description": "ಮೂಲಭೂತ ಸೊಪ್ಪುಗಳು, ಸರದಿಯಲ್ಲಿ. ಒಂದು ತಿಂಗಳಲ್ಲಿ ಯಾವ ಎರಡು ಡಬ್ಬಿಗಳೂ ಒಂದೇ ಅಲ್ಲ — ಬೇಗ ಬೆಳೆಯುವವು ಮೊದಲು ಬರುತ್ತವೆ, ನಿಧಾನವಾಗಿ ಬೆಳೆಯುವವು ಮುಂದಿನ ವಾರ, ಏಕೆಂದರೆ ಎರಡೂ ಒಂದೇ ಭಾನುವಾರ ಮಣ್ಣಿಗೆ ಹೋಗಿದ್ದವು. ಸೊಪ್ಪನ್ನು ವಿಶೇಷ ಸಂದರ್ಭವಾಗಿ ಅಲ್ಲ, ಅಭ್ಯಾಸವಾಗಿ ತಟ್ಟೆಯಲ್ಲಿ ಇಟ್ಟುಕೊಳ್ಳಬೇಕೆನ್ನುವ ಮನೆಗೆ ಈ ಯೋಜನೆ.",
+    "highlights": [
+      "ಆರ್ಡರ್ ಮಾಡಿದ ನಂತರವೇ ಬಿತ್ತನೆ — ಸಂಗ್ರಹವಿಲ್ಲ",
+      "ನಿಮ್ಮ ಡೆಲಿವರಿಯ ಬೆಳಿಗ್ಗೆಯೇ ಕತ್ತರಿಸಲಾಗುತ್ತದೆ",
+      "ಶನಿವಾರದ ಸುತ್ತಿನಲ್ಲಿ ಡೆಲಿವರಿ ಸೇರಿದೆ",
+      "ತಿಂಗಳ ಪ್ರತಿ ವಾರ ಬೇರೆ ಬೇರೆ ಮಿಶ್ರಣ"
+    ]
+  }
+}
