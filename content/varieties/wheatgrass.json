@@ -1,0 +1,168 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "gallery": [
+      "bunch.jpg"
+    ]
+  },
+  "en": {
+    "name": "Wheat Grass",
+    "shortDescription": "Grown to be juiced, not eaten. Sweet, intensely green, and cut at its peak.",
+    "description": "Wheat grass is the one exception on our list: it is not a salad leaf and it is not meant to be chewed. The blade is built from cellulose that the human gut cannot break down, so it is pressed for juice and the fibre discarded. What comes out is sweet, grassy and extremely green — chlorophyll is around seventy per cent of the solids — along with vitamins A, C, E and K, iron and magnesium. It is cut at what growers call the jointing stage, when the blade is at its sweetest; left longer the sugars drop and it turns bitter and fibrous. Sold by weight like everything else here, because how much juice you get depends on your press.",
+    "flavourNotes": "Sweet and intensely grassy, with a mineral edge. Best drunk cold, in a small quantity, on its own or cut with lemon or apple.",
+    "growingTips": "Soak the grain 8 to 12 hours, then sprout before sowing. Bright indirect light, and cut above the seed with scissors. Harvest before a second blade appears — that is when the sweetness goes.",
+    "nutrition": [
+      {
+        "label": "Chlorophyll",
+        "value": "Very high — around 70% of dry solids"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin E",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Iron",
+        "value": "Moderate"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Amino acids",
+        "value": "Present — a broad range, in small amounts"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose, and they describe the juice rather than the blade — you do not digest the fibre. Content varies with grain lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin A contributes to the maintenance of normal vision, skin and mucous membranes, and to normal immune function.",
+      "Vitamin C protects cells from oxidative stress and increases the absorption of iron from plant foods.",
+      "Vitamin E protects cells from oxidative stress.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Iron contributes to normal oxygen transport in the blood and to reducing tiredness and fatigue.",
+      "Magnesium contributes to normal muscle function, to normal protein synthesis and to the reduction of tiredness and fatigue."
+    ],
+    "cautions": [
+      "Coeliac disease and wheat allergy: the grass blade itself contains no gluten, but it is grown from wheat grain and cross-contact with the seed is a real risk. Do not drink this if you are coeliac or wheat-allergic.",
+      "Start with 30 ml, not 100. Wheat grass juice commonly causes nausea or a headache on a first, large dose.",
+      "Drink it fresh — within about twenty minutes of pressing. It oxidises fast and both the taste and the colour go.",
+      "Not recommended during pregnancy or while breastfeeding, or for anyone who is immunocompromised, without medical advice.",
+      "Rinse before pressing. This is grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Can I just eat it, or put it in a salad?",
+        "answer": "No. The blade is cellulose and your gut has no enzyme for it, so chewing it gives you fibre and a sore jaw rather than nutrition. Press it, drink the juice, compost the pulp. This is the one thing we sell that is not for the plate."
+      },
+      {
+        "question": "I do not own a juicer. Is a mixie enough?",
+        "answer": "It will work, with a step added. Blend the cut grass with a little cold water, then strain hard through a muslin cloth or fine sieve and squeeze the pulp out. A regular centrifugal juicer struggles with grass; a masticating or hand-crank juicer is what it is designed for."
+      },
+      {
+        "question": "Is wheat grass gluten-free?",
+        "answer": "The blade is — gluten lives in the grain, not the leaf. But it is grown on a bed of wheat grain, and separating the two perfectly at harvest is not something we will promise. If you are coeliac or wheat-allergic, please do not drink it."
+      },
+      {
+        "question": "How much should I drink, and how often?",
+        "answer": "Start at 30 ml and see how you feel; most regular drinkers settle between 30 and 60 ml a day. There is nothing gained by drinking more, and a large first dose is the usual reason people report nausea and never try it again."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Cut grass keeps five to seven days unwashed in a lidded box in the fridge, and it is best pressed as close to cutting as possible. Juice does not keep at all — drink it within twenty minutes. If you need to hold it, freeze the juice in an ice tray on the day you press it."
+      }
+    ],
+    "imageAlt": "Tray of tall bright green wheat grass blades above sprouted wheat grain"
+  },
+  "kn": {
+    "name": "ಗೋಧಿ ಹುಲ್ಲು",
+    "shortDescription": "ಜ್ಯೂಸ್ ಮಾಡಲು ಬೆಳೆಸಿದ್ದು, ತಿನ್ನಲು ಅಲ್ಲ. ಸಿಹಿ, ಗಾಢ ಹಸಿರು, ಉತ್ತುಂಗದಲ್ಲಿ ಕಟಾವು.",
+    "description": "ನಮ್ಮ ಪಟ್ಟಿಯಲ್ಲಿ ಗೋಧಿ ಹುಲ್ಲು ಒಂದೇ ಅಪವಾದ: ಇದು ಸಲಾಡ್ ಎಲೆಯಲ್ಲ ಮತ್ತು ಅಗಿಯಲು ಉದ್ದೇಶಿಸಿದ್ದಲ್ಲ. ಎಲೆ ಮಾನವನ ಹೊಟ್ಟೆ ಜೀರ್ಣಿಸಲಾಗದ ಸೆಲ್ಯುಲೋಸ್‌ನಿಂದ ಮಾಡಲ್ಪಟ್ಟಿದೆ, ಆದ್ದರಿಂದ ಇದನ್ನು ಹಿಂಡಿ ರಸ ತೆಗೆದು ನಾರನ್ನು ಬಿಸಾಡುತ್ತಾರೆ. ಬರುವ ರಸ ಸಿಹಿ, ಹುಲ್ಲಿನ ಪರಿಮಳ ಮತ್ತು ಅತ್ಯಂತ ಹಸಿರು — ಒಣ ಘನಾಂಶದ ಸುಮಾರು ಎಪ್ಪತ್ತು ಪ್ರತಿಶತ ಕ್ಲೋರೊಫಿಲ್ — ಜೊತೆಗೆ ವಿಟಮಿನ್ A, C, E ಮತ್ತು K, ಕಬ್ಬಿಣ ಹಾಗೂ ಮ್ಯಾಗ್ನೀಸಿಯಂ. ಬೆಳೆಗಾರರು ಜಾಯಿಂಟಿಂಗ್ ಹಂತ ಎನ್ನುವ ಸಮಯದಲ್ಲಿ ಇದನ್ನು ಕತ್ತರಿಸುತ್ತೇವೆ, ಎಲೆ ಅತಿ ಸಿಹಿಯಾಗಿರುವಾಗ; ತಡವಾದರೆ ಸಕ್ಕರೆ ಇಳಿದು ಕಹಿ ಮತ್ತು ನಾರಿನಂತಾಗುತ್ತದೆ. ಇಲ್ಲಿನ ಎಲ್ಲದಂತೆ ತೂಕದ ಮೇಲೆ ಮಾರುತ್ತೇವೆ, ಏಕೆಂದರೆ ಎಷ್ಟು ರಸ ಬರುತ್ತದೆ ಎಂಬುದು ನಿಮ್ಮ ಜ್ಯೂಸರ್ ಮೇಲೆ ಅವಲಂಬಿಸಿದೆ.",
+    "flavourNotes": "ಸಿಹಿ ಮತ್ತು ಗಾಢ ಹುಲ್ಲಿನ ಪರಿಮಳ, ಖನಿಜದ ಅಂಚು. ತಣ್ಣಗೆ, ಸ್ವಲ್ಪವೇ, ಒಂಟಿಯಾಗಿ ಅಥವಾ ನಿಂಬೆ ಅಥವಾ ಸೇಬಿನೊಂದಿಗೆ ಉತ್ತಮ.",
+    "growingTips": "ಧಾನ್ಯವನ್ನು 8 ರಿಂದ 12 ಗಂಟೆ ನೆನೆಸಿ, ನಂತರ ಮೊಳಕೆ ಬರಿಸಿ ಬಿತ್ತಿ. ಪ್ರಕಾಶಮಾನ ಪರೋಕ್ಷ ಬೆಳಕು, ಮತ್ತು ಬೀಜದ ಮೇಲೆ ಕತ್ತರಿಯಿಂದ ಕತ್ತರಿಸಿ. ಎರಡನೇ ಎಲೆ ಬರುವ ಮೊದಲು ಕಟಾವು ಮಾಡಿ — ಆಗಲೇ ಸಿಹಿ ಹೋಗುತ್ತದೆ.",
+    "nutrition": [
+      {
+        "label": "ಕ್ಲೋರೊಫಿಲ್",
+        "value": "ಬಹಳ ಅಧಿಕ — ಒಣ ಘನಾಂಶದ ಸುಮಾರು 70%"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ E",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಅಮೈನೋ ಆಮ್ಲಗಳು",
+        "value": "ಇದೆ — ವಿಶಾಲ ಶ್ರೇಣಿ, ಸಣ್ಣ ಪ್ರಮಾಣದಲ್ಲಿ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ, ಮತ್ತು ಇವು ಎಲೆಯನ್ನಲ್ಲ ರಸವನ್ನು ವಿವರಿಸುತ್ತವೆ — ನಾರನ್ನು ನೀವು ಜೀರ್ಣಿಸುವುದಿಲ್ಲ. ಧಾನ್ಯದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಪ್ರಮಾಣ ಬದಲಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ, ಚರ್ಮ ಮತ್ತು ಲೋಳೆಪಟಲಗಳ ನಿರ್ವಹಣೆಗೆ ಹಾಗೂ ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ ಮತ್ತು ಸಸ್ಯ ಆಹಾರಗಳಿಂದ ಕಬ್ಬಿಣದ ಹೀರಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ E ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕಬ್ಬಿಣ ರಕ್ತದಲ್ಲಿ ಸಾಮಾನ್ಯ ಆಮ್ಲಜನಕ ಸಾಗಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಹಾಗೂ ಬಳಲಿಕೆ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಮ್ಯಾಗ್ನೀಸಿಯಂ ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ, ಸಾಮಾನ್ಯ ಪ್ರೋಟೀನ್ ಸಂಶ್ಲೇಷಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಸೀಲಿಯಾಕ್ ಕಾಯಿಲೆ ಮತ್ತು ಗೋಧಿ ಅಲರ್ಜಿ: ಹುಲ್ಲಿನ ಎಲೆಯಲ್ಲಿ ಗ್ಲುಟೆನ್ ಇಲ್ಲ, ಆದರೆ ಇದು ಗೋಧಿ ಧಾನ್ಯದಿಂದ ಬೆಳೆಯುತ್ತದೆ ಮತ್ತು ಬೀಜದ ಸಂಪರ್ಕದ ಅಪಾಯ ನಿಜವಾದದ್ದು. ನೀವು ಸೀಲಿಯಾಕ್ ಅಥವಾ ಗೋಧಿ ಅಲರ್ಜಿ ಇದ್ದರೆ ಇದನ್ನು ಕುಡಿಯಬೇಡಿ.",
+      "100 ಮಿ.ಲೀ ಅಲ್ಲ, 30 ಮಿ.ಲೀ ಯಿಂದ ಆರಂಭಿಸಿ. ಮೊದಲ ಬಾರಿ ಹೆಚ್ಚು ಕುಡಿದರೆ ವಾಕರಿಕೆ ಅಥವಾ ತಲೆನೋವು ಸಾಮಾನ್ಯ.",
+      "ತಾಜಾ ಕುಡಿಯಿರಿ — ಹಿಂಡಿದ ಸುಮಾರು ಇಪ್ಪತ್ತು ನಿಮಿಷದೊಳಗೆ. ಇದು ಬೇಗ ಆಕ್ಸಿಡೀಕರಣವಾಗುತ್ತದೆ ಮತ್ತು ರುಚಿ ಹಾಗೂ ಬಣ್ಣ ಎರಡೂ ಹೋಗುತ್ತವೆ.",
+      "ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ, ಹಾಲುಣಿಸುವಾಗ ಅಥವಾ ರೋಗನಿರೋಧಕ ಶಕ್ತಿ ಕುಂದಿದವರಿಗೆ ವೈದ್ಯರ ಸಲಹೆಯಿಲ್ಲದೆ ಶಿಫಾರಸು ಮಾಡುವುದಿಲ್ಲ.",
+      "ಹಿಂಡುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇದು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದ್ದು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದ್ದಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದನ್ನು ಸುಮ್ಮನೆ ತಿನ್ನಬಹುದೇ, ಅಥವಾ ಸಲಾಡ್‌ಗೆ ಹಾಕಬಹುದೇ?",
+        "answer": "ಇಲ್ಲ. ಎಲೆ ಸೆಲ್ಯುಲೋಸ್ ಮತ್ತು ಅದಕ್ಕೆ ನಿಮ್ಮ ಹೊಟ್ಟೆಯಲ್ಲಿ ಕಿಣ್ವವಿಲ್ಲ, ಆದ್ದರಿಂದ ಅಗಿಯುವುದರಿಂದ ಪೋಷಣೆಗಿಂತ ನಾರು ಮತ್ತು ದವಡೆ ನೋವು ಸಿಗುತ್ತದೆ. ಹಿಂಡಿ, ರಸ ಕುಡಿಯಿರಿ, ನಾರನ್ನು ಗೊಬ್ಬರಕ್ಕೆ ಹಾಕಿ. ನಾವು ಮಾರುವ ವಸ್ತುಗಳಲ್ಲಿ ತಟ್ಟೆಗೆ ಅಲ್ಲದ ಒಂದೇ ಇದು."
+      },
+      {
+        "question": "ನನ್ನಲ್ಲಿ ಜ್ಯೂಸರ್ ಇಲ್ಲ. ಮಿಕ್ಸಿ ಸಾಕೇ?",
+        "answer": "ಒಂದು ಹೆಚ್ಚುವರಿ ಹಂತದೊಂದಿಗೆ ಆಗುತ್ತದೆ. ಕತ್ತರಿಸಿದ ಹುಲ್ಲನ್ನು ಸ್ವಲ್ಪ ತಣ್ಣೀರಿನೊಂದಿಗೆ ರುಬ್ಬಿ, ನಂತರ ಮಸ್ಲಿನ್ ಬಟ್ಟೆ ಅಥವಾ ಸಣ್ಣ ಜಾಲರಿಯಲ್ಲಿ ಚೆನ್ನಾಗಿ ಸೋಸಿ ಹಿಂಡಿ. ಸಾಮಾನ್ಯ ಸೆಂಟ್ರಿಫ್ಯೂಗಲ್ ಜ್ಯೂಸರ್ ಹುಲ್ಲಿಗೆ ಕಷ್ಟಪಡುತ್ತದೆ; ಮ್ಯಾಸ್ಟಿಕೇಟಿಂಗ್ ಅಥವಾ ಕೈ ಜ್ಯೂಸರ್ ಇದಕ್ಕೇ ಮಾಡಿದ್ದು."
+      },
+      {
+        "question": "ಗೋಧಿ ಹುಲ್ಲು ಗ್ಲುಟೆನ್ ಮುಕ್ತವೇ?",
+        "answer": "ಎಲೆ ಹೌದು — ಗ್ಲುಟೆನ್ ಧಾನ್ಯದಲ್ಲಿ ಇರುತ್ತದೆ, ಎಲೆಯಲ್ಲಿ ಅಲ್ಲ. ಆದರೆ ಇದು ಗೋಧಿ ಧಾನ್ಯದ ಹಾಸಿನ ಮೇಲೆ ಬೆಳೆಯುತ್ತದೆ, ಮತ್ತು ಕಟಾವಿನಲ್ಲಿ ಎರಡನ್ನೂ ಪರಿಪೂರ್ಣವಾಗಿ ಬೇರ್ಪಡಿಸುವ ಭರವಸೆ ನಾವು ಕೊಡುವುದಿಲ್ಲ. ನೀವು ಸೀಲಿಯಾಕ್ ಅಥವಾ ಗೋಧಿ ಅಲರ್ಜಿ ಇದ್ದರೆ ದಯವಿಟ್ಟು ಕುಡಿಯಬೇಡಿ."
+      },
+      {
+        "question": "ಎಷ್ಟು ಕುಡಿಯಬೇಕು, ಎಷ್ಟು ಬಾರಿ?",
+        "answer": "30 ಮಿ.ಲೀ ಯಿಂದ ಆರಂಭಿಸಿ ಹೇಗೆ ಅನಿಸುತ್ತದೆ ನೋಡಿ; ನಿಯಮಿತವಾಗಿ ಕುಡಿಯುವವರು ಸಾಮಾನ್ಯವಾಗಿ ದಿನಕ್ಕೆ 30 ರಿಂದ 60 ಮಿ.ಲೀ ನಡುವೆ ನಿಲ್ಲುತ್ತಾರೆ. ಹೆಚ್ಚು ಕುಡಿದು ಸಿಗುವುದೇನೂ ಇಲ್ಲ, ಮತ್ತು ಮೊದಲ ಬಾರಿ ಹೆಚ್ಚು ಕುಡಿಯುವುದೇ ಜನರು ವಾಕರಿಕೆ ಅನುಭವಿಸಿ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸದಿರುವ ಸಾಮಾನ್ಯ ಕಾರಣ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ಕತ್ತರಿಸಿದ ಹುಲ್ಲು ತೊಳೆಯದೆ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ ಫ್ರಿಜ್‌ನಲ್ಲಿ ಐದರಿಂದ ಏಳು ದಿನ ಉಳಿಯುತ್ತದೆ, ಮತ್ತು ಕತ್ತರಿಸಿದ ಸಾಧ್ಯವಾದಷ್ಟು ಬೇಗ ಹಿಂಡುವುದು ಉತ್ತಮ. ರಸ ಉಳಿಯುವುದೇ ಇಲ್ಲ — ಇಪ್ಪತ್ತು ನಿಮಿಷದೊಳಗೆ ಕುಡಿಯಿರಿ. ಇಡಬೇಕಿದ್ದರೆ ಹಿಂಡಿದ ದಿನವೇ ಐಸ್ ಟ್ರೇಯಲ್ಲಿ ಹೆಪ್ಪುಗಟ್ಟಿಸಿ."
+      }
+    ],
+    "imageAlt": "ಮೊಳಕೆ ಗೋಧಿ ಧಾನ್ಯದ ಮೇಲೆ ಎತ್ತರದ ಪ್ರಕಾಶಮಾನ ಹಸಿರು ಗೋಧಿ ಹುಲ್ಲಿನ ಟ್ರೇ"
+  }
+}

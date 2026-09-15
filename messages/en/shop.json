@@ -1,0 +1,17 @@
+{
+  "index": {
+    "title": "Shop",
+    "heading": "Greens grown to order, and everything you need to grow your own.",
+    "body": "Racks, trays, seeds and snacks are ordered any time and arrive on the same Saturday run as the greens.",
+    "plansPrompt": "Looking for a weekly box instead?",
+    "plansLink": "See the plans"
+  },
+  "category": {
+    "body": "Delivered on the same Saturday run as the greens.",
+    "empty": "No {category} are listed right now — check back shortly.",
+    "from": "From ₹{price}",
+    "price": "₹{price}",
+    "options": "{count} options",
+    "stock": "{grams} g in stock"
+  }
+}

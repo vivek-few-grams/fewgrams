@@ -1,0 +1,130 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "gallery": [
+      "bunch.jpg"
+    ]
+  },
+  "en": {
+    "name": "",
+    "shortDescription": "",
+    "description": "",
+    "flavourNotes": "",
+    "growingTips": "",
+    "nutrition": [
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      }
+    ],
+    "nutritionNote": "",
+    "benefits": [
+      "",
+      "",
+      ""
+    ],
+    "cautions": [
+      ""
+    ],
+    "faq": [
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      }
+    ],
+    "imageAlt": ""
+  },
+  "kn": {
+    "name": "",
+    "shortDescription": "",
+    "description": "",
+    "flavourNotes": "",
+    "growingTips": "",
+    "nutrition": [
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      }
+    ],
+    "nutritionNote": "",
+    "benefits": [
+      "",
+      "",
+      ""
+    ],
+    "cautions": [
+      ""
+    ],
+    "faq": [
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      }
+    ],
+    "imageAlt": ""
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "en": {
+    "name": "Pick Your Own",
+    "badge": "Most flexible",
+    "tagline": "Pick the greens; we tell you when each lands.",
+    "description": "Choose your varieties and how much of each, and the schedule builds itself: the quick crops land on the nearer Saturdays, the slower ones later, and you see the whole month before you pay. Priced by weight, so a box of wheatgrass and a box of red amaranth are not the same money.",
+    "highlights": [
+      "Every variety in the catalogue is yours",
+      "Your week-by-week schedule, before you pay",
+      "You pay for exactly what you picked",
+      "Change the mix whenever the month renews"
+    ]
+  },
+  "kn": {
+    "name": "ನಿಮ್ಮದೇ ಆಯ್ಕೆ",
+    "badge": "ನಿಮ್ಮ ಇಚ್ಛೆಯಂತೆ",
+    "tagline": "ಸೊಪ್ಪನ್ನು ನೀವು ಆರಿಸಿ; ಯಾವುದು ಯಾವಾಗ ಎಂದು ನಾವು ಹೇಳುತ್ತೇವೆ.",
+    "description": "ನಿಮಗೆ ಬೇಕಾದ ತಳಿಗಳನ್ನು ಮತ್ತು ಎಷ್ಟು ಬೇಕೆಂದು ಆರಿಸಿ; ವೇಳಾಪಟ್ಟಿ ತಾನಾಗಿಯೇ ರೂಪುಗೊಳ್ಳುತ್ತದೆ — ಬೇಗ ಬೆಳೆಯುವವು ಹತ್ತಿರದ ಶನಿವಾರಗಳಿಗೆ, ನಿಧಾನವಾದವು ನಂತರಕ್ಕೆ, ಮತ್ತು ಹಣ ಕಟ್ಟುವ ಮೊದಲೇ ಪೂರ್ತಿ ತಿಂಗಳು ನಿಮಗೆ ಕಾಣುತ್ತದೆ. ತೂಕದ ಮೇಲೆ ಬೆಲೆ, ಆದ್ದರಿಂದ ಗೋಧಿ ಹುಲ್ಲಿನ ಡಬ್ಬಿ ಮತ್ತು ಕೆಂಪು ಹರಿವೆಯ ಡಬ್ಬಿ ಒಂದೇ ಬೆಲೆಯಲ್ಲ.",
+    "highlights": [
+      "ಪಟ್ಟಿಯಲ್ಲಿರುವ ಪ್ರತಿ ತಳಿಯೂ ನಿಮ್ಮ ಆಯ್ಕೆಗೆ",
+      "ಹಣ ಕಟ್ಟುವ ಮೊದಲೇ ವಾರವಾರದ ವೇಳಾಪಟ್ಟಿ",
+      "ನೀವು ಆರಿಸಿದ್ದಕ್ಕೆ ಮಾತ್ರ ಬೆಲೆ",
+      "ತಿಂಗಳು ನವೀಕರಣವಾದಾಗ ಮಿಶ್ರಣ ಬದಲಿಸಿ"
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "eyebrow": "Weekly plans",
+  "heading": "One month, four Saturdays, nothing grown until you ask.",
+  "firstDelivery": "Order by Friday night and your first box arrives",
+  "empty": {
+    "title": "Weekly plans open soon",
+    "body": "None are published yet. Greens are still available by the 100 g, on the same Saturday run.",
+    "cta": "Order by the 100 g"
+  },
+  "card": {
+    "perBox": "~{grams} g per box",
+    "gramsYouChoose": "Grams you choose",
+    "pricedByWeight": "Priced by weight",
+    "subscribe": "Subscribe",
+    "buildMyBundle": "Pick my greens",
+    "showRotation": "See what arrives each of the {weeks} weeks",
+    "hideRotation": "Hide the {weeks}-week schedule",
+    "week": "Week {n}",
+    "weeklyBoxes": "{count} weekly boxes",
+    "perMonth": "/month",
+    "per100g": "₹{price} per 100 g",
+    "firstBox": "First box:"
+  },
+  "rotationNote": "A month is a rotation, not the same box four times. Each Sunday we sow both next week's fast crops and the week after's slow ones.",
+  "cheaperNote": "Cheaper per 100 g than buying one at a time.",
+  "rotationHeading": "{plan} — what arrives each Saturday",
+  "close": "Close",
+  "noDate": "—"
+}

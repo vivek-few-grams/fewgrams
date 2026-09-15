@@ -1,0 +1,166 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "gallery": [
+      "bunch.jpg"
+    ]
+  },
+  "en": {
+    "name": "Red Amaranthus",
+    "shortDescription": "Magenta stems, mild earthy leaf. The one that makes a plate look considered.",
+    "description": "Red amaranthus is the most striking green we grow — deep magenta stems under leaves that shade from burgundy to olive. The colour is not decoration: it comes from betalain pigments, the same family that makes beetroot red, and they are water-soluble antioxidants the plant makes in its first days of life. Flavour is gentle and slightly earthy, closer to young spinach than to anything sharp, which is why it works on food where a peppery green would fight the dish. Amaranth has been eaten across India for centuries as thotakura, harive soppu and chaulai; this is the same plant, cut as a seedling instead of at ten weeks.",
+    "flavourNotes": "Mild, earthy and faintly sweet. No pepper, no bitterness — it adds colour without arguing with the dish.",
+    "growingTips": "Tiny seed, so sow thin and never bury it. Mist rather than water, and cut above the soil line to keep grit out.",
+    "nutrition": [
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Good source"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Iron",
+        "value": "Moderate"
+      },
+      {
+        "label": "Calcium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Betalain pigments",
+        "value": "Present — the source of the magenta"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin C contributes to normal immune function and to normal collagen formation for healthy skin, gums and blood vessels.",
+      "Vitamin C also increases the absorption of iron from plant foods — useful in a vegetarian diet.",
+      "Vitamin A contributes to the maintenance of normal vision and normal skin.",
+      "Folate contributes to normal blood formation and to maternal tissue growth during pregnancy.",
+      "Iron contributes to normal oxygen transport in the blood and to reducing tiredness and fatigue.",
+      "Calcium and magnesium contribute to the maintenance of normal bones and to normal muscle function."
+    ],
+    "cautions": [
+      "Amaranth leaves contain oxalates. If you have had kidney stones or have been told to eat a low-oxalate diet, keep portions modest and speak to your doctor.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Does the red colour survive cooking?",
+        "answer": "Mostly not. Betalain pigments are heat-sensitive, so a hot pan turns the magenta a dull brown and bleeds colour into the dish. Add red amaranthus at the end, off the heat, or use it raw where the colour is the point."
+      },
+      {
+        "question": "Is this the same as the amaranth leaves I buy at the market?",
+        "answer": "Same plant, different stage. Market bunches are the mature leaf, harvested at several weeks and usually cooked. This is the seedling stage — more tender, milder, and eaten raw. It is not a substitute in a dal or a palya; it is a substitute for lettuce."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. Wash only what you are about to eat — water on the leaf is what turns microgreens to slime."
+      },
+      {
+        "question": "Can children eat it?",
+        "answer": "Yes, and the colour usually helps. It is a mild green with no pepper or bitterness, which makes it one of the easier ones to introduce. Rinse it first as you would any raw leaf."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Anywhere you want colour and not competition: over dal rice, on curd rice, in a sandwich or wrap, across a salad, on top of chaat, or scattered on a dosa just before it comes off the tawa."
+      }
+    ],
+    "imageAlt": "Tray of red amaranthus microgreens with deep magenta stems and burgundy leaves"
+  },
+  "kn": {
+    "name": "ಕೆಂಪು ಹರಿವೆ",
+    "shortDescription": "ಕಡುಗುಲಾಬಿ ಕಾಂಡ, ಸೌಮ್ಯ ಮಣ್ಣಿನ ರುಚಿಯ ಎಲೆ. ತಟ್ಟೆಯನ್ನು ಅಂದವಾಗಿ ಕಾಣಿಸುವ ಸೊಪ್ಪು.",
+    "description": "ನಾವು ಬೆಳೆಸುವ ಅತ್ಯಂತ ಆಕರ್ಷಕ ಸೊಪ್ಪು ಕೆಂಪು ಹರಿವೆ — ಕಡುಗುಲಾಬಿ ಕಾಂಡಗಳ ಮೇಲೆ ಕೆಂಪಿನಿಂದ ಹಸಿರಿನವರೆಗೆ ಬಣ್ಣ ಬದಲಾಗುವ ಎಲೆಗಳು. ಆ ಬಣ್ಣ ಅಲಂಕಾರವಲ್ಲ: ಅದು ಬೀಟ್‌ರೂಟ್‌ಗೆ ಕೆಂಪು ಬಣ್ಣ ಕೊಡುವ ಅದೇ ಬೆಟಾಲೈನ್ ವರ್ಣದ್ರವ್ಯಗಳಿಂದ ಬರುತ್ತದೆ, ಮತ್ತು ಇವು ನೀರಿನಲ್ಲಿ ಕರಗುವ ಆಂಟಿಆಕ್ಸಿಡೆಂಟ್‌ಗಳು — ಗಿಡ ತನ್ನ ಮೊದಲ ದಿನಗಳಲ್ಲೇ ಇವನ್ನು ತಯಾರಿಸುತ್ತದೆ. ರುಚಿ ಸೌಮ್ಯ ಮತ್ತು ಸ್ವಲ್ಪ ಮಣ್ಣಿನ ಪರಿಮಳದ್ದು, ಖಾರಕ್ಕಿಂತ ಎಳೆಯ ಪಾಲಕ್‌ಗೆ ಹತ್ತಿರ. ಆದ್ದರಿಂದ ಖಾರದ ಸೊಪ್ಪು ಹೊಂದದ ಅಡುಗೆಗಳಲ್ಲೂ ಇದು ಚೆನ್ನಾಗಿ ಹೊಂದುತ್ತದೆ. ಹರಿವೆ ಸೊಪ್ಪನ್ನು ಭಾರತದಲ್ಲಿ ಶತಮಾನಗಳಿಂದ ತಿನ್ನುತ್ತಿದ್ದೇವೆ; ಇದು ಅದೇ ಗಿಡ, ಹತ್ತು ವಾರಗಳ ಬದಲು ಮೊಳಕೆ ಹಂತದಲ್ಲೇ ಕತ್ತರಿಸಿದ್ದು.",
+    "flavourNotes": "ಸೌಮ್ಯ, ಮಣ್ಣಿನ ಪರಿಮಳ, ಸ್ವಲ್ಪ ಸಿಹಿ. ಖಾರವಿಲ್ಲ, ಕಹಿಯಿಲ್ಲ — ಅಡುಗೆಯೊಂದಿಗೆ ಜಗಳವಾಡದೆ ಬಣ್ಣ ಸೇರಿಸುತ್ತದೆ.",
+    "growingTips": "ಬೀಜ ಅತಿ ಸಣ್ಣದು, ಆದ್ದರಿಂದ ತೆಳುವಾಗಿ ಬಿತ್ತಿ ಮತ್ತು ಮಣ್ಣಿನಲ್ಲಿ ಹೂಳಬೇಡಿ. ನೀರು ಹಾಕುವ ಬದಲು ಸಿಂಪಡಿಸಿ, ಮತ್ತು ಮಣ್ಣಿನ ಮೇಲೆ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಬೆಟಾಲೈನ್ ವರ್ಣದ್ರವ್ಯಗಳು",
+        "value": "ಇದೆ — ಕಡುಗುಲಾಬಿ ಬಣ್ಣದ ಮೂಲ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಆರೋಗ್ಯಕರ ಚರ್ಮ, ವಸಡು ಹಾಗೂ ರಕ್ತನಾಳಗಳಿಗಾಗಿ ಸಾಮಾನ್ಯ ಕಾಲಜನ್ ರಚನೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಸ್ಯ ಆಹಾರಗಳಿಂದ ಕಬ್ಬಿಣದ ಹೀರಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ — ಸಸ್ಯಾಹಾರಿ ಆಹಾರದಲ್ಲಿ ಇದು ಉಪಯುಕ್ತ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ ಮತ್ತು ಸಾಮಾನ್ಯ ಚರ್ಮದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಮತ್ತು ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ತಾಯಿಯ ಅಂಗಾಂಶ ಬೆಳವಣಿಗೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕಬ್ಬಿಣ ರಕ್ತದಲ್ಲಿ ಸಾಮಾನ್ಯ ಆಮ್ಲಜನಕ ಸಾಗಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಹಾಗೂ ಬಳಲಿಕೆ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕ್ಯಾಲ್ಸಿಯಂ ಮತ್ತು ಮ್ಯಾಗ್ನೀಸಿಯಂ ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತವೆ."
+    ],
+    "cautions": [
+      "ಹರಿವೆ ಎಲೆಗಳಲ್ಲಿ ಆಕ್ಸಲೇಟ್ ಇರುತ್ತದೆ. ಮೂತ್ರಪಿಂಡದ ಕಲ್ಲು ಆಗಿದ್ದರೆ ಅಥವಾ ಕಡಿಮೆ ಆಕ್ಸಲೇಟ್ ಆಹಾರ ಹೇಳಿದ್ದರೆ ಪ್ರಮಾಣ ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ — ಹಠಾತ್ತನೆ ಹೆಚ್ಚು ತಿನ್ನಬೇಡಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಬೇಯಿಸಿದ ಮೇಲೆ ಕೆಂಪು ಬಣ್ಣ ಉಳಿಯುತ್ತದೆಯೇ?",
+        "answer": "ಬಹುಪಾಲು ಇಲ್ಲ. ಬೆಟಾಲೈನ್ ವರ್ಣದ್ರವ್ಯಗಳು ಶಾಖಕ್ಕೆ ಸೂಕ್ಷ್ಮ, ಆದ್ದರಿಂದ ಬಿಸಿ ಬಾಣಲೆಯಲ್ಲಿ ಕಡುಗುಲಾಬಿ ಮಸುಕಾದ ಕಂದು ಬಣ್ಣಕ್ಕೆ ತಿರುಗಿ ಬಣ್ಣ ಅಡುಗೆಗೆ ಇಳಿಯುತ್ತದೆ. ಒಲೆಯಿಂದ ಇಳಿಸಿದ ಮೇಲೆ ಕೊನೆಯಲ್ಲಿ ಸೇರಿಸಿ, ಅಥವಾ ಹಸಿಯಾಗಿಯೇ ಬಳಸಿ."
+      },
+      {
+        "question": "ಇದು ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಸಿಗುವ ಹರಿವೆ ಸೊಪ್ಪೇ?",
+        "answer": "ಅದೇ ಗಿಡ, ಬೇರೆ ಹಂತ. ಮಾರುಕಟ್ಟೆಯ ಕಟ್ಟು ಹಲವು ವಾರಗಳ ಬೆಳೆದ ಎಲೆ, ಸಾಮಾನ್ಯವಾಗಿ ಬೇಯಿಸುತ್ತಾರೆ. ಇದು ಮೊಳಕೆ ಹಂತ — ಹೆಚ್ಚು ಮೃದು, ಸೌಮ್ಯ, ಹಸಿಯಾಗಿ ತಿನ್ನುವುದು. ಇದು ಪಲ್ಯಕ್ಕೆ ಬದಲಿಯಲ್ಲ; ಲೆಟಿಸ್‌ಗೆ ಬದಲಿ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ ಇಡಿ. ಐದರಿಂದ ಏಳು ದಿನ ಉಳಿಯುತ್ತದೆ. ತಿನ್ನುವಷ್ಟನ್ನು ಮಾತ್ರ ತೊಳೆಯಿರಿ — ಎಲೆಯ ಮೇಲಿನ ನೀರೇ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಕೊಳೆಯುವ ಕಾರಣ."
+      },
+      {
+        "question": "ಮಕ್ಕಳು ತಿನ್ನಬಹುದೇ?",
+        "answer": "ಹೌದು, ಮತ್ತು ಬಣ್ಣವೇ ಸಾಮಾನ್ಯವಾಗಿ ಸಹಾಯ ಮಾಡುತ್ತದೆ. ಖಾರ ಅಥವಾ ಕಹಿ ಇಲ್ಲದ ಸೌಮ್ಯ ಸೊಪ್ಪು, ಆದ್ದರಿಂದ ಪರಿಚಯಿಸಲು ಸುಲಭವಾದವುಗಳಲ್ಲಿ ಒಂದು. ಯಾವುದೇ ಹಸಿ ಎಲೆಯಂತೆ ಮೊದಲು ತೊಳೆಯಿರಿ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಬಣ್ಣ ಬೇಕು ಆದರೆ ಸ್ಪರ್ಧೆ ಬೇಡ ಎಂಬ ಎಲ್ಲೆಡೆ: ಬೇಳೆ ಅನ್ನದ ಮೇಲೆ, ಮೊಸರನ್ನದ ಮೇಲೆ, ಸ್ಯಾಂಡ್‌ವಿಚ್ ಅಥವಾ ರ‍್ಯಾಪ್‌ನಲ್ಲಿ, ಸಲಾಡ್‌ನಲ್ಲಿ, ಚಾಟ್ ಮೇಲೆ, ಅಥವಾ ದೋಸೆ ತವಾದಿಂದ ಇಳಿಯುವ ಮೊದಲು ಉದುರಿಸಿ."
+      }
+    ],
+    "imageAlt": "ಕಡುಗುಲಾಬಿ ಕಾಂಡಗಳ ಕೆಂಪು ಹರಿವೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

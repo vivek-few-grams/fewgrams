@@ -1,26 +1,542 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─────────────────────────────────────────────────────────────
+   Design tokens — SPEC §17.1–17.4
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --color-forest: #033923;
+  /* The hover/pressed partner to `forest`, and until 15 Sep 2026 it was
+     `#0C3A26` — which measures **1.022:1 against `forest` and is very
+     slightly lighter**, i.e. "deep" in name only. Every
+     `hover:bg-forest-deep` button on the site had no visible hover state at
+     all, which is how it was found: the Subscribe button looked inert.
+     `#022718` is half the luminance of `forest` (0.0153 vs 0.0307, 1.235:1)
+     — unmistakable on hover while still reading as the same green — and
+     keeps cream text at 15.27:1. */
+  --color-forest-deep: #022718;
+  --color-sage: #a8cf8e;
+  --color-mint: #abe1cc;
+  --color-cream: #fbf9f3;
+  --color-sand: #f2ebe3;
+  --color-ink: #1a1a1a;
+  --color-stone: #6b7268;
+  --color-terracotta: #c7452f;
+  /* The logo's own two non-green inks — SPEC §17.1. `bark` is the brown in
+     `fewgrams-logo.svg`; `tan` is the lightened version the white lockup uses
+     on a dark ground, and the two are a matched pair rather than a tint of one
+     another. Added 15 Sep 2026 for the plan badges: a warm pill sets the
+     secondary plans apart from the recommended one without inventing a colour
+     the brand does not already own. */
+  --color-bark: #5a3e22;
+  --color-tan: #d9b48a;
+
+  --font-display: var(--font-quicksand), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-kannada: var(--font-noto-kannada), sans-serif;
+
+  /* The single most important detail of the Don Molinico feel.
+     Same movements with a default ease look cheap. */
+  --ease-brand: cubic-bezier(0.19, 1, 0.22, 1);
+
+  /* Brand curtain (§17.5). Named here rather than inline in the rules
+     because PageLoader.tsx has to hold the same numbers — its timers
+     remove the state attribute after these have finished — and two
+     magic numbers in two files drift.
+
+     Slow on purpose, and slowed again on 15 Sep 2026 because 700ms was
+     uncomfortable to watch: the edge of a circle covering a 1440px
+     screen sweeps a lot of area, and at that duration it crossed the
+     field of view fast enough to strain. 260ms, where this started,
+     read as a flash of green rather than a movement with an origin. */
+  --curtain-enter: 1000ms;
+  /* The exit is a fade with nothing moving, so it does not need the
+     open's patience. 900ms read as the green hanging around after the
+     page had arrived — but most of that was the logo, which now clears
+     in its own first 140ms. With that fixed the panel can afford to be
+     gentle again: 900 → 450 → 650ms, where it is a soft dissolve
+     without an afterimage. */
+  --curtain-exit: 650ms;
+
+  /* The radius at which a centred circle covers the viewport, plus a
+     hair. A percentage radius in `circle()` resolves against
+     √(w² + h²) ÷ √2, and the distance from the centre to a corner is
+     √(w² + h²) ÷ 2 — so the exact figure is 1 ÷ √2 = 70.711%, whatever
+     the window size.
+
+     This is NOT a "big enough" number, and 150% (correct when the
+     circle opened from a corner) is wrong here: the circle would reach
+     full cover less than half way through, and the rest of the duration
+     would be spent growing off-screen. The animation would read as
+     twice as fast as its own timing. */
+  --curtain-full: 72%;
+
+  /* The circle does NOT use --ease-brand. That curve is an expo-out —
+     it put the circle 82% of the way open in its first 112ms and then
+     crawled through the remaining 18%, so a 620ms open still read as a
+     snap. Measured, not guessed.
+
+     This is a gentle symmetric ease-in-out, and the duration was only
+     half the fix: what strains the eye is the PEAK speed, not the
+     average. Profiled frame by frame at 1440x900 (98 and 135 frames):
+
+       700ms  cubic-bezier(.65,0,.35,1)      peak 7410 px/s, 2.88x avg
+       1000ms cubic-bezier(.45,.05,.55,.95)  peak 3148 px/s, 1.75x avg
+
+     So the edge now travels 58% slower at its fastest — most of that
+     from flattening the curve, not from the extra 300ms. The logo fades
+     keep --ease-brand. */
+  --ease-curtain: cubic-bezier(0.45, 0.05, 0.55, 0.95);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+  ::selection {
+    background-color: var(--color-sage);
+    color: var(--color-forest);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* ───────────────────────────────────────────────────────────
+     Interactive affordance — every CTA must look clickable.
+
+     Tailwind v4 REMOVED `button, [role="button"] { cursor: pointer }`
+     from Preflight, deferring to the browser default of `cursor: default`.
+     The result is a site where nothing reads as clickable, which is why
+     this is a base rule rather than a `cursor-pointer` class repeated on
+     every button — the class form guarantees the next button someone adds
+     is missing it again.
+
+     `label:has(input)` covers the checkbox rows, whose clickable area is
+     the whole label, not just the box.
+     ─────────────────────────────────────────────────────────── */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  summary,
+  label:has(input[type="checkbox"]),
+  label:has(input[type="radio"]) {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Keyboard focus in the brand palette rather than the browser's blue,
+     which clashes with the forest/terracotta scheme. `:focus-visible`
+     rather than `:focus`, so a mouse click does not leave a ring behind —
+     the mistake that makes people remove focus styles altogether. */
+  :focus-visible {
+    outline: 2px solid var(--color-forest);
+    outline-offset: 2px;
+    border-radius: 2px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─────────────────────────────────────────────────────────────
+   Product card hover — SPEC §17.4
+   Reverse-engineered from donmolinico.es. Two opposing motions
+   from one hover: the panel pulls INWARD 4% while the image
+   scales OUTWARD 10%. No animation library required.
+   ───────────────────────────────────────────────────────────── */
+.mcard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.mcard__media {
+  position: relative;
+  z-index: 15;
+  transition: transform 1250ms var(--ease-brand);
+  will-change: transform;
+}
+
+.mcard__marquee {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  clip-path: inset(0 round 20px);
+  transition:
+    clip-path 1000ms var(--ease-brand),
+    opacity 500ms var(--ease-brand);
+  will-change: clip-path, opacity;
+}
+
+.mcard__marquee-inner {
+  display: flex;
+  flex-direction: column;
+  animation: mcard-marquee 8s linear infinite;
+  will-change: transform;
+}
+
+.mcard__marquee-line {
+  display: block;
+  white-space: nowrap;
+  text-align: center;
+  line-height: 0.95;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+@keyframes mcard-marquee {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-50%); }
+}
+
+/* Every hover effect above is desktop-only, exactly as the
+   reference does it. Touch devices get no hover state. */
+@media (pointer: fine) {
+  .mcard:hover .mcard__media {
+    transform: scale(1.1) rotate(-4deg);
+  }
+  .mcard:hover .mcard__marquee {
+    opacity: 1;
+    clip-path: inset(4% round 20px);
+  }
+}
+
+/* SPEC §17.4 accessibility requirement. The marquee is continuous
+   motion, which is a genuine problem if it cannot be stopped. */
+@media (prefers-reduced-motion: reduce) {
+  .mcard__media,
+  .mcard__marquee { transition: none !important; }
+  .mcard__marquee-inner { animation: none !important; }
+  .mcard:hover .mcard__media { transform: none !important; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Rotation timeline reveal — SPEC §18.4
+
+   The modal used to appear with all four Saturdays already there,
+   which is a missed opportunity: the rotation IS a sequence, and the
+   whole argument of the panel is that week 2 follows week 1 rather
+   than repeating it. Revealing the columns left to right says that
+   before a word is read.
+
+   Two staggers, nested. `--i` is the column, `--j` the variety within
+   it, both set inline from the render. Keeping the arithmetic in CSS
+   rather than computing delays in JS means one place to retune it and
+   nothing re-rendering to animate.
+
+   `both` fill mode is load-bearing: without the backwards fill an
+   element with a 270ms delay is fully visible for those 270ms and then
+   snaps to opacity 0 to start its own animation.
+   ───────────────────────────────────────────────────────────── */
+@keyframes rot-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* The dot lands after its column has started moving — a timeline marker
+   that arrives with the text reads as part of the text. */
+@keyframes rot-dot {
+  from { opacity: 0; transform: scale(0.2); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.rot-week {
+  animation: rot-rise 520ms var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+
+.rot-dot {
+  animation: rot-dot 420ms var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 90ms + 60ms);
+}
+
+/* The varieties are the payload — what you actually get — so they come
+   last in each column, after its date has settled. */
+.rot-item {
+  animation: rot-rise 460ms var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 90ms + var(--j, 0) * 70ms + 180ms);
+}
+
+/* §17.4. Everything arrives at once and in place — the content is the
+   point, the sequence is decoration. */
+@media (prefers-reduced-motion: reduce) {
+  .rot-week,
+  .rot-dot,
+  .rot-item { animation: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Bundle card hover — SPEC §18.4
+
+   A small lift plus a forest-tinted shadow. Deliberately **not** the
+   `.mcard` treatment: that one scales a cut-out image inside a fixed
+   frame, and there is no image on a bundle card to scale — the whole
+   card would have to move, and 10% on a 430px card is a lurch.
+
+   Written here rather than as `hover:scale-[…] hover:shadow-xl`
+   utilities for the same reason `.mcard` is: Tailwind's `hover:`
+   compiles to a bare `:hover`, which on a touch screen sticks after a
+   tap and leaves one card raised until something else is tapped.
+   `(pointer: fine)` is the only way to say "desktop only", and §17.4
+   already committed to it.
+
+   1.2% and 6px, not 5% and 20px. These cards sit in a three-column grid
+   with a 24px gutter, so the card grows ~5px into the gap on each side
+   at 1.2% — enough to read as coming forward, not enough to collide.
+   `z-index` on hover is what stops the next card in the DOM painting
+   over the raised one's right edge.
+   ───────────────────────────────────────────────────────────── */
+.bcard {
+  transition:
+    transform 450ms var(--ease-brand),
+    box-shadow 450ms var(--ease-brand);
+  will-change: transform;
+}
+
+@media (pointer: fine) {
+  .bcard:hover {
+    z-index: 2;
+    transform: translateY(-6px) scale(1.012);
+    /* Forest-tinted, not black. A neutral shadow under a green card on a
+       cream page reads as grey dirt; tinting it with the ground the card
+       sits on keeps it in the palette.
+
+       Two layers, because one wide soft shadow at a readable opacity looks
+       like a smudge and at a tasteful opacity looks like nothing — which is
+       what the first attempt (a single 48px blur at 0.3) did. The tight
+       layer draws the card's edge, the wide one gives it height. */
+    box-shadow:
+      0 6px 14px -6px rgb(3 57 35 / 0.22),
+      0 28px 52px -22px rgb(3 57 35 / 0.38);
+  }
+}
+
+/* The shadow stays under reduced motion — a shadow is not movement, and
+   it is the part that says "this card is in front". Only the transform
+   goes. */
+@media (prefers-reduced-motion: reduce) {
+  .bcard { transition: box-shadow 450ms var(--ease-brand); }
+  .bcard:hover { transform: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Brand curtain — SPEC §17.5
+
+   A circle of forest that **opens from the middle of the screen** to
+   cover it, and then simply **fades away at full size** to reveal the
+   page. One movement, not two: shrinking it back was a second hard edge
+   travelling across the eye, and a shrink that fades at the same time
+   still has motion nobody needed. The page appears *through* the
+   curtain instead.
+
+   Two origins were tried and dropped before this. The click point was
+   wrong because a click on a variety card sits in the middle of the
+   grid, so the circle seemed to come from nowhere in particular. The
+   brand logo was better but off in a top corner, so the sweep arrived
+   edge-first and the page uncovered unevenly. The centre needs no
+   measuring, no JavaScript and no handoff across a page load: `50% 50%`
+   resolves against the viewport, so it survives a resize or a rotation
+   mid-animation for free.
+
+   State lives in `html[data-loader]`, and every value renders the
+   panel. Three of them:
+
+     in   first paint of a session. Set by the inline script in
+          layout.tsx *before* paint, which is what stops a repeat
+          visitor seeing a flash of a panel about to be dismissed:
+          no attribute, no element. Starts covered — expanding it
+          would mean showing the page first and then hiding it.
+     nav  an internal navigation. Opens from the centre.
+     out  fading out, still full size. No radius change at all.
+
+   Timings are duplicated in PageLoader.tsx, which only removes the
+   attribute once the animation it drives has finished. Change one and
+   change the other.
+   ───────────────────────────────────────────────────────────── */
+.loader {
+  position: fixed;
+  inset: 0;
+  /* Above the sticky header (z-70) and its backdrop blur. */
+  z-index: 100;
+  display: none;
+  place-items: center;
+  background-color: var(--color-forest);
+  clip-path: circle(var(--curtain-full) at 50% 50%);
+}
+
+/* `clip-path` clips hit-testing as well as paint, so a covering panel also
+   blocks clicks on the page beneath it — which is wanted while it is opaque,
+   and released explicitly on the way out. */
+html[data-loader] .loader {
+  display: grid;
+}
+
+html[data-loader="nav"] .loader {
+  animation: curtain-open var(--curtain-enter) var(--ease-curtain) both;
+}
+
+/* The exit is a plain cross-fade at full size — the clip-path stays where the
+   open left it, so nothing moves. A linear ramp, because with no motion to
+   pace there is nothing for an ease to shape, and an eased fade on a
+   full-screen flood reads as a hold followed by a rush.
+
+   `pointer-events: none` is load-bearing here, not a tidy-up: the panel stays
+   full-screen for the whole fade and its opacity reaches 0 before the element
+   is removed, so without it the entire page would be unclickable for the last
+   moments of every navigation. */
+html[data-loader="out"] .loader {
+  animation: curtain-fade var(--curtain-exit) linear both;
+  pointer-events: none;
+}
+
+@keyframes curtain-fade {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+@keyframes curtain-open {
+  from { clip-path: circle(0% at 50% 50%); }
+  to   { clip-path: circle(var(--curtain-full) at 50% 50%); }
+}
+
+
+/* The logo does not travel with the circle — it stays centred and is
+   revealed as the circle passes it, which is what gives the opening its
+   direction. */
+html[data-loader="in"] .loader__mark,
+html[data-loader="hold"] .loader__mark {
+  animation: mark-rise 620ms var(--ease-brand) both;
+}
+
+html[data-loader="nav"] .loader__mark {
+  /* Delayed until the circle is wide enough to hold it, so the logo does
+     not appear inside a coin-sized disc. Scales with --curtain-enter:
+     at 1000ms the circle reaches the centre of the screen later. */
+  animation: mark-rise 560ms var(--ease-brand) 300ms both;
+}
+
+@keyframes mark-rise {
+  from { transform: translateY(10px) scale(0.96); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+
+/* The mark clears in the first 140ms of the 650ms fade — a fifth of it.
+   That looks disproportionate written down and it is not: at 280ms the logo
+   measured *ahead* of the panel in alpha (0.40 against 0.74 at the same
+   instant) and still read as the slower of the two.
+
+   Alpha is the wrong yardstick. A legible shape is a figure and the panel is
+   a wash: the eye tracks a wordmark it can still read long after it has
+   stopped attending to a flat colour at the same contrast. So the logo has to
+   be gone early enough not to be watched at all, leaving the rest of the fade
+   as plain colour.
+
+   Its opacity compounds with the panel's, which is the intent rather than a
+   bug — the number here is the logo's own share of the fade. */
+html[data-loader="out"] .loader__mark {
+  animation: mark-clear 140ms linear both;
+}
+
+@keyframes mark-clear {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* No curtain at all, either path. PageLoader checks the same query before
+   raising one, so this is the backstop and not the mechanism. */
+@media (prefers-reduced-motion: reduce) {
+  .loader { display: none !important; }
+}
+
+/* ── Small-caps UI labels ──────────────────────────────────────────────
+   Nav items, category pills and eyebrows share one treatment: uppercase
+   with wide tracking. That is a Latin convention and it breaks on Kannada:
+   `text-transform` is a no-op in a script with no letter case, and
+   letter-spacing pulls apart conjunct clusters that must render joined.
+
+   Noto Sans Kannada also carries a taller ascent and descent than
+   Montserrat, so at the same `font-size` its line box is taller and a flex
+   row centred with `items-center` drops the Kannada glyphs below their
+   Latin siblings — the misalignment visible on the language switch.
+   `line-height: 1` equalises the line boxes.
+
+   Deliberately NO font-size adjustment. An 8% bump was tried on the theory
+   that Kannada reads optically smaller at the same pixel size; in the header
+   it simply made the Kannada nav items visibly larger than the Latin `EN`
+   beside them. Same size for every label, whatever the script.
+
+   Applied by `:lang`, so a component never has to branch on locale.        */
+.ui-label {
+  /* Size comes from `--label-size`, set by the component, NOT from a Tailwind
+     `text-*` class. The Kannada rule below needs to scale that size, and
+     neither `em` nor `%` can do it: both resolve against the PARENT's font
+     size, so `1.06em` on a 13px nav link inside a 16px container computed to
+     16.96px, not 13.78px. A custom property is the only unit that refers to
+     the value we actually mean.                                             */
+  font-size: var(--label-size, 0.8125rem);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+
+  /* A FIXED line box, not `line-height: 1`. With `1` the box tracks the font
+     size, so the same label sat differently depending on what else shared its
+     row — the nav's box is driven by its own padding, the language switch's by
+     a 16px globe icon. One fixed height makes every label's box identical
+     wherever it appears, which is what lets a single Kannada nudge be correct
+     on every page instead of only one of them.                              */
+  line-height: 16px;
+}
+
+/* `.ui-label:lang(kn)`, NOT `:lang(kn) .ui-label`. The descendant form
+   matches every label inside <html lang="kn"> regardless of the element's own
+   `lang`, which put the switch's Latin "EN" into Noto Sans Kannada while
+   sitting on a Kannada page. The compound form tests the element's own
+   computed language, which is what we actually mean.                        */
+.ui-label:lang(kn) {
+  font-family: var(--font-kannada);
+  text-transform: none;
+  letter-spacing: 0;
+
+  /* Baseline compensation. Measured with canvas TextMetrics at 13px:
+
+       Montserrat           fontAscent 13   fontDescent 3   (1.000 / 0.231em)
+       Noto Sans Kannada    fontAscent 11   fontDescent 7   (0.846 / 0.538em)
+
+     A flex row with `align-items: center` centres LINE BOXES, not baselines.
+     With `line-height: 1` both boxes are 13px, but half-leading differs
+     (-1.5px vs -2.5px), so the Kannada baseline lands 3px ABOVE the Latin
+     one. The nudge puts it back down, and then a little further, so that the
+     centre of the BASE letterforms lines up rather than the baselines:
+
+       Latin cap height        9.23/13    = 0.710em  → centre 0.355em up
+       Kannada base ascent    10.25/13    = 0.788em  → centre 0.394em up
+
+     Derived from base letterforms, deliberately NOT from the full ink box.
+     Ink height swings wildly with a string's marks — ಅಂಗಡಿ has almost no
+     descender, ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ has 5.45px of them — so tuning to ink centre
+     gives a different answer for every word. Base-letterform centring is
+     string-independent, which is the only kind that stays correct.
+
+     What this CANNOT fix, and should not: Kannada's below-base marks sit up
+     to 5px under the baseline, so a word like ಕನ್ನಡ occupies more vertical
+     space than Latin caps. That is correct rendering, not misalignment.
+
+     `position: relative` rather than `transform`, so it cannot blur text or
+     create a stacking context, and it does not affect layout height.        */
+  position: relative;
+  top: 0.277em;
+
+  /* A taste dial, not a metric. The measurements above say Kannada base
+     glyphs are already taller than Latin caps, so this is not correcting for
+     anything — it is the size the brand wants Kannada to read at beside
+     Latin. 1.08 read as too large; this is the smaller step. Change this one
+     multiplier if it still feels off.                                       */
+  font-size: calc(var(--label-size, 0.8125rem) * 1.06);
 }
