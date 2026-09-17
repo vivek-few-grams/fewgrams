@@ -7,9 +7,11 @@ import { brand } from "@/lib/brand";
 import { Header } from "@/components/chrome/Header";
 import { Footer } from "@/components/chrome/Footer";
 import { PageLoader } from "@/components/chrome/PageLoader";
+import { TitleTicker } from "@/components/chrome/TitleTicker";
 import { loaderInitScript } from "@/components/chrome/loader-init";
 import { currentActor } from "@/lib/auth/guard";
 import { routing } from "@/i18n/routing";
+import { NAV_CATEGORIES } from "@/lib/types";
 import "../globals.css";
 
 /* SPEC §17.2. Self-hosted by next/font — no runtime request to Google and
@@ -51,8 +53,8 @@ export async function generateMetadata({
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "common" });
   return {
-    title: `${brand.name} — ${brand.tagline}`,
-    description: brand.subline,
+    title: `${brand.name} — ${t("brand.tagline")}`,
+    description: t("brand.subline"),
     /* hreflang is deliberately NOT set here — a layout cannot know the
        current path, so it would claim every Kannada page lives at /kn. Each
        page sets its own via localeAlternates() (src/i18n/alternates.ts). */
@@ -79,6 +81,13 @@ export default async function LocaleLayout({
      "Yield per tray must be at least 1 g" — into the HTML a customer
      downloads. Internal wording on a public page, and bytes nobody needs.
      The admin subtree re-provides them for itself in admin/layout.tsx. */
+  /* The tab ticker's words, resolved here because it is a client component.
+     Taken from `NAV_CATEGORIES` in nav order rather than from a list of its
+     own, so the tab always names the same five things the header does — and
+     adding a sixth category means editing one array, not two. */
+  const cat = await getTranslations("common.categories");
+  const tickerWords = NAV_CATEGORIES.map((c) => cat(c.slug));
+
   const allMessages = await getMessages();
   const publicMessages = Object.fromEntries(
     Object.entries(allMessages).filter(([namespace]) => namespace !== "admin"),
@@ -100,6 +109,7 @@ export default async function LocaleLayout({
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider messages={publicMessages}>
           <PageLoader />
+          <TitleTicker brand={brand.name} words={tickerWords} />
           <Header actor={actor && { email: actor.email, role: actor.role }} />
           <main className="flex-1">{children}</main>
           <Footer />

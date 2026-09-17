@@ -3,6 +3,8 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
+import { AdminNav } from "./AdminNav";
+import { ADMIN_NAV_LABELS } from "./nav-items";
 
 /**
  * Admin shell — SPEC §8.
@@ -15,6 +17,24 @@ import { requireRole } from "@/lib/auth/guard";
  * Next.js docs warn that a route move can silently remove proxy coverage, and
  * the same reasoning applies to a page that forgets to call this — server
  * actions are directly addressable over HTTP.
+ *
+ * ## Layout: a left rail, not a row of tabs
+ *
+ * Navigation was a horizontal row of pills until 17 Sep 2026. Six of them
+ * already filled the width and SPEC §12 lists a dozen more admin routes to
+ * come, so the row had nowhere to grow and no room for a grouping. It is now a
+ * 14rem rail — see `AdminNav` for why, and for how it collapses to a scrolling
+ * strip below `lg`.
+ *
+ * The measure went from 1100px to 1400px with the change, so the content is
+ * **wider** than it was despite losing 14rem to the rail. The rack tables are
+ * the widest thing in here at about 990px of tracks (SPEC §19.3) and they now
+ * fit without the horizontal scroll they used to need.
+ *
+ * `min-w-0` on the content column is what makes that hold. Without it a flex
+ * child refuses to shrink below its content, so a table's own
+ * `overflow-x-auto` never engages — it widens the whole page instead, and the
+ * rail goes with it.
  */
 export default async function AdminLayout({
   children,
@@ -29,46 +49,33 @@ export default async function AdminLayout({
      which is where the client components that need it live. */
   const messages = await getMessages();
 
-  const tabs = [
-    ["overview", "/admin"],
-    ["varieties", "/admin/varieties"],
-    ["plans", "/admin/plans"],
-    ["products", "/admin/products"],
-  ] as const;
+  /* Resolved here and passed down: `AdminNav` renders outside the provider
+     below, so it cannot look up a key itself. */
+  const labels = Object.fromEntries(ADMIN_NAV_LABELS.map((key) => [key, t(key)]));
 
   return (
-    <div className="mx-auto max-w-[1100px] px-6 py-10 md:px-10">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link
-            href="/"
-            className="mr-2 font-display text-lg font-bold tracking-tight text-forest transition-colors hover:text-stone"
-          >
-            {t("title")}
-          </Link>
-          {tabs.map(([label, href]) => (
-            <Link
-              key={href}
-              href={href}
-              className="rounded-full border border-forest/20 px-4 py-1.5 font-body text-sm text-forest transition-colors hover:bg-forest hover:text-cream"
-            >
-              {t(label)}
-            </Link>
-          ))}
-        </div>
+    <div className="mx-auto flex max-w-[1400px] flex-col px-6 py-8 md:px-8 lg:flex-row lg:gap-8 lg:py-10">
+      {/* `sticky` with `self-start` keeps the rail in view down a long orders
+          table without stretching it to the page's full height. */}
+      <aside className="lg:sticky lg:top-8 lg:flex lg:h-[calc(100vh-4rem)] lg:w-56 lg:shrink-0 lg:flex-col lg:self-start">
+        <Link
+          href="/"
+          className="font-display text-lg font-bold tracking-tight text-forest transition-colors hover:text-stone"
+        >
+          {t("title")}
+        </Link>
 
-        {/* Identity and the way out, right-aligned — SPEC §18.1.
-            `/admin` has no sign-out of its own, so this link is the only route
-            back to the session controls, and it used to be 12px grey underlined
-            text sitting beside a grey email: fine print next to fine print.
-            It is now a bordered pill with an icon, the same control language as
-            the tabs, so it reads as the one actionable thing in this group.
+        <AdminNav labels={labels} navLabel={t("navLabel")} />
+
+        {/* Identity and the way out — SPEC §18.1. Pushed to the foot of the
+            rail on `lg`: it is the least-used control here, so the top of the
+            rail belongs to the routes.
 
             The email and role stay quiet on purpose — they are context, not
-            controls. They are also the wider of the two, so they take the
-            `min-w-0` and truncate; a long address must not squeeze the pill. */}
-        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-          <span className="flex min-w-0 items-center gap-2 font-body text-xs text-stone">
+            controls. They take the `min-w-0` and truncate, because a long
+            address must not squeeze the pill beside it. */}
+        <div className="mt-4 flex min-w-0 flex-wrap items-center gap-3 border-t border-forest/12 pt-4 lg:mt-auto lg:flex-col lg:items-start lg:gap-2">
+          <span className="flex min-w-0 max-w-full items-center gap-2 font-body text-xs text-stone">
             <span className="truncate">{actor.email}</span>
             <span className="shrink-0 rounded-full bg-sage px-2 py-0.5 font-semibold text-forest">
               {actor.role}
@@ -85,11 +92,12 @@ export default async function AdminLayout({
             {t("account")}
           </Link>
         </div>
-      </div>
+      </aside>
 
-      <div className="mt-8">
+      {/* `min-w-0` is load-bearing — see the note in this file's doc comment. */}
+      <main className="mt-6 min-w-0 flex-1 lg:mt-0">
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
-      </div>
+      </main>
     </div>
   );
 }

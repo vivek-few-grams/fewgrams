@@ -7,7 +7,12 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 export type Shot = { src: string; alt: string };
 
 /**
- * The variety photographs — one large image with a thumbnail strip under it.
+ * A catalogue item's photographs — one large image with a thumbnail strip
+ * under it. Shared by every detail page (SPEC §18.10, §22.5).
+ *
+ * Written for varieties and moved here on 17 Sep 2026 when seeds got the same
+ * page. Nothing in it was variety-specific — it takes shots and labels — so
+ * the move was a rename.
  *
  * Replaced a separate "Closer look" band lower down the page on 15 Sep 2026.
  * The band buried the second photograph a full screen below the first and
@@ -25,7 +30,7 @@ export type Shot = { src: string; alt: string };
  * function across the client boundary (it is not serialisable), so the
  * per-thumbnail labels come in as a finished array rather than a formatter.
  */
-export function VarietyGallery({
+export function Gallery({
   shots,
   thumbLabels,
   prevLabel,

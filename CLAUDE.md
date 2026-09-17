@@ -27,16 +27,19 @@ checkout and a translator can be handed a single file:
 | `common.json` | Header, nav, footer, categories, shared counts |
 | `home.json` | Hero, PIN check, process strip, trust band |
 | `plans.json` | Bundle cards and the rotation panel |
-| `shop.json` | `/shop` and `/shop/[category]` |
+| `shop.json` | `/shop`, `/shop/[category]`, `/shop/trays` and tray detail pages (SPEC §23) |
 | `microgreens.json` | `/microgreens` and variety pages |
+| `seeds.json` | `/seeds` and seed pages (SPEC §22) |
 | `cart.json` | `/cart` — the ad-hoc basket (SPEC §18.6.1) |
 | `auth.json` | Login, verify, forbidden |
 | `account.json` | `/account` and its profile, addresses and orders screens |
 | `admin.json` | Admin shell and screens — **English only by design** (SPEC §4.4 scopes Kannada to customer-facing pages) |
 
 This covers **UI chrome**. Editorial copy belongs in `content/` instead, per
-SPEC §4.3. Product names are still a `LocalisedString` in DynamoDB (SPEC
-§4.4); **variety and plan text are not** — see below.
+SPEC §4.3. `LocalisedString` names in DynamoDB (SPEC §4.4) are now the
+**exception, not the rule**: varieties, plans, seeds and trays all keep every
+word in a content file, and only `Product` — snacks, which nothing writes yet —
+still takes a typed name. See below.
 
 ## Variety text never comes from DynamoDB or the admin UI
 
@@ -66,6 +69,57 @@ public pages skip it. Shape and reasoning: `content/varieties/README.md`.
   renaming the file, updating it in admin, and adding a redirect.
 - **Images are named in the content file, never stored in the database.** They
   resolve through `varietyImageUrl()` so the move to CloudFront is one change.
+
+## Seed text does not either — same rule, own folder
+
+`content/seeds/<contentKey>.json`, loaded by `src/lib/content/seeds.ts`.
+DynamoDB holds **two numbers**: price per 100 g and grams held. Admin →
+seeds has no text input at all.
+
+- The fields differ from a variety's, because a seed is bought to be sown:
+  `sowing` where a variety has `growingTips`, `specs` where it has `nutrition`,
+  `uses` where it has `benefits`. Contract: `seed-contract.ts`; full table in
+  `content/seeds/README.md`.
+- **`content/seeds/radish.json` and `content/varieties/radish.json` are two
+  different products.** Only the cart has to keep them apart, and it does it by
+  keying a line on **kind + content key** (`src/lib/cart/cart.ts`). Never key
+  cart, order or stock logic on the content key alone.
+- Photographs are optional here (the packet photography does not exist yet);
+  for a variety they are required.
+- **Stock lives in one module, and it is a *speed*, not a limit.**
+  `src/lib/seeds/stock.ts` owns the 100 g minimum, `seedSourcing` (shelf or
+  vendor) and `seedReadyDate`. Any quantity can be ordered; what the shelf
+  decides is whether the customer is promised **next day** or the **10-day**
+  vendor run (SPEC §22.2). **No seed is ever sold out** — a seed at 0 g still
+  sells. Do not re-derive `Math.floor(grams / 100)` or compare grams to stock
+  at a call site.
+- **The grams held are never shown to a customer.** They are on
+  `/admin/seeds` and nowhere else.
+
+## Tray and drainage text does not either — same rule, own folder
+
+`content/trays/<contentKey>.json`, loaded by `src/lib/content/trays.ts`.
+DynamoDB holds **two numbers**: the price of the pack and the days it takes to
+arrive. Admin → trays has no text input at all.
+
+- **Four fields only**: `name`, `shortDescription`, `specs` (≥4 rows),
+  `imageAlt`. No `description`, no `faq`, no `specsNote` — a tray is decided by
+  four facts and one sentence. The detail page (`/shop/trays/[key]`, SPEC
+  §23.3) renders those same four spec rows as its headline facts and adds a
+  gallery and a buy box; it does **not** repeat them as a table underneath.
+  Contract: `tray-contract.ts`; full notes in `content/trays/README.md`.
+- **The category is "Trays & drainage"** and it holds both. A drain cell mat is
+  not a tray; it is the same *kind of thing to sell* — bought in per order, no
+  stock, one price per pack — and one row shape serves both (SPEC §23.1).
+- **Nothing here is ever in stock**, so there is no out-of-stock state and no
+  count to keep. Every order is a purchase order.
+- **The lead time lives in one module.** `src/lib/trays/lead-time.ts` owns the
+  7-day floor, the 14-day ceiling (which is `MAX_LEAD_DAYS` from
+  `delivery-date.ts`, imported not restated) and `trayReadyDate`. Do not
+  compare against `7` at a call site.
+- **Never write the price or the lead time into copy.** Both are printed on the
+  card from DynamoDB and both get tuned; the contract test scans for a rupee
+  figure or a day count in either language.
 
 ## Plan text does not come from DynamoDB either
 
@@ -104,6 +158,73 @@ add a row, not nine ternaries.
 - A plan with no content file is **skipped** on the home page and flagged in
   red in admin, exactly like a variety.
 
+## A cart unit is not always 100 g
+
+`src/lib/cart/cart.ts` holds three kinds — `variety`, `seed`, `tray` — and a
+line is **kind + content key + units**. What a unit *means* is the kind's
+business:
+
+| Kind | One unit | Priced |
+|---|---|---|
+| `variety`, `seed` | 100 g | per 100 g |
+| `tray` | one pack (2 trays, or 5 mats) | per pack |
+
+- **`isWeighed(kind)` is the only place that distinction lives.** Never write
+  `kind !== "tray"`; the set is declared so a fourth kind has to decide rather
+  than inherit a wrong default. `GRAMS_PER_UNIT` applies to weighed kinds only.
+- **`CartItem.grams` is `number | null`** — null, not 0, for a pack-priced
+  kind, so a page has to branch instead of printing "1 pack · 0 g".
+- **`CartItem.unitPrice`, never `pricePer100g`.** The field held ₹160 for a
+  pack of two trays under the old name.
+- **A key can name three different products.** `content/varieties/radish.json`,
+  `content/seeds/radish.json` and `content/trays/radish.json` would be three
+  lines at three prices. Never key cart, order or delivery logic on the content
+  key alone.
+- **Every line has a delivery date, and the reason differs by kind** — grow
+  days, the seed shelf, or a supplier lead time. `hydrateCart`'s internal
+  `Timing` union is exhaustive on purpose; one order is still one trip on the
+  slowest line's date (`latestDate`).
+- **Nothing in the cart has a stock test.** `sellable()` asks two questions for
+  all three kinds: is the row active, and does it have a content file.
+
+## A cart line's key is not always a content key
+
+`CART_KINDS` is `variety | seed | tray | rack`. The first three are keyed by a
+**content key** — the filename of a content file, lowercase letters and hyphens,
+**no digits**. A rack has no content file and is keyed by its **SKU** plus its
+colour: `rk-6f-5s-1.25x3-1.4-orange`.
+
+- **Validate with `isValidKeyFor(kind, key)`, never `isValidContentKey` alone.**
+  The latter rejects every rack. The two key sets are provably disjoint and
+  `cart-key.test.ts` keeps them that way — if they ever overlapped, one string
+  would address two products.
+- **Do not loosen the content-key rule to fit a rack.** The digit ban is the
+  whole point of it: `amaranth-2` is the naming failure it exists to prevent.
+- **Colour belongs in the key**, because `RackConfig` has none and the cart has
+  no per-line attributes. Two colours of one rack are two lines — two things to
+  build. A pipe rack carries no colour segment at all.
+- **A rack's name is composed at read time** (`rackLineName`), not stored: a
+  model has no customer-facing name by design (SPEC §19.5). An *order* line must
+  still snapshot it at purchase (§4.3); that is checkout's job, not this one's.
+
+## A fourth kind means four branches, and `grams === null` is not the test
+
+When a kind arrives, these are the places that decide something per kind. None
+of them fails loudly if you miss it:
+
+| Where | What it decides |
+|---|---|
+| `isWeighed` | whether the line has a weight at all — declared as a set so a new kind must choose |
+| `isValidKeyFor` | which key rule applies |
+| `Timing` in `cart/server.ts` | how the delivery date is worked out — a union, so a missed arm is a type error |
+| `lineUnits` / `stepKey` / `lineTiming` / `lineHref` in `cart/page.tsx` | the unit, the stepper's aria-label, the reason for the date, and where the line links |
+| `sellable()` in `cart/actions.ts` | what makes it orderable |
+
+**`item.grams === null` means "not sold by weight", not "a pack".** It was the
+pack test while trays were the only unweighed kind, and a rack priced "per pack"
+and counted in "packs" is the exact class of wrong number that survives review
+because the code reads fine. Branch on `item.kind`.
+
 ## Money and weight placeholders are typed, always
 
 `{price, number}`, never `{price}`. A bare placeholder is interpolated as a raw
@@ -127,6 +248,45 @@ into `/admin/*` (fixed 15 Sep 2026, SPEC §8.2).
 - A client component cannot read `admin` messages (the root layout strips that
   namespace). Pass the resolved strings down as a prop that is `null` for
   non-admins — see `Bundles.tsx`.
+
+## A card cut-out and a hero are two different pictures
+
+Every catalogue grid that runs the §17.4 motion — `/microgreens`, `/seeds`,
+`/shop/trays` — needs **`images.cutout`**, a transparent file. `images.hero` is
+a photograph with its own background, for the detail page gallery. They are not
+interchangeable, and `cutout` deliberately does **not** fall back to `hero`: a
+picture carrying its own background dropped into the media box reads as a
+skewed rectangle rather than a tilted product.
+
+- **Build both with `scripts/cutout.py`**, never by hand. Framing is normalised
+  in code because the generator ignores margin instructions. Defaults are the
+  square variety job; `--aspect 3:2 --fill 0.88 --width 900` is the tray card
+  and `--bg '#f2ebe3'` flattens a gallery hero from the same master. Reasoning
+  in `public/trays/README.md` and `public/varieties/README.md`.
+- **The fill percentage is set by the hover, not by taste.** The card scales the
+  media 1.1, rotates it 4° and then clips, so the subject's padding is the only
+  thing keeping its corners off the edge. Changing a card's size means
+  re-padding the cut-out, not widening the media box.
+- **A marquee must be taller than its panel.** The loop translates the block
+  -50%, so one half has to overflow the card or bare panel crosses it once per
+  cycle. `Marquee` pads the words to `minLines` for that reason; the default of
+  ten is right for a **square** tile only. Size the type in **`cqw`** on any
+  non-square panel, because a `clamp()` in `vw` stops scaling with the card as
+  soon as the grid changes column count.
+- **Pass `durationSeconds` whenever you change `minLines` or the type size.** A
+  duration is not a speed: a taller block covers more ground in the same time,
+  so a shared `8s` ran one card at 49px/s and another at 89px/s. The house speed
+  is 48px/s and the formula is on the prop.
+- **Both of those are pinned in `src/components/ui/marquee.test.ts`**, per call
+  site, with the panel aspect and type fraction restated. Neither invariant
+  shows up in a screenshot or a type check, and both have been shipped broken
+  once. Add a row when you add a caller.
+- **Marquee words carry no claim that needs substantiating.** A variety's are
+  nutrient *labels* — "Vitamin C", never "High" — because a nutrient content
+  claim has to be backed by analysis under the FSS (Advertising and Claims)
+  Regulations 2018. A rack's are properties of the steel ("Powder coated"),
+  which is a different kind of statement. Neither may restate a figure the admin
+  screens tune: no price, no height, no shelf count, no lead time.
 
 ## Interactive affordance is a base rule, not a class
 

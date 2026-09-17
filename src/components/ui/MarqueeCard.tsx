@@ -21,6 +21,7 @@ export function MarqueeCard({
   marqueeClass,
   labelClass = "text-forest",
   media,
+  mediaClass = "aspect-square w-[70%]",
   cursorLabel = "Order",
 }: {
   href: string;
@@ -31,6 +32,18 @@ export function MarqueeCard({
   marqueeClass: string;
   labelClass?: string;
   media: ReactNode;
+  /**
+   * The media box's shape and size. Square at 70% of the width by default,
+   * which is the reference's own figure and right for a `Sprout` mark or a
+   * punnet.
+   *
+   * Overridable because the subject decides it: a rack is a tall object, and
+   * `object-contain` in a square box fits it by its height, leaving it small
+   * in a portrait tile. Whatever is passed has to clear the hover — the media
+   * scales 1.1 and rotates 4° inside `overflow: hidden` — so a larger box
+   * means re-padding the cut-out, not just a bigger number here.
+   */
+  mediaClass?: string;
   cursorLabel?: string;
 }) {
   const lines = (
@@ -58,7 +71,7 @@ export function MarqueeCard({
             {lines}
           </div>
         </div>
-        <div className="mcard__media flex aspect-square w-[70%] items-center justify-center">
+        <div className={`mcard__media flex items-center justify-center ${mediaClass}`}>
           {media}
         </div>
       </div>

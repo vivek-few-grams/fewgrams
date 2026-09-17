@@ -1,6 +1,7 @@
 {
   "images": {
     "hero": "hero.jpg",
+    "cutout": "cutout.webp",
     "gallery": [
       "bunch.jpg"
     ]

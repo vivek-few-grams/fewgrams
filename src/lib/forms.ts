@@ -26,3 +26,63 @@ export type FormState =
     };
 
 export const IDLE: FormState = { status: "idle" };
+
+/* ───────────────────────── field readers ───────────────────────────── */
+
+/**
+ * Numeric readers shared by the two rack screens.
+ *
+ * They live here rather than in either `actions.ts` for the reason at the top
+ * of this file — a `"use server"` module may export only async functions — and
+ * they are shared rather than copied because a plated rack and an open-frame
+ * rack validate the same rates. A second copy is a second place for the next
+ * rule change to be applied to only half the range.
+ *
+ * Safe for a client component to import: nothing here touches the request.
+ */
+
+/** A price or a rate: must be present and above zero. */
+export function money(fd: FormData, key: string): number | null {
+  const n = Number(String(fd.get(key) ?? "").trim());
+  return Number.isFinite(n) && n > 0 ? n : null;
+}
+
+/** A count of parts: whole, and at least one. */
+export function count(fd: FormData, key: string): number | null {
+  const n = Number(String(fd.get(key) ?? "").trim());
+  return Number.isInteger(n) && n >= 1 ? n : null;
+}
+
+/**
+ * A figure where zero is a legitimate answer, such as markup.
+ *
+ * The empty check is not redundant: `Number("")` is `0`, so without it a blank
+ * field reads as a deliberate zero. That is how every rack added with the sort
+ * order left empty landed on 0 instead of falling through to a default, and
+ * why they all sorted together.
+ */
+export function zeroOrMore(fd: FormData, key: string): number | null {
+  const raw = String(fd.get(key) ?? "").trim();
+  if (raw === "") return null;
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+
+/** Comma-separated free text → a clean list. Used for heights, which have no
+ *  fixed set to pick from and so stay typed. */
+export function csv(fd: FormData, key: string): string[] {
+  return String(fd.get(key) ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/** An error `FormState`, as a message key plus its ICU arguments — never a
+ *  sentence. See the note on `FormState`. */
+export function err(
+  code: string,
+  field?: string,
+  values?: Record<string, string>,
+): FormState {
+  return { status: "error", code, ...(field ? { field } : {}), ...(values ? { values } : {}) };
+}

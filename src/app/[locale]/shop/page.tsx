@@ -2,11 +2,15 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { MarqueeCard } from "@/components/ui/MarqueeCard";
+import {
+  CategoryMedia,
+  categoryMediaClass,
+} from "@/components/catalogue/CategoryMedia";
 import { Sprout } from "@/components/ui/Sprout";
 import { CATEGORIES } from "@/lib/types";
-import { countsByCategory } from "@/lib/repo/products";
+import { categoryCounts } from "@/lib/catalogue/counts";
 import { listVarieties } from "@/lib/repo/varieties";
-import { CATEGORY_PANELS } from "@/lib/shop";
+import { CATEGORY_COUNT, CATEGORY_HREF, CATEGORY_PANELS } from "@/lib/shop";
 import { CategoryStrip } from "@/components/chrome/CategoryStrip";
 
 /**
@@ -33,7 +37,7 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
   const label = await getTranslations("common.categories");
   const counted = await getTranslations("common.counts");
   const [counts, varieties] = await Promise.all([
-    countsByCategory(),
+    categoryCounts(),
     listVarieties({ activeOnly: true }),
   ]);
 
@@ -62,19 +66,14 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
           return (
             <MarqueeCard
               key={c}
-              href={`/shop/${c}`}
+              href={CATEGORY_HREF[c]}
               label={label(c)}
-              note={counted("products", { count: n })}
+              note={counted(CATEGORY_COUNT[c], { count: n })}
               words={[label(c), label(c)]}
               panelClass={CATEGORY_PANELS[c].panelClass}
               marqueeClass={CATEGORY_PANELS[c].marqueeClass}
-              media={
-                <Sprout
-                  className="h-full w-full"
-                  stroke={c === "seeds" ? "#ABE1CC" : "#033923"}
-                  seed={i + 2}
-                />
-              }
+              media={<CategoryMedia category={c} index={i} />}
+              mediaClass={categoryMediaClass(c)}
             />
           );
         })}

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LOCALE_LABELS, routing, type Locale } from "@/i18n/routing";
+import { CURTAIN_ATTR } from "./curtain-anchor";
 
 /**
  * Language switch — SPEC §4.4 and §18.1.
@@ -29,6 +30,11 @@ export function LocaleSwitch() {
     <Link
       href={pathname}
       locale={next}
+      /* Opted into the brand curtain, and the one link that most needs it:
+         switching language is a full document load, so without the curtain
+         the page blanks and cuts in. It is also the case the `sessionStorage`
+         handoff in `PageLoader` exists for. */
+      {...{ [CURTAIN_ATTR]: "" }}
       aria-label={t("switchTo", { language: LOCALE_LABELS[next].full })}
       title={t("switchTo", { language: LOCALE_LABELS[next].full })}
       className="hidden items-center gap-1.5 font-body font-medium leading-none text-stone [--label-size:13px] transition-colors hover:text-forest sm:inline-flex"

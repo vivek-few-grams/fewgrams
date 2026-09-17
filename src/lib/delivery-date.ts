@@ -1,10 +1,16 @@
 /**
- * Delivery date arithmetic. **Two different rules, deliberately.**
+ * Delivery date arithmetic. **Three different rules, deliberately.**
  *
  * | | Sown | Delivered |
  * |---|---|---|
  * | Subscription (§5.3) | the Sunday after the Friday cutoff | the Saturday after that |
- * | One-off order (§18.6) | **the next day** | `growDays` after the sow |
+ * | One-off greens (§18.6) | **the next day** | `growDays` after the sow |
+ * | Seed (§22.2) | not sown at all | next day off the shelf, else the vendor lead time |
+ *
+ * A seed is stock rather than a crop, so its date comes from `seedSourcing`
+ * in `src/lib/seeds/stock.ts` and only the day arithmetic lives here. What all
+ * three share is `latestDate`: one order is one trip, on the slowest line's
+ * date.
  *
  * Corrected 15 Sep 2026 on the owner's instruction: *"We don't sow on Sundays
  * for individual order, it will be done next day only. Only for subscription,
@@ -35,6 +41,17 @@
 const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * Furthest ahead any non-grown line may be promised, guarding a bad constant
+ * from printing a nonsense date on a customer-facing page.
+ *
+ * Exported since 17 Sep 2026 so the admin screens that *accept* a lead time
+ * can refuse a figure this module would then silently clamp — see
+ * `src/lib/trays/lead-time.ts`. A clamp is the right last defence and the
+ * wrong way to tell an operator their number was ignored.
+ */
+export const MAX_LEAD_DAYS = 14;
+
 /** Day-of-week in IST. 0 = Sunday … 6 = Saturday. */
 function istDayOfWeek(date: Date): number {
   return new Date(date.getTime() + IST_OFFSET_MS).getUTCDay();
@@ -49,6 +66,51 @@ function istMidnight(date: Date): Date {
     shifted.getUTCDate(),
   );
   return new Date(dayStart - IST_OFFSET_MS);
+}
+
+/**
+ * 00:00 IST **tomorrow** — the next IST calendar day, whatever the hour now.
+ *
+ * Deliberately day-granular rather than "24 hours from now": both things that
+ * use it are morning jobs — sowing a one-off order, and packing a seed off the
+ * shelf — so the unit the customer cares about is the day. Order at 23:55
+ * tonight and it is tomorrow; order at 00:05 tonight and it is still tomorrow,
+ * not this time tomorrow.
+ */
+export function nextDay(now: Date = new Date()): Date {
+  return new Date(istMidnight(now).getTime() + DAY_MS);
+}
+
+/**
+ * 00:00 IST `days` calendar days from today in IST.
+ *
+ * `daysFromToday(10)` is the tenth day after today, which is what "within 10
+ * days" means to the person reading it. Used for the seed vendor run
+ * (`src/lib/seeds/stock.ts`); anything longer than a fortnight is clamped, so
+ * a bad constant cannot put a delivery date next year on a customer page.
+ */
+export function daysFromToday(days: number, now: Date = new Date()): Date {
+  const d = Math.min(Math.max(Math.ceil(days), 1), MAX_LEAD_DAYS);
+  return new Date(istMidnight(now).getTime() + d * DAY_MS);
+}
+
+/**
+ * The latest of a set of dates, or null for none.
+ *
+ * **One order, one delivery, on the slowest line's date.** SPEC §18.6 left
+ * this open — radish at 7 days and sunflower at 14 cannot both arrive on their
+ * own day without two trips for one order — and this takes the spec's own
+ * recommendation: one trip, on the later date, stated plainly in the cart
+ * rather than discovered afterwards.
+ *
+ * It takes dates rather than grow days because since 17 Sep 2026 a seed has a
+ * date too (next day off the shelf, or the vendor lead time), and those do not
+ * come from a grow window. The rule is the same for both kinds; only the
+ * arithmetic that produces each line's date differs.
+ */
+export function latestDate(dates: Array<Date | null | undefined>): Date | null {
+  const times = dates.filter((d): d is Date => d instanceof Date).map((d) => d.getTime());
+  return times.length === 0 ? null : new Date(Math.max(...times));
 }
 
 /**
@@ -111,7 +173,7 @@ const MAX_GROW_DAYS = 60;
  * morning job, so the unit the customer cares about is the day.
  */
 export function adhocSowDate(now: Date = new Date()): Date {
-  return new Date(istMidnight(now).getTime() + DAY_MS);
+  return nextDay(now);
 }
 
 /**
@@ -123,27 +185,6 @@ export function adhocSowDate(now: Date = new Date()): Date {
 export function adhocReadyDate(growDays: number, now: Date = new Date()): Date {
   const days = Math.min(Math.max(Math.ceil(growDays), 1), MAX_GROW_DAYS);
   return new Date(adhocSowDate(now).getTime() + days * DAY_MS);
-}
-
-/**
- * When a **mixed** one-off order is ready: the latest of its varieties.
- *
- * SPEC §18.6 left this open — radish at 7 days and sunflower at 14 cannot both
- * arrive on their own day without two trips for one order. This takes the
- * spec's own recommendation: one delivery, on the later date, stated plainly in
- * the cart rather than discovered afterwards. The alternative (holding the fast
- * crop for a week) contradicts "nothing is stored".
- *
- * Returns null for an empty cart — there is no date for nothing.
- */
-export function adhocOrderReadyDate(
-  growDaysList: number[],
-  now: Date = new Date(),
-): Date | null {
-  if (growDaysList.length === 0) return null;
-  return new Date(
-    Math.max(...growDaysList.map((d) => adhocReadyDate(d, now).getTime())),
-  );
 }
 
 /**

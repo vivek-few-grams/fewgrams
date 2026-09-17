@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { brand } from "@/lib/brand";
+import { curtainAnchor } from "./curtain-anchor";
 
 /**
  * The brand curtain — a forest panel carrying the logo that covers the page and
@@ -14,10 +15,17 @@ import { brand } from "@/lib/brand";
  *   1. **First visit in a session.** Decided by `loaderInitScript`, which runs
  *      synchronously in `<head>` before first paint, so a repeat visitor never
  *      sees a flash of a panel that was about to be dismissed.
- *   2. **Every internal navigation** (added 15 Sep 2026, the reference being
- *      donmolinico.es). A circle of forest **opens from the middle of the
- *      screen**, covers the page being left, holds, and closes back to the
- *      middle on the page that arrived.
+ *   2. **A move between sections of the site** — the brand logo, the four
+ *      header nav links and the language switch, and nothing else. A circle of
+ *      forest **opens from the middle of the screen**, covers the page being
+ *      left, holds, and closes back to the middle on the page that arrived.
+ *
+ *      It ran on *every* internal navigation from 15 Sep 2026 until the owner
+ *      narrowed it on the 17th: *"this full screen loader should be shown only
+ *      when i click on these options not for individual pages."* Which links
+ *      qualify is now a property of the link — `data-curtain` — and the rule
+ *      lives in `curtain-anchor.ts`, which explains why it is opt-in rather
+ *      than a list of paths.
  *
  *      Three origins, in order: the click point (wrong — a click on a variety
  *      card sits in the middle of the grid, so the circle came from nowhere in
@@ -26,6 +34,26 @@ import { brand } from "@/lib/brand";
  *      that needs no JavaScript at all: `circle(72% at 50% 50%)` resolves
  *      against the viewport, so there is nothing to measure, nothing to hand
  *      across a document load, and a resize mid-animation is free.
+ *
+ * ## Cover first, then navigate
+ *
+ * The order matters and it was wrong until 17 Sep 2026. The click raised the
+ * curtain and let the navigation go at the same moment, so a prefetched route
+ * committed in about 50ms while the circle needed a full second to close over
+ * it — and the owner watched **the page they were going to** appear in the ring
+ * around the circle, which is precisely the cut the curtain exists to hide.
+ *
+ * So an opted-in click is now **suppressed** (`preventDefault` +
+ * `stopPropagation`, in the capture phase, before Next's own `Link` handler
+ * can see it) and **replayed** on the anchor once the circle has covered the
+ * viewport — `ENTER_MS` later. The page underneath does not change until
+ * nothing of it is visible.
+ *
+ * It is replayed as a real click on the same anchor rather than handed to
+ * `router.push`, so it keeps whatever that link already meant: next-intl's
+ * locale handling, the section-scroll handler on PLANS, and the browser's own
+ * default as a backstop if React never hydrated. The replay is not
+ * re-intercepted because the handler bails whenever a curtain is already up.
  *
  * ## It survives a full document load
  *
@@ -46,10 +74,10 @@ import { brand } from "@/lib/brand";
  * · **Capped.** `MIN_COVER_MS` is the floor that stops a prefetched route from
  *   strobing; nothing sets a ceiling above `FAILSAFE_MS`.
  * · **Skipped entirely under `prefers-reduced-motion`**, both paths.
- * · **Only for a change of page.** A link to the current pathname, an in-page
- *   hash, a new tab, a download, `mailto:`, an external host and any modified
- *   click all pass through untouched. A curtain over a jump to `/#plans` would
- *   hide the very thing it scrolled to.
+ * · **Only for an opted-in link, and only for a change of page.** A link
+ *   without `data-curtain`, a link to the current pathname, an in-page hash, a
+ *   new tab, a download, `mailto:`, an external host and any modified click all
+ *   pass through untouched — see `curtain-anchor.ts`.
  *
  * ## Why the DOM rather than React state
  *
@@ -60,14 +88,29 @@ import { brand } from "@/lib/brand";
  */
 
 /**
+ * How long the circle takes to cover the viewport.
+ *
+ * **Must match `--curtain-enter` in globals.css.** This is not a cosmetic
+ * figure here: it is the delay the navigation waits out, so a value lower than
+ * the CSS would release the route while a ring of the old page was still
+ * showing, and a higher one would sit on a covered screen doing nothing.
+ */
+const ENTER_MS = 1000;
+
+/** Beat on the covered screen after the circle lands, before anything starts
+ *  retracting. Enough to read the mark as a held frame rather than a flicker
+ *  at the turn. */
+const HOLD_MS = 260;
+
+/**
  * Floor on a navigation curtain, measured from the click.
  *
- * It is not a cosmetic pause: it has to be at least `--curtain-enter`, or a
- * prefetched route would start closing the circle while it was still opening
- * and the whole gesture would collapse into a blink. The excess over the open
- * is the hold on the logo.
+ * Derived rather than typed, because the two parts are the two things that
+ * have to happen first: the circle has to finish closing, and it has to hold.
+ * Below `ENTER_MS` a prefetched route would start the retraction while the
+ * circle was still opening, and the whole gesture would collapse into a blink.
  */
-const MIN_COVER_MS = 1180;
+const MIN_COVER_MS = ENTER_MS + HOLD_MS;
 
 /** Fade-out duration. **Must match `--curtain-exit` in globals.css** — this
  *  timer only removes the attribute once the animation it drives has ended. */
@@ -106,41 +149,6 @@ function prefersReducedMotion(): boolean {
   return matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-/**
- * Is this click a navigation to another page of this site?
- *
- * Everything here is a reason the curtain would be wrong, not merely
- * unnecessary — see the class list in the header comment.
- */
-function navigatedAnchor(event: MouseEvent): HTMLAnchorElement | null {
-  if (event.defaultPrevented || event.button !== 0) return null;
-  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return null;
-
-  const anchor = (event.target as Element | null)?.closest?.("a");
-  if (!anchor) return null;
-
-  const href = anchor.getAttribute("href");
-  if (!href || href.startsWith("#")) return null;
-  if (anchor.hasAttribute("download")) return null;
-  /* `_blank` and a named frame both leave this document on screen. */
-  if (anchor.target && anchor.target !== "_self") return null;
-
-  let url: URL;
-  try {
-    url = new URL(anchor.href, location.href);
-  } catch {
-    return null;
-  }
-  if (url.origin !== location.origin) return null;
-
-  /* Same pathname covers two cases worth keeping uncovered: the link to the
-     page you are on, and a link that only changes the query string — a filter
-     or a page number, where a full-screen wipe is far more motion than the
-     change deserves. */
-  if (url.pathname === location.pathname) return null;
-
-  return anchor as HTMLAnchorElement;
-}
 
 export function PageLoader() {
   /**
@@ -202,15 +210,30 @@ export function PageLoader() {
       /* A curtain already up is either this navigation or the intro; in both
          cases raising a second one would restart the animation. */
       if (document.documentElement.dataset.loader) return;
-      if (!navigatedAnchor(event)) return;
+      const anchor = curtainAnchor(event, location);
+      if (!anchor) return;
+
+      /* Hold the navigation back until the circle has covered the page — see
+         "Cover first, then navigate". Capture-phase `stopPropagation` is what
+         keeps it from Next's `Link` handler, which routes without checking
+         whether the event was already prevented. */
+      event.preventDefault();
+      event.stopPropagation();
 
       document.documentElement.dataset.loader = "nav";
       coveredAt.current = Date.now();
-      /* Set before the browser gets a chance to tear this document down: if
-         the click turns out to be a full load, the next document reads this
-         and keeps the curtain up across it. */
+      /* Set while the curtain is up rather than only at the replay: a reload
+         or an unload in between should still hand a covered screen over. */
       markHandoff(true);
       clearTimers();
+
+      later(() => {
+        /* Re-stamped so the freshness window is measured from the navigation
+           that actually happens, not from the click a second earlier. */
+        markHandoff(true);
+        anchor.click();
+      }, ENTER_MS);
+
       later(() => {
         if (coveredAt.current !== null) retract(0);
       }, FAILSAFE_MS);

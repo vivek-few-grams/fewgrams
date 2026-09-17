@@ -150,6 +150,29 @@
   position: relative;
   overflow: hidden;
   border-radius: 20px;
+
+  /* So a marquee can size its type in `cqw` — a fraction of the card —
+     instead of `vw`, a fraction of the window.
+
+     This is not a preference. The marquee loops by translating its block
+     -50%, which only reads as continuous if **one half of the block is
+     taller than the panel**; otherwise bare panel crosses the card once
+     per cycle. A `vw`-based size cannot guarantee that, because the panel
+     and the type do not scale together: a `clamp()` caps the type while the
+     panel keeps growing as the grid drops to one column. Measured on the
+     tray grid at a 700px viewport, the card was 652 x 435 and one half of
+     the marquee 182px — a 252px hole.
+
+     In `cqw` the ratio is fixed by construction at every width, and the
+     apparent scroll speed stays constant too, since the block height is
+     then a fixed multiple of the card's.
+
+     Safe on every `.mcard`: each one takes its width from a grid column or
+     its parent and none sizes to its contents, which is the only thing
+     `inline-size` containment forbids. It is already `position: relative`,
+     so the containing block for `.mcard__marquee` and for `Image fill` is
+     unchanged. */
+  container-type: inline-size;
 }
 
 .mcard__media {
@@ -178,7 +201,25 @@
 .mcard__marquee-inner {
   display: flex;
   flex-direction: column;
-  animation: mcard-marquee 8s linear infinite;
+
+  /* **A duration is not a speed, and the speed is what a reader sees.**
+     The keyframe translates one half of the block, so how fast the type
+     appears to move is `halfHeight / duration` — and `halfHeight` is not a
+     constant: it is `minLines` lines of type sized as a fraction of the card
+     (see `Marquee`). A fixed 8s therefore scrolled a variety tile's 389px half
+     at 49px/s and a rack card's 715px half at 89px/s — nearly twice as fast,
+     from the same declaration.
+
+     So the duration is per-caller and derived: **the house speed is 48px/s**,
+     which is the variety tile's, measured in the browser rather than worked
+     out from its type size. It is the card that has been on the site longest,
+     so it is the one every other card is matched to. A caller that changes its
+     line count or its type size has to recompute this, which is the same
+     arithmetic `minLines` already documents.
+
+     8s is the default rather than a required value because it *is* the correct
+     answer for a square tile at ten lines — the case `Marquee` defaults to. */
+  animation: mcard-marquee var(--mcard-marquee-duration, 8s) linear infinite;
   will-change: transform;
 }
 
@@ -274,6 +315,92 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
+   Hero copy reveal — SPEC §18.3
+
+   The copy blocks must NOT cross-fade in place the way the photographs do:
+   four headlines of different lengths at the same coordinates leave two
+   superimposed paragraphs for the length of the fade, which is unreadable and
+   at a 2s hold is on screen a third of the time. So only the active block is
+   mounted, and it animates in on mount — no outgoing block, nothing to
+   overlap. Borrows rot-rise above rather than declaring a second keyframe that
+   does the same thing.
+   ───────────────────────────────────────────────────────────── */
+.hero-copy {
+  animation: rot-rise 560ms var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-copy { animation: none; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Scroll reveal kit — SPEC §18.3 section 3
+
+   Three classes that share one `--i` stagger so a row of steps arrives in
+   sequence rather than all at once: the marker pops, its connector draws
+   towards the next step, and the words rise under it. That ordering is the
+   whole point — it animates the *process*, so the movement says "this happens,
+   then this" instead of being decoration bolted onto a static row.
+
+   `--d` offsets an element within its own step (title before body). It is a
+   plain substitution, so `0ms` is the fallback and the calc stays valid when
+   nothing sets it.
+
+   Timing runs to ~1.1s over four steps. Longer reads as a page waiting for
+   itself; the marker→line→text order is what makes it legible, not the pace.
+
+   `Reveal` toggles `data-reveal="out"`, and NOT the visible state — see the
+   note in that component for why the hidden state has to be the JS-only one.
+   ───────────────────────────────────────────────────────────── */
+@keyframes reveal-draw {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.reveal-pop {
+  animation: rot-dot 420ms var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 180ms);
+}
+
+.reveal-rise {
+  animation: rot-rise 520ms var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 180ms + var(--d, 0ms));
+}
+
+/* Drawn from the step it leaves, not from the middle out — the direction is
+   the sequence, and a line growing both ways loses it. */
+.reveal-draw {
+  transform-origin: left center;
+  animation: reveal-draw 420ms var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 180ms + 140ms);
+}
+
+[data-reveal="out"] .reveal-pop,
+[data-reveal="out"] .reveal-rise,
+[data-reveal="out"] .reveal-draw {
+  animation: none;
+  opacity: 0;
+}
+
+/* §17.4 again: everything arrives at once and in place. The `[data-reveal]`
+   rules are overridden too, because `Reveal` bails out before setting the
+   attribute — but if it ever did, this is what stops it hiding content that
+   has no animation left to bring it back. */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-pop,
+  .reveal-rise,
+  .reveal-draw,
+  [data-reveal="out"] .reveal-pop,
+  [data-reveal="out"] .reveal-rise,
+  [data-reveal="out"] .reveal-draw {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
    Bundle card hover — SPEC §18.4
 
    A small lift plus a forest-tinted shadow. Deliberately **not** the
@@ -357,9 +484,12 @@
      nav  an internal navigation. Opens from the centre.
      out  fading out, still full size. No radius change at all.
 
-   Timings are duplicated in PageLoader.tsx, which only removes the
-   attribute once the animation it drives has finished. Change one and
-   change the other.
+   Timings are duplicated in PageLoader.tsx, which removes the attribute
+   once the animation it drives has finished — and, since 17 Sep 2026,
+   also **holds the navigation back for --curtain-enter** so the page
+   underneath cannot change while a ring of it is still visible. Change
+   --curtain-enter here and change ENTER_MS there, or the route is
+   released early and the new page shows through the gap.
    ───────────────────────────────────────────────────────────── */
 .loader {
   position: fixed;

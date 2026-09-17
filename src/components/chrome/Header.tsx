@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { brand } from "@/lib/brand";
 import { NavLinks } from "./NavLinks";
+import { CURTAIN_ATTR } from "./curtain-anchor";
 import { LocaleSwitch } from "./LocaleSwitch";
 import type { Role } from "@/lib/auth/roles";
 import { readCartCount } from "@/lib/cart/server";
@@ -91,6 +92,12 @@ export async function Header({
             this the only link to the home page would be unnamed. */}
         <Link
           href="/"
+          /* Opted into the brand curtain (SPEC §17.5.1), on the owner's call
+             17 Sep 2026. Going home is a change of section like any of the
+             four nav links, and it is the one link the curtain's own artwork
+             is a picture of. From the home page it stays quiet anyway — the
+             same-pathname rule catches it. */
+          {...{ [CURTAIN_ATTR]: "" }}
           /* `row-span-2` + `self-center` is the whole point: the logo occupies
              both grid rows and centres across them, so the nav sitting on row 2
              cannot push it upward. */

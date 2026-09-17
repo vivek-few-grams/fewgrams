@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { CATEGORIES, type Category } from "@/lib/types";
+import { CATEGORY_HREF } from "@/lib/shop";
 
 /**
  * Persistent category navigation inside the shop — SPEC §18.1.
@@ -35,7 +36,10 @@ export async function CategoryStrip({ current }: { current?: Category }) {
           return (
             <li key={cat}>
               <Link
-                href={`/shop/${cat}`}
+                /* Seeds go to /seeds, not /shop/seeds — see `CATEGORY_HREF`.
+                   The strip still marks it as the current category, because
+                   that page passes `current="seeds"`. */
+                href={CATEGORY_HREF[cat]}
                 aria-current={active ? "page" : undefined}
                 className={`ui-label inline-block rounded-full border px-4 py-1.5 font-body transition-colors [--label-size:12px] ${
                   active

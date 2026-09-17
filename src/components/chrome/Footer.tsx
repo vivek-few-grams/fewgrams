@@ -2,9 +2,11 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { brand } from "@/lib/brand";
 import { NAV_CATEGORIES } from "@/lib/types";
+import { CATEGORY_HREF } from "@/lib/shop";
 
 export async function Footer() {
   const t = await getTranslations("common.footer");
+  const b = await getTranslations("common.brand");
   const c = await getTranslations("common.categories");
 
   return (
@@ -13,7 +15,7 @@ export async function Footer() {
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <p className="font-display text-2xl font-bold tracking-tight">{brand.name}</p>
-            <p className="mt-3 max-w-xs font-body text-sm text-mint">{brand.subline}</p>
+            <p className="mt-3 max-w-xs font-body text-sm text-mint">{b("subline")}</p>
             <p className="mt-6 font-body text-sm text-mint/70">
               {t("deliveryNote", { city: brand.city })}
             </p>
@@ -21,9 +23,13 @@ export async function Footer() {
 
           <FooterCol title={t("shop")}>
             {NAV_CATEGORIES.map((cat) => (
+              /* Microgreens and seeds are described catalogues with routes of
+                 their own; the rest are `/shop/<slug>`. `CATEGORY_HREF` is the
+                 one place that mapping lives, so a footer link cannot drift
+                 from the nav's. */
               <FooterLink
                 key={cat.slug}
-                href={cat.slug === "microgreens" ? "/microgreens" : `/shop/${cat.slug}`}
+                href={cat.slug === "microgreens" ? "/microgreens" : CATEGORY_HREF[cat.slug]}
               >
                 {c(cat.slug)}
               </FooterLink>

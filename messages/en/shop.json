@@ -2,7 +2,7 @@
   "index": {
     "title": "Shop",
     "heading": "Greens grown to order, and everything you need to grow your own.",
-    "body": "Racks, trays, seeds and snacks are ordered any time and arrive on the same Saturday run as the greens.",
+    "body": "Racks, trays, seeds and snacks can be ordered any time. Seed comes off our own shelf; everything else is brought in for you, so it takes a few days longer.",
     "plansPrompt": "Looking for a weekly box instead?",
     "plansLink": "See the plans"
   },
@@ -11,7 +11,120 @@
     "empty": "No {category} are listed right now — check back shortly.",
     "from": "From ₹{price}",
     "price": "₹{price}",
-    "options": "{count} options",
-    "stock": "{grams} g in stock"
+    "options": "{count} options"
+  },
+  "racks": {
+    "body": "Built to order in the size you need — the height, the width and the number of levels are all yours to pick. Three ranges, and the difference between them is what a level is made of.",
+    "ranges": {
+      "shelf": {
+        "name": "Shelf racks",
+        "line": "Slotted steel angle uprights with a pressed steel plate bolted on at every level. A closed shelf, so it carries anything — not only trays.",
+        "imageAlt": "A four-level rack of orange slotted steel angle with white pressed steel shelf plates bolted on",
+        "prop1": "Powder coated",
+        "prop2": "Orange, green or purple",
+        "prop3": "Bolted, not welded",
+        "prop4": "Steel shelf plates",
+        "prop5": "Load rated",
+        "prop6": "Built to your size"
+      },
+      "angle": {
+        "name": "Open-frame angle racks",
+        "line": "The same slotted angle with no plates at all. Every level is an open rectangle with a third rail down the middle, which braces the span and is where an LED tube mounts.",
+        "imageAlt": "A three-level rack of orange slotted steel angle with no shelf plates, each level an open rectangle with a rail down the middle",
+        "prop1": "Powder coated",
+        "prop2": "Orange, green or purple",
+        "prop3": "Bolted, not welded",
+        "prop4": "Open on every level",
+        "prop5": "Takes an LED tube",
+        "prop6": "Built to your size"
+      },
+      "pipe": {
+        "name": "UPVC pipe racks",
+        "line": "One inch UPVC pipe and push-fit connectors, chosen for steadiness rather than price. Light to move, nothing on it to rust in a wet grow room, and it wipes clean. The dearest of the three.",
+        "imageAlt": "A three-level rack built from white UPVC pipe and moulded connectors, each level an open rectangle braced by a support leg underneath",
+        "prop1": "Rust proof",
+        "prop2": "Wipes clean",
+        "prop3": "Light to move",
+        "prop4": "Push-fit joints",
+        "prop5": "One inch UPVC",
+        "prop6": "Built to your size"
+      }
+    },
+    "size": "{depth, number} × {length, number} ft",
+    "lineName": "{range} · {height, number} ft · {shelves, plural, one {# shelf} other {# shelves}} · {size} · {colour}",
+    "lineNamePipe": "{range} · {height, number} ft · {shelves, plural, one {# shelf} other {# shelves}} · {size}",
+    "colours": {
+      "red": "Red",
+      "orange": "Orange",
+      "yellow": "Yellow",
+      "green": "Green",
+      "blue": "Blue",
+      "purple": "Purple",
+      "pink": "Pink",
+      "grey": "Grey",
+      "black": "Black",
+      "white": "White"
+    },
+    "dispatch": "Built for you — with you by {date}",
+    "leadNote": "Racks are built for your order and delivered across Bengaluru in three days. We do not deliver them outside the city.",
+    "detail": {
+      "back": "All racks",
+      "height": "Height",
+      "heightOption": "{height, number} ft · {shelves, plural, one {# shelf} other {# shelves}}",
+      "size": "Shelf size",
+      "colour": "Colour",
+      "colourNone": "White — the only finish UPVC pipe comes in",
+      "capacity": "Load",
+      "capacityValue": "{kg, number} kg across {shelves, plural, one {# shelf} other {# shelves}}",
+      "steel": "Steel",
+      "steelValue": "{mm, number} mm slotted angle",
+      "sku": "Code",
+      "noneForSize": "That size is not built at this height. Pick another.",
+      "quantity": "How many",
+      "decrease": "One rack fewer",
+      "increase": "One rack more",
+      "addToCart": "Add to cart",
+      "updateCart": "Update cart",
+      "added": "Added to your cart",
+      "updated": "Cart updated",
+      "viewCart": "View cart",
+      "lineTotal": "₹{total, number}",
+      "lineBreakdown": "{count, plural, one {# rack} other {# racks}} · ₹{price, number} each",
+      "galleryAlt": "{name}",
+      "thumb": "Photo {n, number} of {total, number}",
+      "prevPhotos": "Previous photos",
+      "nextPhotos": "More photos"
+    },
+    "cardLink": "See sizes and prices"
+  },
+  "trays": {
+    "body": "Bought in for you from our suppliers rather than held in stock, so each of these is ordered the day you ask for it. The price is for the whole pack.",
+    "dispatch": "Ordered in for you — with you by {date}",
+    "note": "Trays and mats travel on the same delivery as your greens and your seed — one trip, on the date of the slowest thing in the order.",
+    "cardLink": "See the detail",
+    "detail": {
+      "back": "All trays & drainage",
+      "galleryAlt": "{name}",
+      "thumb": "Show photo {n} of {total}",
+      "prevPhotos": "Previous photos",
+      "nextPhotos": "More photos",
+      "quantity": "How many",
+      "decrease": "One less pack",
+      "increase": "One more pack",
+      "addToCart": "Add to cart",
+      "updateCart": "Update cart",
+      "added": "Added to your cart.",
+      "updated": "Cart updated.",
+      "viewCart": "View cart",
+      "lineTotal": "₹{total, number}",
+      "lineBreakdown": "{count, plural, one {# pack} other {# packs}} · ₹{price, number} each",
+      "buyNote": "Sold by the pack. We do not keep these in stock — your order goes to our supplier the day you place it, and it travels on the same delivery as anything else you order.",
+      "errors": {
+        "unitsInvalid": "Choose between 1 and 20 packs.",
+        "notSellable": "That item is not on sale at the moment.",
+        "cartFull": "Your cart is full at 12 items. Remove one to add another.",
+        "generic": "That did not save. Please try again."
+      }
+    }
   }
 }

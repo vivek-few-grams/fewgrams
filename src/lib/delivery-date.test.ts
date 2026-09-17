@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
-  adhocOrderReadyDate,
   adhocReadyDate,
   adhocSowDate,
+  daysFromToday,
   deliverySchedule,
   firstDeliveryDate,
   formatDeliveryDate,
   istDateISO,
+  latestDate,
   nextCutoff,
+  nextDay,
   sowSunday,
 } from "./delivery-date";
 
@@ -150,12 +152,74 @@ describe("one-off orders sow next day, not Sunday — SPEC §18.6", () => {
     const now = ist("2026-09-15T12:00:00"); // sown 16th
     // 7-day mustard would be ready 23rd; 10-day broccoli on the 26th.
     expect(fmt(adhocReadyDate(7, now))).toBe("2026-09-23");
-    expect(fmt(adhocOrderReadyDate([7, 10], now)!)).toBe("2026-09-26");
+    const slowest = latestDate([adhocReadyDate(7, now), adhocReadyDate(10, now)]);
+    expect(fmt(slowest!)).toBe("2026-09-26");
     // Order of the list must not matter.
-    expect(fmt(adhocOrderReadyDate([10, 7], now)!)).toBe("2026-09-26");
+    expect(fmt(latestDate([adhocReadyDate(10, now), adhocReadyDate(7, now)])!)).toBe(
+      "2026-09-26",
+    );
+  });
+});
+
+describe("nextDay — a next-day promise, day-granular in IST", () => {
+  it.each(["2026-09-17T00:05:00", "2026-09-17T14:00:00", "2026-09-17T23:55:00"])(
+    "is the 18th whatever the hour on the 17th (%s)",
+    (when) => {
+      expect(fmt(nextDay(ist(when)))).toBe("2026-09-18");
+    },
+  );
+
+  /* The seed dispatch date and the one-off sow date are the same arithmetic,
+     and this pins that they stay the same rather than drifting apart. */
+  it("is the same instant a one-off order is sown on", () => {
+    const now = ist("2026-09-17T14:00:00");
+    expect(nextDay(now).getTime()).toBe(adhocSowDate(now).getTime());
   });
 
-  it("has no ready date for an empty order", () => {
-    expect(adhocOrderReadyDate([], ist("2026-09-15T12:00:00"))).toBeNull();
+  it("crosses a month end", () => {
+    expect(fmt(nextDay(ist("2026-09-30T20:00:00")))).toBe("2026-10-01");
+  });
+});
+
+describe("daysFromToday — the seed vendor lead time", () => {
+  const now = ist("2026-09-17T14:00:00");
+
+  it("counts calendar days from today in IST", () => {
+    expect(fmt(daysFromToday(1, now))).toBe("2026-09-18");
+    expect(fmt(daysFromToday(10, now))).toBe("2026-09-27");
+  });
+
+  it("is unaffected by the hour the order was placed", () => {
+    expect(fmt(daysFromToday(10, ist("2026-09-17T00:05:00")))).toBe("2026-09-27");
+    expect(fmt(daysFromToday(10, ist("2026-09-17T23:55:00")))).toBe("2026-09-27");
+  });
+
+  /* Guards a bad constant from printing a date next year on a page a customer
+     reads. Both ends are clamped. */
+  it("clamps rather than printing a nonsense date", () => {
+    expect(fmt(daysFromToday(0, now))).toBe("2026-09-18");
+    expect(fmt(daysFromToday(9999, now))).toBe(fmt(daysFromToday(14, now)));
+  });
+});
+
+describe("latestDate — one order, one trip, on the slowest line's date", () => {
+  const a = ist("2026-09-18T00:00:00");
+  const b = ist("2026-09-27T00:00:00");
+
+  it("takes the later date whichever order it is given in", () => {
+    expect(latestDate([a, b])).toEqual(b);
+    expect(latestDate([b, a])).toEqual(b);
+  });
+
+  it("is the single date for a cart of one thing", () => {
+    expect(latestDate([a])).toEqual(a);
+  });
+
+  /* Null-safe, because a cart line's date is optional at the type level in
+     more than one caller and an empty cart has no date at all. */
+  it("ignores gaps and has no date for nothing", () => {
+    expect(latestDate([null, a, undefined])).toEqual(a);
+    expect(latestDate([])).toBeNull();
+    expect(latestDate([null, undefined])).toBeNull();
   });
 });

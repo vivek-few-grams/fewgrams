@@ -5,8 +5,9 @@ import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { hydrateCart } from "@/lib/cart/server";
-import { MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
+import { lineId } from "@/lib/cart/cart";
 import { formatDeliveryDate } from "@/lib/delivery-date";
+import { rackLineHref } from "@/lib/racks/cart-key";
 import { clearCart } from "./actions";
 import { CartLineControls } from "./CartLineControls";
 
@@ -94,11 +95,14 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
         <ul className="border-t border-forest/15">
           {cart.items.map((item) => (
             <li
-              key={item.key}
+              key={lineId(item)}
               className="flex flex-wrap items-center gap-x-5 gap-y-4 border-b border-forest/15 py-5"
             >
+              {/* Three catalogues, three routes. The kind is what decides,
+                  which is also why it is part of a line's identity in the
+                  cookie: a seed and a green can share a content key. */}
               <Link
-                href={`/microgreens/${item.key}`}
+                href={lineHref(item)}
                 className="group flex min-w-0 flex-1 items-center gap-4"
               >
                 <span className="relative block size-20 shrink-0 overflow-hidden rounded-xl bg-sand">
@@ -116,24 +120,46 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                   <span className="block truncate font-display text-base font-semibold text-forest transition-colors group-hover:text-stone">
                     {item.name}
                   </span>
+                  {/* The unit differs by kind, so both halves of this line
+                      do: a green and a seed are priced per 100 g and counted
+                      in grams, a tray per pack, a rack per rack.
+                      `item.grams` is null for both unweighed kinds rather than
+                      0, which is what makes this a branch instead of a "0 g" —
+                      but null alone no longer says *which* unit, so the kind
+                      is what picks the words. */}
                   <span className="mt-0.5 block font-body text-xs text-stone">
-                    {t("linePrice", { price: item.pricePer100g })}
-                    {" · "}
-                    {t("lineGrams", { grams: item.grams })}
+                    {lineUnits(item, t)}
                   </span>
+                  {/* Every line has a date, and the *reason* differs by kind:
+                      a green is grown, a seed either comes off our shelf
+                      tomorrow or is ordered in, a tray is always ordered in.
+                      Saying which is what stops a ten-day seed looking like a
+                      mistake next to a seven-day green.
+
+                      Keyed on the kind first and the sourcing second, because
+                      `sourcing` is null for two of the three kinds — reading
+                      it alone would have put a tray on the greens wording. */}
                   <span className="mt-0.5 block font-body text-xs text-stone/80">
-                    {t("colReady")}: {formatDeliveryDate(item.readyDate, dateLocale)}
+                    {lineTiming(item, dateLocale, t)}
                   </span>
                 </span>
               </Link>
 
               <CartLineControls
+                kind={item.kind}
                 contentKey={item.key}
                 units={item.units}
-                max={MAX_UNITS_PER_LINE}
+                /* The per-line wholesale cap, the same for every kind. It was
+                   a seed's stock as well until 17 Sep 2026 — that is now a
+                   delivery date, not a ceiling (SPEC §22.2). */
+                max={item.maxUnits}
+                /* The step labels name the unit, so they follow the kind: a
+                   stepper that says "one less 100 g" beside a pack of two
+                   trays is wrong to a screen reader and to nobody else, which
+                   is exactly the kind of error that survives. */
                 labels={{
-                  decrease: t("decrease", { name: item.name }),
-                  increase: t("increase", { name: item.name }),
+                  decrease: t(stepKey(item.kind, "decrease"), { name: item.name }),
+                  increase: t(stepKey(item.kind, "increase"), { name: item.name }),
                   remove: t("remove", { name: item.name }),
                   removeShort: t("removeShort"),
                 }}
@@ -142,6 +168,7 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
               <span className="w-20 shrink-0 text-right font-display text-base font-semibold tabular-nums text-forest">
                 {t("subtotalValue", { amount: item.lineTotal })}
               </span>
+
             </li>
           ))}
         </ul>
@@ -154,9 +181,14 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                 {t("subtotalValue", { amount: cart.subtotal })}
               </span>
             </div>
-            <p className="mt-1 font-body text-xs text-stone">
-              {t("totalGrams", { grams: cart.grams })}
-            </p>
+            {/* Only when something in the cart is sold by weight. A
+                trays-only cart weighs nothing we quote, and "0 g in total"
+                under a ₹160 subtotal reads as a fault. */}
+            {cart.grams > 0 && (
+              <p className="mt-1 font-body text-xs text-stone">
+                {t("totalGrams", { grams: cart.grams })}
+              </p>
+            )}
             <p className="mt-4 border-t border-forest/15 pt-4 font-body text-xs leading-relaxed text-stone">
               {t("deliveryNote")}
             </p>
@@ -170,14 +202,68 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                   date: formatDeliveryDate(cart.readyDate, dateLocale),
                 })}
               </h2>
-              {/* Two different explanations, because the reason for the date is
-                  different. A single-window cart is simply "sown tomorrow"; a
-                  mixed one needs to say why the fast green waits for the slow
-                  one, which SPEC §18.6 flags as the thing not to leave as a
-                  surprise. */}
+              {/* One sentence for the reason the date is what it is, chosen in
+                  order of what dominates it. A mixed cart needs the "why is the
+                  fast thing waiting" explanation SPEC §18.6 flags as the thing
+                  not to leave as a surprise; a greens-only cart is simply
+                  "sown tomorrow"; a seed-only cart is a dispatch, and which
+                  dispatch depends on whether we are ordering any of it in. */}
               <p className="mt-2 font-body text-xs leading-relaxed text-stone">
-                {cart.splitDates ? t("readySplit") : t("readySingle")}
+                {cart.splitDates
+                  ? t("readySplit")
+                  : cart.hasVarieties
+                    ? t("readySingle")
+                    : cart.hasTrays
+                      ? t("readyTray")
+                      : cart.hasRacks
+                        ? t("readyRack")
+                        : cart.hasVendorSeeds
+                          ? t("readySeedVendor")
+                          : t("readySeedShelf")}
               </p>
+              {/* Why the greens are not arriving separately. `readySplit` states
+                  the rule without naming a cause, because a split cart can be
+                  all seed; the cause belongs in whichever of these applies. */}
+              {cart.splitDates && cart.hasVarieties && (
+                <p className="mt-2 font-body text-xs leading-relaxed text-stone">
+                  {t("readyGrowNote")}
+                </p>
+              )}
+              {/* Why a seed order is taking a week and a half. Said only when
+                  the sentence above has not already said it — a seed-only
+                  vendor cart is covered by `readySeedVendor`. */}
+              {cart.hasVendorSeeds && (cart.splitDates || cart.hasVarieties) && (
+                <p className="mt-2 font-body text-xs leading-relaxed text-stone">
+                  {t("readyVendorNote")}
+                </p>
+              )}
+              {/* Why a tray is taking a week. Same rule: only when the
+                  sentence above was about something else, which for a tray is
+                  any cart that is not trays-only. */}
+              {cart.hasTrays && (cart.splitDates || cart.hasVarieties || cart.hasSeeds) && (
+                <p className="mt-2 font-body text-xs leading-relaxed text-stone">
+                  {t("readyTrayNote")}
+                </p>
+              )}
+              {/* Why a rack is taking three days, and only when the sentence
+                  above was about something else. A rack is the *fastest* thing
+                  in the shop after a shelf seed, so in a mixed cart the note
+                  is doing the opposite job to the tray one: it explains a line
+                  that is waiting for the others, not one the others wait for. */}
+              {cart.hasRacks &&
+                (cart.splitDates || cart.hasVarieties || cart.hasSeeds || cart.hasTrays) && (
+                  <p className="mt-2 font-body text-xs leading-relaxed text-stone">
+                    {t("readyRackNote")}
+                  </p>
+                )}
+              {/* Only when the cart mixes the two: a seed needs no growing, so
+                  the thing worth saying is that it does not travel separately
+                  (SPEC §7 — everything consolidates onto one run). */}
+              {cart.hasSeeds && cart.hasVarieties && !cart.hasVendorSeeds && (
+                <p className="mt-2 font-body text-xs leading-relaxed text-stone">
+                  {t("readyWithSeeds")}
+                </p>
+              )}
             </div>
           )}
 
@@ -213,4 +299,82 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
       </div>
     </section>
   );
+}
+
+/**
+ * Back to the page this line was added from.
+ *
+ * A rack is the only kind whose link carries a query string: the other three
+ * are one key to one page, while a rack key is a SKU that has to be unpacked
+ * into the height, size and colour the detail page reads (`rackLineHref`).
+ *
+ * `/shop/racks` is the fallback for a rack key that will not parse — a cart can
+ * hold a line written by an older format, and the range index is a true answer
+ * where a 404 would not be.
+ */
+function lineHref(item: { kind: string; key: string }): string {
+  if (item.kind === "seed") return `/seeds/${item.key}`;
+  if (item.kind === "tray") return `/shop/trays/${item.key}`;
+  if (item.kind === "rack") return rackLineHref(item.key) ?? "/shop/racks";
+  return `/microgreens/${item.key}`;
+}
+
+/**
+ * The price-and-quantity line, whose **unit** is the kind's.
+ *
+ * Extracted when racks arrived and made `item.grams === null` ambiguous: it
+ * had meant "a pack" while trays were the only unweighed kind, and a rack
+ * priced "per pack" and counted in "packs" is the exact class of wrong number
+ * that survives review because the code reads fine.
+ */
+function lineUnits(
+  item: { kind: string; unitPrice: number; units: number; grams: number | null },
+  t: (key: string, values?: Record<string, number>) => string,
+): string {
+  if (item.kind === "rack") {
+    return `${t("linePriceRack", { price: item.unitPrice })} · ${t("lineRacks", { count: item.units })}`;
+  }
+  if (item.grams === null) {
+    return `${t("linePricePack", { price: item.unitPrice })} · ${t("linePacks", { count: item.units })}`;
+  }
+  return `${t("linePrice", { price: item.unitPrice })} · ${t("lineGrams", { grams: item.grams })}`;
+}
+
+/**
+ * Which stepper label names this kind's unit.
+ *
+ * A screen reader hearing "one less 100 g" beside a rack is the only person
+ * this affects, which is precisely why it is worth a function: it is invisible
+ * to everyone reviewing the page.
+ */
+function stepKey(kind: string, dir: "decrease" | "increase"): string {
+  if (kind === "rack") return dir === "decrease" ? "decreaseRack" : "increaseRack";
+  if (kind === "tray") return dir === "decrease" ? "decreasePack" : "increasePack";
+  return dir;
+}
+
+/**
+ * The one-line reason a cart line arrives when it does.
+ *
+ * Extracted from the JSX because it is now a three-way on the kind with a
+ * nested two-way inside one arm, and nested ternaries that deep in a template
+ * are where a wrong branch hides. Takes the already-scoped `t` so it resolves
+ * no messages of its own.
+ */
+function lineTiming(
+  item: { kind: string; readyDate: Date; sourcing: string | null },
+  dateLocale: string,
+  t: (key: string, values?: Record<string, string>) => string,
+): string {
+  const date = formatDeliveryDate(item.readyDate, dateLocale);
+  /* A rack is built rather than ordered in or grown — its own wording, because
+     "ordered in for you" would credit a supplier that does not exist. */
+  if (item.kind === "rack") return t("lineBuild", { date });
+  if (item.kind === "tray") return t("lineSupplier", { date });
+  if (item.kind === "seed") {
+    return item.sourcing === "shelf"
+      ? t("lineShelf", { date })
+      : t("lineVendor", { date });
+  }
+  return `${t("colReady")}: ${date}`;
 }

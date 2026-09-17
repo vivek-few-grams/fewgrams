@@ -1,0 +1,118 @@
+{
+  "images": {
+    "hero": "",
+    "gallery": [
+      ""
+    ]
+  },
+  "en": {
+    "name": "",
+    "shortDescription": "",
+    "description": "",
+    "sowing": "",
+    "specs": [
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      }
+    ],
+    "specsNote": "",
+    "uses": [
+      "",
+      ""
+    ],
+    "cautions": [
+      ""
+    ],
+    "faq": [
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      }
+    ],
+    "imageAlt": ""
+  },
+  "kn": {
+    "name": "",
+    "shortDescription": "",
+    "description": "",
+    "sowing": "",
+    "specs": [
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      }
+    ],
+    "specsNote": "",
+    "uses": [
+      "",
+      ""
+    ],
+    "cautions": [
+      ""
+    ],
+    "faq": [
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      },
+      {
+        "question": "",
+        "answer": ""
+      }
+    ],
+    "imageAlt": ""
+  }
+}

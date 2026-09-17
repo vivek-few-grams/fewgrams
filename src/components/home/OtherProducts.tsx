@@ -1,8 +1,11 @@
 import { MarqueeCard } from "@/components/ui/MarqueeCard";
-import { Sprout } from "@/components/ui/Sprout";
+import {
+  CategoryMedia,
+  categoryMediaClass,
+} from "@/components/catalogue/CategoryMedia";
 import { getTranslations } from "next-intl/server";
 import { CATEGORIES, type Category } from "@/lib/types";
-import { CATEGORY_PANELS } from "@/lib/shop";
+import { CATEGORY_COUNT, CATEGORY_HREF, CATEGORY_PANELS } from "@/lib/shop";
 
 /**
  * Other products — SPEC §18.3 section 5. Four tiles, full Don Molinico
@@ -25,8 +28,9 @@ export async function OtherProducts({
   const label = await getTranslations("common.categories");
   const counted = await getTranslations("common.counts");
 
+  /* `md:py-20`, matching `Process` and `TrustTags` — see the note there. */
   return (
-    <section className="mx-auto max-w-[1400px] px-6 py-24 md:px-12 md:py-32">
+    <section className="mx-auto max-w-[1400px] px-6 py-14 md:px-12 md:py-20">
       <div className="max-w-2xl">
         <p className="font-body text-[11px] uppercase tracking-widest text-stone">
           {t("eyebrow")}
@@ -45,19 +49,14 @@ export async function OtherProducts({
           return (
             <MarqueeCard
               key={c}
-              href={`/shop/${c}`}
+              href={CATEGORY_HREF[c]}
               label={label(c)}
-              note={counted("products", { count: n })}
+              note={counted(CATEGORY_COUNT[c], { count: n })}
               words={[label(c), label(c)]}
               panelClass={CATEGORY_PANELS[c].panelClass}
               marqueeClass={CATEGORY_PANELS[c].marqueeClass}
-              media={
-                <Sprout
-                  className="h-full w-full"
-                  stroke={c === "seeds" ? "#ABE1CC" : "#033923"}
-                  seed={i + 2}
-                />
-              }
+              media={<CategoryMedia category={c} index={i} />}
+              mediaClass={categoryMediaClass(c)}
             />
           );
         })}

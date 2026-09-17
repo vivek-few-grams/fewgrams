@@ -6,7 +6,7 @@ import { Bundles } from "@/components/home/Bundles";
 import { OtherProducts } from "@/components/home/OtherProducts";
 import { TrustTags } from "@/components/home/TrustTags";
 import { listPlansWithWeeks } from "@/lib/repo/plans";
-import { countsByCategory } from "@/lib/repo/products";
+import { categoryCounts } from "@/lib/catalogue/counts";
 import { listVarieties } from "@/lib/repo/varieties";
 import { varietyNameMap } from "@/lib/content/varieties";
 import { attachPlanContent } from "@/lib/content/plans";
@@ -41,7 +41,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
   const [rows, counts, varieties] = await Promise.all([
     listPlansWithWeeks({ activeOnly: true }),
-    countsByCategory(),
+    categoryCounts(),
     listVarieties({ activeOnly: true }),
   ]);
 

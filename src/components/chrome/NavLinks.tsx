@@ -2,6 +2,8 @@
 
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { onSectionClick } from "@/lib/section-scroll";
+import { CURTAIN_ATTR } from "./curtain-anchor";
 
 /**
  * The four persistent nav items — SPEC §18.1.
@@ -23,33 +25,6 @@ const ITEMS = [
   { href: "/shop", key: "shop", match: "/shop" },
   { href: "/how-we-grow", key: "howWeGrow", match: "/how-we-grow" },
 ] as const;
-
-/**
- * Re-scroll to a section that the URL already points at.
- *
- * The bug this fixes: PLANS worked once and then never again. `/#plans` is a
- * `Link`, so the first click changes the URL and the browser scrolls — but on
- * the second click the URL is *already* `/#plans`, no navigation happens, and
- * nothing scrolls. The visitor scrolls up, clicks PLANS, and the page ignores
- * them.
- *
- * So the click is intercepted **only** when the hash is already current, which
- * leaves the ordinary first click to the router and keeps this to the one case
- * that is broken.
- *
- * `scrollIntoView` honours the section's `scroll-mt-24`, so the sticky header
- * does not cover the heading, and reduced motion drops the smooth scroll —
- * a long animated jump is exactly what §17.4 says to respect.
- */
-function onSectionClick(event: React.MouseEvent, hash: string) {
-  if (window.location.hash !== `#${hash}`) return;
-  const target = document.getElementById(hash);
-  if (!target) return;
-
-  event.preventDefault();
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
-}
 
 export function NavLinks() {
   const t = useTranslations("common.nav");
@@ -85,6 +60,13 @@ export function NavLinks() {
           <Link
             key={item.href}
             href={item.href}
+            /* Opts this link into the full-screen brand curtain. These four
+               and the language switch are the only links on the site that
+               carry it — see `curtain-anchor.ts` for why it is per-link.
+               `/#plans` is included and still stays quiet while you are on
+               the home page, because the rule also skips a same-pathname
+               link. */
+            {...{ [CURTAIN_ATTR]: "" }}
             onClick={
               "hash" in item
                 ? (event) => onSectionClick(event, item.hash)
