@@ -1,10 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
-import Image from "next/image";
-import { Sprout } from "@/components/ui/Sprout";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
+import { Tile } from "@/components/catalogue/Tile";
 import { listVarieties } from "@/lib/repo/varieties";
-import { attachContent, varietyHero } from "@/lib/content/varieties";
+import { attachContent, varietyCutout, varietyHero } from "@/lib/content/varieties";
 import { currentActor } from "@/lib/auth/guard";
 
 /**
@@ -16,7 +16,7 @@ import { currentActor } from "@/lib/auth/guard";
  * never did. For the page selling the hero product that matters more than
  * the transition did.
  *
- * Greens are sold two ways (§18.6): by the 100 g ad hoc from the detail page,
+ * Greens are sold two ways (§18.6): by the tray ad hoc from the detail page,
  * or as a weekly plan. Both routes are offered here rather than assuming
  * which one a visitor wants.
  */
@@ -33,6 +33,7 @@ export default async function MicrogreensPage({
 }: PageProps<"/[locale]/microgreens">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await guardProductTypeEnabled("microgreens", locale);
 
   const t = await getTranslations("microgreens");
   const counts = await getTranslations("common.counts");
@@ -51,11 +52,11 @@ export default async function MicrogreensPage({
   );
 
   return (
-    <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
+    <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
       <p className="font-body text-[11px] uppercase tracking-widest text-stone">
         {counts("varieties", { count: varieties.length })}
       </p>
-      <h1 className="mt-3 max-w-2xl font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
+      <h1 className="mt-3 max-w-2xl font-display text-[clamp(1.25rem,2.5vw,1.9rem)] font-bold leading-tight tracking-tight text-forest">
         {t("heading")}
       </h1>
       <p className="mt-4 max-w-xl font-body text-sm text-stone">
@@ -89,64 +90,22 @@ export default async function MicrogreensPage({
         </p>
       ) : (
         <ul className="mt-12 grid grid-cols-2 gap-x-5 gap-y-9 md:grid-cols-4 md:gap-x-6">
-          {varieties.map((v, i) => {
-            const name = v.content.text.name;
-            const hero = varietyHero(v.content);
-            return (
-              <li key={v.contentKey}>
-                <Link href={`/microgreens/${v.contentKey}`} className="group block">
-                  <div className="mcard flex aspect-square items-center justify-center overflow-hidden bg-forest">
-                    {hero ? (
-                      /* A real photograph fills the tile; `sizes` matches the
-                         2-up / 4-up grid so no phone downloads a desktop
-                         image.
-
-                         `priority` on the first row only: the top-left tile is
-                         the Largest Contentful Paint element on this page, and
-                         lazy-loading it delays the metric by a round trip.
-                         Four covers the widest grid; below the fold stays lazy,
-                         because marking everything priority defeats the point
-                         and floods the connection. */
-                      <Image
-                        src={hero.src}
-                        alt={hero.alt}
-                        fill
-                        priority={i < 4}
-                        sizes="(min-width: 768px) 25vw, 50vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                      />
-                    ) : (
-                      <>
-                        <div className="mcard__marquee text-mint/20" aria-hidden="true">
-                          <div className="mcard__marquee-inner">
-                            {[0, 1].map((k) => (
-                              <div key={k} className="px-2">
-                                <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">
-                                  {name}
-                                </span>
-                                <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">
-                                  {name}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="mcard__media w-[62%]">
-                          <Sprout className="h-full w-full" stroke="#A8CF8E" seed={i} />
-                        </div>
-                      </>
-                    )}
-                  </div>
-                  <p className="mt-3 font-display text-sm font-semibold uppercase tracking-wide text-forest transition-colors group-hover:text-stone">
-                    {name}
-                  </p>
-                  <p className="font-body text-xs text-stone">
-                    {t("meta", { days: v.growDays, price: v.pricePer100g })}
-                  </p>
-                </Link>
-              </li>
-            );
-          })}
+          {varieties.map((v, i) => (
+            <li key={v.contentKey}>
+              <Tile
+                href={`/microgreens/${v.contentKey}`}
+                name={v.content.text.name}
+                meta={t("meta", { days: v.growDays, price: v.pricePerTray })}
+                index={i}
+                cutout={varietyCutout(v.content)}
+                hero={varietyHero(v.content)}
+                /* Labels only, and from the resolved locale, so the Kannada
+                   grid scrolls Kannada nutrients — see the prop's note for why
+                   the values stay on the detail page. */
+                words={(v.content.text.nutrition ?? []).map((n) => n.label)}
+              />
+            </li>
+          ))}
         </ul>
       )}
 

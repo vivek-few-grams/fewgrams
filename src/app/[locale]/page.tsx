@@ -6,9 +6,15 @@ import { Bundles } from "@/components/home/Bundles";
 import { OtherProducts } from "@/components/home/OtherProducts";
 import { TrustTags } from "@/components/home/TrustTags";
 import { listPlansWithWeeks } from "@/lib/repo/plans";
-import { countsByCategory } from "@/lib/repo/products";
+import { categoryCounts } from "@/lib/catalogue/counts";
+import { enabledCategories, isProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { listVarieties } from "@/lib/repo/varieties";
 import { varietyNameMap } from "@/lib/content/varieties";
+import { listSeeds } from "@/lib/repo/seeds";
+import { seedNameMap } from "@/lib/content/seeds";
+import { listTrays } from "@/lib/repo/trays";
+import { trayNameMap } from "@/lib/content/trays";
+import { RACK_RANGES } from "@/lib/racks/cart-key";
 import { attachPlanContent } from "@/lib/content/plans";
 import { currentActor } from "@/lib/auth/guard";
 
@@ -39,16 +45,40 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [rows, counts, varieties] = await Promise.all([
-    listPlansWithWeeks({ activeOnly: true }),
-    countsByCategory(),
-    listVarieties({ activeOnly: true }),
-  ]);
+  const [rows, counts, varieties, categories, microgreensOn, seeds, trays] =
+    await Promise.all([
+      listPlansWithWeeks({ activeOnly: true }),
+      categoryCounts(),
+      listVarieties({ activeOnly: true }),
+      enabledCategories(),
+      isProductTypeEnabled("microgreens"),
+      listSeeds({ activeOnly: true }),
+      listTrays({ activeOnly: true }),
+    ]);
 
   /* Rotation weeks reference varieties by contentKey, and the name lives in
      content/varieties/<key>.json rather than in DynamoDB (SPEC §4.3), so the
      page resolves the labels and hands Bundles a plain map. */
   const varietyNames = await varietyNameMap(locale);
+
+  /* Same "the real names, not the category label twice" word clouds as
+     `/shop` (CLAUDE.md's marquee rules) — the two surfaces show the same
+     shelf, so they read the same. */
+  const [seedNameById, trayNameById] = await Promise.all([
+    seedNameMap(locale),
+    trayNameMap(locale),
+  ]);
+  const rackRanges = await getTranslations({ locale, namespace: "shop.racks.ranges" });
+  const microgreenNames = varieties
+    .map((v) => varietyNames[v.contentKey])
+    .filter((name): name is string => Boolean(name));
+  const rackRangeNames = RACK_RANGES.map((range) => rackRanges(`${range}.name`));
+  const seedNames = seeds
+    .map((s) => seedNameById[s.contentKey])
+    .filter((name): name is string => Boolean(name));
+  const trayItemNames = trays
+    .map((tr) => trayNameById[tr.contentKey])
+    .filter((name): name is string => Boolean(name));
 
   /* Plan copy comes from content/plans/<key>.json for the same reason. A plan
      whose file does not exist yet is **skipped**, not rendered nameless — the
@@ -87,7 +117,16 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         varietyNames={varietyNames}
         adminEmpty={adminEmpty}
       />
-      <OtherProducts counts={counts} />
+      <OtherProducts
+        counts={counts}
+        categories={categories}
+        microgreensOn={microgreensOn}
+        varietyCount={varieties.length}
+        microgreenNames={microgreenNames}
+        rackRangeNames={rackRangeNames}
+        seedNames={seedNames}
+        trayItemNames={trayItemNames}
+      />
       <TrustTags />
     </>
   );

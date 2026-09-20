@@ -1,0 +1,201 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Sunflower",
+    "shortDescription": "Thick, crunchy stems with a genuinely nutty bite. The richest-tasting thing we grow.",
+    "description": "Sunflower microgreens are the richest-tasting thing we grow — thick, crunchy stems topped by a small pale-green leaf, with a flavour closer to a raw sunflower seed or a mild nut than to any salad green. That richness is not an illusion: sunflower carries more fat and a more complete amino acid profile at this stage than almost anything else on this list, which is also why the tray needs weighting while it germinates — the seed pushes hard enough to lift its own hull clear off the soil. Cut once the stem is thick and the hull has mostly shed, this is the microgreen for texture as much as flavour.",
+    "flavourNotes": "Nutty and rich, with a genuine crunch in the stem. Closer to a raw seed than a leaf — mild, never bitter, never sharp.",
+    "growingTips": "Soak the hulled seed overnight, then weight the tray for the first few days so the hull sheds rather than staying attached to the leaf. Uncover once the shoots lift the weight, and rinse away any loose hulls before the final cut.",
+    "nutrition": [
+      {
+        "label": "Vitamin E",
+        "value": "Good source"
+      },
+      {
+        "label": "Folate",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Good source"
+      },
+      {
+        "label": "Calcium",
+        "value": "High"
+      },
+      {
+        "label": "Iron",
+        "value": "Moderate"
+      },
+      {
+        "label": "Zinc",
+        "value": "Moderate"
+      },
+      {
+        "label": "Potassium",
+        "value": "Present"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Present"
+      },
+      {
+        "label": "Phosphorus",
+        "value": "Present"
+      },
+      {
+        "label": "Selenium",
+        "value": "Present"
+      },
+      {
+        "label": "Linoleic acid (a bioactive fatty acid)",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose, and they describe the young shoot rather than the mature sunflower seed, whose oil and mineral content is measured very differently. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin E protects cells from oxidative stress.",
+      "Folate contributes to normal blood formation and to normal amino acid synthesis.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin A contributes to the maintenance of normal vision and to normal immune function.",
+      "Calcium contributes to normal muscle function and to the maintenance of normal bones and teeth.",
+      "Iron contributes to normal oxygen transport in the blood and to reducing tiredness and fatigue.",
+      "Zinc contributes to normal cognitive function and to the maintenance of normal skin."
+    ],
+    "cautions": [
+      "This is grown from a hulled seed, and a few loose hull fragments can remain in the cut tray even after rinsing. Pick through it before serving to a small child who might not spit out a hard fragment.",
+      "Sunflower seed allergy is uncommon but real. If you or anyone eating this has a known seed allergy, treat it with the same caution as the seed itself.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Why does this taste nutty instead of grassy?",
+        "answer": "Fat content. Sunflower carries far more of it at this stage than almost any other microgreen, which is what gives the stem its crunch and the leaf its rounded, nutty flavour rather than a green, grassy one."
+      },
+      {
+        "question": "Do I need to pick out the seed hulls?",
+        "answer": "Mostly no. Weighting the tray while it germinates sheds most of the hull before the first true leaf appears. Any stray fragments sit loose on top of the cut tray and rinse away easily — they do not cling the way a buckwheat hull does."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. The thick stems hold their crunch longer than most microgreens hold their leaf."
+      },
+      {
+        "question": "Can children eat it?",
+        "answer": "Yes, though check for a seed allergy first and look over the tray for a stray hull fragment before giving it to a small child."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Anywhere you want texture as much as flavour: over hummus, folded into a sandwich, scattered on a grain bowl, or as the crunch on top of a smooth soup."
+      }
+    ],
+    "imageAlt": "Tray of pale green sunflower microgreens with thick crunchy stems"
+  },
+  "kn": {
+    "name": "ಸೂರ್ಯಕಾಂತಿ",
+    "shortDescription": "ದಪ್ಪ, ಗರಿಗರಿ ಕಾಂಡ ಮತ್ತು ನಿಜವಾದ ಕಾಯಿಯ ರುಚಿ. ನಾವು ಬೆಳೆಸುವ ಅತ್ಯಂತ ಶ್ರೀಮಂತ ರುಚಿಯ ಸೊಪ್ಪು.",
+    "description": "ಸೂರ್ಯಕಾಂತಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ನಾವು ಬೆಳೆಸುವ ಅತ್ಯಂತ ಶ್ರೀಮಂತ ರುಚಿಯ ಸೊಪ್ಪು — ದಪ್ಪ, ಗರಿಗರಿ ಕಾಂಡಗಳ ಮೇಲೆ ಸಣ್ಣ ತಿಳಿ ಹಸಿರು ಎಲೆ, ರುಚಿ ಸಲಾಡ್ ಸೊಪ್ಪಿಗಿಂತ ಹಸಿ ಸೂರ್ಯಕಾಂತಿ ಬೀಜ ಅಥವಾ ಸೌಮ್ಯ ಕಾಯಿಗೆ ಹತ್ತಿರ. ಆ ಶ್ರೀಮಂತಿಕೆ ಭ್ರಮೆಯಲ್ಲ: ಈ ಹಂತದಲ್ಲಿ ಸೂರ್ಯಕಾಂತಿ ಈ ಪಟ್ಟಿಯ ಬಹುತೇಕ ಎಲ್ಲದಕ್ಕಿಂತ ಹೆಚ್ಚು ಕೊಬ್ಬು ಮತ್ತು ಸಂಪೂರ್ಣ ಅಮೈನೋ ಆಮ್ಲ ಪ್ರೊಫೈಲ್ ಹೊಂದಿದೆ — ಅದೇ ಕಾರಣಕ್ಕೆ ಮೊಳಕೆಯೊಡೆಯುವಾಗ ಟ್ರೇಗೆ ತೂಕ ಹಾಕಬೇಕು; ಬೀಜ ತನ್ನ ಸಿಪ್ಪೆಯನ್ನು ಮಣ್ಣಿನಿಂದ ಎತ್ತುವಷ್ಟು ಬಲವಾಗಿ ತಳ್ಳುತ್ತದೆ. ಕಾಂಡ ದಪ್ಪವಾಗಿ ಮತ್ತು ಸಿಪ್ಪೆ ಬಹುಪಾಲು ಉದುರಿದ ಮೇಲೆ ಕತ್ತರಿಸುವ ಇದು, ರುಚಿಗಿಂತ ಜಗ್ಗುವ ಸ್ಪರ್ಶಕ್ಕೂ ಆಯ್ಕೆಯಾಗುವ ಮೈಕ್ರೋಗ್ರೀನ್.",
+    "flavourNotes": "ಕಾಯಿಯಂತ ಶ್ರೀಮಂತ ರುಚಿ, ಕಾಂಡದಲ್ಲಿ ನಿಜವಾದ ಗರಿಗರಿತನ. ಎಲೆಗಿಂತ ಹಸಿ ಬೀಜಕ್ಕೆ ಹತ್ತಿರ — ಸೌಮ್ಯ, ಎಂದೂ ಕಹಿಯಲ್ಲ, ಎಂದೂ ಖಾರವಲ್ಲ.",
+    "growingTips": "ಸಿಪ್ಪೆಯುಳ್ಳ ಬೀಜವನ್ನು ರಾತ್ರಿಯಿಡೀ ನೆನೆಸಿ, ನಂತರ ಮೊದಲ ಕೆಲವು ದಿನ ಟ್ರೇಗೆ ತೂಕ ಹಾಕಿ ಇರಿಸಿ — ಆಗ ಸಿಪ್ಪೆ ಎಲೆಗೆ ಅಂಟಿಕೊಳ್ಳುವ ಬದಲು ಉದುರುತ್ತದೆ. ಚಿಗುರು ತೂಕವನ್ನು ಎತ್ತಿದ ಮೇಲೆ ಮುಚ್ಚಳ ತೆಗೆಯಿರಿ, ಮತ್ತು ಕೊನೆಯ ಕಟಾವಿನ ಮೊದಲು ಸಡಿಲ ಸಿಪ್ಪೆಗಳನ್ನು ತೊಳೆದು ತೆಗೆಯಿರಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ E",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಸತು",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ರಂಜಕ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಸೆಲೆನಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಲಿನೊಲಿಯಿಕ್ ಆಮ್ಲ (ಜೈವಿಕ ಕ್ರಿಯಾಶೀಲ ಕೊಬ್ಬಿನಾಮ್ಲ)",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ, ಮತ್ತು ಇವು ಎಳೆಯ ಚಿಗುರನ್ನು ವಿವರಿಸುತ್ತವೆ, ಬೆಳೆದ ಸೂರ್ಯಕಾಂತಿ ಬೀಜದ ಎಣ್ಣೆ ಮತ್ತು ಖನಿಜ ಪ್ರಮಾಣವನ್ನು ಬೇರೆ ರೀತಿಯಲ್ಲಿ ಅಳೆಯಲಾಗುತ್ತದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ, ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ E ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಅಮೈನೋ ಆಮ್ಲ ಸಂಶ್ಲೇಷಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿಯ ನಿರ್ವಹಣೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕ್ಯಾಲ್ಸಿಯಂ ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆ ಹಾಗೂ ಹಲ್ಲುಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕಬ್ಬಿಣ ರಕ್ತದಲ್ಲಿ ಸಾಮಾನ್ಯ ಆಮ್ಲಜನಕ ಸಾಗಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಹಾಗೂ ಬಳಲಿಕೆ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಸತು ಸಾಮಾನ್ಯ ಮಾನಸಿಕ ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಚರ್ಮದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಇದನ್ನು ಸಿಪ್ಪೆಯುಳ್ಳ ಬೀಜದಿಂದ ಬೆಳೆಸಲಾಗುತ್ತದೆ, ಮತ್ತು ತೊಳೆದ ಮೇಲೂ ಕೆಲವು ಸಿಪ್ಪೆಯ ಚೂರುಗಳು ಕತ್ತರಿಸಿದ ಟ್ರೇಯಲ್ಲಿ ಉಳಿಯಬಹುದು. ಗಟ್ಟಿ ಚೂರನ್ನು ಉಗುಳದ ಸಣ್ಣ ಮಗುವಿಗೆ ಬಡಿಸುವ ಮೊದಲು ನೋಡಿ ತೆಗೆಯಿರಿ.",
+      "ಸೂರ್ಯಕಾಂತಿ ಬೀಜದ ಅಲರ್ಜಿ ಅಪರೂಪ ಆದರೆ ನಿಜ. ನಿಮಗೆ ಅಥವಾ ತಿನ್ನುವವರಿಗೆ ಬೀಜದ ಅಲರ್ಜಿ ಇದ್ದರೆ, ಬೀಜದಂತೆಯೇ ಎಚ್ಚರಿಕೆ ವಹಿಸಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದು ಹುಲ್ಲಿನಂತಲ್ಲ, ಕಾಯಿಯಂತೆ ಏಕೆ ರುಚಿ?",
+        "answer": "ಕೊಬ್ಬಿನ ಪ್ರಮಾಣ. ಈ ಹಂತದಲ್ಲಿ ಸೂರ್ಯಕಾಂತಿ ಬಹುತೇಕ ಇತರ ಎಲ್ಲಾ ಮೈಕ್ರೋಗ್ರೀನ್‌ಗಿಂತ ಹೆಚ್ಚು ಕೊಬ್ಬು ಹೊಂದಿದೆ, ಅದೇ ಕಾಂಡಕ್ಕೆ ಗರಿಗರಿತನ ಮತ್ತು ಎಲೆಗೆ ದುಂಡಾದ, ಕಾಯಿಯ ರುಚಿ ಕೊಡುತ್ತದೆ — ಹಸಿರು, ಹುಲ್ಲಿನ ರುಚಿಯಲ್ಲ."
+      },
+      {
+        "question": "ಬೀಜದ ಸಿಪ್ಪೆಯನ್ನು ತೆಗೆಯಬೇಕೇ?",
+        "answer": "ಬಹುತೇಕ ಬೇಡ. ಮೊಳಕೆಯೊಡೆಯುವಾಗ ಟ್ರೇಗೆ ತೂಕ ಹಾಕುವುದರಿಂದ ಮೊದಲ ನಿಜವಾದ ಎಲೆ ಬರುವ ಮೊದಲೇ ಬಹುಪಾಲು ಸಿಪ್ಪೆ ಉದುರುತ್ತದೆ. ಉಳಿದ ಚೂರುಗಳು ಕತ್ತರಿಸಿದ ಟ್ರೇಯ ಮೇಲೆ ಸಡಿಲವಾಗಿ ಇರುತ್ತವೆ ಮತ್ತು ಸುಲಭವಾಗಿ ತೊಳೆದುಹೋಗುತ್ತವೆ — ಬಕ್‌ವೀಟ್‌ನ ಸಿಪ್ಪೆಯಂತೆ ಅಂಟಿಕೊಳ್ಳುವುದಿಲ್ಲ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ದಪ್ಪ ಕಾಂಡಗಳು ಬಹುತೇಕ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಎಲೆಗಿಂತ ಹೆಚ್ಚು ಕಾಲ ಗರಿಗರಿ ಇರುತ್ತವೆ."
+      },
+      {
+        "question": "ಮಕ್ಕಳು ತಿನ್ನಬಹುದೇ?",
+        "answer": "ಹೌದು, ಆದರೆ ಮೊದಲು ಬೀಜದ ಅಲರ್ಜಿ ಇದೆಯೇ ಎಂದು ನೋಡಿ ಮತ್ತು ಸಣ್ಣ ಮಗುವಿಗೆ ಕೊಡುವ ಮೊದಲು ಟ್ರೇಯಲ್ಲಿ ಸಿಪ್ಪೆಯ ಚೂರು ಇದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ರುಚಿಗಿಂತ ಜಗ್ಗುವ ಸ್ಪರ್ಶ ಬೇಕಿರುವ ಎಲ್ಲೆಡೆ: ಹಮ್ಮಸ್ ಮೇಲೆ, ಸ್ಯಾಂಡ್‌ವಿಚ್‌ನಲ್ಲಿ ಸೇರಿಸಿ, ಗ್ರೇನ್ ಬೌಲ್ ಮೇಲೆ ಉದುರಿಸಿ, ಅಥವಾ ಮೃದುವಾದ ಸೂಪ್ ಮೇಲೆ ಗರಿಗರಿತನಕ್ಕಾಗಿ."
+      }
+    ],
+    "imageAlt": "ದಪ್ಪ ಗರಿಗರಿ ಕಾಂಡಗಳ ತಿಳಿ ಹಸಿರು ಸೂರ್ಯಕಾಂತಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

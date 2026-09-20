@@ -1,8 +1,11 @@
 {
   "images": {
     "hero": "hero.jpg",
+    "cutout": "cutout.webp",
     "gallery": [
-      "bunch.jpg"
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
     ]
   },
   "en": {
@@ -39,6 +42,54 @@
       {
         "label": "Manganese",
         "value": "Moderate"
+      },
+      {
+        "label": "Vitamin E",
+        "value": "Present"
+      },
+      {
+        "label": "Vitamin B6",
+        "value": "Present"
+      },
+      {
+        "label": "Potassium",
+        "value": "Present"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Present"
+      },
+      {
+        "label": "Iron",
+        "value": "Present"
+      },
+      {
+        "label": "Phosphorus",
+        "value": "Present"
+      },
+      {
+        "label": "Zinc",
+        "value": "Present"
+      },
+      {
+        "label": "Copper",
+        "value": "Present"
+      },
+      {
+        "label": "Carotenoids (lutein and zeaxanthin)",
+        "value": "Present"
+      },
+      {
+        "label": "Flavonoids (kaempferol and quercetin derivatives)",
+        "value": "Present"
+      },
+      {
+        "label": "Phenolic acids",
+        "value": "Present"
+      },
+      {
+        "label": "Chlorophylls",
+        "value": "Present"
       }
     ],
     "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
@@ -114,6 +165,54 @@
       {
         "label": "ಮ್ಯಾಂಗನೀಸ್",
         "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ E",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ B6",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ರಂಜಕ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಸತು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ತಾಮ್ರ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕ್ಯಾರೊಟಿನಾಯ್ಡ್‌ಗಳು (ಲುಟೀನ್ ಮತ್ತು ಝಿಯಾಕ್ಸಾಂಥಿನ್)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫ್ಲೇವನಾಯ್ಡ್‌ಗಳು (ಕೇಂಫೆರಾಲ್ ಮತ್ತು ಕ್ವೆರ್ಸೆಟಿನ್ ಉತ್ಪನ್ನಗಳು)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫೀನಾಲಿಕ್ ಆಮ್ಲಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕ್ಲೋರೊಫಿಲ್‌ಗಳು",
+        "value": "ಇದೆ"
       }
     ],
     "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",

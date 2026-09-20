@@ -83,19 +83,27 @@ export function VarietyRow({
         />
         <NumberField
           compact
-          label={t("colYield")}
-          name="yieldGramsPerTray"
+          label={t("colYieldMin")}
+          name="yieldGramsPerTrayMin"
           min={1}
-          defaultValue={variety.yieldGramsPerTray}
-          error={errorFor("yieldGramsPerTray")}
+          defaultValue={variety.yieldGramsPerTrayMin}
+          error={errorFor("yieldGramsPerTrayMin")}
+        />
+        <NumberField
+          compact
+          label={t("colYieldMax")}
+          name="yieldGramsPerTrayMax"
+          min={1}
+          defaultValue={variety.yieldGramsPerTrayMax}
+          error={errorFor("yieldGramsPerTrayMax")}
         />
         <NumberField
           compact
           label={t("colPrice")}
-          name="pricePer100g"
+          name="pricePerTray"
           min={1}
-          defaultValue={variety.pricePer100g}
-          error={errorFor("pricePer100g")}
+          defaultValue={variety.pricePerTray}
+          error={errorFor("pricePerTray")}
         />
         <NumberField
           compact

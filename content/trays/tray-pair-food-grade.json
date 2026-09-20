@@ -1,0 +1,53 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": ["dimensions.webp", "how-it-works.webp"]
+  },
+  "en": {
+    "name": "Microgreen trays — pair, food grade",
+    "shortDescription": "The same pair moulded from virgin food-grade plastic instead of recycled. Worth the difference if you cut straight into the tray and eat what comes out of it.",
+    "specs": [
+      {
+        "label": "In the pack",
+        "value": "2 trays — one with drain holes in white, one solid in green"
+      },
+      {
+        "label": "Size",
+        "value": "60 × 30 cm, 3 cm deep"
+      },
+      {
+        "label": "Thickness",
+        "value": "3 mm"
+      },
+      {
+        "label": "Material",
+        "value": "Virgin food-grade plastic"
+      }
+    ],
+    "imageAlt": "A solid green growing tray stacked over a white one with drain holes"
+  },
+  "kn": {
+    "name": "ಮೈಕ್ರೋಗ್ರೀನ್ ಟ್ರೇ — ಜೋಡಿ, ಆಹಾರ ದರ್ಜೆ",
+    "shortDescription": "ಅದೇ ಜೋಡಿ, ಮರುಬಳಕೆಯ ಪ್ಲಾಸ್ಟಿಕ್ ಬದಲು ಹೊಸ ಆಹಾರ ದರ್ಜೆಯ ಪ್ಲಾಸ್ಟಿಕ್‌ನಲ್ಲಿ ಎರಕ ಹೊಯ್ದದ್ದು. ಟ್ರೇಯಲ್ಲೇ ಕತ್ತರಿಸಿ ಅದರಿಂದಲೇ ತಿನ್ನುವವರಿಗೆ ಈ ವ್ಯತ್ಯಾಸ ಯೋಗ್ಯ.",
+    "specs": [
+      {
+        "label": "ಪ್ಯಾಕ್‌ನಲ್ಲಿ",
+        "value": "2 ಟ್ರೇ — ರಂಧ್ರವಿರುವ ಬಿಳಿ ಒಂದು, ರಂಧ್ರವಿಲ್ಲದ ಹಸಿರು ಒಂದು"
+      },
+      {
+        "label": "ಅಳತೆ",
+        "value": "60 × 30 ಸೆಂಮೀ, 3 ಸೆಂಮೀ ಆಳ"
+      },
+      {
+        "label": "ದಪ್ಪ",
+        "value": "3 ಮಿಮೀ"
+      },
+      {
+        "label": "ವಸ್ತು",
+        "value": "ಹೊಸ ಆಹಾರ ದರ್ಜೆಯ ಪ್ಲಾಸ್ಟಿಕ್"
+      }
+    ],
+    "imageAlt": "ರಂಧ್ರವಿಲ್ಲದ ಹಸಿರು ಟ್ರೇಯನ್ನು ರಂಧ್ರವಿರುವ ಬಿಳಿ ಟ್ರೇಯ ಮೇಲೆ ಜೋಡಿಸಿದ ನೋಟ"
+  }
+}

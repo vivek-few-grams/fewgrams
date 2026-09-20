@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { ScatterMarquee } from "./ScatterMarquee";
 
 /**
  * The Don Molinico product card — SPEC §17.4.
@@ -17,20 +18,52 @@ export function MarqueeCard({
   label,
   note,
   words,
+  scatter = false,
+  staticMarquee = false,
   panelClass,
   marqueeClass,
   labelClass = "text-forest",
   media,
+  mediaClass = "aspect-square w-[70%]",
   cursorLabel = "Order",
 }: {
   href: string;
   label: string;
   note?: string;
   words: string[];
+  /**
+   * `false` (the default): `words` is the one or two words the reference
+   * repeats large behind the media — a category's own name, doubled by the
+   * caller (`words={[label(c), label(c)]}`).
+   *
+   * `true`: `words` is a **list** — every name in a catalogue, one card
+   * covers — rendered as `ScatterMarquee`'s word cloud (random sizes,
+   * wrapped, filling the panel) instead of one huge repeated pair. The
+   * microgreens tile on `/shop` turned this on 20 Sep 2026 so its background
+   * reads the 18 varieties on the shelf rather than just the word
+   * "microgreens" twice.
+   */
+  scatter?: boolean;
+  /** Freezes the `scatter` word cloud — no scroll loop. Ignored when
+   *  `scatter` is false; the single-word `Marquee`-style loop below has no
+   *  static form. See `ScatterMarquee`'s `animated` prop for why. */
+  staticMarquee?: boolean;
   panelClass: string;
   marqueeClass: string;
   labelClass?: string;
   media: ReactNode;
+  /**
+   * The media box's shape and size. Square at 70% of the width by default,
+   * which is the reference's own figure and right for a `Sprout` mark or a
+   * punnet.
+   *
+   * Overridable because the subject decides it: a rack is a tall object, and
+   * `object-contain` in a square box fits it by its height, leaving it small
+   * in a portrait tile. Whatever is passed has to clear the hover — the media
+   * scales 1.1 and rotates 4° inside `overflow: hidden` — so a larger box
+   * means re-padding the cut-out, not just a bigger number here.
+   */
+  mediaClass?: string;
   cursorLabel?: string;
 }) {
   const lines = (
@@ -52,13 +85,17 @@ export function MarqueeCard({
         className={`mcard flex aspect-[580/660] items-center justify-center ${panelClass}`}
         data-cursor={cursorLabel}
       >
-        <div className={`mcard__marquee ${marqueeClass}`} aria-hidden="true">
-          <div className="mcard__marquee-inner">
-            {lines}
-            {lines}
+        {scatter ? (
+          <ScatterMarquee words={words} toneClass={marqueeClass} animated={!staticMarquee} />
+        ) : (
+          <div className={`mcard__marquee ${marqueeClass}`} aria-hidden="true">
+            <div className="mcard__marquee-inner">
+              {lines}
+              {lines}
+            </div>
           </div>
-        </div>
-        <div className="mcard__media flex aspect-square w-[70%] items-center justify-center">
+        )}
+        <div className={`mcard__media flex items-center justify-center ${mediaClass}`}>
           {media}
         </div>
       </div>

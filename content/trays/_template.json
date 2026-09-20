@@ -1,0 +1,24 @@
+{
+  "en": {
+    "name": "",
+    "shortDescription": "",
+    "specs": [
+      { "label": "In the pack", "value": "" },
+      { "label": "Size", "value": "" },
+      { "label": "Thickness", "value": "" },
+      { "label": "Material", "value": "" }
+    ],
+    "imageAlt": ""
+  },
+  "kn": {
+    "name": "",
+    "shortDescription": "",
+    "specs": [
+      { "label": "", "value": "" },
+      { "label": "", "value": "" },
+      { "label": "", "value": "" },
+      { "label": "", "value": "" }
+    ],
+    "imageAlt": ""
+  }
+}

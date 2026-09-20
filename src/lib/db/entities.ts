@@ -57,6 +57,14 @@ const localisedString = {
  * and generates the identical key string, because it does the same two jobs
  * a slug did (URL segment, stable identifier) plus one more: it names the
  * content file. src/lib/db/keys.test.ts pins that the bytes did not move.
+ *
+ * **`pricePer100g` became `pricePerTray` on 19 Sep 2026** — the owner's
+ * instruction: ordering and pricing both move to the tray, and
+ * `yieldGramsPerTray` becomes an approximate, informational weight rather
+ * than a figure anything is priced from. See the note on `Variety`.
+ *
+ * **`yieldGramsPerTray` split into `Min`/`Max` the same day** — a range
+ * rather than one number, because no two cut trays weigh the same.
  */
 export const VarietyEntity = new Entity(
   {
@@ -64,10 +72,11 @@ export const VarietyEntity = new Entity(
     attributes: {
       id: { type: "string", required: true },
       contentKey: { type: "string", required: true },
-      pricePer100g: { type: "number", required: true },
+      pricePerTray: { type: "number", required: true },
       /** The two fields the whole operation computes from (SPEC §3.1), so
        *  both are required on every variety. */
-      yieldGramsPerTray: { type: "number", required: true },
+      yieldGramsPerTrayMin: { type: "number", required: true },
+      yieldGramsPerTrayMax: { type: "number", required: true },
       growDays: { type: "number", required: true },
       /** Optional: present only for varieties whose seed rate is known, and
        *  it drives the sow plan's advisory seed column (SPEC §6). */
@@ -155,6 +164,113 @@ export const ProductEntity = new Entity(
           casing: "none",
         },
         sk: { field: "GSI1SK", composite: ["slug"], template: "${slug}", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * Seed — SPEC §3 / §22.
+ *   PK = SEED#<id>   SK = META   GSI1PK = SEED   GSI1SK = <contentKey>
+ *
+ * Identical key shape to `VarietyEntity`, because a seed is the same kind of
+ * record: numbers in DynamoDB, every word in `content/seeds/<contentKey>.json`
+ * (SPEC §4.3). GSI1 is what makes "list every seed, ordered by key" a Query
+ * rather than a Scan.
+ *
+ * **A separate entity from `ProductEntity`, not `category: "seeds"` on it.**
+ * The reasoning is on the `Seed` type; the storage consequence is that stock
+ * lives on the row rather than inside a `variants` list, so decrementing it at
+ * checkout is an `UpdateItem` with a condition on one attribute instead of a
+ * read-modify-write of a nested list — which could not be made safe under two
+ * concurrent orders (SPEC §15).
+ *
+ * `SEED#` cannot be confused with `SEEDS#` or anything else on this table:
+ * the partitions here are one per entity id, and `GSI1PK = "SEED"` is an
+ * exact-match partition, never a `begins_with`. `keys.test.ts` pins that a
+ * seed and a variety with the same content key land on different keys — which
+ * they must, because `radish` the seed and `radish` the microgreen are two
+ * different things to buy.
+ */
+export const SeedEntity = new Entity(
+  {
+    model: { ...model, entity: "seed" },
+    attributes: {
+      id: { type: "string", required: true },
+      contentKey: { type: "string", required: true },
+      pricePer100g: { type: "number", required: true },
+      /** Grams on the shelf. Required, and zero is a legitimate value — an
+       *  empty shelf, where every order is bought in (SPEC §22.2). It is not
+       *  an absent figure and it is not "out of stock": the seed still
+       *  sells. */
+      stockGrams: { type: "number", required: true },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "SEED#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      byCatalogue: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: [], template: "SEED", casing: "none" },
+        sk: {
+          field: "GSI1SK",
+          composite: ["contentKey"],
+          template: "${contentKey}",
+          casing: "none",
+        },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * Tray or drainage mat — SPEC §23.
+ *   PK = TRAY#<id>  SK = META  GSI1PK = TRAY  GSI1SK = <contentKey>
+ *
+ * The same layout as `SeedEntity` with the stock attribute replaced by a lead
+ * time, which is the whole difference between the two: a seed may be on our
+ * shelf, a tray is always on the supplier's. Carries no text, for the reasons
+ * on the `Tray` type.
+ *
+ * **Not `category: "trays"` on `ProductEntity`**, which is what SPEC §3
+ * originally described. `Product` puts the name in DynamoDB as a
+ * `LocalisedString` typed into an admin form, and these items' words — the
+ * supplier's dimensions, material and pack contents — want a content file and
+ * a git diff instead (SPEC §4.3). Third entity pulled out of `Product` after
+ * racks and seeds; only snacks are left on it.
+ */
+export const TrayEntity = new Entity(
+  {
+    model: { ...model, entity: "tray" },
+    attributes: {
+      id: { type: "string", required: true },
+      contentKey: { type: "string", required: true },
+      /** ₹ for the pack as sold, whole — see the note on `Tray.price`. */
+      price: { type: "number", required: true },
+      /** Days from order to delivery. Required and never zero: nothing in
+       *  this category is ever in stock, so there is no same-day or next-day
+       *  path to represent (SPEC §23.1). */
+      leadDays: { type: "number", required: true },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "TRAY#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      byCatalogue: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: [], template: "TRAY", casing: "none" },
+        sk: {
+          field: "GSI1SK",
+          composite: ["contentKey"],
+          template: "${contentKey}",
+          casing: "none",
+        },
       },
     },
   },
@@ -366,4 +482,382 @@ export const AddressEntity = new Entity(
     },
   },
   usersConfig,
+);
+
+/**
+ * Rack rate card — SPEC §19–§21. Nine entities, one partition.
+ *
+ *   PK = RACKSPEC   SK = SETTINGS | PLATE#<id> | ANGLE#<id>
+ *                        | FRAME#<id> | MODEL#<id> | AMODEL#<id>
+ *                        | PIPESETTINGS | PIPESIZE#<id> | PMODEL#<id>
+ *
+ * Everything the rack calculator needs shares `PK = RACKSPEC`, so the whole
+ * rate card is one partition and reading it costs three small Queries — one
+ * per SK prefix. Not a collection, for the reason given at the top of this
+ * file: ElectroDB implements non-isolated collections by filtering on the
+ * `__edb_e__` attribute, and three Queries on a partition this size is
+ * cheaper than earning the right to use one.
+ *
+ * Separate entities rather than one with a `kind` discriminator because the
+ * shapes have nothing in common — a plate has a depth and a capacity, an
+ * angle has a gauge and a colour list, and settings is a singleton. One
+ * entity covering all of them would make almost every attribute optional and
+ * give up the schema validation that is the point of declaring them here.
+ *
+ * **`MODEL#`, `AMODEL#` and `PMODEL#` are three lists, not one.** All three
+ * rack ranges live in the same partition because they share `shelvesForHeight`
+ * and the markup, but a `begins_with(SK, "MODEL#")` cannot match `AMODEL#...`
+ * or `PMODEL#...` — the `#` is part of the prefix — so each screen queries
+ * only its own range. `keys.test.ts` pins every direction.
+ *
+ * **Rack models are not here.** A rack that is actually on sale is a
+ * `ProductVariant` on the single `category: "racks"` product, carrying its
+ * frozen price and the `build` that produced it. The rate card computes
+ * prices; the product catalogue owns what is sold. Keeping models out of this
+ * partition is what stops there being two answers to "what racks do we sell".
+ */
+const RACKSPEC = "RACKSPEC" as const;
+
+/** Singleton. `heightsFt` is a list of numbers rather than a string so the
+ *  form parses once, on write, instead of at every read site. */
+export const RackSettingsEntity = new Entity(
+  {
+    model: { ...model, entity: "rackSettings" },
+    attributes: {
+      boltSetPrice: { type: "number", required: true },
+      bushPrice: { type: "number", required: true },
+      legsPerRack: { type: "number", required: true },
+      boltSetsPerShelf: { type: "number", required: true },
+      bushesPerRack: { type: "number", required: true },
+      heightsFt: { type: "list", required: true, items: { type: "number" } },
+      markupPercent: { type: "number", required: true },
+      roundUpToNearest: { type: "number", required: true },
+    },
+    indexes: {
+      single: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: [], template: "SETTINGS", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/** One row per shelf size the vendor sells. Priced per size, not per square
+ *  foot — the vendor's figures are not linear in area (see `ShelfPlate`). */
+export const ShelfPlateEntity = new Entity(
+  {
+    model: { ...model, entity: "shelfPlate" },
+    attributes: {
+      id: { type: "string", required: true },
+      depthFt: { type: "number", required: true },
+      lengthFt: { type: "number", required: true },
+      thicknessMm: { type: "number", required: true },
+      capacityKg: { type: "number", required: true },
+      price: { type: "number", required: true },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: ["id"], template: "PLATE#${id}", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/** One row per angle grade. `colours` lives here, not on the rack, because the
+ *  vendor couples gauge and colour.
+ *
+ *  `finish` was removed on 17 Sep 2026 — every rack is powder-coated, so the
+ *  attribute had one value. Rows written before then still carry it in
+ *  DynamoDB; ElectroDB ignores attributes absent from the schema on read, and
+ *  the next `put` drops it. */
+export const AngleGradeEntity = new Entity(
+  {
+    model: { ...model, entity: "angleGrade" },
+    attributes: {
+      id: { type: "string", required: true },
+      thicknessMm: { type: "number", required: true },
+      colours: { type: "list", required: true, items: { type: "string" } },
+      ratePerFt: { type: "number", required: true },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: ["id"], template: "ANGLE#${id}", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * A rack on sale — SPEC §19.
+ *   PK = RACKSPEC   SK = MODEL#<id>
+ *
+ * Same partition as the rate card it is priced from, so one more small Query
+ * returns the whole rack screen's data.
+ *
+ * The key carried a `sortOrder` prefix until 17 Sep 2026, so that DynamoDB
+ * returned models in display order without the app re-sorting. Display order
+ * is now **derived** from the config — shortest rack first — which is not
+ * expressible in a key, so the app sorts. That is free at this scale: a rack
+ * range is a handful of rows, not a page of them.
+ *
+ * **Not a `ProductVariant`.** A rack model becomes a purchasable variant when
+ * the customer view is built; until then, projecting it into the product
+ * catalogue would leave `build` metadata on `ProductEntity` that nothing
+ * reads. One home now, and the projection is a deliberate later step.
+ */
+export const RackModelEntity = new Entity(
+  {
+    model: { ...model, entity: "rackModel" },
+    attributes: {
+      id: { type: "string", required: true },
+      config: {
+        type: "map",
+        required: true,
+        properties: {
+          heightFt: { type: "number", required: true },
+          shelves: { type: "number", required: true },
+          plateId: { type: "string", required: true },
+          angleId: { type: "string", required: true },
+          /* No `colour`: it left the config on 17 Sep 2026 because the angle
+             grade already lists the colours it comes in, and they apply to
+             every rack built on it. Rows written before then still carry it;
+             ElectroDB ignores attributes absent from the schema. */
+        },
+      },
+      /** Frozen at publish. See `RackModel` for why it is not derived. */
+      price: { type: "number", required: true },
+      costAtPublish: { type: "number", required: true },
+      publishedAt: { type: "string", required: true },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: ["id"], template: "MODEL#${id}", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * A footprint for the open-frame range — SPEC §20.
+ *   PK = RACKSPEC   SK = FRAME#<id>
+ *
+ * **No `price` and no `capacityKg`**, which is the whole difference from
+ * `ShelfPlateEntity`. An open frame is not a bought part: it is
+ * `3 × length + 2 × depth` feet of angle, priced from the grade's rate per
+ * foot, so a stored price would be a stored answer to a sum — the thing this
+ * partition exists to avoid. And there is no deck to rate for load.
+ */
+export const FrameSizeEntity = new Entity(
+  {
+    model: { ...model, entity: "frameSize" },
+    attributes: {
+      id: { type: "string", required: true },
+      depthFt: { type: "number", required: true },
+      lengthFt: { type: "number", required: true },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: ["id"], template: "FRAME#${id}", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * An open-frame rack on sale — SPEC §20.
+ *   PK = RACKSPEC   SK = AMODEL#<id>
+ *
+ * Same shape as `RackModelEntity` with `frameId` in place of `plateId`, and a
+ * separate entity rather than an optional field on that one: a row carrying
+ * `plateId?` and `frameId?` would be a row where neither is guaranteed, and
+ * the pricing formula that applies is decided by which one is set. Two
+ * entities make that a type-level fact rather than a runtime check.
+ *
+ * `AMODEL#` and not `ANGLEMODEL#` because `ANGLE#` is already the grade
+ * prefix, and two prefixes where one is nearly the other is a `begins_with`
+ * bug waiting to be written.
+ */
+export const AngleRackModelEntity = new Entity(
+  {
+    model: { ...model, entity: "angleRackModel" },
+    attributes: {
+      id: { type: "string", required: true },
+      config: {
+        type: "map",
+        required: true,
+        properties: {
+          heightFt: { type: "number", required: true },
+          shelves: { type: "number", required: true },
+          frameId: { type: "string", required: true },
+          angleId: { type: "string", required: true },
+        },
+      },
+      /** Frozen at publish, for the reasons on `RackModel`. */
+      price: { type: "number", required: true },
+      costAtPublish: { type: "number", required: true },
+      publishedAt: { type: "string", required: true },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: ["id"], template: "AMODEL#${id}", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/* ────────────────────────── UPVC pipe racks ─────────────────────────── */
+
+/**
+ * The pipe range's own material rates — SPEC §21.
+ *   PK = RACKSPEC   SK = PIPESETTINGS
+ *
+ * A **second settings row**, not three more attributes on
+ * `RackSettingsEntity`, and the split is along a real seam: `SETTINGS` holds
+ * what every range shares — the corner leg count, the heights on sale, markup
+ * and rounding — while this holds what only this range buys. Pipe, connectors
+ * and pipe bushes appear in no other bill, so on the shared row they would be
+ * three fields the plated rates form neither renders nor writes, which is the
+ * unread schema field the project rules say to cut.
+ *
+ * `PIPESETTINGS` rather than `PIPE#SETTINGS`, so it cannot be caught by the
+ * `begins_with(SK, "PIPESIZE#")` that lists the footprints. `keys.test.ts`
+ * pins that none of the five prefixes on this partition can match another.
+ */
+export const PipeSettingsEntity = new Entity(
+  {
+    model: { ...model, entity: "pipeSettings" },
+    attributes: {
+      ratePerFt: { type: "number", required: true },
+      connectorPrice: { type: "number", required: true },
+      /** Per **leg**, unlike `RackSettings.bushPrice` which is per rack at a
+       *  fixed four. A 4 ft pipe rack carries a middle support, so six. */
+      bushPrice: { type: "number", required: true },
+    },
+    indexes: {
+      single: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: [], template: "PIPESETTINGS", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * A footprint for the pipe range — SPEC §21.
+ *   PK = RACKSPEC   SK = PIPESIZE#<id>
+ *
+ * Same shape as `FrameSizeEntity`, and a separate list rather than a shared
+ * one because the **sizes genuinely differ**: the owner dropped 1¼ ft depth
+ * here and added a 2½ ft length that neither steel range offers. Sharing the
+ * list would mean an `offeredIn` flag on every row, which is a worse model of
+ * "these are two different product ranges" than two lists.
+ *
+ * No price and no capacity, for the reasons on `FrameSizeEntity`.
+ */
+export const PipeSizeEntity = new Entity(
+  {
+    model: { ...model, entity: "pipeSize" },
+    attributes: {
+      id: { type: "string", required: true },
+      depthFt: { type: "number", required: true },
+      lengthFt: { type: "number", required: true },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: ["id"], template: "PIPESIZE#${id}", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * A pipe rack on sale — SPEC §21.
+ *   PK = RACKSPEC   SK = PMODEL#<id>
+ *
+ * The config is **three fields, not four**: there is no `angleId`, because
+ * there is one pipe spec and it is white. So this range has no grade dimension
+ * and no colour choice, and a footprint plus a height is the whole of a model.
+ *
+ * `PMODEL#` joins `MODEL#` and `AMODEL#`. None of the three can match another
+ * under `begins_with` — the `#` is part of the prefix — and `keys.test.ts`
+ * asserts all six directions, because the day one of them starts matching is
+ * the day three rack screens show each other's racks at each other's prices.
+ */
+export const PipeRackModelEntity = new Entity(
+  {
+    model: { ...model, entity: "pipeRackModel" },
+    attributes: {
+      id: { type: "string", required: true },
+      config: {
+        type: "map",
+        required: true,
+        properties: {
+          heightFt: { type: "number", required: true },
+          shelves: { type: "number", required: true },
+          pipeSizeId: { type: "string", required: true },
+        },
+      },
+      /** Frozen at publish, for the reasons on `RackModel`. */
+      price: { type: "number", required: true },
+      costAtPublish: { type: "number", required: true },
+      publishedAt: { type: "string", required: true },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: ["id"], template: "PMODEL#${id}", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * Singleton. Which product types the owner has switched off — SPEC §12
+ * "settings". Absent entirely until the first toggle, which is why the repo
+ * treats a missing row as "nothing disabled" rather than seeding one at
+ * startup.
+ *
+ * A list of the disabled ones, not a map of every `ProductType` to a
+ * boolean: `PRODUCT_TYPES` grows over time (snacks arrived after racks;
+ * microgreens was there from the start), and a required map would need a
+ * migration on every addition. An absent entry already means "enabled" for a
+ * type that did not exist when this row was last written, which is the
+ * correct default for a brand-new type.
+ */
+export const CatalogueVisibilityEntity = new Entity(
+  {
+    model: { ...model, entity: "catalogueVisibility" },
+    attributes: {
+      disabled: { type: "list", required: true, items: { type: "string" } },
+    },
+    indexes: {
+      single: {
+        pk: { field: "PK", composite: [], template: "CATALOGUEVISIBILITY", casing: "none" },
+        sk: { field: "SK", composite: [], template: "SETTINGS", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
 );

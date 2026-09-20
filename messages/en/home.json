@@ -1,6 +1,34 @@
 {
   "hero": {
-    "placeholder": "placeholder — hero photograph needed"
+    "slides": {
+      "harvest": {
+        "eyebrow": "Harvested to order",
+        "headline": "Nothing here is older than today.",
+        "body": "We sow after you order and cut on the morning we deliver. No cold room in between.",
+        "alt": "Bundles of green and purple microgreens on a striped cloth by a sunlit window, scissors beside them."
+      },
+      "bowl": {
+        "eyebrow": "Goodness in every gram",
+        "headline": "A week of greens, in one bowl.",
+        "body": "The mix changes every week, so the same box never arrives twice.",
+        "alt": "A speckled ceramic bowl heaped with mixed red and green microgreens on a wooden block."
+      },
+      "plate": {
+        "eyebrow": "Good on everything",
+        "headline": "A handful lifts the whole plate.",
+        "body": "Salads, toast, soup, a smoothie — added last, raw, at the table.",
+        "alt": "A sunlit table of dishes topped with microgreens: a salad bowl, a green smoothie, soup, avocado toast and a grain bowl."
+      },
+      "trays": {
+        "eyebrow": "Untreated seed only",
+        "headline": "Grown in our own trays.",
+        "body": "Checked by hand before sowing, because poor seed means poor greens.",
+        "alt": "Trays of red and green microgreens on a wooden counter beside a small dish of seed."
+      }
+    },
+    "ctaPlans": "Plan a subscription",
+    "ctaGreens": "Meet the greens",
+    "goToSlide": "Show hero image {number}"
   },
   "pinCheck": {
     "prompt": "Delivering across {city}",
@@ -19,20 +47,25 @@
     "aside": "No freezing. No storing.",
     "steps": {
       "seed": {
-        "title": "Untreated seed",
-        "body": "We buy only non-treated seed — no chemical coating, nothing you would not want on a plate."
+        "title": "Seed we trust",
+        "body": "From suppliers we know: non-hybrid, non-GMO, untreated, checked by hand."
       },
-      "quality": {
-        "title": "Checked for quality",
-        "body": "Every batch is examined before it goes anywhere near a tray. Poor seed means poor greens."
+      "trays": {
+        "title": "Clean tray, new medium",
+        "body": "Trays sterilised before every sow, with fresh coco peat we never reuse."
       },
       "sown": {
         "title": "Sown on your order",
-        "body": "Nothing is sown speculatively. Your order decides what goes into the trays that Sunday."
+        "body": "Nothing speculative. Your order decides what goes into the trays."
       },
       "harvest": {
-        "title": "Harvested to deliver",
-        "body": "Cut on Saturday morning and taken straight to your door. No cold room in between."
+        "title": "Checked, cut, delivered",
+        "body": "Quality inspected in the tray, cut Saturday morning, at your door that day."
+      },
+      "again": {
+        "title": "Repeat",
+        "body": "Every week.",
+        "note": "From scratch."
       }
     }
   },
@@ -42,9 +75,21 @@
     "body": "Ordered any time and delivered on the same Saturday run as the greens."
   },
   "trust": {
-    "organic": { "title": "Organically grown", "note": "Soil and water, nothing else" },
-    "noChemicals": { "title": "No chemicals", "note": "No pesticides, no growth agents" },
-    "seed": { "title": "Trusted seed sources", "note": "Untreated seed only" },
-    "neverFrozen": { "title": "Never frozen", "note": "Cut and delivered the same morning" }
+    "organic": {
+      "title": "Organically grown",
+      "note": "Soil and water, nothing else"
+    },
+    "noChemicals": {
+      "title": "No chemicals",
+      "note": "No pesticides, no growth agents"
+    },
+    "seed": {
+      "title": "Trusted seed sources",
+      "note": "Untreated seed only"
+    },
+    "neverFrozen": {
+      "title": "Never frozen",
+      "note": "Cut and delivered the same morning"
+    }
   }
 }

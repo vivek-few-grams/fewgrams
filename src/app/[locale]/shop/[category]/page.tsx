@@ -1,23 +1,31 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
-import { Link } from "@/i18n/navigation";
 import { notFound } from "next/navigation";
 import { t as localised, CATEGORIES, type Category } from "@/lib/types";
 import { listByCategory } from "@/lib/repo/products";
 import { CATEGORY_PANELS } from "@/lib/shop";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { redirect } from "@/i18n/navigation";
 import { Sprout } from "@/components/ui/Sprout";
 import { CategoryStrip } from "@/components/chrome/CategoryStrip";
-import { currentActor } from "@/lib/auth/guard";
 
 /**
  * /shop/[category] — SPEC §12. One page per product category, read from
  * `fewgrams-catalogue` by a single GSI1 Query.
  *
- * Product detail pages (`/shop/[category]/[slug]`) are not built yet, so the
- * cards here are not links. Everything a buyer needs to compare — price,
- * variants, and seed stock in grams — is on the card itself, so the page is
- * useful before the detail route exists rather than a list of dead ends.
+ * **Two of the four categories have left this page.** Microgreens never
+ * belonged to it (SPEC §18.6) and seeds left on 17 Sep 2026 (SPEC §22.5):
+ * both are described catalogues where each item has a page of its own copy, so
+ * both redirect to their own route. What is left here is trays and snacks —
+ * interchangeable SKUs where a grid genuinely is the product listing — and
+ * racks — whose customer view was deliberately unbuilt until 17 Sep 2026 and
+ * now lives at `/shop/racks` and `/shop/racks/[range]` (SPEC §19.6, §19.7), so
+ * a static segment takes that URL off this page exactly as trays did.
+ *
+ * Product detail pages (`/shop/[category]/[slug]`) are not built, so the cards
+ * here are not links. Everything a buyer needs to compare is on the card
+ * itself, so the page is useful before the detail route exists rather than a
+ * list of dead ends.
  */
 export const dynamic = "force-dynamic";
 
@@ -42,48 +50,39 @@ export default async function CategoryPage({
   const { locale, category } = await params;
   setRequestLocale(locale);
 
-  /* Microgreens is in the shop menu but is not a product category — it is a
-     variety catalogue with its own route (SPEC §18.6). Redirect rather than
-     404 so the URL a visitor might guess still works. */
+  /* Two categories in the shop menu are **described catalogues with their own
+     routes**, not grids of interchangeable SKUs: microgreens (SPEC §18.6) and,
+     since 17 Sep 2026, seeds (SPEC §22.5). Both redirect rather than 404, so
+     the URL a visitor might guess — or an old link — still works. */
   if (category === "microgreens") redirect({ href: "/microgreens", locale });
+  if (category === "seeds") redirect({ href: "/seeds", locale });
   if (!isCategory(category)) notFound();
+  await guardProductTypeEnabled(category, locale);
 
   const t = await getTranslations("shop.category");
   const label = await getTranslations("common.categories");
   const products = await listByCategory(category, { activeOnly: true });
   const panel = CATEGORY_PANELS[category];
-  /* See the empty state below: the admin instruction is resolved only for an
-     admin, so it never reaches a customer's HTML. */
-  const actor = await currentActor();
-  const isAdmin = actor?.role === "admin";
-  const ta = await getTranslations("admin.publicEmpty");
 
   return (
-    <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
+    <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
       <CategoryStrip current={category} />
 
-      <h1 className="mt-8 font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
+      <h1 className="mt-8 font-display text-[clamp(1.25rem,2.5vw,1.9rem)] font-bold leading-tight tracking-tight text-forest">
         {label(category)}
       </h1>
       <p className="mt-3 max-w-xl font-body text-sm text-stone">{t("body")}</p>
 
       {products.length === 0 ? (
-        /* Customers get "no racks are listed right now"; only an admin gets
-           told where to add them. */
+        /* One sentence for everybody, including an admin (changed 17 Sep
+           2026). It used to offer an admin a link to `/admin/products`, and
+           that screen is gone: it was one generic form for four categories
+           that have nothing in common, and the two categories with real
+           content — seeds and racks — now have screens of their own. Trays and
+           snacks have no admin screen yet, so there is nowhere honest to send
+           anyone, and a link to a 404 is worse than the plain truth. */
         <p className="mt-12 rounded-2xl border border-dashed border-forest/20 p-6 font-body text-sm text-stone">
-          {isAdmin
-            ? ta.rich("products", {
-                category: label(category).toLowerCase(),
-                link: (chunks) => (
-                  <Link
-                    href="/admin/products"
-                    className="text-forest underline underline-offset-4"
-                  >
-                    {chunks}
-                  </Link>
-                ),
-              })
-            : t("empty", { category: label(category).toLowerCase() })}
+          {t("empty", { category: label(category).toLowerCase() })}
         </p>
       ) : (
         <ul className="mt-12 grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-6">
@@ -92,10 +91,6 @@ export default async function CategoryPage({
             const from = active.length
               ? Math.min(...active.map((v) => v.price))
               : p.basePrice;
-            const stock = active.reduce(
-              (sum, v) => (v.stockGrams === undefined ? sum : sum + v.stockGrams),
-              0,
-            );
             return (
               <li key={p.id}>
                 <div
@@ -117,11 +112,6 @@ export default async function CategoryPage({
                     ? `${t("from", { price: from })} · ${t("options", { count: active.length })}`
                     : t("price", { price: from })}
                 </p>
-                {category === "seeds" && stock > 0 && (
-                  <p className="font-body text-xs text-stone/70">
-                    {t("stock", { grams: stock })}
-                  </p>
-                )}
               </li>
             );
           })}

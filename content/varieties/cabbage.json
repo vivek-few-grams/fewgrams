@@ -1,0 +1,171 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Cabbage",
+    "shortDescription": "Mild, sweet and pale green — the gentlest brassica we grow, without the bite of mustard.",
+    "description": "Cabbage microgreens are the softest introduction to the brassica family on this shelf: pale green, faintly ruffled leaves on tender stems, with a clean sweetness and none of the pungency that mustard or rocket carry. The same glucosinolates that make its relatives sharp are present here too, just in gentler form, which is why it works as an everyday base green rather than a seasoning. Cut when the first true leaves are just showing, while the leaf is still soft enough to eat by the handful.",
+    "flavourNotes": "Mild and sweet with a clean cabbage finish. No bitterness and no heat — the softest brassica on the shelf.",
+    "growingTips": "Keep the canopy dry and the airflow good — like the rest of the brassica family, it rots from the middle if the mat stays wet. Cut when the first true leaves appear.",
+    "nutrition": [
+      {
+        "label": "Vitamin C",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Good source"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Glucosinolates",
+        "value": "Present"
+      },
+      {
+        "label": "Calcium",
+        "value": "Present"
+      },
+      {
+        "label": "Potassium",
+        "value": "Present"
+      },
+      {
+        "label": "Manganese",
+        "value": "Present"
+      },
+      {
+        "label": "Iron",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin C contributes to normal immune function and to normal collagen formation for healthy skin, gums and blood vessels.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin A contributes to the maintenance of normal vision and normal skin.",
+      "Folate contributes to normal blood formation."
+    ],
+    "cautions": [
+      "Cabbage is a brassica and contains goitrogens, which in large regular amounts can interfere with thyroid function. If you have a thyroid condition, keep portions moderate and ask your doctor.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "How is this different from your red cabbage?",
+        "answer": "Colour, mostly, and a little in chemistry. This is the plain green cabbage — sweeter and even milder than red cabbage, without the anthocyanin pigment that gives the other its violet stems and slightly different flavour edge."
+      },
+      {
+        "question": "What does it taste like?",
+        "answer": "Mild and sweet, like the softest possible cabbage leaf, with a clean finish and no bite at all."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. It holds up well, closer to mustard than to basil in sturdiness."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Anywhere you want a leafy base without a strong flavour of its own — a sandwich, a wrap, folded into a slaw, or scattered over curd rice or a grain bowl."
+      },
+      {
+        "question": "Can children eat it?",
+        "answer": "Yes. It is one of the mildest brassicas we grow, with no bitterness and no heat, which makes it an easy one to start with."
+      }
+    ],
+    "imageAlt": "Tray of pale green cabbage microgreens with softly ruffled leaves"
+  },
+  "kn": {
+    "name": "ಎಲೆಕೋಸು (ಹಸಿರು)",
+    "shortDescription": "ಸೌಮ್ಯ, ಸಿಹಿ ಮತ್ತು ತಿಳಿ ಹಸಿರು — ಸಾಸಿವೆಯ ಖಾರ ಇಲ್ಲದ, ನಾವು ಬೆಳೆಸುವ ಅತಿ ಸೌಮ್ಯ ಬ್ರಾಸಿಕಾ.",
+    "description": "ಎಲೆಕೋಸು ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಈ ಶೆಲ್ಫಿನಲ್ಲಿ ಬ್ರಾಸಿಕಾ ಕುಟುಂಬಕ್ಕೆ ಅತಿ ಸೌಮ್ಯ ಪರಿಚಯ: ತಿಳಿ ಹಸಿರು, ಸ್ವಲ್ಪ ಅಲೆಅಲೆಯಾದ ಎಲೆಗಳು ಮೃದು ಕಾಂಡಗಳ ಮೇಲೆ, ಸ್ವಚ್ಛ ಸಿಹಿ ಮತ್ತು ಸಾಸಿವೆ ಅಥವಾ ರಾಕೆಟ್‌ನಲ್ಲಿರುವ ಖಾರ ಇಲ್ಲ. ಅದೇ ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು ಇದರಲ್ಲೂ ಇವೆ, ಆದರೆ ಸೌಮ್ಯ ರೂಪದಲ್ಲಿ — ಅದೇ ಕಾರಣಕ್ಕೆ ಇದು ಮಸಾಲೆಗಿಂತ ದಿನನಿತ್ಯದ ತಳಪಾಯ ಸೊಪ್ಪಾಗಿ ಚೆನ್ನಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ. ಮೊದಲ ನಿಜವಾದ ಎಲೆಗಳು ಕಾಣುವಾಗ ಕತ್ತರಿಸಿ, ಎಲೆ ಇನ್ನೂ ಹಿಡಿಯಷ್ಟು ತಿನ್ನಲು ಮೃದುವಾಗಿರುವಾಗ.",
+    "flavourNotes": "ಸೌಮ್ಯ ಮತ್ತು ಸಿಹಿ, ಸ್ವಚ್ಛ ಎಲೆಕೋಸಿನ ಕೊನೆ. ಕಹಿಯಿಲ್ಲ, ಖಾರವಿಲ್ಲ — ಈ ಶೆಲ್ಫಿನ ಅತಿ ಸೌಮ್ಯ ಬ್ರಾಸಿಕಾ.",
+    "growingTips": "ಮೇಲ್ಪದರ ಒಣಗಿರಲಿ, ಗಾಳಿ ಚೆನ್ನಾಗಿರಲಿ — ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ ಉಳಿದವುಗಳಂತೆ, ಮೇಲ್ಪದರ ಒದ್ದೆಯಾಗಿದ್ದರೆ ಇದೂ ಮಧ್ಯದಿಂದ ಕೊಳೆಯುತ್ತದೆ. ಮೊದಲ ನಿಜವಾದ ಎಲೆಗಳು ಬಂದಾಗ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಂಗನೀಸ್",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಆರೋಗ್ಯಕರ ಚರ್ಮ, ವಸಡು ಹಾಗೂ ರಕ್ತನಾಳಗಳಿಗಾಗಿ ಸಾಮಾನ್ಯ ಕಾಲಜನ್ ರಚನೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ ಮತ್ತು ಸಾಮಾನ್ಯ ಚರ್ಮದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಇದು ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು ಮತ್ತು ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳನ್ನು ಹೊಂದಿದೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು. ಥೈರಾಯ್ಡ್ ಸಮಸ್ಯೆ ಇದ್ದರೆ ಪ್ರಮಾಣವನ್ನು ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ — ಹಠಾತ್ತನೆ ಹೆಚ್ಚು ತಿನ್ನಬೇಡಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದು ನಿಮ್ಮ ಕೆಂಪು ಎಲೆಕೋಸಿಗಿಂತ ಹೇಗೆ ಬೇರೆ?",
+        "answer": "ಬಹುತೇಕ ಬಣ್ಣದಲ್ಲಿ, ಸ್ವಲ್ಪ ರಸಾಯನಶಾಸ್ತ್ರದಲ್ಲಿ. ಇದು ಸಾದಾ ಹಸಿರು ಎಲೆಕೋಸು — ಕೆಂಪು ಎಲೆಕೋಸಿಗಿಂತ ಇನ್ನೂ ಸಿಹಿ ಮತ್ತು ಸೌಮ್ಯ, ಅದರ ನೇರಳೆ ಕಾಂಡಕ್ಕೆ ಕಾರಣವಾದ ಆಂಥೋಸಯಾನಿನ್ ವರ್ಣದ್ರವ್ಯ ಮತ್ತು ಸ್ವಲ್ಪ ಬೇರೆ ರುಚಿಯ ಅಂಚು ಇಲ್ಲದೆ."
+      },
+      {
+        "question": "ಇದರ ರುಚಿ ಹೇಗಿದೆ?",
+        "answer": "ಸೌಮ್ಯ ಮತ್ತು ಸಿಹಿ, ಸಾಧ್ಯವಾದಷ್ಟು ಮೃದು ಎಲೆಕೋಸು ಎಲೆಯಂತೆ, ಸ್ವಚ್ಛ ಕೊನೆ ಮತ್ತು ಖಾರವೇ ಇಲ್ಲ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಬೆಸಿಲ್‌ಗಿಂತ ಸಾಸಿವೆಗೆ ಹತ್ತಿರವಾದ ಗಟ್ಟಿತನ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಸ್ವಂತ ಬಲವಾದ ರುಚಿ ಇಲ್ಲದ ಸೊಪ್ಪಿನ ತಳಪಾಯ ಬೇಕಿರುವ ಯಾವುದಕ್ಕೂ — ಸ್ಯಾಂಡ್‌ವಿಚ್, ರ‍್ಯಾಪ್, ಸ್ಲಾ ಆಗಿ ಮಡಿಚಿ, ಅಥವಾ ಮೊಸರನ್ನ ಅಥವಾ ಧಾನ್ಯದ ಬಟ್ಟಲಿನ ಮೇಲೆ ಚೆಲ್ಲಿ."
+      },
+      {
+        "question": "ಮಕ್ಕಳು ಇದನ್ನು ತಿನ್ನಬಹುದೇ?",
+        "answer": "ಹೌದು. ನಾವು ಬೆಳೆಸುವ ಅತಿ ಸೌಮ್ಯ ಬ್ರಾಸಿಕಾಗಳಲ್ಲಿ ಇದು ಒಂದು, ಕಹಿಯಿಲ್ಲ ಖಾರವಿಲ್ಲ, ಆದ್ದರಿಂದ ಆರಂಭಿಸಲು ಸುಲಭ."
+      }
+    ],
+    "imageAlt": "ಮೃದುವಾಗಿ ಅಲೆಅಲೆಯಾದ ಎಲೆಗಳ ತಿಳಿ ಹಸಿರು ಎಲೆಕೋಸು ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

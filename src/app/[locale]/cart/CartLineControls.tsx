@@ -2,6 +2,7 @@
 
 import { Minus, Plus, X } from "lucide-react";
 import { useFormStatus } from "react-dom";
+import type { CartKind } from "@/lib/cart/cart";
 import { removeCartLine, updateCartLine } from "./actions";
 
 /**
@@ -17,15 +18,27 @@ import { removeCartLine, updateCartLine } from "./actions";
  * a delta. A delta plus a double-click is a race; an absolute value applied
  * twice is idempotent.
  *
- * Decrementing to zero removes the line (`setUnits`), so there is no state
- * where the quantity reads 0 and the line is still on the page.
+ * Decrementing to zero removes the line, so there is no state where the
+ * quantity reads 0 and the line is still on the page.
+ *
+ * **`kind` travels with every submit** (17 Sep 2026). A seed and a green can
+ * share a content key, so a stepper that sent the key alone could change the
+ * wrong line — and the action refuses a submit with no kind rather than
+ * guessing one.
+ *
+ * `max` is per line, not a constant: a seed's ceiling is the stock the owner
+ * holds. The disabled `+` is the only thing stopping a customer asking for
+ * more than exists, because these steppers have no error surface — the action
+ * refuses silently rather than clamping the line to a number nobody chose.
  */
 export function CartLineControls({
+  kind,
   contentKey,
   units,
   max,
   labels,
 }: {
+  kind: CartKind;
   contentKey: string;
   units: number;
   max: number;
@@ -40,6 +53,7 @@ export function CartLineControls({
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-1 rounded-full border border-forest/20 p-1">
         <StepForm
+          kind={kind}
           contentKey={contentKey}
           units={units - 1}
           label={labels.decrease}
@@ -49,6 +63,7 @@ export function CartLineControls({
           {units}
         </span>
         <StepForm
+          kind={kind}
           contentKey={contentKey}
           units={units + 1}
           label={labels.increase}
@@ -58,6 +73,7 @@ export function CartLineControls({
       </div>
 
       <form action={removeCartLine}>
+        <input type="hidden" name="kind" value={kind} />
         <input type="hidden" name="key" value={contentKey} />
         <RemoveButton label={labels.remove} title={labels.removeShort} />
       </form>
@@ -66,12 +82,14 @@ export function CartLineControls({
 }
 
 function StepForm({
+  kind,
   contentKey,
   units,
   label,
   icon,
   disabled,
 }: {
+  kind: CartKind;
   contentKey: string;
   units: number;
   label: string;
@@ -80,6 +98,7 @@ function StepForm({
 }) {
   return (
     <form action={updateCartLine}>
+      <input type="hidden" name="kind" value={kind} />
       <input type="hidden" name="key" value={contentKey} />
       <input type="hidden" name="units" value={units} />
       <StepButton label={label} icon={icon} disabled={disabled} />

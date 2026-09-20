@@ -39,8 +39,11 @@ export const brand = {
     width: 2112,
     height: 1845,
   },
-  tagline: "Cut the morning it reaches you.",
-  subline: "Microgreens grown to order in Bengaluru. Never frozen, never stored.",
+  /* `tagline` and `subline` deliberately do NOT live here. They are prose a
+     visitor reads, so by the project's own first rule they belong in
+     `messages/<locale>/common.json` under `brand.*` — a plain string here
+     rendered the English headline on /kn. What stays is identity: names,
+     files, addresses, none of which translate. */
   city: "Bengaluru",
   email: "info.fewgrams@gmail.com",
   instagram: "@fewgrams",

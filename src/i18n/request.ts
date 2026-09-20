@@ -21,6 +21,7 @@ export const NAMESPACES = [
   "home",
   "shop",
   "microgreens",
+  "seeds",
   "cart",
   "plans",
   "auth",

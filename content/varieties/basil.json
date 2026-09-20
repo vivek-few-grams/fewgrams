@@ -1,0 +1,159 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg"
+    ]
+  },
+  "en": {
+    "name": "Basil",
+    "shortDescription": "Sweet, intensely aromatic and the most patient thing we grow — worth the wait for the perfume alone.",
+    "description": "Basil as a microgreen is the herb concentrated into its earliest leaves: the same sweet, faintly clove-like aroma as the mature plant, but brighter and less resinous, because the paired oval leaves are still soft enough to eat whole rather than chopped. It is also the most patient thing on this shelf — basil germinates and grows slower than every brassica here, and rewards a steady hand with humidity more than it rewards speed. Cut once the true leaves have opened fully and release their scent at a touch.",
+    "flavourNotes": "Sweet and intensely aromatic, with a warm, faintly clove-like note underneath. Softer and less resinous than the mature herb.",
+    "growingTips": "Mist rather than pour, and keep the tray humid until germination — basil sulks and germinates unevenly in a dry canopy. Cut once the paired true leaves have opened and smell fragrant when brushed.",
+    "nutrition": [
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Calcium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Iron",
+        "value": "Moderate"
+      },
+      {
+        "label": "Linalool and eugenol (the aromatic compounds behind the scent)",
+        "value": "Present"
+      },
+      {
+        "label": "Flavonoids",
+        "value": "Present"
+      },
+      {
+        "label": "Vitamin E",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin A contributes to the maintenance of normal vision and normal skin.",
+      "Vitamin C contributes to normal immune function and protects cells from oxidative stress.",
+      "Iron contributes to normal oxygen transport in the blood and to reducing tiredness and fatigue."
+    ],
+    "cautions": [
+      "Basil naturally contains trace amounts of estragole, a compound also found in many common culinary herbs and spices. Ordinary garnish quantities are not a concern for most adults; avoid eating it in large amounts daily over long periods.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "What does it taste like?",
+        "answer": "Sweet and intensely herbal, with a warm, clove-like edge — closer to biting a fresh basil leaf than to the dried version in a spice jar. It is softer and less resinous than a mature plant, because the leaf has not yet built up its full oil content."
+      },
+      {
+        "question": "How is this different from growing basil at home?",
+        "answer": "Stage and intention. A home basil plant is grown for weeks and picked leaf by leaf as a herb; this is cut once, at its earliest true-leaf stage, as a whole tray. The flavour is brighter and less concentrated, and you eat the stem along with the leaf."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. Basil bruises and blackens faster than most leaves here, so handle it gently and eat it in the first half of that window."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Anywhere you would finish with fresh basil — scattered over pizza or pasta as it leaves the pan, on a tomato salad, folded into a sandwich, or as the garnish on a cocktail or lemonade."
+      },
+      {
+        "question": "Is this the same basil used for pesto?",
+        "answer": "Yes — it is the sweet basil family used across Indian and Italian kitchens, just cut at the seedling stage instead of grown out for weeks. It works in a pesto, but the flavour is lighter, so taste as you go."
+      }
+    ],
+    "imageAlt": "Tray of delicate green basil microgreens with paired oval leaves"
+  },
+  "kn": {
+    "name": "ಬೆಸಿಲ್ (ಹಸಿರು ಸಿಹಿ ತುಳಸಿ)",
+    "shortDescription": "ಸಿಹಿ, ತೀವ್ರ ಸುಗಂಧ, ಮತ್ತು ನಾವು ಬೆಳೆಸುವುದರಲ್ಲಿ ಅತಿ ತಾಳ್ಮೆ ಬೇಡುವ ಸೊಪ್ಪು — ಆ ಪರಿಮಳಕ್ಕಾಗಿಯೇ ಕಾಯುವುದು ಸಾರ್ಥಕ.",
+    "description": "ಮೈಕ್ರೋಗ್ರೀನ್ ಆಗಿ ಬೆಸಿಲ್ ಎಂದರೆ ಈ ಸೊಪ್ಪಿನ ಮೊದಲ ಎಲೆಗಳಲ್ಲೇ ಸಾಂದ್ರವಾದ ಪರಿಮಳ: ಬೆಳೆದ ಗಿಡದ ಅದೇ ಸಿಹಿ, ಸ್ವಲ್ಪ ಲವಂಗದಂತಹ ಸುಗಂಧ, ಆದರೆ ಹೆಚ್ಚು ಪ್ರಕಾಶಮಾನ ಮತ್ತು ಕಡಿಮೆ ಎಣ್ಣೆಯಂಶ, ಏಕೆಂದರೆ ಜೋಡಿ ಅಂಡಾಕಾರದ ಎಲೆಗಳು ಇನ್ನೂ ಮೃದುವಾಗಿದ್ದು ಕತ್ತರಿಸದೆ ಪೂರ್ತಿಯಾಗಿ ತಿನ್ನಬಹುದು. ಇದು ಈ ಶೆಲ್ಫಿನಲ್ಲಿ ಅತಿ ತಾಳ್ಮೆ ಬೇಡುವ ಸೊಪ್ಪೂ ಹೌದು — ಇಲ್ಲಿನ ಪ್ರತಿ ಬ್ರಾಸಿಕಾಗಿಂತ ಬೆಸಿಲ್ ನಿಧಾನವಾಗಿ ಮೊಳಕೆಯೊಡೆದು ಬೆಳೆಯುತ್ತದೆ, ಮತ್ತು ವೇಗಕ್ಕಿಂತ ಸ್ಥಿರವಾದ ತೇವಾಂಶಕ್ಕೆ ಚೆನ್ನಾಗಿ ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತದೆ. ನಿಜವಾದ ಎಲೆಗಳು ಪೂರ್ತಿ ತೆರೆದು ಸ್ಪರ್ಶಿಸಿದಾಗ ಪರಿಮಳ ಬಿಡುವಾಗ ಕತ್ತರಿಸಿ.",
+    "flavourNotes": "ಸಿಹಿ ಮತ್ತು ತೀವ್ರ ಸುಗಂಧ, ಕೆಳಗೆ ಬೆಚ್ಚಗಿನ ಲವಂಗದಂತಹ ಸುಳಿವು. ಬೆಳೆದ ಸೊಪ್ಪಿಗಿಂತ ಮೃದು ಮತ್ತು ಕಡಿಮೆ ಎಣ್ಣೆಯಂಶ.",
+    "growingTips": "ಸುರಿಯುವ ಬದಲು ಸಿಂಪಡಿಸಿ, ಮೊಳಕೆಯೊಡೆಯುವವರೆಗೆ ಟ್ರೇ ತೇವವಾಗಿರಲಿ — ಒಣ ಹಾಸಿನಲ್ಲಿ ಬೆಸಿಲ್ ಸೊಪ್ಪಾಗಿ ಅಸಮವಾಗಿ ಮೊಳಕೆಯೊಡೆಯುತ್ತದೆ. ಜೋಡಿ ನಿಜವಾದ ಎಲೆಗಳು ತೆರೆದು, ಸ್ಪರ್ಶಿಸಿದಾಗ ಪರಿಮಳ ಬಿಟ್ಟಾಗ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಲಿನಲೂಲ್ ಮತ್ತು ಯುಜಿನಾಲ್ (ಸುಗಂಧದ ಮೂಲ ಸಂಯುಕ್ತಗಳು)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫ್ಲೇವನಾಯ್ಡ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ E",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ ಮತ್ತು ಸಾಮಾನ್ಯ ಚರ್ಮದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ಕಬ್ಬಿಣ ರಕ್ತದಲ್ಲಿ ಸಾಮಾನ್ಯ ಆಮ್ಲಜನಕ ಸಾಗಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಹಾಗೂ ಬಳಲಿಕೆ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಬೆಸಿಲ್‌ನಲ್ಲಿ ಎಸ್ಟ್ರಾಗೋಲ್ ಎಂಬ ಸಂಯುಕ್ತದ ಅಲ್ಪ ಪ್ರಮಾಣ ಸ್ವಾಭಾವಿಕವಾಗಿ ಇರುತ್ತದೆ — ಇದು ಅನೇಕ ಸಾಮಾನ್ಯ ಅಡುಗೆ ಸೊಪ್ಪು ಮತ್ತು ಮಸಾಲೆಗಳಲ್ಲೂ ಇರುತ್ತದೆ. ಸಾಮಾನ್ಯ ಅಲಂಕಾರದ ಪ್ರಮಾಣ ಬಹುತೇಕ ವಯಸ್ಕರಿಗೆ ಸಮಸ್ಯೆಯಲ್ಲ; ದೀರ್ಘಕಾಲ ದಿನವೂ ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ತಿನ್ನುವುದನ್ನು ತಪ್ಪಿಸಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದರ ರುಚಿ ಹೇಗಿದೆ?",
+        "answer": "ಸಿಹಿ ಮತ್ತು ತೀವ್ರ ಸೊಪ್ಪಿನ ಪರಿಮಳ, ಕೆಳಗೆ ಬೆಚ್ಚಗಿನ ಲವಂಗದಂತಹ ಅಂಚು — ಮಸಾಲೆ ಡಬ್ಬಿಯ ಒಣ ಬೆಸಿಲ್‌ಗಿಂತ ತಾಜಾ ಎಲೆ ಕಚ್ಚಿದಂತೆ. ಎಣ್ಣೆಯಂಶ ಪೂರ್ತಿ ಬೆಳೆಯದ ಕಾರಣ ಬೆಳೆದ ಗಿಡಕ್ಕಿಂತ ಮೃದು ಮತ್ತು ಕಡಿಮೆ ಎಣ್ಣೆಯಂಶ."
+      },
+      {
+        "question": "ಮನೆಯಲ್ಲಿ ಬೆಸಿಲ್ ಬೆಳೆಸುವುದಕ್ಕಿಂತ ಇದು ಹೇಗೆ ಬೇರೆ?",
+        "answer": "ಹಂತ ಮತ್ತು ಉದ್ದೇಶ ಬೇರೆ. ಮನೆಯ ಬೆಸಿಲ್ ಗಿಡವನ್ನು ವಾರಗಟ್ಟಲೆ ಬೆಳೆಸಿ ಎಲೆ ಎಲೆಯಾಗಿ ಸೊಪ್ಪಿನಂತೆ ಕೀಳುತ್ತೀರಿ; ಇದನ್ನು ಮೊದಲ ನಿಜವಾದ ಎಲೆಯ ಹಂತದಲ್ಲೇ ಒಂದೇ ಬಾರಿಗೆ ಪೂರ್ತಿ ಟ್ರೇ ಆಗಿ ಕತ್ತರಿಸುತ್ತೇವೆ. ರುಚಿ ಹೆಚ್ಚು ಪ್ರಕಾಶಮಾನ ಮತ್ತು ಕಡಿಮೆ ಸಾಂದ್ರ, ಮತ್ತು ಎಲೆಯ ಜೊತೆ ಕಾಂಡವನ್ನೂ ತಿನ್ನುತ್ತೀರಿ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಇಲ್ಲಿನ ಬಹುತೇಕ ಎಲೆಗಳಿಗಿಂತ ಬೆಸಿಲ್ ಬೇಗ ಜಜ್ಜಿ ಕಪ್ಪಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಮೃದುವಾಗಿ ನಿರ್ವಹಿಸಿ ಮತ್ತು ಮೊದಲ ಅರ್ಧದಲ್ಲೇ ತಿನ್ನಿ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ತಾಜಾ ಬೆಸಿಲ್ ಮುಗಿಸುವ ಯಾವುದೇ ಕಡೆ — ಬಾಣಲೆಯಿಂದ ಇಳಿಸಿದ ಪಿಜ್ಜಾ ಅಥವಾ ಪಾಸ್ತಾದ ಮೇಲೆ, ಟೊಮ್ಯಾಟೊ ಸಲಾಡ್‌ನಲ್ಲಿ, ಸ್ಯಾಂಡ್‌ವಿಚ್‌ನಲ್ಲಿ ಮಡಿಚಿ, ಅಥವಾ ಕಾಕ್‌ಟೈಲ್ ಅಥವಾ ನಿಂಬೆ ಪಾನಕದ ಅಲಂಕಾರವಾಗಿ."
+      },
+      {
+        "question": "ಇದೇ ಬೆಸಿಲ್ ಪೆಸ್ಟೋಗೆ ಬಳಸುತ್ತಾರೆಯೇ?",
+        "answer": "ಹೌದು — ಇದು ಭಾರತೀಯ ಮತ್ತು ಇಟಾಲಿಯನ್ ಅಡುಗೆಮನೆಗಳಲ್ಲಿ ಬಳಸುವ ಸಿಹಿ ತುಳಸಿ ಕುಟುಂಬವೇ, ವಾರಗಟ್ಟಲೆ ಬೆಳೆಸುವ ಬದಲು ಮೊಳಕೆ ಹಂತದಲ್ಲೇ ಕತ್ತರಿಸಿದ್ದು. ಪೆಸ್ಟೋಗೆ ಬಳಸಬಹುದು, ಆದರೆ ರುಚಿ ಹಗುರ, ಹಾಗಾಗಿ ರುಚಿ ನೋಡುತ್ತಾ ಸೇರಿಸಿ."
+      }
+    ],
+    "imageAlt": "ಜೋಡಿ ಅಂಡಾಕಾರದ ಎಲೆಗಳ ಮೃದು ಹಸಿರು ಬೆಸಿಲ್ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

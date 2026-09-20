@@ -1,0 +1,140 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
+  "en": {
+    "name": "Radish (pink)",
+    "shortDescription": "Peppery, quick and almost impossible to fail — the seed to prove a new set-up with.",
+    "description": "Pink radish is the one most microgreen growers settle on: a pink-stemmed, sharply peppery green that goes from dry seed to a cut tray faster than anything else on this list. It needs no soaking, germinates within a day of sowing, and grows vigorously enough that it outruns most of the mistakes a new grower makes. That speed is also what makes it the right seed to test a rack, a light or a new medium with — you find out in a week rather than a fortnight.\n\nThe seed is untreated and cleaned for sowing. Nothing is dressed with fungicide, because a seed treated for field use has no place in a tray you are going to eat off. Expect fine root hairs on the surface of a young tray and do not mistake them for mould: they are white, fuzzy, appear overnight all over the stems, and disappear when misted. Mould is grey, sits in patches, and smells.",
+    "sowing": "Sow dry, straight onto damp medium — no soak, which is one less step and one less thing to get wrong. Around 30 to 40 grams for a standard 10 by 20 inch tray, spread thin enough that you can still see medium between the seeds; radish swells a lot and a crowded tray is where rot starts. Cover for the first two days to hold humidity, then uncover and give it bright indirect light. Water from the bottom once it is up, keep the air moving, and cut when the first true leaves are just showing behind the seed leaves.",
+    "specs": [
+      {
+        "label": "Germination",
+        "value": "90% or better"
+      },
+      {
+        "label": "Treatment",
+        "value": "Untreated — no fungicide, no seed dressing"
+      },
+      {
+        "label": "Soak",
+        "value": "None — sow dry"
+      },
+      {
+        "label": "Sow rate",
+        "value": "30 to 40 g per 10 × 20 in tray"
+      },
+      {
+        "label": "Blackout",
+        "value": "2 days, unweighted"
+      },
+      {
+        "label": "Harvest window",
+        "value": "6 to 9 days from sowing"
+      }
+    ],
+    "specsNote": "Germination is a lot-by-lot fact, not a promise about every seed in the bag. These figures are what we measure on our own trays at Bengaluru room temperature, and a hot dry week will shorten the harvest window while a cool one stretches it. Treat the sow rate as a starting point and adjust once you have grown one tray of your own.",
+    "uses": [
+      "Microgreen trays — the main use, cut at the seed-leaf stage for the sharpest flavour.",
+      "Jar sprouting, where the same peppery heat arrives in three or four days.",
+      "Sowing on in a pot or bed for actual radishes, if you leave it in the ground."
+    ],
+    "cautions": [
+      "This is seed for sowing. It is clean and untreated, but it is not packed, washed or processed as a ready-to-eat food.",
+      "Keep it cool, dark and dry, in a sealed jar once the monsoon arrives — heat and humidity take the germination rate down faster than age does.",
+      "Radish is a brassica, and brassica microgreens contain goitrogens. In large regular amounts they can interfere with thyroid function; if that applies to you, keep portions moderate and ask your doctor.",
+      "The white fuzz on a young tray is root hair, not mould. Mist it and it vanishes. If it is grey, patchy and smells sour, that is mould — improve the airflow and sow thinner next time."
+    ],
+    "faq": [
+      {
+        "question": "Does radish seed need soaking?",
+        "answer": "No, and it is better not to. Radish takes up water readily and a soaked seed turns slippery and clumps as you sow, which gives you a patchy tray. Sow it dry onto damp medium and it will be through within a day."
+      },
+      {
+        "question": "How much seed per tray?",
+        "answer": "About 30 to 40 grams for a 10 by 20 inch tray, so a 500 g bag is roughly twelve to sixteen trays. Radish needs a thinner sow than sunflower — the seed is small but it swells hard, and a crowded tray traps moisture at the base."
+      },
+      {
+        "question": "There is white fuzz all over my tray. Have I lost it?",
+        "answer": "Almost certainly not. Radish throws fine white root hairs that appear overnight, coat the stems evenly and vanish when you mist them. Mould is grey rather than white, grows in distinct patches rather than evenly, and smells sour. If in doubt, mist it and look again an hour later."
+      },
+      {
+        "question": "Why is my radish pale instead of pink?",
+        "answer": "Light. The pink in the stem develops on exposure, so a tray kept covered too long or grown in a dim corner comes out pale and leggy. Uncover it on day two and give it the brightest indirect light you have."
+      },
+      {
+        "question": "How long will the seed keep?",
+        "answer": "Sealed, cool and dry, radish seed holds well for a year and usually two. You will notice it as slower and patchier germination before you ever see a tray fail outright. Buy a season's worth rather than a sack that has to sit through a Bengaluru monsoon."
+      }
+    ],
+    "imageAlt": "A burlap sack spilling tan radish seed, with pink radish roots behind it"
+  },
+  "kn": {
+    "name": "ಮೂಲಂಗಿ (ಗುಲಾಬಿ)",
+    "shortDescription": "ಖಾರ, ವೇಗ, ಮತ್ತು ವಿಫಲವಾಗುವುದೇ ಕಷ್ಟ — ಹೊಸ ವ್ಯವಸ್ಥೆಯನ್ನು ಪರೀಕ್ಷಿಸಲು ಸರಿಯಾದ ಬೀಜ.",
+    "description": "ಗುಲಾಬಿ ಕಾಂಡದ ಮೂಲಂಗಿ — ಬಹುತೇಕ ಮೈಕ್ರೋಗ್ರೀನ್ ಬೆಳೆಗಾರರು ಕೊನೆಗೆ ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಂಗಿ ತಳಿ. ಗುಲಾಬಿ ಕಾಂಡ, ತೀಕ್ಷ್ಣ ಖಾರ, ಮತ್ತು ಒಣ ಬೀಜದಿಂದ ಕಟಾವಿನ ಟ್ರೇವರೆಗೆ ಈ ಪಟ್ಟಿಯ ಇನ್ನಾವುದಕ್ಕಿಂತಲೂ ವೇಗ. ನೆನೆಸುವ ಅಗತ್ಯವಿಲ್ಲ, ಬಿತ್ತಿದ ಒಂದು ದಿನದೊಳಗೆ ಮೊಳಕೆಯೊಡೆಯುತ್ತದೆ, ಮತ್ತು ಹೊಸ ಬೆಳೆಗಾರ ಮಾಡುವ ಬಹುತೇಕ ತಪ್ಪುಗಳನ್ನು ಮೀರಿ ಬೆಳೆಯುತ್ತದೆ. ಇದೇ ವೇಗದಿಂದ ಹೊಸ ರ್ಯಾಕ್, ಹೊಸ ದೀಪ ಅಥವಾ ಹೊಸ ಮಾಧ್ಯಮವನ್ನು ಪರೀಕ್ಷಿಸಲು ಇದು ಸೂಕ್ತ — ಎರಡು ವಾರದ ಬದಲು ಒಂದು ವಾರದಲ್ಲಿ ಉತ್ತರ ಸಿಗುತ್ತದೆ.\n\nಬೀಜ ಲೇಪನವಿಲ್ಲದ್ದು, ಬಿತ್ತನೆಗಾಗಿ ಶುದ್ಧೀಕರಿಸಿದ್ದು. ಯಾವುದಕ್ಕೂ ಶಿಲೀಂಧ್ರನಾಶಕ ಲೇಪನ ಇಲ್ಲ; ಹೊಲದ ಬಳಕೆಗೆ ಲೇಪಿಸಿದ ಬೀಜಕ್ಕೆ ನೀವು ತಿನ್ನುವ ಟ್ರೇಯಲ್ಲಿ ಜಾಗವಿಲ್ಲ. ಎಳೆಯ ಟ್ರೇಯ ಮೇಲ್ಪದರದಲ್ಲಿ ಸೂಕ್ಷ್ಮ ಬೇರಿನ ಕೂದಲು ಕಾಣುತ್ತದೆ — ಅದನ್ನು ಬೂಸ್ಟು ಎಂದು ತಪ್ಪಾಗಿ ತಿಳಿಯಬೇಡಿ: ಅದು ಬಿಳಿ, ಮೃದು, ರಾತ್ರಿಯೊಂದರಲ್ಲಿ ಕಾಂಡಗಳ ಮೇಲೆಲ್ಲಾ ಸಮನಾಗಿ ಬರುತ್ತದೆ ಮತ್ತು ನೀರು ಸಿಂಪಡಿಸಿದರೆ ಮಾಯವಾಗುತ್ತದೆ. ಬೂಸ್ಟು ಬೂದು ಬಣ್ಣ, ತೇಪೆ ತೇಪೆಯಾಗಿ ಕುಳಿತಿರುತ್ತದೆ, ಮತ್ತು ವಾಸನೆ ಬರುತ್ತದೆ.",
+    "sowing": "ಒಣಗಿದಂತೆಯೇ ಒದ್ದೆ ಮಾಧ್ಯಮದ ಮೇಲೆ ನೇರವಾಗಿ ಬಿತ್ತಿ — ನೆನೆಸುವ ಅಗತ್ಯವಿಲ್ಲ, ಅಂದರೆ ಒಂದು ಹೆಜ್ಜೆ ಮತ್ತು ಒಂದು ತಪ್ಪಿನ ಸಾಧ್ಯತೆ ಕಡಿಮೆ. 10 × 20 ಇಂಚಿನ ಸಾಮಾನ್ಯ ಟ್ರೇಗೆ ಸುಮಾರು 30ರಿಂದ 40 ಗ್ರಾಂ, ಬೀಜಗಳ ನಡುವೆ ಮಾಧ್ಯಮ ಕಾಣುವಷ್ಟು ತೆಳುವಾಗಿ ಹರಡಿ; ಮೂಲಂಗಿ ಚೆನ್ನಾಗಿ ಊದಿಕೊಳ್ಳುತ್ತದೆ ಮತ್ತು ಒತ್ತೊತ್ತಾದ ಟ್ರೇಯಲ್ಲೇ ಕೊಳೆ ಶುರುವಾಗುತ್ತದೆ. ಮೊದಲ ಎರಡು ದಿನ ತೇವ ಉಳಿಸಲು ಮುಚ್ಚಿ, ನಂತರ ತೆರೆದು ಪ್ರಕಾಶಮಾನ ಪರೋಕ್ಷ ಬೆಳಕು ಕೊಡಿ. ಮೇಲೆ ಬಂದ ಮೇಲೆ ಕೆಳಗಿನಿಂದ ನೀರು ಕೊಡಿ, ಗಾಳಿ ಓಡಾಡುವಂತೆ ನೋಡಿಕೊಳ್ಳಿ, ಮತ್ತು ಬೀಜದ ಎಲೆಗಳ ಹಿಂದೆ ಮೊದಲ ನಿಜವಾದ ಎಲೆ ಕಾಣುವಾಗ ಕತ್ತರಿಸಿ.",
+    "specs": [
+      {
+        "label": "ಮೊಳಕೆ ಪ್ರಮಾಣ",
+        "value": "90% ಅಥವಾ ಹೆಚ್ಚು"
+      },
+      {
+        "label": "ಲೇಪನ",
+        "value": "ಲೇಪನವಿಲ್ಲ — ಶಿಲೀಂಧ್ರನಾಶಕವಿಲ್ಲ, ಬೀಜ ಔಷಧವಿಲ್ಲ"
+      },
+      {
+        "label": "ನೆನೆಸುವಿಕೆ",
+        "value": "ಬೇಡ — ಒಣಗಿದಂತೆ ಬಿತ್ತಿ"
+      },
+      {
+        "label": "ಬಿತ್ತನೆ ಪ್ರಮಾಣ",
+        "value": "10 × 20 ಇಂಚಿನ ಟ್ರೇಗೆ 30ರಿಂದ 40 ಗ್ರಾಂ"
+      },
+      {
+        "label": "ಕತ್ತಲೆ ಅವಧಿ",
+        "value": "ಭಾರ ಇಲ್ಲದೆ 2 ದಿನ"
+      },
+      {
+        "label": "ಕಟಾವಿನ ಅವಧಿ",
+        "value": "ಬಿತ್ತನೆಯಿಂದ 6ರಿಂದ 9 ದಿನ"
+      }
+    ],
+    "specsNote": "ಮೊಳಕೆ ಪ್ರಮಾಣ ಪ್ರತಿ ತಂಡಕ್ಕೆ ಬದಲಾಗುವ ಸಂಗತಿ — ಚೀಲದ ಪ್ರತಿ ಬೀಜದ ಭರವಸೆಯಲ್ಲ. ಇಲ್ಲಿನ ಅಂಕಿಗಳು ಬೆಂಗಳೂರಿನ ಕೋಣೆಯ ಉಷ್ಣತೆಯಲ್ಲಿ ನಮ್ಮದೇ ಟ್ರೇಗಳಲ್ಲಿ ಅಳೆದವು; ಬಿಸಿ ಒಣ ವಾರ ಕಟಾವಿನ ಅವಧಿಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ, ತಣ್ಣನೆಯದು ಹೆಚ್ಚಿಸುತ್ತದೆ. ಬಿತ್ತನೆ ಪ್ರಮಾಣವನ್ನು ಆರಂಭದ ಅಂದಾಜಾಗಿ ತೆಗೆದುಕೊಂಡು, ನಿಮ್ಮದೇ ಒಂದು ಟ್ರೇ ಬೆಳೆದ ಮೇಲೆ ಹೊಂದಿಸಿ.",
+    "uses": [
+      "ಮೈಕ್ರೋಗ್ರೀನ್ ಟ್ರೇ — ಮುಖ್ಯ ಬಳಕೆ; ಅತಿ ತೀಕ್ಷ್ಣ ರುಚಿಗೆ ಬೀಜದ ಎಲೆಯ ಹಂತದಲ್ಲೇ ಕತ್ತರಿಸಿ.",
+      "ಜಾರ್‌ನಲ್ಲಿ ಮೊಳಕೆ — ಅದೇ ಖಾರ ಮೂರು ನಾಲ್ಕು ದಿನಗಳಲ್ಲಿ ಸಿಗುತ್ತದೆ.",
+      "ಕುಂಡ ಅಥವಾ ಮಡಿಯಲ್ಲಿ ಬಿತ್ತಿ ನಿಜವಾದ ಮೂಲಂಗಿ ಬೆಳೆಯಲು, ಮಣ್ಣಿನಲ್ಲಿ ಬಿಟ್ಟರೆ."
+    ],
+    "cautions": [
+      "ಇದು ಬಿತ್ತನೆಗಾಗಿನ ಬೀಜ. ಶುದ್ಧ ಮತ್ತು ಲೇಪನವಿಲ್ಲದ್ದು, ಆದರೆ ತಕ್ಷಣ ತಿನ್ನುವ ಆಹಾರವಾಗಿ ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದ್ದಲ್ಲ.",
+      "ತಣ್ಣನೆಯ, ಕತ್ತಲ, ಒಣ ಜಾಗದಲ್ಲಿ ಇಡಿ; ಮಳೆಗಾಲದಲ್ಲಿ ಗಾಳಿ ಹೋಗದ ಡಬ್ಬಿಯಲ್ಲಿ — ವಯಸ್ಸಿಗಿಂತ ಶಾಖ ಮತ್ತು ತೇವವೇ ಮೊಳಕೆ ಪ್ರಮಾಣವನ್ನು ಬೇಗ ಇಳಿಸುತ್ತವೆ.",
+      "ಮೂಲಂಗಿ ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು, ಮತ್ತು ಬ್ರಾಸಿಕಾ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನಲ್ಲಿ ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳಿವೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು; ಸಂಬಂಧಿಸಿದರೆ ಪ್ರಮಾಣ ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ಎಳೆಯ ಟ್ರೇಯ ಮೇಲಿನ ಬಿಳಿ ಮೃದು ಪದರ ಬೇರಿನ ಕೂದಲು, ಬೂಸ್ಟಲ್ಲ. ನೀರು ಸಿಂಪಡಿಸಿದರೆ ಮಾಯವಾಗುತ್ತದೆ. ಬೂದು ಬಣ್ಣ, ತೇಪೆ ತೇಪೆ ಮತ್ತು ಹುಳಿ ವಾಸನೆ ಇದ್ದರೆ ಅದು ಬೂಸ್ಟು — ಗಾಳಿ ಹೆಚ್ಚಿಸಿ, ಮುಂದಿನ ಬಾರಿ ತೆಳುವಾಗಿ ಬಿತ್ತಿ."
+    ],
+    "faq": [
+      {
+        "question": "ಮೂಲಂಗಿ ಬೀಜ ನೆನೆಸಬೇಕೇ?",
+        "answer": "ಇಲ್ಲ, ನೆನೆಸದಿರುವುದೇ ಒಳ್ಳೆಯದು. ಮೂಲಂಗಿ ಬೇಗ ನೀರು ಹಿಡಿಯುತ್ತದೆ, ನೆನೆಸಿದ ಬೀಜ ಜಾರುತ್ತದೆ ಮತ್ತು ಬಿತ್ತುವಾಗ ಉಂಡೆಯಾಗುತ್ತದೆ — ಇದರಿಂದ ಟ್ರೇ ಅಸಮವಾಗುತ್ತದೆ. ಒದ್ದೆ ಮಾಧ್ಯಮದ ಮೇಲೆ ಒಣಗಿದಂತೆ ಬಿತ್ತಿ, ಒಂದು ದಿನದಲ್ಲಿ ಮೇಲೆ ಬರುತ್ತದೆ."
+      },
+      {
+        "question": "ಒಂದು ಟ್ರೇಗೆ ಎಷ್ಟು ಬೀಜ?",
+        "answer": "10 × 20 ಇಂಚಿನ ಟ್ರೇಗೆ ಸುಮಾರು 30ರಿಂದ 40 ಗ್ರಾಂ, ಅಂದರೆ 500 ಗ್ರಾಂ ಚೀಲ ಸರಿಸುಮಾರು ಹನ್ನೆರಡರಿಂದ ಹದಿನಾರು ಟ್ರೇ. ಸೂರ್ಯಕಾಂತಿಗಿಂತ ತೆಳುವಾಗಿ ಬಿತ್ತಬೇಕು — ಬೀಜ ಚಿಕ್ಕದಾದರೂ ಚೆನ್ನಾಗಿ ಊದಿಕೊಳ್ಳುತ್ತದೆ, ಮತ್ತು ಒತ್ತೊತ್ತಾದ ಟ್ರೇಯ ಬುಡದಲ್ಲಿ ತೇವ ಸಿಕ್ಕಿಕೊಳ್ಳುತ್ತದೆ."
+      },
+      {
+        "question": "ಟ್ರೇ ತುಂಬಾ ಬಿಳಿ ಪದರ ಬಂದಿದೆ. ಬೆಳೆ ಹೋಯಿತೇ?",
+        "answer": "ಬಹುಶಃ ಇಲ್ಲ. ಮೂಲಂಗಿ ಸೂಕ್ಷ್ಮ ಬಿಳಿ ಬೇರಿನ ಕೂದಲು ಬಿಡುತ್ತದೆ — ರಾತ್ರಿಯೊಂದರಲ್ಲಿ ಬಂದು ಕಾಂಡಗಳ ಮೇಲೆ ಸಮನಾಗಿ ಹರಡಿ, ನೀರು ಸಿಂಪಡಿಸಿದರೆ ಮಾಯವಾಗುತ್ತದೆ. ಬೂಸ್ಟು ಬಿಳಿಗಿಂತ ಬೂದು, ಸಮನಾಗಿ ಅಲ್ಲದೆ ತೇಪೆಯಾಗಿ ಬೆಳೆಯುತ್ತದೆ, ಮತ್ತು ಹುಳಿ ವಾಸನೆ ಬರುತ್ತದೆ. ಸಂದೇಹವಿದ್ದರೆ ನೀರು ಸಿಂಪಡಿಸಿ ಒಂದು ಗಂಟೆ ಬಿಟ್ಟು ನೋಡಿ."
+      },
+      {
+        "question": "ನನ್ನ ಮೂಲಂಗಿ ಗುಲಾಬಿ ಆಗದೆ ಬಿಳಿಚಿದೆ ಏಕೆ?",
+        "answer": "ಬೆಳಕು. ಕಾಂಡದ ಗುಲಾಬಿ ಬಣ್ಣ ಬೆಳಕಿಗೆ ಒಡ್ಡಿದಾಗ ಬರುತ್ತದೆ; ಹೆಚ್ಚು ಕಾಲ ಮುಚ್ಚಿಟ್ಟ ಅಥವಾ ಮಂದ ಮೂಲೆಯಲ್ಲಿ ಬೆಳೆದ ಟ್ರೇ ಬಿಳಿಚಿ ಉದ್ದವಾಗುತ್ತದೆ. ಎರಡನೇ ದಿನ ತೆರೆದು, ಇರುವ ಅತಿ ಪ್ರಕಾಶಮಾನ ಪರೋಕ್ಷ ಬೆಳಕು ಕೊಡಿ."
+      },
+      {
+        "question": "ಬೀಜ ಎಷ್ಟು ಕಾಲ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ಮುಚ್ಚಿದ, ತಣ್ಣನೆಯ, ಒಣ ಜಾಗದಲ್ಲಿ ಮೂಲಂಗಿ ಬೀಜ ಒಂದು ವರ್ಷ ಚೆನ್ನಾಗಿ, ಸಾಮಾನ್ಯವಾಗಿ ಎರಡು ವರ್ಷವೂ ಉಳಿಯುತ್ತದೆ. ಟ್ರೇ ಪೂರ್ತಿ ವಿಫಲವಾಗುವುದಕ್ಕಿಂತ ಮುಂಚೆಯೇ ನಿಧಾನ, ಅಸಮ ಮೊಳಕೆಯಾಗಿ ಗಮನಕ್ಕೆ ಬರುತ್ತದೆ. ಬೆಂಗಳೂರಿನ ಮಳೆಗಾಲ ಪೂರ್ತಿ ಕುಳಿತಿರುವ ಚೀಲಕ್ಕಿಂತ ಒಂದು ಋತುವಿಗೆ ಬೇಕಾದಷ್ಟು ಖರೀದಿಸಿ."
+      }
+    ],
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ತಿಳಿ ಕಂದು ಮೂಲಂಗಿ ಬೀಜ, ಹಿಂದೆ ಗುಲಾಬಿ ಮೂಲಂಗಿಗಳು"
+  }
+}

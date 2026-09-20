@@ -26,7 +26,23 @@ import { VarietyRow } from "./VarietyRow";
  * few hundred, move it to a query — not before.
  */
 const COLUMNS =
-  "minmax(11rem,1.6fr) repeat(4, minmax(4.5rem, 0.7fr)) 6rem 5.5rem 4rem";
+  "minmax(11rem,1.6fr) repeat(5, minmax(4.5rem, 0.7fr)) 6rem 5.5rem 4rem";
+
+/**
+ * Below this the rows scroll sideways inside their own box rather than
+ * widening the page.
+ *
+ * Added 17 Sep 2026, alongside the same fix on `/admin/seeds`. The rack tables
+ * got it when the nav rail landed and this screen was missed: a row's tracks
+ * come from an inline `gridTemplateColumns`, so they apply at every width, and
+ * at 414px this table pushed the whole document 837px wide — taking the admin
+ * rail with it.
+ *
+ * Stacking to one column is not the alternative: a compact row's inputs carry
+ * their label only as an `aria-label`, so it would give an operator four
+ * unlabelled boxes.
+ */
+const MIN_WIDTH = "min-w-[52rem]";
 
 export function VarietyTable({
   varieties,
@@ -104,9 +120,13 @@ export function VarietyTable({
           {t("searchNone", { query: query.trim() })}
         </p>
       ) : (
-        <div className="space-y-2">
-          {/* Column headings, hidden below `lg` where each row becomes a
-              stacked card and every input carries its own label instead. */}
+        /* The scroll box wraps the header *and* the rows, so they scroll
+           together and stay aligned. */
+        <div className="overflow-x-auto">
+        <div className={`${MIN_WIDTH} space-y-2`}>
+          {/* Column headings, hidden below `lg` where the table is scrolled
+              rather than stacked and every input carries its own label as its
+              accessible name instead. */}
           <div
             style={{ gridTemplateColumns: COLUMNS }}
             className="hidden gap-x-3 px-4 lg:grid"
@@ -114,7 +134,8 @@ export function VarietyTable({
             {[
               t("colVariety"),
               t("colGrowDays"),
-              t("colYield"),
+              t("colYieldMin"),
+              t("colYieldMax"),
               t("colPrice"),
               t("colSeed"),
               "",
@@ -138,6 +159,7 @@ export function VarietyTable({
               columns={COLUMNS}
             />
           ))}
+        </div>
         </div>
       )}
     </div>

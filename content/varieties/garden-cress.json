@@ -1,0 +1,191 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Garden Cress",
+    "shortDescription": "Sharp, peppery and famously fast. The one that beats every other tray to the table.",
+    "description": "Garden cress is the seed better known in India as halim or aleria — the small dark seed stirred into laddoos and given to new mothers for its iron, long before anyone called it a microgreen. As a tray, the same plant comes up as a dense tangled mat faster than almost anything else we grow, with a peppery bite that sits close to mustard but is sharper and more mineral. It is a different species from mustard entirely, related instead to watercress, and it carries the family's reputation for iron into the leaf stage.",
+    "flavourNotes": "Sharp and peppery with a mineral edge, close to watercress. Strong raw, and the heat mellows fast once it meets anything warm or creamy.",
+    "growingTips": "Sows and germinates faster than almost anything on our list, so keep the density moderate — a thick sow bolts into a tangled mat that is hard to cut cleanly. Mist rather than drench, and cut as soon as the canopy closes over.",
+    "nutrition": [
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Iron",
+        "value": "High"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Calcium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Potassium",
+        "value": "Present"
+      },
+      {
+        "label": "Glucosinolates",
+        "value": "Present"
+      },
+      {
+        "label": "Phenolic compounds (including caffeic and gallic acid)",
+        "value": "Present"
+      },
+      {
+        "label": "Flavonoids (including kaempferol derivatives)",
+        "value": "Present"
+      },
+      {
+        "label": "Omega-3 fatty acids (alpha-linolenic acid)",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin A contributes to the maintenance of normal vision, skin and mucous membranes.",
+      "Vitamin C contributes to normal immune function and increases the absorption of iron from plant foods.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Iron contributes to normal oxygen transport in the blood and to reducing tiredness and fatigue.",
+      "Folate contributes to normal blood formation and to normal amino acid synthesis."
+    ],
+    "cautions": [
+      "Garden cress is a brassica relative and contains goitrogens, which in large regular amounts can interfere with thyroid function. If you have a thyroid condition, keep portions moderate and ask your doctor.",
+      "The seed has a long folk reputation as a 'heating' food in Indian home practice, traditionally limited during pregnancy. There is no strong clinical evidence either way, so if you are pregnant, ask your doctor before eating it regularly.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Is this the halim or aleria seed used in laddoos?",
+        "answer": "Same seed, same plant — Lepidium sativum. The laddoo uses the whole soaked seed; this is the same seed grown into a tray and cut as a leaf. The iron reputation carries over, and the peppery bite is new."
+      },
+      {
+        "question": "How is it different from mustard microgreens?",
+        "answer": "Related bite, different plant. Both carry a peppery heat from similar chemistry, but cress is sharper and more mineral, mustard is more wasabi-like and rises into the nose. Cress also comes up noticeably faster — it is one of the quickest trays we grow."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. It holds its bite well but the fine stems wilt faster than a sturdier leaf's, so eat it in the first half of that window if you can."
+      },
+      {
+        "question": "Can children eat it?",
+        "answer": "In small amounts, yes — the pepperiness is milder than a chilli and fades with cooking or dressing. Start with a pinch, the way you would with any sharp green."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "A pinch over dal, curd rice or a sandwich in place of a stronger spice, folded into a raita, or scattered over eggs. It also works the traditional way, stirred into warm milk with jaggery and ghee."
+      }
+    ],
+    "imageAlt": "Dense tray of fine green garden cress microgreens with tangled thread-like stems"
+  },
+  "kn": {
+    "name": "ಗಾರ್ಡನ್ ಕ್ರೆಸ್ (ಆಲಿವೆ)",
+    "shortDescription": "ಚುರುಕು, ಖಾರ ಮತ್ತು ಪ್ರಸಿದ್ಧ ವೇಗ. ಬೇರೆ ಎಲ್ಲ ಟ್ರೇಗಳಿಗಿಂತ ಮೊದಲು ಸಿದ್ಧವಾಗುವ ಸೊಪ್ಪು.",
+    "description": "ಗಾರ್ಡನ್ ಕ್ರೆಸ್ ಬೀಜ ಭಾರತದಲ್ಲಿ ಹಲೀಮ್ ಅಥವಾ ಆಲಿವೆ ಎಂದು ಹೆಚ್ಚು ಪರಿಚಿತ — ಮೈಕ್ರೋಗ್ರೀನ್ ಎಂಬ ಪದ ಬರುವ ಮುನ್ನವೇ, ಇದರ ಕಬ್ಬಿಣಕ್ಕಾಗಿ ಲಡ್ಡುವಿನಲ್ಲಿ ಬೆರೆಸಿ ಬಾಣಂತಿಯರಿಗೆ ಕೊಡುತ್ತಿದ್ದ ಪುಟ್ಟ ಕಪ್ಪು ಬೀಜ. ಟ್ರೇಯಾಗಿ ಅದೇ ಗಿಡ ನಾವು ಬೆಳೆಸುವ ಬೇರೆ ಯಾವುದಕ್ಕಿಂತ ವೇಗವಾಗಿ ದಟ್ಟ ಹಾಸಾಗಿ ಬರುತ್ತದೆ, ಸಾಸಿವೆಗೆ ಹತ್ತಿರವಾದ ಆದರೆ ಚುರುಕಾದ ಮತ್ತು ಖನಿಜದ ಖಾರದೊಂದಿಗೆ. ಇದು ಸಾಸಿವೆಗೆ ಸಂಬಂಧವಿಲ್ಲದ ಬೇರೆಯೇ ಸಸ್ಯ, ವಾಟರ್‌ಕ್ರೆಸ್‌ಗೆ ಸಂಬಂಧಿಸಿದ್ದು, ಮತ್ತು ಕುಟುಂಬದ ಕಬ್ಬಿಣದ ಹೆಸರನ್ನು ಎಲೆಯ ಹಂತಕ್ಕೂ ತರುತ್ತದೆ.",
+    "flavourNotes": "ಚುರುಕು ಮತ್ತು ಖಾರ, ಖನಿಜದ ಅಂಚು, ವಾಟರ್‌ಕ್ರೆಸ್‌ಗೆ ಹತ್ತಿರ. ಹಸಿಯಾಗಿ ತೀಕ್ಷ್ಣ, ಬೆಚ್ಚಗಿನ ಅಥವಾ ಮಲಾಯಿಯಂಥ ಯಾವುದನ್ನೂ ಸೇರಿದ ಕೂಡಲೇ ಖಾರ ಬೇಗ ಇಳಿಯುತ್ತದೆ.",
+    "growingTips": "ನಮ್ಮ ಪಟ್ಟಿಯಲ್ಲಿ ಬೇರೆ ಬಹುತೇಕದಕ್ಕಿಂತ ಬೇಗ ಬಿತ್ತಿ ಮೊಳಕೆಯೊಡೆಯುತ್ತದೆ, ಆದ್ದರಿಂದ ಮಧ್ಯಮ ಸಾಂದ್ರತೆ ಇಡಿ — ದಟ್ಟ ಬಿತ್ತನೆ ಕತ್ತರಿಸಲು ಕಷ್ಟವಾದ ತೊಡಕಿನ ಹಾಸಾಗುತ್ತದೆ. ನೀರು ಹಾಕುವ ಬದಲು ಸಿಂಪಡಿಸಿ, ಮೇಲ್ಪದರ ಮುಚ್ಚಿದ ಕೂಡಲೇ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫೀನಾಲಿಕ್ ಸಂಯುಕ್ತಗಳು (ಕಫೀಕ್ ಮತ್ತು ಗ್ಯಾಲಿಕ್ ಆಮ್ಲ ಸೇರಿ)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫ್ಲೇವನಾಯ್ಡ್‌ಗಳು (ಕೇಂಫೆರಾಲ್ ಉತ್ಪನ್ನಗಳು ಸೇರಿ)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಒಮೆಗಾ-3 ಕೊಬ್ಬಿನಾಮ್ಲಗಳು (ಆಲ್ಫಾ-ಲಿನೊಲೆನಿಕ್ ಆಮ್ಲ)",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ, ಚರ್ಮ ಮತ್ತು ಲೋಳೆಪಟಲಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಸಸ್ಯ ಆಹಾರಗಳಿಂದ ಕಬ್ಬಿಣದ ಹೀರಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕಬ್ಬಿಣ ರಕ್ತದಲ್ಲಿ ಸಾಮಾನ್ಯ ಆಮ್ಲಜನಕ ಸಾಗಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಹಾಗೂ ಬಳಲಿಕೆ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಅಮೈನೋ ಆಮ್ಲ ಸಂಶ್ಲೇಷಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಗಾರ್ಡನ್ ಕ್ರೆಸ್ ಬ್ರಾಸಿಕಾ ಸಂಬಂಧಿ ಮತ್ತು ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳನ್ನು ಹೊಂದಿದೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು. ಥೈರಾಯ್ಡ್ ಸಮಸ್ಯೆ ಇದ್ದರೆ ಪ್ರಮಾಣವನ್ನು ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ಈ ಬೀಜಕ್ಕೆ ಭಾರತೀಯ ಮನೆ ಪದ್ಧತಿಯಲ್ಲಿ 'ಬಿಸಿ' ಆಹಾರ ಎಂಬ ಹಳೆಯ ನಂಬಿಕೆ ಇದೆ, ಗರ್ಭಾವಸ್ಥೆಯಲ್ಲಿ ಸಾಂಪ್ರದಾಯಿಕವಾಗಿ ಮಿತಗೊಳಿಸಲಾಗುತ್ತದೆ. ಇದಕ್ಕೆ ಬಲವಾದ ವೈದ್ಯಕೀಯ ಪುರಾವೆ ಇಲ್ಲ, ಆದ್ದರಿಂದ ಗರ್ಭಿಣಿಯಾಗಿದ್ದರೆ ನಿಯಮಿತವಾಗಿ ತಿನ್ನುವ ಮೊದಲು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ — ಹಠಾತ್ತನೆ ಹೆಚ್ಚು ತಿನ್ನಬೇಡಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದು ಲಡ್ಡುವಿನಲ್ಲಿ ಬಳಸುವ ಹಲೀಮ್ ಅಥವಾ ಆಲಿವೆ ಬೀಜವೇ?",
+        "answer": "ಅದೇ ಬೀಜ, ಅದೇ ಗಿಡ. ಲಡ್ಡುವಿನಲ್ಲಿ ನೆನೆಸಿದ ಪೂರ್ತಿ ಬೀಜ ಬಳಸುತ್ತಾರೆ; ಇದು ಅದೇ ಬೀಜವನ್ನು ಟ್ರೇಯಲ್ಲಿ ಬೆಳೆಸಿ ಎಲೆಯಾಗಿ ಕತ್ತರಿಸಿದ್ದು. ಕಬ್ಬಿಣದ ಹೆಸರು ಮುಂದುವರಿಯುತ್ತದೆ, ಖಾರ ಹೊಸದು."
+      },
+      {
+        "question": "ಸಾಸಿವೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ಗಿಂತ ಇದು ಹೇಗೆ ಬೇರೆ?",
+        "answer": "ಖಾರ ಹತ್ತಿರ, ಗಿಡ ಬೇರೆ. ಎರಡೂ ಸಮಾನ ರಸಾಯನಶಾಸ್ತ್ರದಿಂದ ಖಾರ ಪಡೆಯುತ್ತವೆ, ಆದರೆ ಕ್ರೆಸ್ ಚುರುಕು ಮತ್ತು ಖನಿಜಯುಕ್ತ, ಸಾಸಿವೆ ವಸಾಬಿಯಂತೆ ಮೂಗಿಗೆ ಏರುತ್ತದೆ. ಕ್ರೆಸ್ ಗಮನಾರ್ಹವಾಗಿ ಬೇಗ ಬರುತ್ತದೆ — ನಾವು ಬೆಳೆಸುವ ಅತಿ ವೇಗದ ಟ್ರೇಗಳಲ್ಲಿ ಒಂದು."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಖಾರ ಚೆನ್ನಾಗಿ ಉಳಿಯುತ್ತದೆ, ಆದರೆ ತೆಳು ಕಾಂಡಗಳು ಗಟ್ಟಿ ಎಲೆಗಿಂತ ಬೇಗ ಬಾಡುತ್ತವೆ, ಆದ್ದರಿಂದ ಸಾಧ್ಯವಾದರೆ ಮೊದಲ ಅರ್ಧದಲ್ಲಿ ತಿನ್ನಿ."
+      },
+      {
+        "question": "ಮಕ್ಕಳು ತಿನ್ನಬಹುದೇ?",
+        "answer": "ಸ್ವಲ್ಪ ಪ್ರಮಾಣದಲ್ಲಿ, ಹೌದು — ಖಾರ ಮೆಣಸಿನಕಾಯಿಗಿಂತ ಸೌಮ್ಯ ಮತ್ತು ಬೇಯಿಸಿದಾಗ ಅಥವಾ ಡ್ರೆಸಿಂಗ್‌ನೊಂದಿಗೆ ಬೆರೆಸಿದಾಗ ಇಳಿಯುತ್ತದೆ. ಯಾವುದೇ ಖಾರದ ಸೊಪ್ಪಿನಂತೆ ಚಿಟಿಕೆಯಿಂದ ಆರಂಭಿಸಿ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಬೇಳೆ, ಮೊಸರನ್ನ ಅಥವಾ ಸ್ಯಾಂಡ್‌ವಿಚ್ ಮೇಲೆ ಬಲವಾದ ಮಸಾಲೆ ಬದಲು ಚಿಟಿಕೆ, ರಾಯತದಲ್ಲಿ ಬೆರೆಸಿ, ಅಥವಾ ಮೊಟ್ಟೆಯ ಮೇಲೆ ಚೆಲ್ಲಿ. ಪಾರಂಪರಿಕ ರೀತಿಯಲ್ಲಿ ಬೆಚ್ಚಗಿನ ಹಾಲಿನಲ್ಲಿ ಬೆಲ್ಲ ಮತ್ತು ತುಪ್ಪದೊಂದಿಗೆ ಬೆರೆಸಿಯೂ ಬಳಸಬಹುದು."
+      }
+    ],
+    "imageAlt": "ತೆಳು ನೂಲಿನಂತಹ ಕಾಂಡಗಳ ದಟ್ಟ ಹಸಿರು ಗಾರ್ಡನ್ ಕ್ರೆಸ್ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

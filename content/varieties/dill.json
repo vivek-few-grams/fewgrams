@@ -1,0 +1,213 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Dill",
+    "shortDescription": "Feathery, aromatic and grassy-sweet. A herb to finish a dish, not a base green.",
+    "description": "Dill microgreens are thread-fine and soft, nothing like the coarse dried herb from a jar. The aroma is the same — that clean, faintly citrus, faintly anise smell comes from the same volatile oils as the mature frond — but at this stage it arrives fresh and green rather than dried and dusty. Sabbasige soppu is already a familiar taste across Karnataka kitchens; this is the same plant cut at its most tender, closer to a garnish than a vegetable. A little goes a long way, which is exactly how a herb should behave.",
+    "flavourNotes": "Grassy and aromatic with a faint anise-citrus note. Soft and mild raw, and the aroma fades fast once heat touches it.",
+    "growingTips": "Sow fairly densely — the thread-like leaf needs the company to stand upright. Mist rather than drench, and cut as soon as the first feathery leaves open; left longer the stem gets fibrous and the aroma turns grassy instead of bright.",
+    "nutrition": [
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin E",
+        "value": "Present"
+      },
+      {
+        "label": "Calcium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Iron",
+        "value": "Moderate"
+      },
+      {
+        "label": "Potassium",
+        "value": "Present"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Present"
+      },
+      {
+        "label": "Manganese",
+        "value": "Present"
+      },
+      {
+        "label": "Phosphorus",
+        "value": "Present"
+      },
+      {
+        "label": "Zinc",
+        "value": "Present"
+      },
+      {
+        "label": "Folate",
+        "value": "Present"
+      },
+      {
+        "label": "Flavonoids",
+        "value": "Present"
+      },
+      {
+        "label": "Volatile oils (carvone and limonene)",
+        "value": "Present — the source of the aroma"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin C contributes to normal immune function and protects cells from oxidative stress.",
+      "Vitamin A contributes to the maintenance of normal vision, skin and mucous membranes.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Calcium contributes to normal muscle function and to the maintenance of normal bones and teeth.",
+      "Iron contributes to normal oxygen transport in the blood and to reducing tiredness and fatigue."
+    ],
+    "cautions": [
+      "Dill belongs to the carrot family (Apiaceae). If you are allergic to celery, carrot or mugwort pollen, you may cross-react to dill — try a small amount first.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Does it taste like the dried dill I already have in the kitchen?",
+        "answer": "Same aroma, different intensity and texture. Dried dill is concentrated and slightly dusty; this is soft, green and fresh, with the same anise-citrus note but gentler. Use less of the dried herb and more of this, since fresh volatile oils fade fast."
+      },
+      {
+        "question": "Is this the same plant as dill seed?",
+        "answer": "Yes — Anethum graveolens, cut as a seedling instead of grown to seed. The seed is warm and slightly bitter when toasted; the leaf at this stage is fresh, mild and aromatic. Different use, same plant."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days, though the aroma is at its best in the first three — dill's volatile oils fade faster than a sturdier leaf's flavour does."
+      },
+      {
+        "question": "Can I cook with it?",
+        "answer": "Add it at the very end, off the heat, the way you would fresh dill. Cooking drives off the aromatic oils that make it worth using, so it belongs on top of a dish rather than in the pan."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Scatter it over curd rice, a raita or a cucumber salad, fold it into an omelette just before folding, or use it exactly as you would the mature herb — on fish, in a yogurt dip, or finishing a soup."
+      }
+    ],
+    "imageAlt": "Tray of feathery, thread-like green dill microgreens on pale stems"
+  },
+  "kn": {
+    "name": "ಸಬ್ಬಸಿಗೆ",
+    "shortDescription": "ನೂಲಿನಂತೆ ನಯ, ಪರಿಮಳಯುತ ಮತ್ತು ಹುಲ್ಲಿನ ಸಿಹಿ. ಅಡುಗೆ ಮುಗಿಸಲು ಬಳಸುವ ಸೊಪ್ಪು, ಮುಖ್ಯ ಸೊಪ್ಪಲ್ಲ.",
+    "description": "ಸಬ್ಬಸಿಗೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ನೂಲಿನಂತೆ ತೆಳು ಮತ್ತು ಮೃದು, ಡಬ್ಬಿಯಲ್ಲಿನ ಒಣ ಸೊಪ್ಪಿಗಿಂತ ಸಂಪೂರ್ಣ ಬೇರೆ. ಪರಿಮಳ ಅದೇ — ಆ ಸ್ವಚ್ಛ, ಸ್ವಲ್ಪ ನಿಂಬೆ ಮತ್ತು ಸ್ವಲ್ಪ ಸೋಂಪಿನ ವಾಸನೆ ಬೆಳೆದ ಎಲೆಯ ಅದೇ ಬಾಷ್ಪಶೀಲ ತೈಲಗಳಿಂದ ಬರುತ್ತದೆ — ಆದರೆ ಈ ಹಂತದಲ್ಲಿ ಅದು ತಾಜಾ ಮತ್ತು ಹಸಿರಾಗಿ ಬರುತ್ತದೆ, ಒಣಗಿ ಪುಡಿಯಾಗಿಲ್ಲ. ಸಬ್ಬಸಿಗೆ ಸೊಪ್ಪು ಕರ್ನಾಟಕದ ಅಡುಗೆಮನೆಗಳಲ್ಲಿ ಈಗಾಗಲೇ ಪರಿಚಿತ ರುಚಿ; ಇದು ಅದೇ ಗಿಡ, ಅತ್ಯಂತ ಎಳೆಯ ಹಂತದಲ್ಲಿ ಕತ್ತರಿಸಿದ್ದು, ತರಕಾರಿಗಿಂತ ಅಲಂಕಾರಕ್ಕೆ ಹತ್ತಿರ. ಸ್ವಲ್ಪವೇ ಸಾಕು, ಒಂದು ಸೊಪ್ಪು ಹೀಗೆಯೇ ವರ್ತಿಸಬೇಕು.",
+    "flavourNotes": "ಹುಲ್ಲಿನ ಪರಿಮಳ, ಸ್ವಲ್ಪ ಸೋಂಪು-ನಿಂಬೆ ಅಂಚು. ಹಸಿಯಾಗಿ ಮೃದು ಮತ್ತು ಸೌಮ್ಯ, ಶಾಖ ತಟ್ಟಿದ ಕ್ಷಣ ಪರಿಮಳ ಬೇಗ ಇಳಿಯುತ್ತದೆ.",
+    "growingTips": "ಸ್ವಲ್ಪ ದಟ್ಟವಾಗಿ ಬಿತ್ತಿ — ನೂಲಿನಂತಹ ಎಲೆಗೆ ನೆರೆಹೊರೆಯ ಆಸರೆ ಬೇಕು ನಿಲ್ಲಲು. ನೀರು ಹಾಕುವ ಬದಲು ಸಿಂಪಡಿಸಿ, ಮೊದಲ ಗರಿಗರಿ ಎಲೆಗಳು ಬಿಚ್ಚಿದ ಕೂಡಲೇ ಕತ್ತರಿಸಿ — ತಡವಾದರೆ ಕಾಂಡ ನಾರಿನಂತಾಗಿ ಪರಿಮಳ ಹುಲ್ಲಿನಂತೆ ಒರಟಾಗುತ್ತದೆ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ E",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಂಗನೀಸ್",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ರಂಜಕ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಸತು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫ್ಲೇವನಾಯ್ಡ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಬಾಷ್ಪಶೀಲ ತೈಲಗಳು (ಕಾರ್ವೋನ್ ಮತ್ತು ಲಿಮೋನೀನ್)",
+        "value": "ಇದೆ — ಪರಿಮಳದ ಮೂಲ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ, ಚರ್ಮ ಮತ್ತು ಲೋಳೆಪಟಲಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕ್ಯಾಲ್ಸಿಯಂ ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆ ಹಾಗೂ ಹಲ್ಲುಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕಬ್ಬಿಣ ರಕ್ತದಲ್ಲಿ ಸಾಮಾನ್ಯ ಆಮ್ಲಜನಕ ಸಾಗಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಹಾಗೂ ಬಳಲಿಕೆ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಸಬ್ಬಸಿಗೆ ಕ್ಯಾರೆಟ್ ಕುಟುಂಬಕ್ಕೆ (ಆಪಿಯೇಸಿ) ಸೇರಿದೆ. ಸೆಲರಿ, ಕ್ಯಾರೆಟ್ ಅಥವಾ ಮಗ್‌ವರ್ಟ್ ಪರಾಗಕ್ಕೆ ಅಲರ್ಜಿ ಇದ್ದರೆ ಸಬ್ಬಸಿಗೆಗೂ ಪ್ರತಿಕ್ರಿಯೆ ಬರಬಹುದು — ಮೊದಲು ಸ್ವಲ್ಪವೇ ಪ್ರಯತ್ನಿಸಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ — ಹಠಾತ್ತನೆ ಹೆಚ್ಚು ತಿನ್ನಬೇಡಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದು ಮನೆಯಲ್ಲಿರುವ ಒಣ ಸಬ್ಬಸಿಗೆಯಂತೆ ರುಚಿಸುತ್ತದೆಯೇ?",
+        "answer": "ಪರಿಮಳ ಅದೇ, ಆದರೆ ತೀಕ್ಷ್ಣತೆ ಮತ್ತು ಸ್ಪರ್ಶ ಬೇರೆ. ಒಣ ಸಬ್ಬಸಿಗೆ ಸಾಂದ್ರ ಮತ್ತು ಸ್ವಲ್ಪ ಪುಡಿಯಂತೆ; ಇದು ಮೃದು, ಹಸಿರು ಮತ್ತು ತಾಜಾ, ಅದೇ ಸೋಂಪು-ನಿಂಬೆ ಅಂಚಿನೊಂದಿಗೆ ಆದರೆ ಸೌಮ್ಯವಾಗಿ. ಒಣ ಸೊಪ್ಪನ್ನು ಕಡಿಮೆ ಬಳಸಿ, ಇದನ್ನು ಹೆಚ್ಚು — ಇದರ ಬಾಷ್ಪಶೀಲ ತೈಲಗಳು ಬೇಗ ಹೋಗುತ್ತವೆ."
+      },
+      {
+        "question": "ಇದು ಸಬ್ಬಸಿಗೆ ಬೀಜದ ಅದೇ ಗಿಡವೇ?",
+        "answer": "ಹೌದು — ಬೀಜವಾಗಿ ಬೆಳೆಯುವ ಬದಲು ಮೊಳಕೆಯ ಹಂತದಲ್ಲಿ ಕತ್ತರಿಸಿದ್ದು. ಬೀಜ ಹುರಿದಾಗ ಬೆಚ್ಚಗೆ ಸ್ವಲ್ಪ ಕಹಿ; ಈ ಹಂತದ ಎಲೆ ತಾಜಾ, ಸೌಮ್ಯ ಮತ್ತು ಪರಿಮಳಯುತ. ಬೇರೆ ಬಳಕೆ, ಅದೇ ಗಿಡ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ, ಆದರೆ ಪರಿಮಳ ಮೊದಲ ಮೂರು ದಿನ ಅತ್ಯುತ್ತಮ — ಸಬ್ಬಸಿಗೆಯ ಬಾಷ್ಪಶೀಲ ತೈಲಗಳು ಗಟ್ಟಿ ಎಲೆಯ ರುಚಿಗಿಂತ ಬೇಗ ಇಳಿಯುತ್ತವೆ."
+      },
+      {
+        "question": "ಇದನ್ನು ಬೇಯಿಸಬಹುದೇ?",
+        "answer": "ತಾಜಾ ಸಬ್ಬಸಿಗೆಯಂತೆ, ಕೊನೆಯಲ್ಲಿ, ಶಾಖದಿಂದ ಹೊರಗೆ ಸೇರಿಸಿ. ಬೇಯಿಸುವುದು ಇದನ್ನು ಬಳಸುವಂತೆ ಮಾಡುವ ಪರಿಮಳಯುತ ತೈಲಗಳನ್ನು ಹಾರಿಸುತ್ತದೆ, ಆದ್ದರಿಂದ ಇದು ಬಾಣಲೆಯಲ್ಲಲ್ಲ, ಅಡುಗೆಯ ಮೇಲೆ ಇರಬೇಕು."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಮೊಸರನ್ನ, ರಾಯತ ಅಥವಾ ಸೌತೆಕಾಯಿ ಸಲಾಡ್ ಮೇಲೆ ಚೆಲ್ಲಿ, ಆಮ್ಲೆಟ್ ಮುಚ್ಚುವ ಮೊದಲು ಸೇರಿಸಿ, ಅಥವಾ ಬೆಳೆದ ಸೊಪ್ಪಿನಂತೆಯೇ ಬಳಸಿ — ಮೀನಿನ ಮೇಲೆ, ಮೊಸರು ಡಿಪ್‌ನಲ್ಲಿ, ಅಥವಾ ಸೂಪ್ ಮುಗಿಸಲು."
+      }
+    ],
+    "imageAlt": "ತೆಳು ಕಾಂಡಗಳ ಮೇಲೆ ನೂಲಿನಂತಹ ಹಸಿರು ಸಬ್ಬಸಿಗೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

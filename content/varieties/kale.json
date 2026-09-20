@@ -1,0 +1,205 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Kale",
+    "shortDescription": "Dense, dark and mineral. The one green here without a deep-rooted local name.",
+    "description": "Kale is the newcomer on this shelf — unlike mustard or cabbage, it never had a place in an older Karnataka kitchen, and it arrived on Indian tables mostly through the last decade's interest in salads and juices. As a microgreen it carries the same dense, slightly earthy character as the mature leaf, but in miniature: sturdy little leaves on pale stems, standing up better to handling than most of the softer greens on our list. It is the one to reach for when a dish wants weight and colour rather than sweetness or heat.",
+    "flavourNotes": "Earthy and mineral with a faint bitter edge, more robust than a lettuce-type leaf. No heat, no sweetness — a background note rather than a bright one.",
+    "growingTips": "Sow evenly at a moderate density; a dense sow germinates unevenly, the same tendency the mature crop has. Good airflow, and cut once the first true leaves stand clear of the seed hulls.",
+    "nutrition": [
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "High"
+      },
+      {
+        "label": "Calcium",
+        "value": "Good source"
+      },
+      {
+        "label": "Manganese",
+        "value": "Good source"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Iron",
+        "value": "Moderate"
+      },
+      {
+        "label": "Potassium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Present"
+      },
+      {
+        "label": "Lutein and other carotenoids",
+        "value": "Present"
+      },
+      {
+        "label": "Glucosinolates",
+        "value": "Present"
+      },
+      {
+        "label": "Flavonoids",
+        "value": "Present"
+      },
+      {
+        "label": "Chlorophylls",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin C contributes to normal immune function and protects cells from oxidative stress.",
+      "Vitamin A contributes to the maintenance of normal vision and normal skin.",
+      "Calcium contributes to the maintenance of normal bones and teeth and to normal muscle function.",
+      "Manganese contributes to normal energy-yielding metabolism and helps protect cells from oxidative stress."
+    ],
+    "cautions": [
+      "Kale is a brassica and contains goitrogens, which in large regular amounts can interfere with thyroid function. If you have a thyroid condition, keep portions moderate and ask your doctor.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Does it taste bitter like the mature leaf?",
+        "answer": "A faint edge of it, not the full character. Mature kale can be genuinely bitter and needs massaging or cooking to soften; this stage is milder — earthy rather than bitter — and works raw without any of that effort."
+      },
+      {
+        "question": "How is this different from eating kale?",
+        "answer": "Form and quantity, mostly. You eat a bowl of the mature leaf and a handful of this. It is raw where kale is usually cooked or dressed hard, so it keeps more of its vitamin C, but it is a garnish here, not a main ingredient the way a kale salad is."
+      },
+      {
+        "question": "My kids won't touch kale. Will they eat this?",
+        "answer": "More likely than the mature leaf — it is milder and the leaves are small enough to eat without chewing through a tough rib. Mixing it into something familiar, like a sandwich or a smoothie, is the easiest way in."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. It is one of the sturdier leaves we grow, closer to mustard than to a soft lettuce-type green."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Into a smoothie for colour and body without a strong flavour to fight, folded through a salad, on top of a grain bowl, or scattered over soup just before serving. It stands up well to a heavier dressing than most microgreens can."
+      }
+    ],
+    "imageAlt": "Tray of dense dark green kale microgreens on pale stems"
+  },
+  "kn": {
+    "name": "ಕೇಲ್",
+    "shortDescription": "ದಟ್ಟ, ಗಾಢ ಮತ್ತು ಖನಿಜಯುಕ್ತ. ಇಲ್ಲಿ ಆಳವಾದ ಸ್ಥಳೀಯ ಹೆಸರಿಲ್ಲದ ಒಂದೇ ಸೊಪ್ಪು.",
+    "description": "ಕೇಲ್ ಈ ಶೆಲ್ಫಿನ ಹೊಸ ಬರುವಿಕೆ — ಸಾಸಿವೆ ಅಥವಾ ಎಲೆಕೋಸಿನಂತೆ ಇದಕ್ಕೆ ಹಳೆಯ ಕರ್ನಾಟಕ ಅಡುಗೆಮನೆಯಲ್ಲಿ ಜಾಗ ಇರಲಿಲ್ಲ, ಮತ್ತು ಇದು ಭಾರತೀಯ ತಟ್ಟೆಗಳಿಗೆ ಕಳೆದ ದಶಕದ ಸಲಾಡ್ ಮತ್ತು ಜ್ಯೂಸ್ ಆಸಕ್ತಿಯ ಮೂಲಕ ಬಂದಿತು. ಮೈಕ್ರೋಗ್ರೀನ್ ಆಗಿ ಇದು ಬೆಳೆದ ಎಲೆಯ ಅದೇ ದಟ್ಟ, ಸ್ವಲ್ಪ ಮಣ್ಣಿನ ಗುಣವನ್ನು ಚಿಕ್ಕ ಪ್ರಮಾಣದಲ್ಲಿ ಹೊಂದಿದೆ: ತೆಳು ಕಾಂಡಗಳ ಮೇಲೆ ಗಟ್ಟಿ ಪುಟ್ಟ ಎಲೆಗಳು, ನಮ್ಮ ಪಟ್ಟಿಯ ಬಹುತೇಕ ಮೃದು ಸೊಪ್ಪುಗಳಿಗಿಂತ ನಿರ್ವಹಣೆಯನ್ನು ಚೆನ್ನಾಗಿ ತಾಳಿಕೊಳ್ಳುತ್ತದೆ. ಸಿಹಿ ಅಥವಾ ಖಾರಕ್ಕಿಂತ ತೂಕ ಮತ್ತು ಬಣ್ಣ ಬೇಕಾದಾಗ ಇದನ್ನೇ ತೆಗೆದುಕೊಳ್ಳಿ.",
+    "flavourNotes": "ಮಣ್ಣಿನ ಮತ್ತು ಖನಿಜಯುಕ್ತ, ಸ್ವಲ್ಪ ಕಹಿಯ ಅಂಚು, ಲೆಟ್ಯೂಸ್‌ ಶೈಲಿಯ ಎಲೆಗಿಂತ ಗಟ್ಟಿ. ಖಾರವಿಲ್ಲ, ಸಿಹಿಯಿಲ್ಲ — ಪ್ರಕಾಶಮಾನ ರುಚಿಗಿಂತ ಹಿನ್ನೆಲೆ ರುಚಿ.",
+    "growingTips": "ಮಧ್ಯಮ ಸಾಂದ್ರತೆಯಲ್ಲಿ ಸಮನಾಗಿ ಬಿತ್ತಿ; ದಟ್ಟ ಬಿತ್ತನೆ ಅಸಮವಾಗಿ ಮೊಳಕೆಯೊಡೆಯುತ್ತದೆ, ಬೆಳೆದ ಬೆಳೆಗೂ ಇದೇ ಗುಣ. ಒಳ್ಳೆಯ ಗಾಳಿ, ಮತ್ತು ಮೊದಲ ನಿಜವಾದ ಎಲೆಗಳು ಬೀಜದ ಸಿಪ್ಪೆಯಿಂದ ಸ್ಪಷ್ಟವಾಗಿ ಎದ್ದು ನಿಂತಾಗ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಮ್ಯಾಂಗನೀಸ್",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಲುಟೀನ್ ಮತ್ತು ಇತರ ಕ್ಯಾರೊಟಿನಾಯ್ಡ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫ್ಲೇವನಾಯ್ಡ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕ್ಲೋರೊಫಿಲ್‌ಗಳು",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ ಮತ್ತು ಸಾಮಾನ್ಯ ಚರ್ಮದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕ್ಯಾಲ್ಸಿಯಂ ಸಾಮಾನ್ಯ ಮೂಳೆ ಹಾಗೂ ಹಲ್ಲುಗಳ ನಿರ್ವಹಣೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಮ್ಯಾಂಗನೀಸ್ ಸಾಮಾನ್ಯ ಶಕ್ತಿ-ಉತ್ಪಾದಕ ಚಯಾಪಚಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಕೇಲ್ ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು ಮತ್ತು ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳನ್ನು ಹೊಂದಿದೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು. ಥೈರಾಯ್ಡ್ ಸಮಸ್ಯೆ ಇದ್ದರೆ ಪ್ರಮಾಣವನ್ನು ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ — ಹಠಾತ್ತನೆ ಹೆಚ್ಚು ತಿನ್ನಬೇಡಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಬೆಳೆದ ಎಲೆಯಂತೆ ಕಹಿಯಾಗಿದೆಯೇ?",
+        "answer": "ಸ್ವಲ್ಪ ಅಂಚು ಇದೆ, ಪೂರ್ತಿ ಗುಣವಲ್ಲ. ಬೆಳೆದ ಕೇಲ್ ನಿಜವಾಗಿ ಕಹಿಯಾಗಬಹುದು ಮತ್ತು ಮೆತ್ತಗಾಗಿಸಲು ಉಜ್ಜುವುದು ಅಥವಾ ಬೇಯಿಸುವುದು ಬೇಕಾಗುತ್ತದೆ; ಈ ಹಂತ ಸೌಮ್ಯ — ಕಹಿಗಿಂತ ಮಣ್ಣಿನ ರುಚಿ — ಮತ್ತು ಆ ಶ್ರಮವಿಲ್ಲದೆ ಹಸಿಯಾಗಿ ಚೆನ್ನಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ."
+      },
+      {
+        "question": "ಕೇಲ್ ತಿನ್ನುವುದಕ್ಕಿಂತ ಇದು ಹೇಗೆ ಬೇರೆ?",
+        "answer": "ಹೆಚ್ಚಾಗಿ ರೂಪ ಮತ್ತು ಪ್ರಮಾಣ. ಬೆಳೆದ ಎಲೆಯನ್ನು ಬಟ್ಟಲು ತುಂಬಿ ತಿನ್ನುತ್ತೀರಿ, ಇದನ್ನು ಹಿಡಿಯಷ್ಟು. ಕೇಲ್ ಸಾಮಾನ್ಯವಾಗಿ ಬೇಯಿಸಿ ಅಥವಾ ಗಟ್ಟಿಯಾಗಿ ಡ್ರೆಸ್ ಮಾಡುವ ಕಡೆ, ಇದು ಹಸಿಯಾಗಿ ಸಿಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಹೆಚ್ಚು ವಿಟಮಿನ್ C ಉಳಿಸುತ್ತದೆ, ಆದರೆ ಇದು ಅಲಂಕಾರ, ಕೇಲ್ ಸಲಾಡ್‌ನಂತೆ ಮುಖ್ಯ ಪದಾರ್ಥವಲ್ಲ."
+      },
+      {
+        "question": "ನನ್ನ ಮಕ್ಕಳು ಕೇಲ್ ಮುಟ್ಟುವುದಿಲ್ಲ. ಇದನ್ನು ತಿನ್ನುತ್ತಾರೆಯೇ?",
+        "answer": "ಬೆಳೆದ ಎಲೆಗಿಂತ ಸಾಧ್ಯತೆ ಹೆಚ್ಚು — ಇದು ಸೌಮ್ಯ ಮತ್ತು ಗಟ್ಟಿ ದಂಟನ್ನು ಅಗಿಯುವ ಅಗತ್ಯವಿಲ್ಲದಷ್ಟು ಚಿಕ್ಕ ಎಲೆಗಳು. ಸ್ಯಾಂಡ್‌ವಿಚ್ ಅಥವಾ ಸ್ಮೂದಿಯಂತಹ ಪರಿಚಿತ ಯಾವುದಕ್ಕೂ ಬೆರೆಸುವುದೇ ಸುಲಭ ದಾರಿ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ನಾವು ಬೆಳೆಸುವ ಗಟ್ಟಿ ಎಲೆಗಳಲ್ಲಿ ಇದೊಂದು, ಮೃದು ಲೆಟ್ಯೂಸ್ ಶೈಲಿಯ ಸೊಪ್ಪಿಗಿಂತ ಸಾಸಿವೆಗೆ ಹತ್ತಿರ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಬಣ್ಣ ಮತ್ತು ದೇಹಕ್ಕಾಗಿ ಸ್ಮೂದಿಯಲ್ಲಿ, ಬಲವಾದ ರುಚಿಯ ಜಗಳವಿಲ್ಲದೆ, ಸಲಾಡ್‌ನಲ್ಲಿ ಬೆರೆಸಿ, ಅನ್ನದ ಬಟ್ಟಲಿನ ಮೇಲೆ, ಅಥವಾ ಬಡಿಸುವ ಮೊದಲು ಸೂಪ್ ಮೇಲೆ ಚೆಲ್ಲಿ. ಬಹುತೇಕ ಮೈಕ್ರೋಗ್ರೀನ್‌ಗಳಿಗಿಂತ ಗಟ್ಟಿ ಡ್ರೆಸಿಂಗ್ ಅನ್ನು ಚೆನ್ನಾಗಿ ತಾಳಿಕೊಳ್ಳುತ್ತದೆ."
+      }
+    ],
+    "imageAlt": "ತೆಳು ಕಾಂಡಗಳ ಮೇಲೆ ದಟ್ಟ ಗಾಢ ಹಸಿರು ಕೇಲ್ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

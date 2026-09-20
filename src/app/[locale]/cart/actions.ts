@@ -2,18 +2,27 @@
 
 import { revalidatePath } from "next/cache";
 import { listVarieties } from "@/lib/repo/varieties";
-import { getVarietyContent, isValidContentKey } from "@/lib/content/varieties";
+import { listSeeds } from "@/lib/repo/seeds";
+import { listTrays } from "@/lib/repo/trays";
+import { getVarietyContent } from "@/lib/content/varieties";
+import { getSeedContent } from "@/lib/content/seeds";
+import { getTrayContent } from "@/lib/content/trays";
+import { findSellableRack } from "@/lib/racks/catalogue";
 import {
+  MAX_UNITS_PER_LINE,
+  asCartKind,
+  isValidKeyFor,
   removeFromCart,
   unitsFor,
   upsertLine,
-  MAX_UNITS_PER_LINE,
+  type CartKind,
 } from "@/lib/cart/cart";
 import { readCartLines, writeCartLines } from "@/lib/cart/server";
-import type { FormState } from "@/lib/forms";
+import { err, type FormState } from "@/lib/forms";
 
 /**
- * Cart mutations — SPEC §18.6.
+ * Cart mutations — SPEC §18.6, extended to seeds and then to trays on
+ * 17 Sep 2026.
  *
  * **No role assertion here, on purpose.** Unlike the admin and account actions
  * (SPEC §8), a cart is explicitly available to a guest: §8 allows browsing and
@@ -21,10 +30,37 @@ import type { FormState } from "@/lib/forms";
  * these are public actions — which is exactly why each one re-validates its
  * input instead of trusting the form.
  *
- * What *is* enforced: the key must name a variety that is active **and** has a
- * content file. Otherwise a stale or hand-made request could seed a cart with
- * something withdrawn from sale, and the cart page would then report it
- * unavailable the moment it was added.
+ * What *is* enforced, and it is the same short list for every kind:
+ *
+ * | | Must be |
+ * |---|---|
+ * | variety | active, and have a content file |
+ * | seed | active, and have a content file |
+ * | tray | active, and have a content file |
+ * | rack | resolve to a published, active model in a colour its grade offers |
+ *
+ * **A seed's stock is no longer one of them** (17 Sep 2026). It used to be
+ * checked here as well as in the form, so that a stale tab or a hand-made POST
+ * could not order 2 kg of a seed the owner had 300 g of. The owner replaced
+ * that rule with a delivery one: any quantity may be ordered, and ordering
+ * beyond the shelf moves the promise from tomorrow to the vendor lead time
+ * (SPEC §22.2). There is nothing left to refuse, so a quantity that would once
+ * have been rejected is now simply a slower line — decided in `hydrateCart`,
+ * because it is a fact about the cart rather than a permission to write it.
+ *
+ * A tray never had a stock test to drop: nothing in that category is held at
+ * all (SPEC §23.1), so the only thing its quantity changes is how many packs
+ * the supplier order is for. A rack is the same again — built to order from a
+ * rate card (§19), so there is nothing to be out of.
+ *
+ * **A rack is the one kind with no content file**, so its test is a different
+ * shape rather than a different threshold: `findSellableRack` is the whole of
+ * it, and it folds five separate failures — malformed key, never published,
+ * since deactivated, parts retired, colour not offered — into one null.
+ *
+ * The per-line twenty-unit cap below survives. That one is a wholesale
+ * threshold rather than an inventory one, and it applies identically whatever
+ * a unit happens to be.
  */
 
 /** Pages whose rendering depends on the cart cookie. The header badge is in
@@ -33,12 +69,60 @@ function refresh() {
   revalidatePath("/[locale]", "layout");
 }
 
-async function isSellable(key: string): Promise<boolean> {
-  if (!isValidContentKey(key)) return false;
-  const rows = await listVarieties({ activeOnly: true });
-  if (!rows.some((v) => v.contentKey === key)) return false;
-  // Locale is irrelevant to existence — English is required in every file.
-  return (await getVarietyContent(key, "en")) !== null;
+/**
+ * Is this item on sale right now?
+ *
+ * **Not "this much of it"** — the quantity stopped mattering here when the
+ * seed stock cap was dropped. Returns the reason it cannot be ordered, as a
+ * message key, so the caller can report it without this function choosing any
+ * wording (CLAUDE.md).
+ */
+async function sellable(
+  kind: CartKind,
+  key: string,
+): Promise<{ ok: true } | { ok: false; code: string; values?: Record<string, string> }> {
+  /* Kind-aware, because a rack's key is a SKU and a content key bans the digits
+     a SKU is made of — see `isValidKeyFor`. This used to be a bare
+     `isValidContentKey`, which would have rejected every rack before the
+     lookup ran. */
+  if (!isValidKeyFor(kind, key)) return { ok: false, code: "notSellable" };
+
+  if (kind === "rack") {
+    /* One call is the entire test. Nothing else to check: the price is on the
+       model, and a rack has no stock and no content file. */
+    return (await findSellableRack(key))
+      ? { ok: true }
+      : { ok: false, code: "notSellable" };
+  }
+
+  if (kind === "variety") {
+    const rows = await listVarieties({ activeOnly: true });
+    if (!rows.some((v) => v.contentKey === key)) return { ok: false, code: "notSellable" };
+    // Locale is irrelevant to existence — English is required in every file.
+    if (!(await getVarietyContent(key, "en"))) return { ok: false, code: "notSellable" };
+    return { ok: true };
+  }
+
+  if (kind === "tray") {
+    const rows = await listTrays({ activeOnly: true });
+    if (!rows.some((tr) => tr.contentKey === key)) return { ok: false, code: "notSellable" };
+    if (!(await getTrayContent(key, "en"))) return { ok: false, code: "notSellable" };
+    /* Nothing else to check. `leadDays` is read only by `hydrateCart`, and
+       only to pick a delivery date — a slow supplier is not a reason to refuse
+       an order, it is the reason the date is what it is. */
+    return { ok: true };
+  }
+
+  const seed = (await listSeeds({ activeOnly: true })).find((s) => s.contentKey === key);
+  if (!seed) return { ok: false, code: "notSellable" };
+  if (!(await getSeedContent(key, "en"))) return { ok: false, code: "notSellable" };
+  /* No stock test — see the note at the top of this file. `seed.stockGrams` is
+     read only by `hydrateCart`, and only to pick a delivery date. */
+  return { ok: true };
+}
+
+function readKind(fd: FormData): CartKind | null {
+  return asCartKind(String(fd.get("kind") ?? "").trim());
 }
 
 function readKey(fd: FormData): string {
@@ -51,7 +135,7 @@ function readUnits(fd: FormData): number {
 }
 
 /**
- * Set this variety's quantity in the cart, from the variety detail page.
+ * Set this item's quantity in the cart, from its detail page.
  *
  * **Sets, does not add** (changed 15 Sep 2026). The page's stepper is seeded
  * from the cart, so it already reads 3 when the cart holds 3; adding 3 again
@@ -60,52 +144,80 @@ function readUnits(fd: FormData): number {
  *
  * Returns `FormState` so the button can confirm in place. Sending the customer
  * to `/cart` on every add would interrupt someone browsing three greens, and
- * §18.6 makes this the low-commitment entry point — it should stay low-friction.
+ * §18.6 makes this the low-commitment entry point — it should stay
+ * low-friction.
+ *
+ * One action for every kind rather than one each: every rule is shared between
+ * them, and three copies would be three places to fix the next one.
  */
-export async function setVarietyQuantity(
+export async function setCartQuantity(
   _prev: FormState,
   fd: FormData,
 ): Promise<FormState> {
+  const kind = readKind(fd);
+  if (!kind) return err("notSellable");
   const key = readKey(fd);
   const units = readUnits(fd);
 
+  /* The lower bound is one unit, which is the minimum order for every kind:
+     100 g of a green or a seed (SPEC §22.2), one pack of trays (§23.1). There
+     is nothing extra to check per kind. */
   if (!Number.isFinite(units) || units < 1 || units > MAX_UNITS_PER_LINE) {
-    return { status: "error", code: "unitsInvalid", field: "units" };
-  }
-  if (!(await isSellable(key))) {
-    return { status: "error", code: "notSellable" };
+    return err("unitsInvalid", "units");
   }
 
+  const check = await sellable(kind, key);
+  if (!check.ok) return err(check.code, undefined, check.values);
+
   const before = await readCartLines();
-  const after = upsertLine(before, key, units);
+  const after = upsertLine(before, kind, key, units);
 
   /* A full cart silently returning the same lines would look like a working
      add that did nothing, so the one case `upsertLine` cannot express is
      reported here. Only a *new* line can be refused — an existing one is
      always updatable. */
-  if (unitsFor(after, key) !== units) {
-    return { status: "error", code: "cartFull" };
-  }
+  if (unitsFor(after, kind, key) !== units) return err("cartFull");
 
   await writeCartLines(after);
   refresh();
   return { status: "saved" };
 }
 
-/** Set a line's exact quantity from the cart page. Zero removes it. */
+/**
+ * Set a line's exact quantity from the cart page. Zero removes it.
+ *
+ * Returns nothing — the cart page's steppers are plain form submits with no
+ * error surface, so an increase of something no longer on sale has to be
+ * *refused silently* here and prevented in the UI (the button is disabled at
+ * the cap). The alternative, clamping to the maximum, would change the
+ * customer's line to a number they did not choose.
+ */
 export async function updateCartLine(fd: FormData): Promise<void> {
+  const kind = readKind(fd);
+  if (!kind) return;
   const key = readKey(fd);
   const units = readUnits(fd);
-  if (!isValidContentKey(key) || !Number.isFinite(units)) return;
+  if (!isValidKeyFor(kind, key) || !Number.isFinite(units)) return;
 
-  await writeCartLines(upsertLine(await readCartLines(), key, units));
+  /* Decreasing and removing are always allowed — only an increase has to
+     clear the sellable check, so a customer holding a line that has since been
+     withdrawn can always reduce or remove it. */
+  const lines = await readCartLines();
+  if (units > unitsFor(lines, kind, key)) {
+    const check = await sellable(kind, key);
+    if (!check.ok) return;
+  }
+
+  await writeCartLines(upsertLine(lines, kind, key, units));
   refresh();
 }
 
 export async function removeCartLine(fd: FormData): Promise<void> {
+  const kind = readKind(fd);
+  if (!kind) return;
   const key = readKey(fd);
-  if (!isValidContentKey(key)) return;
-  await writeCartLines(removeFromCart(await readCartLines(), key));
+  if (!isValidKeyFor(kind, key)) return;
+  await writeCartLines(removeFromCart(await readCartLines(), kind, key));
   refresh();
 }
 

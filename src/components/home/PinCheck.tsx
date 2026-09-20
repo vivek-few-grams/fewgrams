@@ -9,12 +9,16 @@ import { firstDeliveryDate, formatDeliveryDate } from "@/lib/delivery-date";
 type Result = { pin: string; served: boolean } | null;
 
 /**
- * Serviceability check — SPEC §18.3, still an OPEN DECISION.
+ * Serviceability check — SPEC §7. **Currently mounted nowhere.**
  *
- * Placed as one quiet expanding line in the hero, which was the recommendation
- * but not yet confirmed. It is self-contained precisely so it can be moved to a
- * bar under the header or down to the bundle cards without touching anything
- * else.
+ * It lived as one quiet expanding line in the hero until 16 Sep 2026, when the
+ * §18.3 open decision was closed the other way: the check belongs in checkout,
+ * before payment, and nowhere else. Kept rather than deleted because that is
+ * where it is going, and because it is already self-contained — it owns its
+ * own state and reads nothing from the page around it.
+ *
+ * It still lives under `components/home/` for now; move it when checkout
+ * mounts it, so the folder does not lie about where it is used.
  *
  * TODO: validate server-side against `PIN#<pincode>` in DynamoDB. SPEC §8 is
  * explicit that these rules must be enforced in server actions and not only in

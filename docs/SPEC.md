@@ -170,10 +170,10 @@ Five categories with genuinely different commerce rules — this is the heart of
 
 | Category | How it sells | Inventory |
 |---|---|---|
-| **Microgreens** | Weekly subscription (min 1 month, prepaid) **and** one-off by the 100 g — see §18.6 | **No stock.** Variety catalogue carrying yield + grow-day metadata |
-| **Seeds** | One-off, buy anytime | **Real stock in grams.** Orders blocked above stock on hand |
+| **Microgreens** | Weekly subscription (min 1 month, prepaid) **and** one-off by the tray — see §18.6, superseded 19 Sep 2026 | **No stock.** Variety catalogue carrying yield + grow-day metadata |
+| **Seeds** | One-off, buy anytime, by the 100 g — see §22 | **Real stock in grams**, but it is a *speed*, not a limit: any quantity sells, and the shelf sets the delivery date (§22.2) |
 | **Racks** | One-off, buy anytime | **None** — outsourced, assumed always available |
-| **Trays** | One-off, buy anytime. **Variants:** virgin plastic / PP plastic | **None** — same as racks, assumed always available |
+| **Trays & drainage** | One-off. Bought in per order, min **7 days** — see §23 | **None, by design.** The supplier holds it; every order is a purchase order |
 | **Value-added** (sandwiches, burgers, salads) | One-off **add-on** to the weekly delivery, ordered before cutoff | **None** — made to order |
 
 ### 3.0 Two things called "tray" — keep them separate
@@ -188,6 +188,13 @@ the sow plan becomes impossible to reason about. Name them distinctly in code
 Trays introduced the first need for variants (virgin plastic vs PP plastic, and likely size and
 pack quantity), each with its own price and SKU. Racks and seeds did not need this. The product
 model must carry a variant array from the start rather than have it retrofitted:
+
+> **Superseded for trays, 17 Sep 2026.** The two tray kits the owner actually sells *are* the
+> virgin-vs-recycled pair this section anticipated — and they are **two rows, not one row with two
+> variants** (§23.1). The owner asked for "three products", the prices differ by ₹110, and there is
+> no detail page for a variant selector to live on, so two cards side by side is what a buyer can
+> compare. `ProductVariant` is unused by anything today; it stays on `Product` for snacks, where a
+> size or a pack quantity may yet earn it.
 
 ```ts
 type ProductVariant = {
@@ -267,14 +274,24 @@ Indexes: **GSI1** only.
 
 | Entity | PK | SK | GSI1PK | GSI1SK |
 |---|---|---|---|---|
-| Variety | `VARIETY#<id>` | `META` | `VARIETY` | `<slug>` |
-| Product (seed/rack/tray/snack) | `PRODUCT#<id>` | `META` | `CAT#<category>` | `<slug>` |
+| Variety | `VARIETY#<id>` | `META` | `VARIETY` | `<contentKey>` |
+| Seed | `SEED#<id>` | `META` | `SEED` | `<contentKey>` |
+| Tray / drainage mat | `TRAY#<id>` | `META` | `TRAY` | `<contentKey>` |
+| Product (snack) | `PRODUCT#<id>` | `META` | `CAT#<category>` | `<slug>` |
 | Plan definition | `PLAN#<planId>` | `META` | `PLAN` | `<sortOrder>#<slug>` |
 | Plan rotation week | `PLAN#<planId>` | `WEEK#<1..4>` | — | — |
 | Coupon | `COUPON#<code>` | `META` | — | — |
 | Coupon redemption | `COUPON#<code>` | `REDEEM#<userId>` | — | — |
 | PIN code | `PIN#<pincode>` | `META` | — | — |
 | Settings | `CONFIG` | `SETTINGS` | — | — |
+
+`Seed` and `Tray` are separate entities rather than `PRODUCT#` with a
+`category` — see §22.1 and §23.1 for why. **Only snacks are left on `Product`,
+and nothing writes one yet.** Every one of these is its own content-key
+namespace: `VARIETY`, `SEED` and `TRAY` are exact-match GSI1 partitions, never a
+`begins_with`, so `radish` the microgreen, `radish` the seed and a hypothetical
+`radish` tray cannot reach each other's lists. `keys.test.ts` pins all three
+pairings.
 
 The plan's `GSI1` entry is a **documented deviation** from the original spec, carried over from the
 first implementation: the home page must list every plan, and without an index that is a Scan.
@@ -440,8 +457,21 @@ from the original section. **Plans no longer do** — their copy moved to `conte
 
 #### What a variety is, and what it is not
 
-A variety is a microgreen grown and sold **by the 100 g** for ad-hoc orders (§18.6). Its record
-holds only that: `pricePer100g`, `growDays`, `yieldGramsPerTray`, `seedGramsPerTray`, `active`.
+A variety is a microgreen grown and sold **by the tray** for ad-hoc orders (§18.6). Its record
+holds only that: `pricePerTray`, `growDays`, `yieldGramsPerTray`, `seedGramsPerTray`, `active`.
+
+#### SUPERSEDED 19 Sep 2026 — sold by the tray, not by the 100 g
+
+The paragraph above replaced "by the 100 g" with "by the tray". The owner's instruction: *ordering
+should be based on the tray, not by grams, and costing should also be decided based on trays* — a
+green was never actually weighed out of a sack the way a seed is; it is cut whole from a tray that
+was sown whole, so pricing and ordering it in grams implied a precision the operation never had.
+
+`pricePer100g` is renamed `pricePerTray` and is what a customer is charged per tray ordered.
+`yieldGramsPerTray` **stays on the record but no longer prices anything** — it is the owner's
+measured, approximate weight a tray of this variety yields, kept for the customer's information
+(shown alongside the tray count in the buy box) and for whatever the sow plan eventually wants it
+for. See `isWeighed` in `src/lib/cart/cart.ts` and the note on `Variety` in `src/lib/types.ts`.
 
 **`tier` was removed on 15 Sep 2026.** It was written by the admin form and read by nothing. Its
 only purpose was grouping varieties for the curated Essential/Exotic plans, but §5.1 has those
@@ -550,6 +580,51 @@ Today they resolve to `public/varieties/<key>/<filename>`, served by Next. At la
 every caller goes through `varietyImageUrl()` rather than building a path inline. A variety with no
 `images.hero` falls back to the generated `Sprout` placeholder, so photography can land one variety
 at a time.
+
+**`images.cutout` is a third kind of picture, not a second hero** — added 16 Sep 2026 so the
+`/microgreens` grid can run the §17.4 card motion. Transparent background, product centred, no
+ground and no props, so the tile can scale and tilt it over a flat colour with the nutrient marquee
+scrolling behind. A square `hero` crop cannot do that job: it fills the tile, leaving nothing for
+the type to show through. Optional, and it does **not** fall back to `hero` — a photo with its own
+background dropped into the media box reads as a skewed rectangle rather than a tilted punnet, so a
+variety without a cut-out gets the flat photographic tile instead.
+
+Framing is normalised in code, not asked of the generator: `scripts/cutout.py` crops to the alpha
+bounding box, centres it in a square canvas at **86% of the width**, resizes to **800 × 800** and
+encodes **WebP q85** (112–122 KB each with alpha; PNG is 588 KB for the same pixels). 86% was
+chosen by rendering 70/78/86/96% at the real card size with the marquee running — below it the
+punnet looks lost, above it the tray covers the type. The first sample came back framed at 96% of
+the width, which is why this is a build step rather than a line in the prompt.
+
+**A shared duration is not a shared speed**, and this cost two defects on
+17 Sep 2026. The keyframe translates *one half* of the marquee block, so the
+apparent speed is `halfHeight ÷ duration` — and `halfHeight` is however many
+lines the caller asked for, at type sized as a fraction of its card. A single
+`8s` in the CSS therefore ran a variety tile's 389px half at 49px/s and a rack
+card's 715px half at 89px/s. The duration is now a per-caller custom property
+derived from a **house speed of 48px/s**, which is the variety tile's own,
+measured rather than calculated.
+
+The related trap is the loop itself: one half of the block must be *taller* than
+the panel or bare panel crosses the card once per cycle. `marqueeLines` pads the
+word list to `minLines` for that reason, and the default of ten is right only
+for a square tile — a 3:2 tray card needs the type sized in `cqw` and a 4:5 rack
+card needs 26 lines as well. Both invariants are pinned per call site in
+`src/components/ui/marquee.test.ts`, because neither shows up in a screenshot
+and both have now been shipped once.
+
+Those are the script's **defaults**, not its only behaviour: it took `--aspect`, `--fill`,
+`--width` and `--bg` on 17 Sep 2026 when the tray grid needed a 3:2 cut-out and a flattened
+gallery hero from the same master (§23.8). The square path is unchanged and verified byte-identical
+against the original algorithm.
+
+Normalising on the **width** is what makes the grid look like one set: the five silhouettes came
+back at aspects 1.34–1.47, so a common width gives every punnet the same size while their heights
+vary with the canopy, which is the plant rather than the photography.
+
+All five varieties carry a cut-out as of 16 Sep 2026, generated from the amaranthus master by
+masked edit in ChatGPT — see `docs/CUTOUT_PROMPT.md` for the prompt and the workflow. The hero and
+`Sprout` fallbacks in `VarietyTile` stay for the sixth variety, whenever it arrives.
 
 **`next.config.ts` needs `outputFileTracingIncludes` for `content/**`.** The files are read with
 `fs` at request time and Next's tracing only follows static imports, so without it the folder is
@@ -737,7 +812,7 @@ Not done, because it is a further change rather than part of this split.
 |---|---|---|---|
 | **Everyday Essentials** | `essential` | Owner (curated) | **Flat monthly price** |
 | **Rare & Exotic** | `exotic` | Owner (curated) — premium varieties *plus* the everyday basics | **Flat monthly price** |
-| **Pick Your Own** | `build-your-own` | Customer picks varieties and quantities | **Computed by weight** — sum of `pricePer100g × quantity` |
+| **Pick Your Own** | `build-your-own` | Customer picks varieties and quantities | **Computed by tray** — sum of `pricePerTray × trays` (superseded 19 Sep 2026; was by weight, `pricePer100g × quantity`) |
 
 **Named 15 Sep 2026.** They were Essential / Exotic / Build Your Own. Three problems: "Essential"
 is tier-speak (Basic / Pro / Enterprise) rather than a description of food; "Exotic" alone does not
@@ -871,14 +946,27 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
 
 - **PIN allowlist**, admin-managed. A non-serviceable PIN blocks checkout with a clear message and
   an optional "notify me when you reach my area" capture.
-- PIN check is available on the home page, not just at checkout — no one should reach payment
-  before discovering you don't deliver to them.
+- **The PIN check lives in checkout, not on the home page** (decided 16 Sep 2026, closing the
+  §18.3 open decision). The gate that matters is the one before payment, and it is enforced
+  server-side there; a second copy in the hero was a marketing surface competing with the
+  headline for the fold, and it asked a visitor to prove their eligibility before the site had
+  told them what it sells. `PinCheck.tsx` stays in the repo for checkout to mount.
 - Delivery charging via `ShippingRateProvider`:
   - **v1, rules-based:** subscription price *includes* delivery, but the amount is computed and
     itemised at payment; racks a flat **₹500**; seeds calculated at payment; ⟨trays — rate rule
     still to be set; they are bulky like racks but lighter⟩.
   - **v2, dynamic:** adapter for a courier partner quoting from the full address.
 - Everything consolidates onto the **same Saturday run**.
+- **Seed has its own dispatch rule, set 17 Sep 2026** (§22.2): up to what is on the shelf goes out
+  **next day**, and anything beyond it is bought in from the supplier and promised **within 10
+  days**. That is a *timing* rule and it does not set a *charge* — the seed delivery rate is still
+  unset above. A cart mixing seed and greens takes one trip on the slowest line's date, so this
+  rule can push a greens order later than its grow window.
+- **Trays and drainage have one too, set the same day** (§23.1): nothing is held, so every order is
+  bought in and promised on a **per-item lead time with a floor of 7 days**. Three rules now
+  coexist — grow days, the seed shelf, and a supplier lead time — and `latestDate` is what keeps
+  them one delivery. Also a timing rule: the tray rate is the ⟨⟩ above and is still unset, which
+  matters more now that trays are real rows with real prices.
 
 ---
 
@@ -918,6 +1006,52 @@ Two rules follow, and they are cheap to keep:
 Verified by reading the rendered HTML as a guest: no `/admin/` href, no "Add a plan", no "Create
 Essential" — and the same pages as an admin still carry all three. Kannada checked too; the new
 customer copy renders in `kn` rather than falling back.
+
+### 8.3 Admin navigation is a left rail — 17 Sep 2026
+
+Navigation was a horizontal row of pills. Six of them already filled the width
+and §12 lists a dozen more admin routes to come, so the row had nowhere to grow
+and no room for a grouping. It is now a **14rem rail** (`AdminNav.tsx`), with
+the routes grouped under headings and the operator's identity and `My account`
+link pushed to the foot.
+
+Three things worth knowing about it:
+
+- **The content got wider, not narrower.** The shell went from a 1100px measure
+  to 1400px, so the content column is about 1,080px against the old ~970px even
+  after losing 14rem to the rail. The rack tables (§19.3) are the widest thing
+  in admin at ~990px of tracks and they now fit without the horizontal scroll
+  they used to need at full width.
+- **`min-w-0` on the content column is load-bearing.** Without it a flex child
+  refuses to shrink below its content, so a table's own `overflow-x-auto` never
+  engages — it widens the whole page instead and drags the rail off-screen.
+- **The route map lives in `nav-items.ts`, not in the component.** `AdminNav` is
+  `"use client"` (it needs `usePathname` to mark the current route), and every
+  export of a client module is a client *reference* when a server component
+  imports it. The layout reads the label list to resolve one translation per
+  item, and reading a client reference on the server throws — it did, as a 500
+  on every admin page, while the constant shared the component's file.
+
+Groups hold **only routes that exist.** A heading with nothing under it, or a
+link to a page that 404s, is worse than an absent section — the public nav
+already has one of those (`/how-we-grow`) and admin should not gain a second.
+Operations, Sales and Settings groups get added when their first screen is
+built.
+
+Below `lg` the rail becomes one horizontally scrolling strip and the group
+headings are hidden: a stack of eighteen rows would push the page content off a
+phone's first screen, and a heading inside a scrolling strip reads as another
+link.
+
+The same pass fixed a **pre-existing mobile overflow** in the three rack
+tables. A row's tracks come from an inline `gridTemplateColumns`, which applies
+at every width, so at 414px the Save / Active / Delete controls pushed the
+document 344px wide — and with a rail in place that dragged the navigation with
+it. Each table's rows now sit in their own `overflow-x-auto` box with a
+`min-w-`; the add form stays outside it, so it never slides sideways with the
+rows. Stacking to one column was not the alternative: a compact row's inputs
+carry their label only as an `aria-label`, so it would leave an operator with
+unlabelled boxes.
 
 ### 8.1 Authentication — DECIDED & IMPLEMENTED 14 Sep 2026
 
@@ -1121,15 +1255,21 @@ real blocker is Meta Business verification and per-template approval, not the mo
 ### Public
 | Route | Contents |
 |---|---|
-| `/` | Hero, PIN serviceability check, category tiles, how-it-works strip, plan teaser, testimonials |
+| `/` | Hero, category tiles, how-it-works strip, plan teaser, testimonials (no PIN check — §7) |
 | `/subscribe` | The three plans compared side by side |
 | `/subscribe/essential`, `/subscribe/exotic` | What arrives in each of the 4 rotation weeks, price, first-delivery date |
 | `/subscribe/build` | **BYO builder** — variety picker with quantities, live price, grow-group segregation, week-by-week schedule preview |
 | `/microgreens` | Variety grid — a shopping surface, not a library (§18.6). Each block shows grow days |
 | `/microgreens/[key]` | Variety detail — built, §18.10. Flavour, nutrition, benefits, cautions, growing tips, FAQs, gallery, grow days, price per 100 g. The **100 g quantity selector and add-to-cart** (§18.6) wait on `/cart` |
-| `/shop` | Index of all five categories with live counts. Microgreens leads and links to `/microgreens` |
-| `/shop/[category]` | One page per product category — racks, seeds, trays, snacks. `/shop/microgreens` redirects to `/microgreens` |
-| `/shop/[category]/[slug]` | Product detail with variant selector (e.g. tray material); seeds show available grams. **Was `/shop/[slug]`** — category-then-product gives better URLs and lets the category page exist on its own |
+| `/seeds` | Seed grid — built, §22.5. Price per 100 g only; the grams held are internal, and **no seed is ever listed as sold out** (§22.2) |
+| `/seeds/[key]` | Seed detail — built, §22.5. The **same layout as a variety page**, filled with the seed's spec table, sowing instructions and uses. Any quantity, minimum 100 g, with a dated delivery promise per quantity |
+| `/shop` | Index of all five categories with live counts. Microgreens, seeds and trays link to their own routes |
+| `/shop/racks` | The three rack ranges — built, §19.6. A photograph, a name, six scrolling properties and a from-price per range |
+| `/shop/racks/[range]` | Pick a rack and buy it — built, §19.7. Height, shelf size and colour as options **in the URL**, then the price and add-to-cart |
+| `/shop/trays` | Trays & drainage — built, §23.5. Its own static route, because trays left `Product` for their own entity and content files. A grid with a spec table and a dated promise per card, each linking to its detail page |
+| `/shop/trays/[key]` | Tray detail — built, §23.3. **Deliberately minimal**: gallery, the four spec rows as facts, and the buy box. No description, no FAQ, no spec table repeated below |
+| `/shop/[category]` | What is left of the generic category page — racks and snacks. `/shop/microgreens` and `/shop/seeds` redirect to `/microgreens` and `/seeds`; `/shop/trays` is a static route that wins over this one |
+| `/shop/[category]/[slug]` | Product detail for what is left on `Product` — snacks. **Not built.** Trays got their own detail route instead (`/shop/trays/[key]`, §23.3) rather than a generic one |
 | `/cart` | Line items, delivery estimate, coupon field |
 | `/checkout` | PIN gate → address → **delivery date shown** → coupon → payment |
 | `/order/[id]/confirmation` | Receipt, first-delivery date, claim-account prompt for guests |
@@ -1146,8 +1286,10 @@ schedule) · `/account/orders` · `/account/orders/[id]` · `/account/addresses`
 
 ### Admin
 `/admin` (this week at a glance) · `/admin/varieties` (CRUD incl. yield + grow days) ·
-`/admin/plans` (curate the Essential/Exotic rotation weeks) · `/admin/products` (seeds with gram
-stock, racks, trays with variants, value-add) · `/admin/cycles` (list, lock a cycle) · `/admin/sow-plan/[sowDate]` (the
+`/admin/plans` (curate the Essential/Exotic rotation weeks) · `/admin/seeds` (price per 100 g and
+grams held — §22.3, replaced `/admin/products`) · `/admin/trays` (pack price and lead days —
+§23.4) · `/admin/racks`, `/admin/angle-racks`,
+`/admin/pipe-racks` (the three computed rack ranges, §19–§21) · `/admin/cycles` (list, lock a cycle) · `/admin/sow-plan/[sowDate]` (the
 sow sheet) · `/admin/deliveries/[date]` (pick-pack, route, status) · `/admin/orders` ·
 `/admin/orders/[id]` · `/admin/subscriptions` · `/admin/customers` · `/admin/coupons` ·
 `/admin/sales` · `/admin/pincodes` · `/admin/payments` (reconciliation, refunds) · `/admin/reports` ·
@@ -1196,10 +1338,11 @@ Then:
    password, roles in middleware, Tailwind/shadcn, brand config file, Cloudflare → Amplify DNS, **`next-intl` with
    locale routing and the `LocalisedString` helper wired in from day one** (cheap now, a migration
    later).
-2. **Catalogue (admin first)** — `/admin/varieties` and `/admin/products` with yield, grow days,
-   seed gram stock and tray variants, plus the variety content-file loader and its build-time
-   completeness check. Nothing downstream can be built or tested without real variety data.
-3. **Public catalogue** — home, `/microgreens`, `/shop` and their detail pages. PIN checker.
+2. **Catalogue (admin first)** — `/admin/varieties` with yield and grow days, `/admin/seeds` with
+   price per 100 g and grams held (§22.3), plus the content-file loader and its completeness check.
+   Nothing downstream can be built or tested without real variety data. Tray variants wait for a
+   tray screen; the generic products screen was removed on 17 Sep 2026 rather than extended.
+3. **Public catalogue** — home, `/microgreens`, `/shop` and their detail pages.
 4. **Plans & BYO builder** — plan definitions, the 4-week rotation editor, and the BYO
    grow-group segregation with schedule preview. **The highest-risk logic in the build — write unit
    tests for the segregation and first-delivery-date rules before the UI.**
@@ -1270,15 +1413,22 @@ Then:
   varieties are ready on different Saturdays. Needs a rule before the variety page is built.
 - **Ad-hoc vs subscription price gap not set (§18.6).** Without a deliberate gap, one-off 100 g
   buying undercuts the subscription, which is the only recurring revenue.
-- **PIN serviceability check has no home on the home page (§18.3).** A visitor outside the
-  delivery zone can currently reach checkout before being refused.
+- **A visitor outside the delivery zone learns so only at checkout** — the deliberate choice
+  in §7. The refusal there has to be unmistakable and has to arrive before the payment step,
+  not with it, because it is now the *only* place the constraint is stated.
 - **"How we grow" — 3D models vs photography undecided (§18.5).**
 - **Bundle prices do not exist yet.** §18.4 is built against a typed placeholder until Phase 2
   ships the admin UI.
-- **Tray delivery rate not set.** Racks are a flat ₹500; trays are bulky but lighter, so they need
-  their own rule in the `ShippingRateProvider`.
-- **Trays carry no stock count**, so an order can be accepted that the supplier cannot fill by
-  Saturday. Acceptable for now; the manual out-of-stock toggle is the cheap fix if it bites.
+- **Tray delivery rate not set**, and it matters more since 17 Sep 2026 because trays are now real
+  rows with real prices (§23). Racks are a flat ₹500; trays are bulky but lighter, so they need
+  their own rule in the `ShippingRateProvider`. A drainage mat pack is five 50 × 25 cm sheets —
+  closer to a rack than to a bag of seed.
+- **Trays carry no stock count**, which is now a *decision* rather than a gap (§23.1): nothing is
+  held, so every order is a purchase order and the honest model is a lead time, not a count. The
+  risk it leaves is different from the one first written here — not that we oversell, but that
+  **nobody is told to go and place the supplier order.** That gap got sharper on 17 Sep 2026, when
+  trays became addable to the cart (§23.7): a customer can now commit to a seven-day promise that
+  generates no purchase order anywhere. It needs checkout (§9).
 - **Kannada content coverage** is a standing cost, not a one-off task. Every new variety or recipe
   needs a second content file or it silently falls back to English.
 - Brand name and logo should come from **one config file** so the visual identity can change
@@ -1487,7 +1637,24 @@ keyframe. (Don Molinico loads GSAP and Lenis, but only for smooth scroll and the
 `@media (prefers-reduced-motion: reduce)`. The marquee in particular is continuous motion, which is
 a genuine accessibility problem if it cannot be stopped.
 
-### 17.5 Brand curtain — revised 15 Sep 2026
+**Rotating tab title** (`TitleTicker`, 16 Sep 2026) — `Fewgrams | Microgreens`, `| Racks`,
+`| Seeds`, `| Trays`, `| Snacks`, one every 2.5s, from `NAV_CATEGORIES` in nav order so the tab
+names the same five things the header does. Borrowed from palmo.co.in's `Flavours | Chilling /
+Pressing / Pouring`.
+
+Three things it has to get right. It **must not write on mount** — Next applies the route's
+metadata title after hydration, so the first word was set and immediately overwritten, and the
+first word a visitor saw was the second one in the list. It **restores the page's own title on
+unmount**, or a client-side navigation inherits whichever word was last showing. And it is
+**disabled under `prefers-reduced-motion`**, because a title changing on a timer is moving content
+in the sense WCAG 2.2.2 means and there is no way to pause it.
+
+The cost, accepted: it replaces the per-page title while the tab is open, so `/microgreens/mustard`
+stops saying "Mustard" and a bookmark taken mid-rotation saves whatever was showing. Crawlers read
+the server-rendered `<title>`, so this is navigational, not an SEO cost. Rotating only while
+`document.hidden` would avoid it; the reference does not, and neither does this.
+
+### 17.5 Brand curtain — revised 15 Sep 2026, scoped 17 Sep 2026
 
 Don Molinico pattern: a `forest` panel carrying the Fewgrams mark (the **light** lockup,
 `brand.logoLight` — the green-and-brown one disappears on forest), which covers the page and
@@ -1527,21 +1694,90 @@ from a corner — would reach full cover less than half way through and spend th
 growing off-screen, making the animation read as twice as fast as its own timing. Verified covered
 at all four corners at 1440x900, 390x844, 2560x620, 768x1024 and 320x480.
 
-Files: `PageLoader.tsx` (the component and the click handling), `loader-init.ts` (the pre-paint
-decision, unit-tested in `page-loader.test.ts`), and the `.loader` block in `globals.css`.
+Files: `PageLoader.tsx` (the component and the timing), `curtain-anchor.ts` (which clicks qualify,
+unit-tested in `curtain-anchor.test.ts`), `loader-init.ts` (the pre-paint decision, unit-tested in
+`page-loader.test.ts`), and the `.loader` block in `globals.css`.
+
+#### 17.5.1 The curtain is opt-in, per link — 17 Sep 2026
+
+It ran on **every** internal navigation for two days. The owner narrowed it: *"this full screen
+loader should be shown only when i click on these options not for individual pages."*
+
+The reasoning is about what the gesture is for. A full-screen wipe is punctuation for **changing
+section**; on the way into a variety page from a card in a grid it is a 1.2 second toll on the
+browsing the grid exists to encourage — and the deeper someone goes, the more often they pay it.
+
+**A link now has to ask, by carrying `data-curtain`.** Exactly six links on the site do, all of
+them in the header:
+
+| Link | Why |
+|---|---|
+| MICROGREENS, PLANS, SHOP, HOW WE GROW | the four section entries — the owner's "these options" |
+| The brand logo | added on the owner's call the same day: going home is a change of section like any of them, and it is the one link the curtain's own artwork is a picture of |
+| The language switch | a **full document load**; without the curtain the page blanks and cuts in. It is also the only consumer of the `fg:curtain` handoff |
+
+Everything else navigates plainly: variety cards, shop category tiles, the cart and account icons,
+footer links, in-page CTAs. The cart and account icons sit inside the same header strip and were the
+one judgement call — they are utility hops rather than section changes, where a 1.2s curtain is most
+irritating, so they are out. Adding either is one attribute.
+
+**Opt-in rather than a path allowlist**, because an allowlist would have meant `curtain-anchor.ts`
+holding a second copy of the nav's route list, and the two would part company the first time a
+section was added. The check is `closest("[data-curtain]")` rather than an attribute test on the
+anchor, so a whole group can be opted in by marking its container if that is ever useful.
+
+PLANS is `/#plans` and is opted in, yet stays quiet while you are already on the home page — the
+same-pathname rule catches it, which is what stops a curtain hiding the section it just scrolled to.
 
 **When it runs — three cases, one attribute (`html[data-loader]`):**
 
 | Value | Cause | Behaviour |
 |---|---|---|
 | `in` | First visit of a session | Starts covered — expanding it would mean showing the page and then hiding it. Holds 650ms, then fades |
-| `nav` | Any internal navigation | Opens from the centre, holds, fades at full size |
+| `nav` | A click on an **opted-in** link — see below | Opens from the centre, holds, fades at full size |
 | `hold` | A navigation that turned out to be a **full document load** | Starts covered, holds 220ms, fades |
 
 The `hold` case is what stops the language switch — a real page load — from looking different from
 the client-side navigations around it. A `sessionStorage` flag, `fg:curtain = <timestamp>`, is set
 when a curtain goes up and consumed by the init script of the next document. Nothing else needs to
 travel with it now that the circle is centred.
+
+#### 17.5.2 Cover first, then navigate — 17 Sep 2026
+
+The owner: *"background content is loaded even before the fullscreen is filled with green color."*
+
+The click used to raise the curtain **and** release the navigation in the same tick. `--curtain-enter`
+is 1000ms and a prefetched route commits in about 50ms, so for the remaining ~950ms the page being
+*arrived at* was on screen in the ring around a still-growing circle — the exact cut the curtain
+exists to hide, dressed up as a transition.
+
+An opted-in click is now **suppressed and replayed**:
+
+1. `preventDefault()` **and `stopPropagation()`**, in the document's capture listener. Both are
+   needed: Next's `Link` handler routes without checking whether the event was already prevented,
+   so only stopping propagation keeps the click away from it. Capture at `document` runs before
+   React's root listener, which is a descendant.
+2. The circle opens over the unchanged page.
+3. At `ENTER_MS` the click is **replayed on the same anchor** — `anchor.click()` — and the route
+   goes. The handler does not re-intercept it, because it bails whenever a curtain is already up.
+
+Replayed as a click rather than handed to `router.push`, so the link keeps whatever it already
+meant: next-intl's locale handling, the section-scroll handler on PLANS, and the browser's own
+default navigation as a backstop if React never hydrated.
+
+`ENTER_MS` in `PageLoader.tsx` **must match `--curtain-enter`**. Too low and the route is released
+while a ring of the old page still shows; too high and the screen sits covered doing nothing.
+`MIN_COVER_MS` is now derived — `ENTER_MS + HOLD_MS` — because those are exactly the two things that
+have to happen before anything retracts.
+
+Measured on a warm route: curtain up at 2ms, content swap at **1714ms**, fade begins at 1714ms with
+the panel still at full opacity, page clear at 2364ms. The swap trails full cover by ~700ms.
+
+**What it costs.** The open no longer overlaps the fetch, so a navigation is as long as the cover
+plus the route. In dev that reads as ~500ms added, but most of that is the dev server's RSC
+compile; with prefetch in production the route commits just after the replay and the total moves by
+under 100ms. If it ever needs to be faster the lever is `--curtain-enter` (and `ENTER_MS` with it) —
+not releasing the route early, which is the bug.
 
 **Constraints, because loaders are usually a net loss:**
 - **Never gated on the network.** It retracts when the route commits *or* at `FAILSAFE_MS` (3s),
@@ -1550,11 +1786,12 @@ travel with it now that the circle is centred.
   neither the init script nor the component.
 - The handoff flag is **timestamped and expires** (`HANDOFF_MAX_AGE_MS`, 5s) precisely because
   that 404 never consumes it. Untimed, it armed a curtain on some unrelated load minutes later.
-- `MIN_COVER_MS` (880ms, measured from the click) is a floor, not a pause: below the open duration
-  a prefetched route starts closing the circle while it is still opening.
+- `MIN_COVER_MS` (`ENTER_MS + HOLD_MS` = 1260ms, measured from the click) is a floor, not a pause:
+  below the open duration a prefetched route starts closing the circle while it is still opening.
 - **Skipped entirely under `prefers-reduced-motion`**, and checked in both the script and the CSS.
-- Only for a change of *pathname*. A hash link, a query-string-only change, a link to the current
-  page, a new tab, a download and any modified click all pass through untouched.
+- Only for an **opted-in link** (below) and only for a change of *pathname*. A hash link, a
+  query-string-only change, a link to the current page, a new tab, a download and any modified
+  click all pass through untouched.
 - The state is written to the DOM, not React state: the head script runs before React exists, and
   the click handler must cover the page in the same tick as the click.
 - The fading panel carries `pointer-events: none`, and this is load-bearing rather than tidiness:
@@ -1762,10 +1999,10 @@ next-day delivery before they reach a product page.
 
 | # | Section | Purpose |
 |---|---|---|
-| 0 | **Brand curtain** (§17.5) | First visit **and every navigation** — revised 15 Sep 2026 |
+| 0 | **Brand curtain** (§17.5) | First visit, plus the logo, four nav links and language switch — scoped 17 Sep 2026 |
 | 1 | **Header** (§18.1) | |
 | 2 | **Hero** — full-bleed microgreens image, full viewport width | Says what this is in three seconds |
-| 3 | **Our process** — non-treated seeds → quality checked → sown only on your order → harvested to deliver. No freezing, no storing | The core differentiator, and the answer to "is this safe to eat" |
+| 3 | **Our process** — five numbered steps on one row, joined by a hairline that draws towards the next: seed from suppliers we know (non-hybrid, non-GMO, untreated, hand-checked) → clean tray and new medium → sown only on your order → quality checked, cut, delivered → and again from scratch every week. No freezing, no storing. Revealed on scroll with a marker → line → text stagger (`Reveal` + the `.reveal-*` kit) | The core differentiator, and the answer to "is this safe to eat". Rewritten 16 Sep 2026 to add the hygiene claims — sterilised trays and never-reused coco peat, the specific thing a buyer worries about — while staying on one row, because six steps wrapped to two and lost the left-to-right flow that makes a numbered sequence legible. The fifth step is the weekly cycle rather than a fifth task: the connector used to run out at "delivered", and repeating the whole sequence is the claim a subscriber most needs to believe |
 | 4 | **Bundles** (`#plans`, §18.4) | The conversion surface |
 | 5 | **Other products** — racks · trays · seeds · snacks, four tiles | One-off revenue, clearly secondary. Same card motion as §17.4 |
 | 6 | **Trust tags** — organically grown · no chemicals · trusted seed sources · fresh, never frozen | Icon badges, `sage` on `forest` |
@@ -1775,10 +2012,12 @@ next-day delivery before they reach a product page.
 signals that nobody buys this, and inventing quotes is an unacceptable trade for a food brand. The
 trust band does the same job honestly. Add testimonials when they are real.
 
-**Still unplaced: the PIN serviceability check.** Not in the layout above. Delivery is restricted
-to an allowlist of Bengaluru PIN codes, so a visitor outside the zone can currently read the whole
-page, choose a bundle and reach checkout before being refused. It needs a home — recommended as a
-single quiet line in the hero. **Open decision.**
+**The PIN serviceability check is deliberately absent.** Decided 16 Sep 2026: serviceability is
+checked in checkout, before payment, and nowhere else (§7). The hero line was tried and removed —
+it spent the most valuable strip on the page asking the visitor to qualify themselves before the
+site had made a case, and it duplicated a rule that has to be enforced server-side at order
+creation regardless. The cost is accepted: someone outside the zone can read the whole page and
+pick a bundle before being turned away, so checkout's refusal has to be clear and early.
 
 ### 18.4 Bundle cards
 
@@ -2082,6 +2321,30 @@ line, verified in the browser.
 
 The marquee is therefore no longer on the bundle card. `.mcard*` in globals.css stays — the
 `/microgreens` grid, the variety page and `MarqueeCard` all still use it.
+
+**The variety grid got the full treatment on 16 Sep 2026** (`VarietyTile`). Where a cut-out exists
+the tile sits on a pale tint — `sage/30`, `sand`, `mint/40` by position, the greens being the only
+saturated thing that should be in the frame — and hover scrolls that variety's **nutrient labels**
+behind the punnet. Labels only, never their values: "Vitamin C" states what is in the green, while
+"High — well above the mature head" is a nutrient content claim needing analysis to substantiate
+under the Advertising & Claims Regulations 2018, and the values live on the detail page beside the
+note that qualifies them. A parenthetical qualifier is dropped for display, because "Vitamin A (as
+beta-carotene)" clipped mid-word at both tile edges and read as a bug rather than as the
+reference's deliberate overflow.
+
+The media box is **96%** of the tile here against the 70% used elsewhere: a punnet at a
+three-quarter angle is a 1.34:1 landscape silhouette in a square box, so its height runs out at
+two thirds of the box and at 70% it looked like a thumbnail floating in colour.
+
+96% is close to the ceiling, and the ceiling is the hover. The subject is 86% of the box wide and
+64% tall; hover scales it 1.1 and rotates it 4°, taking the rotated bounding width to 0.993 × the
+box. A box at 100% of the tile would therefore put the punnet's corners inside the tile's own 20px
+border radius, where `overflow: hidden` shaves them. Measured at 96%: clearance of 13–17px on
+every side at hover, nothing touching an edge. Going larger means re-padding the cut-out tighter
+than 86%, not widening the box.
+
+**List page only** — the detail page prints the same nutrients as a table with their values, and
+carries no `.mcard__media` or `.mcard__marquee`.
 
 ### 18.5 How we grow
 
@@ -2474,3 +2737,1625 @@ sit in the HTML whether or not they are open, so a crawler indexes all five.
 `priority` on the hero emits `<link rel="preload" as="image">` in the head under
 Next 16 rather than `loading="eager"` on the `<img>`. Both are correct; the
 preload is the newer form. Do not "fix" the absent `loading` attribute.
+
+---
+
+## 19. Racks — computed pricing
+
+**A rack's price is calculated from what it is made of, never typed in.**
+
+This is the owner's requirement, in their own words: *"the cost of the bolt can
+change, the cost of the bushes can change or even the shelf price can change, so
+I don't want to recalculate the prices again."* Storing a finished price per rack
+makes every vendor requote a spreadsheet exercise across the whole range;
+storing the components makes it one edited number.
+
+The alternative was considered and rejected: entering each rack's dimensions and
+its total cost directly. It is less code and it fails the one requirement above.
+
+### 19.1 The formula
+
+Confirmed against the vendor's quote and verified by hand by the owner on
+16 Sep 2026:
+
+```
+cost = legsPerRack × heightFt × ratePerFt      four legs, angle priced by the foot
+     + shelves × platePrice                    one plate per shelf
+     + shelves × boltSetsPerShelf × boltSet     8 bolt+nut pairs per shelf
+     + bushesPerRack × bushPrice                4 per rack — NOT per shelf
+```
+
+**The plate is the brace.** That is why the bill has no horizontal or diagonal
+members: four legs plus the shelves is the entire frame, and it is why a plate
+is priced by footprint rather than by the foot.
+
+The owner's worked example, which `src/lib/racks/pricing.test.ts` pins as the
+acceptance test for the whole feature — 6 ft, 5 shelves, 1¼ × 3 ft plate, 1.4 mm
+powder-coated angle:
+
+| Line | Working | ₹ |
+|---|---|---|
+| Shelves | 5 × 250 | 1,250 |
+| Legs | 4 × 6 ft × 40 | 960 |
+| Bolts + nuts | 5 × 8 pairs × 2 | 80 |
+| Bushes | 4 × 5 | 20 |
+| | | **2,310** |
+
+If the code ever disagrees with that figure, the disagreement is a bug and not a
+revision of the price list.
+
+Two derived rules:
+
+- **Retail price rounds up, never to nearest.** ₹2,310 at 0% markup rounded to
+  the nearest ₹50 is ₹2,300 — under cost. Direction is not cosmetic.
+- **Shelf count is `height − 1`, fixed.** `shelvesForHeight(heightFt)`. The
+  vendor's rule, confirmed 17 Sep 2026: 6 ft takes 5 shelves, 5 ft takes 4,
+  down to 2 ft taking 1. It is an **identity, not a ceiling** — a 6 ft frame
+  with 2 shelves is not something they build — so shelf count is never a choice
+  anyone makes. The add form shows it as a readout and posts nothing; the
+  server derives it from the height rather than trusting a field.
+
+  This replaced a `shelfPitchInches` setting ("minimum clear height per tier"),
+  which produced the same numbers at 14 in but expressed a cap, and so let a
+  rack be published with fewer shelves than it physically has. The setting was
+  removed from the type, the entity, the seed and the form.
+
+  Heights must be **at least 2 ft**, rejected on save: 1 ft would give a frame
+  with no shelves, and rejecting the height beats clamping the count.
+
+### 19.2 Three layers
+
+Split by how often each changes, which is what saves the recalculation:
+
+| Layer | Changes | Stored as |
+|---|---|---|
+| Rates — what parts cost | often, when the vendor requotes | `RACKSPEC / SETTINGS`, `PLATE#<id>`, `ANGLE#<id>` |
+| Build rules — how a rack assembles | rarely | `RACKSPEC / SETTINGS` |
+| Models — the racks actually sold | when the range changes | `RACKSPEC / MODEL#<id>`, `AMODEL#<id>` |
+
+One partition, so the whole screen loads in four small Queries. Keys are pinned
+by `src/lib/db/keys.test.ts` alongside every other entity.
+
+Plates are priced **per size, never per square foot**: the vendor's figures are
+not linear in area — 1 × 3 ft works out at ₹67/sq ft and 2 × 3 ft at ₹92/sq ft,
+because thickness climbs with depth. An area formula would misprice most of the
+range.
+
+**Powder coat only, and `finish` is gone.** From 17 Sep 2026 every rack is
+powder-coated, so the `"painted" | "powder"` field had one possible value and
+was removed from the type, the entity and the form. It was worse than merely
+redundant: the add form defaulted it to `Painted`, so the easiest thing to do
+with the screen was enter a grade Fewgrams does not sell. Powder coat is now a
+fact about the range, stated once in copy. Bring the field back only if a
+second finish really is sold.
+
+**There is exactly one angle grade: 1.4 mm powder coat at ₹40/ft.**
+
+The vendor's sheet also listed 1 mm at ₹25 and 1.2 mm at ₹30, both painted grey,
+and both were seeded `active: false` for a day on the reasoning that what the
+vendor quoted and what Fewgrams offers are different things worth keeping apart.
+The owner corrected that on 17 Sep 2026: *"we dont have 1 and 1.2 mm painted
+slotted angles, its only 1.4 mm different colored combination."* They are not
+stock that was retired — they were never available. So they are **deleted, not
+deactivated**, from the seed and from the database: an inactive row invites the
+click that puts an unbuildable rack on sale.
+
+The consequence is not small. **Every rack's legs are ₹40/ft with no cheaper
+gauge to fall back on** — ₹960 on a 6 ft rack before a single shelf, which lifts
+the cheapest 6 ft five-shelf rack from ₹1,600 to ₹1,960. Within the grade the
+only thing that varies is colour, and colour changes nothing about the cost.
+
+**Colour belongs to the angle grade, not to the rack**, because the vendor
+couples them: each gauge comes in its own finish and its own colours. A rack picks a grade and then a colour *from that grade*, so a 1 mm green
+rack is not enterable. Enforced in the form and again in the server action,
+because a server action is addressable without its form. The admin screen
+carries a standing note saying so — a painted grade offering grey alone reads
+as a broken dropdown until you know the rule.
+
+Colours come from a **fixed palette of swatches** (`src/lib/racks/colours.ts`),
+picked rather than typed. Free text let "grey", "Grey" and "gray" become three
+colours, and a rack referencing any of them would then fail the colour check on
+its own grade. **Slugs are stored, labels are resolved** — the database holds
+`orange` and the word comes from `admin.racks.colours.orange`, exactly as
+`finish` already worked. That is what lets the customer view print a colour in
+Kannada later without rewriting stored rows. `hex` lives in code and is not
+translatable: a filled circle settles what the vendor's "purple" and yours
+might not.
+
+Adding a colour is a one-line edit plus a label. That is a real cost against
+the rule that the admin screen stands alone, accepted because the alternative
+is a second CRUD screen with a colour picker for a side product, and ten
+colours already cover any powder-coat range.
+
+### 19.3 A rate edit reprices every rack, immediately
+
+**Changed 17 Sep 2026**, on the owner's instruction: *"we need to add logic to
+update prices of all variants as soon as primary raw material cost is updated,
+No need of approval."* §19.3.1 records what the previous design was and what
+the change costs.
+
+`RackModel.price` is **stored, and rewritten whenever a rate it depends on
+changes.** Saving a rate calls `repriceAllRacks()`
+(`src/lib/racks/reprice.ts`), which recomputes every published rack in **all
+three ranges** and writes back the ones that moved. There is nothing to approve
+and nothing to accept row by row.
+
+It is stored rather than computed on read, which matters for three reasons: a
+cart, a receipt and an order line each need one concrete figure to quote; a
+rack whose parts have been retired keeps its last good price instead of reading
+as ₹0; and `costAtPublish` remains as the record of which cost the stored price
+came from, which is what the margin column and the integrity flag are built on.
+
+**All three ranges, from any one screen.** The markup, the rounding, the heights
+and the corner leg count are shared by every range, and the angle rate prices
+the legs of both steel ranges — so an edit on `/admin/racks` can move prices on
+`/admin/pipe-racks`. A cascade covering only the screen it was triggered from
+would leave the other two quietly wrong, so there is one cascade and every
+rate-writing action calls it. It also revalidates all three routes.
+
+**Which mutations cascade, and which deliberately do not:**
+
+| Action | Cascades | Why |
+|---|---|---|
+| Save settings (incl. markup, rounding) | yes | can move every price with no material rate changing |
+| Save a plate, an angle grade, the pipe rates | yes | a material cost moved |
+| Save a footprint (frame or pipe size) | yes | dimensions move the running feet, which moves the cost |
+| Seed the vendor sheet | yes | it writes rates |
+| **Add** a plate, grade or footprint | no | no existing rack references it |
+| **Toggle or delete** one | no | it makes racks *unpriceable*, not cheaper — see below |
+
+Two kinds of row are never written by a cascade, both in `repricedRows`:
+
+- **Unpriceable ones.** A retired plate or an absent pipe rate means the cost is
+  unknown, not zero. The row keeps its last good price and stays flagged.
+- **Unchanged ones.** Both the price *and* the cost are compared, not the cost
+  alone — a markup edit moves the price while the cost stands still, and
+  rounding means a small cost move often leaves the price where it was. This is
+  what stops ₹2 → ₹2.01 rewriting a hundred rows and restamping every
+  `publishedAt`.
+
+Every row a single cascade touches gets **one shared `publishedAt`**, so the
+sweep reads as one event in the data rather than a hundred near-simultaneous
+ones.
+
+Setting a price by hand still works and still re-baselines `costAtPublish`, but
+its meaning has narrowed: **a typed price holds until the next rate edit, which
+overwrites it.** The screens say so. If a permanent per-rack override is ever
+wanted, it needs a flag on the model for the cascade to respect — deliberately
+not added, because nothing asked for one.
+
+The three row states survive, with the middle one changed from a workflow into
+an alarm:
+
+| State | When | Behaviour |
+|---|---|---|
+| Live | `costNow === costAtPublish` | nothing to do — the normal state after any rate edit |
+| Cost moved | they differ | **should not happen through the UI.** Flagged with both figures and a Republish button, kept as the repair for a write that bypassed the app |
+| Cannot price | its plate, grade or footprint has been retired | flagged; never zeroed |
+
+### 19.3.1 What the cascade gives up, and what still protects an order
+
+The design it replaced froze the price at publish so that a rate edit could
+never move a price a customer was looking at. That was worth stating plainly
+before removing it:
+
+- **An order that exists is safe either way.** An order line snapshots its name
+  and price at purchase (§4.3), so no cascade can reach it. This was always the
+  stronger half of the protection.
+- **What the cascade does expose is the gap between basket and payment.** A
+  customer can add a rack at one price and pay at another. Closing that is
+  checkout re-reading the model and confirming the price at payment time, which
+  belongs with the cart work (§12) — **noted here as a requirement of that
+  phase rather than left implicit.**
+- **A hundred rows of frozen prices with a queue of approvals was the worse
+  failure.** It is the hand recalculation this whole feature exists to remove,
+  and at three ranges it had stopped being a review step and become a chore
+  nobody would finish.
+
+**Display order is derived, not typed.** Racks list shortest-first
+(`listRackModels`: height, then shelves, then shelf size, then colour). A
+manual `sortOrder` existed until 17 Sep 2026 and went for two reasons — height
+is what racks are compared by, so the order is a fact rather than a decision,
+and the field carried its own bug: `Number("")` is `0`, so a rack added with the
+box left empty read as a deliberate zero and every one of them sorted together.
+Deriving it also simplified the key, from `MODEL#<sortOrder>#<id>` to
+`MODEL#<id>`.
+
+**One column per attribute.** The rack was one string — `6 ft · 5 shelves ·
+1.25 × 3 ft · 1.4 mm Green` — in a single column, which read as a sentence
+rather than as data: it wrapped, and it was not comparable down the column,
+which is the only reason to list racks together. Height, shelves, shelf size,
+gauge and colour each have a column, so two racks differing in one respect
+differ in one column. Twelve tracks fit the shell's 1100px measure in about
+990px; a first pass at comfortable widths came to 1148px and pushed the Live
+toggle and Delete link behind a horizontal scroll, which is worse than any
+amount of narrowness in a numeric column.
+
+### 19.3.2 Filling out the range is a script, not a button
+
+**`scripts/racks-fill.mjs`**, run as `node --env-file=.env.local
+scripts/racks-fill.mjs` (`--dry` to preview). It publishes every rack either
+rate card can build that is not already on sale — **one per height**, in every
+**active** shelf size or footprint and gauge, at the current markup with
+`costAtPublish` recorded. At five heights (2–6 ft), one gauge, five plates and
+six footprints that is 25 plated racks and 30 open-frame ones.
+
+There were two bulk buttons on the admin screens — "add every missing
+combination" and "republish all stale" — and both were **removed on 17 Sep
+2026** at the owner's instruction: *"do not build too many UI elements to load
+the different combination or accept the prices. The UI should be simple enough
+to add different combination, but the missing combination can be added directly
+into the DB from your end."* Adding one rack is a three-field form; filling out
+a thirty-row grid is a data job, and a data job does not need a UI. Accepting a
+recomputed cost stays one button on the one row it applies to, where the two
+figures being compared are visible.
+
+The script is additive and idempotent — existing racks are matched on config and
+skipped, so a hand-set price, an override or a deactivated row survives every
+run. Inactive parts are excluded, so it cannot resurrect a retired plate as a
+rack. An unpriceable config is skipped rather than written at ₹0.
+
+An earlier generator enumerated every shelf count from 1 to a cap and produced
+75 plated racks, of which 50 were frames the vendor does not build; `height − 1`
+(§19.1) removed the enumeration.
+
+**The script holds a second copy of the arithmetic**, because it is plain ESM
+and cannot import TypeScript on Node 20. That is the one dangerous thing about
+it — a divergence would write wrong *frozen* prices, which do not correct
+themselves — so `src/lib/racks/script-parity.test.ts` imports both and asserts
+they agree across the whole range, including the rounding step. Every pure
+function in the script is exported for that reason, and its DynamoDB entry point
+is guarded on `process.argv[1]` so importing it writes nothing.
+
+**Each add form shares its table's `COLUMNS`**, so a new row's inputs are
+exactly as wide as the saved rows above it. With their own equal-column grids
+the boxes were visibly different widths from the row they were about to become,
+which read as two unrelated forms. The submit button spans the action tracks,
+which have no field to align with. Only from `lg`, where the tables are
+unscrolled; below that both stack and matching widths would only mean matching
+narrowness. The racks table is the exception — its add form picks from labelled
+options (`1 × 2 ft — ₹180`) where the row shows resolved values (`1 × 2`), so
+one width cannot serve both.
+
+Rounding means a cost change often leaves the price where it was (₹2,310 and
+₹2,330 both round up to ₹2,350), so the button's label switches to *"Accept —
+price stays ₹X"* rather than naming a price that is not changing.
+
+### 19.3.3 No cost matrix
+
+One existed: every shelf size against every angle grade, at a selectable
+height, recomputed live so a rate edit had a visible consequence. **Removed
+17 Sep 2026.**
+
+It was redundant. `Racks on sale` already lists live cost, selling price and
+margin for every rack actually offered, and it recomputes from the same rate
+card — so the matrix's only unique contribution was the fifteen combinations
+nobody sells. The owner asked what it was for twice, which was the answer.
+
+`PriceMatrix.tsx`, the `?h=` search-param plumbing and the six `matrix*`
+message keys were deleted rather than left unreachable.
+
+What it did that nothing else now does: show what an *unlisted* combination
+would cost, before adding it. That question is answerable by adding the rack
+and reading its row, then deleting it if the figure is wrong — one more step,
+for a decision taken once per rack rather than daily.
+
+### 19.4 No "trays per shelf" figure
+
+The admin screen briefly computed and displayed trays per shelf, from a 10 × 20 in
+tray. **Removed 16 Sep 2026.** A rack goes to whoever buys it and they use
+whatever tray they already own, so the number was an assumption presented as a
+specification. `traysPerShelf` and `ASSUMED_TRAY` were deleted along with it
+rather than left unread.
+
+The underlying finding is still worth knowing, as buying information rather than
+as a published figure: **footprint runs out long before load does.** Three trays
+of wet medium is roughly 15 kg against a 40 kg shelf, and on a 10 × 20 in tray
+only the 2 ft-deep shelf (24 × 36 in) takes three — a 10 in-wide tray needs 20 in
+of depth to sit sideways, and nothing shallower has it. That is what separates a
+growing rack from a storage rack, and it should inform which racks lead the
+range even though the site does not claim it.
+
+Revive the column only if Fewgrams sells a rack bundled with a known tray, keyed
+to that tray's real dimensions.
+
+Capacity in kilograms stays: it is the vendor's own figure, and the rack row
+shows it multiplied by the shelf count.
+
+### 19.5 What was deliberately not built, and what superseded it
+
+- **No customer view of the *models*.** The owner asked for the admin screen
+  first. `RackModel` therefore carries no customer-facing name and nothing
+  writes to the product catalogue: a rack model becomes a `ProductVariant` when
+  there is a page to render it on. Half a projection would be a second answer to
+  "what racks do we sell". A model is identified by what it is — *6 ft ·
+  5 shelves · 1¼ × 3 ft · 1.4 mm Green* — which is what the admin table shows
+  and what a packing slip needs.
+- **No per-rack markup override.** One global figure until there is a reason for
+  two.
+
+**Both of those held for about an hour.** `/shop/racks` was built on
+17 Sep 2026 to show the three *ranges* with no models and no prices, and then
+the owner asked for add-to-cart the same day — so §19.5 now describes a
+decision that has been superseded rather than one still standing. What replaced
+it is §19.7.
+
+The part of the reasoning that survived is worth keeping: a rack model still
+carries **no stored customer-facing name**, and it is still not a
+`ProductVariant`. It is described from its own figures at read time
+(`rackLineName`), which is exactly what §19.5 said a model is identified by. The
+projection §19.5 refused was a *stored* one.
+
+### 19.6 `/shop/racks` — the three ranges
+
+One card per range: the photograph, the name, one sentence on what a level is
+made of, a **from-price** (the cheapest published model in the range), the
+three-day delivery date, and six properties scrolling behind the cut-out on
+hover.
+
+It replaced an empty state. That URL was served by `/shop/[category]`, which
+reads racks out of `ProductEntity` and finds none — because a rack is computed
+from a rate card rather than entered as a SKU — so the category strip and the
+footer both led to "no products in racks yet" while three admin screens quietly
+priced the whole range.
+
+**From-price, not price**, because a range is not one product: the height and
+the shelf size a customer picks are what decide the real figure. A range whose
+models are all unpublished or deactivated is **not rendered at all**, rather
+than linked to a page that would 404.
+
+**The properties are six different things, not the range name repeated** — the
+owner's instruction: *"so that it is clear that we are showing different
+properties not the same text getting scrolled"*. The two steel ranges share four
+of their six, because they are the same steel; what separates them is "Steel
+shelf plates" against "Open on every level" and "Takes an LED tube". None of
+them may restate a figure the admin screens tune — no price, no height, no shelf
+count — so "Built to your size" and "Load rated" carry those ideas instead.
+
+### 19.7 `/shop/racks/[range]` — choosing one, and buying it
+
+Three option rows — **height, shelf size, colour** — then the price and
+add-to-cart. Colour is offered only where there is a choice: a pipe rack gets a
+sentence saying white is the only finish UPVC comes in, because a selector with
+one option invites a tap that does nothing.
+
+**The choice is in the URL** (`?h=6&s=1.25x3&c=orange`), not in client state,
+and the options are `Link`s. Three reasons, in order of weight:
+
+1. **The price is computed on the server.** A rack's price is per model, so a
+   client-side selector would need every model's price *and* twenty
+   pre-formatted totals for each — 45 models on the pipe range alone. With the
+   choice in the request, the page resolves one model and formats one set,
+   exactly as the tray page does.
+2. **Choosing needs no JavaScript**, and the chosen rack is in the address bar
+   to be shared or bookmarked.
+3. **`AddToCart` needed no changes**, because its key is fixed again once the
+   request decides it.
+
+The cost is a round trip per tap. For a page whose whole content is one price
+only the server can compute, that is the honest trade.
+
+**Nothing 404s on a bad option.** An unknown *range* does — it is a route
+segment and there are three — but a height, size or colour that does not exist
+falls back to the nearest offered one, because those come from a query string
+that a stale bookmark or a retired part can invalidate. The one exception is
+deliberate: when a height and a size are each offered but not *together*, the
+page says so rather than silently moving the customer to a rack they did not
+pick.
+
+**Heights and sizes are listed from what is published**, not from
+`RackSettings.heightsFt` — a height whose models have all been deactivated must
+not be offered.
+
+The **SKU is shown** as a fact. It is what a packing slip and a WhatsApp message
+about the order will both say, and a customer who can quote it is one we can
+answer quickly.
+
+### 19.8 Three days, inside Bengaluru
+
+The owner's figure, 17 Sep 2026: *"for racks within Bangalore location, the
+delivery timeline is three days"*. It lives in `src/lib/racks/lead-time.ts` as
+`RACK_LEAD_DAYS`.
+
+**One constant, not a per-row field** — the opposite of a tray's `leadDays`
+(§23.1), and the two look alike from a distance. A tray's is per row because
+three items already come from two suppliers; a rack has **no supplier**. It is
+assembled to order from a rate card, so three days is our own build time and
+every range goes through the same bench. If a range ever gets its own timeline,
+that is the moment to move it onto the model — not before.
+
+**"Within Bangalore" is the scope of the promise, not a condition the code
+checks.** Fewgrams delivers only to serviceable Bengaluru PIN codes and refuses
+everything else at checkout (§7), so there is no slower option to qualify
+against. Repeating the condition in code would imply one exists. It appears in
+the *copy* because a buyer reading "three days" about a made-to-order steel rack
+will reasonably wonder whether that is a city figure or a national one.
+
+The module throws on import if the constant ever exceeds `MAX_LEAD_DAYS`, which
+`daysFromToday` would otherwise clamp — printing a nearer date than the constant
+claims, silently.
+
+### 19.9 The cart learned a fourth kind
+
+`CART_KINDS` is `variety | seed | tray | rack`, coded `v | s | t | r`.
+
+**A rack is the first kind whose key is not a content key**, and that forced the
+cart's key validation to become kind-aware (`isValidKeyFor`) rather than be
+loosened for everyone. A content key is lowercase letters and hyphens with **no
+digits** — that ban is the whole point of the rule, because `amaranth-2` is the
+naming failure it exists to prevent. A rack is identified by precisely those
+digits: 6 feet, 5 shelves, a 1.25 × 3 ft footprint, 1.4 mm steel.
+
+So a rack is keyed by **its SKU**, which already existed for packing slips on
+the argument that a readable identifier beats a UUID "when the person picking it
+is the person who priced it". Lowercased, because a cart key is also a URL
+segment. The two key sets are provably disjoint, pinned in `cart-key.test.ts` —
+which is what stops one string addressing two products.
+
+**Colour is in the key, not on the model.** `RackConfig` deliberately has none:
+orange, green and purple are the same rack at the same price, and three models
+for one product is three rows to keep in step. Colour is chosen at purchase, and
+the cart has no per-line attributes — a line is a kind, a key and a quantity.
+Appending it to the key reconciles those two facts and gets the behaviour right
+for free: two racks of one size in two colours are two lines, because they are
+two things to build. A pipe rack has no colour segment; appending `-white` would
+imply a choice nobody is offered.
+
+**A rack has no content file, so its name is composed** (`rackLineName`) —
+"Shelf racks · 6 ft · 5 shelves · 2 × 3 ft · Purple", localised, with plain
+decimals rather than the admin table's `1¼`. §4.3 still requires an *order* line
+to snapshot that name at purchase; this composes the current one, and checkout
+is where it would be frozen.
+
+**`Timing` gained a fourth arm, `build`**, distinct from a tray's `supplier`
+even though both are a flat number of days: one is somebody else's dispatch and
+varies per row, the other is our own build time and is one constant. Collapsing
+them would make the next change to either touch both.
+
+**`item.grams === null` stopped meaning "a pack".** It had been the test for
+"unweighed" while trays were the only such kind, and a rack priced "per pack"
+and counted in "packs" is the exact class of wrong number that survives review
+because the code reads fine. The cart page now branches on the kind
+(`lineUnits`, `stepKey`).
+
+Verified end to end on a five-line cart — a tray, a green, a shelf seed, a pipe
+rack and a purple shelf rack: one consolidated date, 200 g of weight from the
+two weighed lines only, and a correct subtotal. And on a crafted cookie: a
+colour the grade does not offer and a height never published are both reported
+as no longer on sale, while a pipe key carrying a colour and outright junk are
+dropped by the parser.
+
+### 19.10 Still not built
+
+- **No rack in an order.** Checkout does not exist (§9), so nothing snapshots
+  the composed name or the price, and nothing tells the owner to build the rack.
+  Identical to the gap trays have (§23.9) and now with a bigger number attached.
+- **No delivery charge.** §7 sets racks at a flat ₹500 and the cart charges
+  nothing yet, so a ₹6,900 rack currently quotes free delivery by omission.
+- **The markup is a test value.** `RackSettings.markupPercent` is 80 in the dev
+  database and every price on the site is computed from it. Confirm it before
+  these pages are public.
+- **No per-rack markup override.** One global figure until there is a reason for
+  two.
+- **One photograph per range, not per model.** A 4 ft and a 6 ft rack of one
+  range show the same picture, which is honest — it is the same object at two
+  heights — but a cart line for a 2 ft rack shows a photograph of a taller one.
+
+### 19.11 The range photography
+
+Three cut-outs, supplied by the owner on 17 Sep 2026, at
+`public/racks/<range>/cutout.webp`. Details and the two known caveats — the
+steel is orange rather than the brand green, and the `angle` master is clipped
+at its left edge — are in `public/racks/README.md`; prompts are in
+`docs/TRAY_PROMPT.md`.
+
+**4:5 portrait and normalised on height**, which is the opposite of the variety
+cut-outs (§17.4). Punnets are all roughly one shape, so a common *width* gives
+them a common size; racks are all the same kind of tall object at different
+widths, so a common *height* is what makes three ranges read as one set. Their
+widths land at 74%, 79% and 83%, which is the rack rather than the photography.
+
+**No `hero.jpg` for any of them.** A hero is a photograph flattened onto the
+ground of the frame it sits in, and the only rack frame that exists is a cut-out
+panel. There is no rack gallery to design a background for yet.
+
+Racks are also the first category with a photograph on its **tile** — the home
+page and `/shop` both render the `shelf` range through `CategoryMedia`, which is
+where the four category tiles' media decision now lives. One tile serves the
+category, so the other two ranges appear only on `/shop/racks`.
+
+### 19.12 Open with the vendor
+
+Both change the numbers, neither blocks the screen:
+
+1. **Is angle cut to length, or sold in fixed sticks?** Slotted angle usually
+   ships in 8 ft or 10 ft lengths. If so a 6 ft rack buys four 8 ft sticks for
+   its legs and uses 24 ft of the 32 — ₹1,280 rather than ₹960 at ₹40/ft — and
+   the model becomes `× ceil(height / stockLength)` with offcut waste at every
+   non-standard height.
+
+   **This now matters far more than it did.** An open-frame rack (§20) is
+   almost entirely angle: a 6 ft 1 × 4 ft one takes 94 running feet in 29
+   separate pieces. How those pieces are cut from stock lengths, and who eats
+   the offcuts, is the single largest open question in the rack range.
+2. **What is the bush?** A foot, or a leg coupler. Four per rack either way
+   today, but a coupler would scale with how the legs are made up rather than
+   with the rack.
+
+Two figures in the vendor's sheet are also worth confirming: the 1 × 2 ft plate
+claims 20 kg at 0.4 mm while the 1 × 3 ft claims 10 kg at the same thickness
+(plausible on the shorter span, but a 2× jump), and 1¼ × 3 and 1½ × 3 are both
+0.6 mm over the same 3 ft span yet differ 20 vs 30 kg.
+
+---
+
+## 20. Angle racks — the open-frame range
+
+**A second rack category, added 17 Sep 2026: a rack built entirely from slotted
+angle, with no steel shelf plates at all.** Its own admin screen,
+`/admin/angle-racks`. The plated range keeps `/admin/racks`, relabelled
+**Shelf racks** — one of two rack tabs called plain "Racks" would be the
+ambiguous one.
+
+### 20.1 What a shelf is
+
+The owner's description: each shelf level is a rectangle of angle — two along
+the length, two across the depth — **plus one more along the length down the
+middle**, which braces the span and is where an LED tube mounts. In their words:
+*"if a user is asking for four feet length and one feet depth we will have 3
+four ft slotted angles and two 1 feet slotted angle — two 4 feet slotted angle
+will be on the either ends and one 4 feet slotted angle will be in the middle to
+provide the support and also to install the LED tube lights."*
+
+So it is five pieces, not four:
+
+```
+frameFeetPerShelf = 3 × lengthFt + 2 × depthFt
+```
+
+A 4 × 1 ft level is **14 running feet**, which `pricing.test.ts` pins as the
+acceptance test for the category.
+
+The mid-rail runs **along the length**, not across the depth. That is the axis
+the owner named and the load-bearing one; a rail across a 1 ft depth would brace
+nothing, and the tube it carries has to run the long way for the light to fall
+down the shelf.
+
+One consequence to keep in mind when reading the price list: **cost is not a
+function of area.** 1 × 4 ft and 2 × 2 ft both cover 4 sq ft and take 14 ft and
+10 ft of angle respectively, because length is counted three times and depth
+twice. A long shallow shelf costs more than a short deep one of the same area.
+
+### 20.2 The formula
+
+```
+cost = legsPerRack × heightFt × ratePerFt                  same four legs
+     + shelves × (3×length + 2×depth) × ratePerFt           the framing
+     + shelves × boltSetsPerShelf × boltSet                 unchanged
+     + bushesPerRack × bushPrice                            unchanged
+```
+
+**Only the shelf line differs from §19.1.** A bought plate at its own price
+becomes five lengths of angle at the grade's rate per foot. Shelves are still
+`height − 1`; the price still follows the rates immediately (§19.3)
+(§19.3); colour still belongs to the grade and not to the rack.
+
+Bolt and nut counts are taken as **identical** to a plated rack, on the owner's
+instruction: *"the nuts and bolts required would be same even for the slotted
+angle there won't be any additional and even if there is any additional it will
+be very negligible so we don't have to consider it."*
+
+The owner's 6 ft 1 × 4 ft rack, at 1.4 mm / ₹40 a foot:
+
+| Line | Working | ₹ |
+|---|---|---|
+| Legs | 4 × 6 ft × 40 | 960 |
+| Framing | 5 × 14 ft × 40 | 2,800 |
+| Bolts + nuts | 5 × 8 pairs × 2 | 80 |
+| Bushes | 4 × 5 | 20 |
+| | | **3,860** |
+
+**Dropping the deck costs more, not less** — worth stating plainly because the
+owner expected the opposite. On a 1 × 3 ft footprint at 6 ft, the plated rack is
+₹2,060 and the open frame is ₹3,260: each shelf saves the plate's ₹200 but buys
+11 ft of angle at ₹40 — ₹440 — to replace it. `pricing.test.ts` pins that direction, so
+if it ever flips it will be because a rate moved and not because the model
+changed. The open-frame range is therefore a *lighter, see-through, tube-lit*
+rack rather than a cheaper one. Whether that is what the owner wants to sell is
+a business question, not a code one.
+
+### 20.3 One rate card, two ranges
+
+Everything that *changes* is shared; everything that *differs* is a different
+table.
+
+| | Shelf rack | Angle rack |
+|---|---|---|
+| Legs | 4 × height × ₹/ft | the same |
+| Bolts, bushes | 8 pairs a shelf, 4 bushes a rack | the same |
+| Markup, rounding, heights | shared `RackSettings` row | the same row |
+| Angle grade | `ANGLE#<id>` | the same list |
+| A shelf | a bought plate: own price, own load rating | `3 × length + 2 × depth` ft of angle |
+
+So the rates live **once**, on Shelf racks, and the angle-racks screen shows them
+**read-only with a link**. A second rates form would be a second place to change
+a bolt price and one of them to forget — precisely the recalculation the whole
+design exists to avoid. Proven end to end: editing the bolt price from ₹2 to
+₹2.50 on Shelf racks flagged all 30 open-frame racks with their old and new
+cost, prices unmoved.
+
+Both categories go through **one pricing module**, `src/lib/racks/pricing.ts`,
+and a test asserts the legs, bolt and bush lines are byte-identical between
+them — so a future requote cannot be applied to half the range.
+
+### 20.4 Footprints have no price and no capacity
+
+`FrameSize` is `{ id, depthFt, lengthFt, active }` and nothing else. Both
+absences are deliberate:
+
+- **No price.** A frame is not a part the vendor sells. Storing one would be
+  storing the answer to a sum, which is what §19 exists to prevent.
+- **No capacity.** There is no deck to load. The vendor's `capacityKg` rates a
+  steel plate; what an open frame holds depends on what the buyer rests on it,
+  and inventing a figure would repeat the "trays per shelf" mistake (§19.4).
+
+In place of a load column the table shows **total running feet of angle** —
+legs plus framing, 94 ft for the owner's 6 ft 1 × 4 ft rack. On a rack that is
+angle and almost nothing else, that is the figure that checks straight against a
+vendor invoice.
+
+Unlike plates, the footprint list is **Fewgrams' choice, not the vendor's**: any
+size is buildable from angle by the foot. The starting set is the five plated
+footprints, so a buyer can compare the two ranges at the same size, plus
+1 × 4 ft from the owner's example.
+
+### 20.5 Keys
+
+| Entity | PK | SK |
+|---|---|---|
+| Footprint | `RACKSPEC` | `FRAME#<id>` |
+| Angle rack on sale | `RACKSPEC` | `AMODEL#<id>` |
+
+Same partition as the rate card, because it is priced from the same rates — one
+load serves both screens.
+
+**`AMODEL#` and not `ANGLEMODEL#`**, because `ANGLE#` is already the grade
+prefix and two prefixes where one is nearly the other is a `begins_with` bug
+waiting to be written. `keys.test.ts` pins that `begins_with(SK, "MODEL#")`
+cannot match `AMODEL#…` — the `#` is part of the prefix — because if a future
+rename dropped it, the two rack screens would silently start showing each
+other's racks at each other's prices.
+
+Two entities rather than one `RackModel` with `plateId?` and `frameId?`: a row
+where neither is guaranteed is a row where the applicable pricing formula is a
+runtime question. Two entities make it a type-level fact.
+
+### 20.6 Not built
+
+**The customer view arrived on 17 Sep 2026** and is shared with the other two
+ranges — `/shop/racks/angle` (§19.6, §19.7). Nothing here writes to the product
+catalogue even so: a model is described from its own figures at read time rather
+than projected into a SKU (§19.5).
+
+What is still absent is the same list as §19.10: no order, no delivery charge,
+and a markup that is a test value.
+
+There is no seed button on this screen either: the footprints arrive with
+`scripts/racks-fill.mjs` (§19.3.2), and the owner asked for fewer buttons here,
+not more.
+
+---
+
+## 21. Pipe racks — the UPVC range
+
+The third rack category, added 17 Sep 2026: **a rack built from 1 inch UPVC
+pipe, joined with four-way connectors.** Admin screen at `/admin/pipe-racks`.
+
+The owner's reason is not price: *"in this the stability is a bit important."*
+Light to move, nothing to rust in a wet grow room, wipes clean. It is the
+**dearest of the three ranges**, and by some margin.
+
+### 21.1 The bill
+
+```
+cost = legs × height_ft × pipe_rate_per_ft              uprights
+     + shelves × 2 × (length + depth) × pipe_rate_per_ft   shelf frames
+     + legs × shelves × connector_price                 a four-way per junction
+     + legs × bush_price                                one bottom bush per leg
+
+legs = 4 + (length_ft >= 4 ? 2 : 0)
+```
+
+Owner's rates: pipe **₹25/ft**, four-way connector **₹110 each**, bottom bush
+**₹10 per leg**.
+
+Worked example — 6 ft, 5 shelves, 1½ × 3 ft:
+
+| Line | | ₹ |
+|---|---|---|
+| Uprights | 4 legs × 6 ft = 24 ft × 25 | 600 |
+| Shelf frames | 5 × 2 × (3 + 1.5) = 45 ft × 25 | 1,125 |
+| Connectors | 4 legs × 5 levels = 20 × 110 | **2,200** |
+| Bushes | 4 × 10 | 40 |
+| | | **3,965** |
+
+Shelves are still `height − 1` and retail still rounds **up** — the two rules
+every range shares, which is why all three go through
+`src/lib/racks/pricing.ts`. And like the other two, a pipe rack reprices itself
+the moment a rate it depends on changes (§19.3) — including the shared markup,
+which is edited on `/admin/racks`.
+
+### 21.2 Three findings worth knowing before quoting
+
+**The fittings, not the pipe, set the price.** Twenty connectors at ₹110 come to
+₹2,200, more than all 69 ft of pipe in the same rack. `pricing.test.ts` pins the
+direction, so a requote that flips it is flagged rather than absorbed.
+
+**So height is expensive and depth is cheap.** Every extra foot of height is
+another shelf level, and a level is four more connectors before a single foot of
+pipe — ₹440 of fittings against ₹175 of pipe on a 1 × 2½ ft level. Depth, by
+contrast, adds pipe and no junctions at all: 1 × 3 ft to 2 × 3 ft at 6 ft tall
+is ₹250 on a ₹3,840 rack.
+
+**It is the dearest range, not the cheapest** — the same surprise as §20, in the
+same direction. At 6 ft on a 1½ × 3 ft footprint:
+
+| Range | Cost |
+|---|---|
+| Plated steel (§19) | ₹2,810 |
+| Open angle frame (§20) | ₹3,460 |
+| UPVC pipe (§21) | ₹3,965 |
+
+Pinned as an ordering in `pricing.test.ts`, so a flip means a rate moved rather
+than the model changing.
+
+### 21.3 A pipe shelf has no mid-rail — the leg goes underneath
+
+The one thing that separates the two open ranges, and it is easy to get wrong.
+An **angle** shelf takes a third length down the middle to brace the span and
+mount an LED tube, so `3 × length + 2 × depth` (§20.1). A **pipe** shelf is the
+perimeter only, `2 × (length + depth)`, and braces its span from *underneath*
+with the middle support leg instead.
+
+Consequences:
+
+- A 4 ft pipe level is four pieces; a 4 ft angle level is five.
+- Pipe cost per shelf **is** a function of perimeter — 1 × 4 ft and 2 × 3 ft
+  come out identical. Angle cost is not, because length counts three times.
+- The middle support adds **no** horizontal footage. It stands under the
+  existing long rails at their midpoint; two halves of a 4 ft rail are still
+  4 ft of pipe. What it adds is two uprights, two bushes and — the expensive
+  part — **two more connectors at every level**.
+
+**Two mid-support legs, not one, is an inference.** The owner said "a supporting
+leg", singular. Both long rails span the length, so propping only one would
+leave the other exactly as it was, and the reference photo shows the mid legs in
+a pair. At 6 ft on a 2 × 4 ft footprint it is the difference between ₹5,760 and
+₹5,050, so it is **flagged for confirmation** rather than assumed silently.
+`PIPE_MID_SUPPORT_LEGS` is one number to change.
+
+### 21.4 What it shares, and the one thing that makes this screen different
+
+| | Shared with §19/§20 | This range's own |
+|---|---|---|
+| Corner legs | 4, from `RackSettings.legsPerRack` | — |
+| Heights, markup, rounding | the same `SETTINGS` row | — |
+| `shelvesForHeight`, `retailPrice` | the same functions | — |
+| Material rates | — | pipe, connector, bush — `PIPESETTINGS` |
+| Footprints | — | `PIPESIZE#` |
+| Bushes | — | per **leg**, not four per rack |
+| Fasteners | — | none; the joint *is* the fitting |
+
+**This is the only rack screen with a rates form on it.** The angle screen has
+none deliberately (§20.3) because every rate it uses belongs to the plated range
+too, so a second form would be a second place to change a bolt price. Nothing
+else in the catalogue buys UPVC pipe, four-way connectors or pipe bushes, so
+those three rates have no other home. What *is* shared is still edited only on
+`/admin/racks` and shown here read-only with a link.
+
+Hence the second settings row rather than three more fields on `RackSettings`:
+on the shared row they would be three attributes the plated rates form neither
+renders nor writes, which is the unread schema field CLAUDE.md says to cut.
+
+### 21.5 No gauge, no colour — and a height cap
+
+**One pipe spec, and it is white.** So a footprint plus a height is the whole of
+a model: `PipeRackConfig` has three fields where `RackConfig` has four, the add
+form asks two questions instead of three, and both tables are a column narrower.
+The range is a third smaller per footprint than the other two.
+
+**Six feet is the ceiling.** `PIPE_MAX_HEIGHT_FT`, the owner's figure — a 1 inch
+upright gets springy above it. A constant and not a setting, because the
+`heightsFt` list is shared with two steel ranges that have no such limit: if 8 ft
+is ever added there, this stops the pipe range following it into something that
+wobbles. Enforced in three places for the usual reason — the add form does not
+offer it, `allPipeRackConfigs` filters it, and the server action re-checks it,
+since an action is addressable over HTTP without its form.
+
+### 21.6 Footprints — a different grid from the steel ranges
+
+Three depths by three lengths, the owner's own list: **1, 1½, 2 ft deep** by
+**2½, 3, 4 ft long**. Nine sizes.
+
+Two differences from the plated footprints, both theirs: **1¼ ft depth is gone**
+and **2½ ft length is new**. That is why it is a separate list rather than a
+shared one with an `offeredIn` flag — two product ranges with different size
+grids are two lists.
+
+**One thing to confirm.** The owner wrote *"we will not have depth of 1 and
+1.25"* and then, in the same sentence, *"what we will have is 1 feet depth, 1 and
+a half feet depth, and 2 feet depth. That's it."* The explicit list is taken as
+authoritative — it is more specific and it closes with "that's it" — and dropping
+1¼ ft alone gives exactly that list from the plated set, which reads like the
+intended edit. If 1 ft depth really is out, deactivate three rows.
+
+No price and no capacity on any footprint, for the reasons in §20.4. The table
+shows two derived figures instead: pipe per shelf, and **the leg count** — which
+jumps from 4 to 6 as you type a length of 4, because that is the only place a
+footprint's length has a consequence an operator cannot otherwise see.
+
+### 21.7 Keys
+
+| Entity | PK | SK |
+|---|---|---|
+| Pipe rates | `RACKSPEC` | `PIPESETTINGS` |
+| Footprint | `RACKSPEC` | `PIPESIZE#<id>` |
+| Pipe rack on sale | `RACKSPEC` | `PMODEL#<id>` |
+
+Same partition as the rest, so one load serves all three screens — `loadRateCard`
+is now six parallel Queries.
+
+**`PIPESETTINGS`, not `PIPE#SETTINGS`**, so a `begins_with(SK, "PIPESIZE#")`
+listing the footprints cannot sweep up the rates row — the same class of mistake
+`ANGLEMODEL#` would have been (§20.5). `keys.test.ts` now asserts that **each of
+the seven list prefixes on this partition matches exactly one of the nine key
+shapes**, and that neither settings row is caught by any of them.
+
+Footprint ids are `pp-1.5x3`, not `p-1.5x3`: the plated plate already owns `p-`,
+and one character between two id spaces is not enough.
+
+### 21.8 Filling the range and the script's second copy
+
+`scripts/racks-fill.mjs` (§19.3.2) now fills all three ranges in one pass —
+25 plated, 30 angle, 45 pipe. Additive and it never overwrites, so a hand-set
+price survives every run.
+
+The script duplicates the pipe arithmetic for the reason given in §19.3.2 —
+plain ESM cannot import TypeScript on Node 20 — and the duplication now includes
+**three constants as well as the formulas**. `script-parity.test.ts` compares
+both copies across the whole range and asserts the constants match, because a
+height cap that differed would publish racks the screen refuses to build, and a
+mid-support threshold that differed would misprice every 4 ft rack by ₹710.
+
+### 21.9 Not built
+
+**The customer view arrived on 17 Sep 2026** — `/shop/racks/pipe` (§19.6,
+§19.7). The three ranges come to **100 racks** in DynamoDB, and that count is
+what settled the shape of it: a list was never going to work, so the page offers
+two axes — height and footprint — and resolves one model. Pipe is the range
+where it matters most, with 45 of the 100.
+
+It is also the only range with **no colour choice**: one pipe spec, and it is
+white, so the page shows a sentence where the other two show chips.
+
+Still absent, as §19.10: no order, no delivery charge, and a test markup.
+
+---
+
+## 22. Seeds — stock sold by weight
+
+The third catalogue with a page per item, after microgreens (§18.6) and the
+rack ranges (§19–§21). Built 17 Sep 2026 on the owner's two instructions:
+
+> *"Next, I would like to build the admin page for the seeds. Basically I
+> should be able to add the number of grams of seed that I hold today for
+> selling, I should be able to add different varieties of seeds. And also each
+> seed will have its own description like microgreens. We can reuse the entire
+> template of microgreen details page to show the seeds information. Adding to
+> the cart should always be limited to the quantity that I hold and minimum
+> order quantity of each seeds would be 100 grams. Once it is out of stock we
+> should show out of stock message on the seeds display page."*
+
+> *"I feel we have to get rid of products menu from the admin page since it's a
+> generic form built for multiple products which isn't suitable. So we need
+> seed specific inventory page similar to microgreen where I can enter the seed
+> information and also the available quantity and its price per 100 grams."*
+
+**The first quotation's stock rule was superseded the same day** — "limited to
+the quantity that I hold" and the out-of-stock message are gone, replaced by a
+delivery rule. See §22.2. The 100 g minimum from that quotation survives
+unchanged.
+
+### 22.1 A seed is shaped like a variety, not like a product
+
+`Seed` is its own entity (`src/lib/types.ts`), modelled on `Variety`:
+
+| | In DynamoDB | In `content/seeds/<key>.json` |
+|---|---|---|
+| `Seed` | `pricePer100g`, `stockGrams`, `active` | name, description, sowing, specs, uses, cautions, FAQ |
+
+It is deliberately **not** a `Product` with `category: "seeds"` and a
+`stockGrams` variant, which is what §3 originally described. Three reasons, all
+of which the old `/admin/products` screen demonstrated:
+
+1. **`Product.name` is typed into the admin UI.** Every catalogue entity a
+   customer reads about moved its text to content files on 15 Sep 2026 (§4.3),
+   and a seed has more to say than a tray does, not less.
+2. **Variants earn their place on trays** (virgin vs PP, 10×20 vs 10×10). A
+   seed has one axis — how much you want — and that is a quantity, not a
+   variant. "100 g / 250 g / 500 g" as three SKUs would multiply the rows and
+   then have to keep three stock figures honest against one sack.
+3. **Stock on a variant is stock per SKU.** The owner holds one sack, and one
+   number is the honest model of one sack. It also makes the decrement at
+   checkout an `UpdateItem` with a condition on one attribute, rather than a
+   read-modify-write of a nested list that cannot be made safe under two
+   concurrent orders (§15).
+
+Trays and snacks stay on `Product` until they get screens of their own. Racks
+were pulled out for a different reason — computed pricing (§19).
+
+### 22.2 The stock rule: any quantity, and the shelf sets the date
+
+**Rewritten 17 Sep 2026, hours after it was first built.** The original rule
+was the owner's: stock was a hard cap, anything under 100 g read as out of
+stock, and every card printed the grams held. They replaced it the same day:
+
+> *"one thing to fix is for seats we don't have to show how much we hold in our
+> inventory in the customer facing UI we should let them allow to order how much
+> ever they want but the delivery logic changes if the ordered amount is less
+> than the amount that we are holding we will deliver on the next day if they
+> are ordering beyond our capacity then we will order it in the vendor website
+> and deliver to the customer within 10 days."*
+
+("seats" is a dictation slip for "seeds".)
+
+**Stock stopped being a limit and became a speed.** The reason the change is
+sound is that seed is a shelf-stable commodity with a supplier: you cannot
+re-order a tray of greens that takes fourteen days to grow, but you can buy
+another kilo of mustard seed. So nothing is refused; what moves is the date.
+
+| Ordered | Source | Promise |
+|---|---|---|
+| ≤ grams held | our shelf | **next day** |
+| > grams held | the vendor | **within 10 days** |
+
+One module still owns it, `src/lib/seeds/stock.ts`:
+
+- `SEED_MIN_ORDER_GRAMS = 100` — unchanged, and still the cart's unit (§18.6),
+  so "at least one unit" already enforces it. `stock.test.ts` asserts the two
+  constants are equal, so a future 250 g minimum fails a test instead of
+  shipping a control that lies.
+- `SEED_VENDOR_LEAD_DAYS = 10` — the owner's figure, and it is a **worst case
+  stated as a promise**, not an estimate. A seed order that arrives early costs
+  nobody anything.
+- `seedSourcing(orderedGrams, stockGrams)` → `"shelf" | "vendor"`. **Equal
+  amounts count as the shelf**: ordering exactly the 200 g we hold is a
+  next-day order, because the seed is there.
+- `seedReadyDate(sourcing)` — tomorrow, or the lead time, day-granular in IST.
+- `shelfPacks(grams)` / `shelfGrams(grams)` — **operator-facing only**, for the
+  admin table's derived column. Never a customer-facing ceiling.
+
+**The defensive reads are asymmetric on purpose.** A nonsense `stockGrams`
+resolves to `"vendor"`, a slower promise the business can always beat;
+`"shelf"` on a seed we do not have is a next-day delivery that cannot happen.
+
+#### What the customer sees, and what they do not
+
+**The grams held appear on no customer-facing page.** Removed from the grid
+card, the detail facts, the buy box and the cart line. It is an internal figure
+that moves every time a sack is opened, and printing it both published
+inventory and implied a ceiling that no longer exists.
+
+| Surface | Before | Now |
+|---|---|---|
+| `/seeds` card | `₹340/100 g · 200 g in stock`, or `Out of stock` | `₹340/100 g` |
+| detail facts | `On the shelf 200 g` + `Minimum order 100 g` | `Minimum order 100 g` + the undated dispatch policy |
+| buy box | stepper capped at stock; sold-out panel at zero | stepper to 20; **a dated line per quantity** |
+| cart line | `In stock`, or a terracotta over-stock flag | `From our shelf · Fri 18 Sept` or `Ordered in for you · by Sun 27 Sept` |
+| `/admin/seeds` | `Sells as 2 packs` / `Out of stock` | `Next day: 2 packs` / `All bought in` |
+
+**The dated line in the buy box is computed per quantity**, one pre-formatted
+string for each of the twenty the stepper can reach, because the answer changes
+with the amount: the same seed is next-day at 100 g and a vendor order at
+900 g. Stepping past the shelf changes the promise *in front of the customer,
+before they commit*, rather than surprising them at checkout.
+
+The undated fact beside it — "Next day from our shelf", with "order more than
+we hold and we bring the rest in for you" underneath — is the policy, identical
+for every seed and every reader. The dated version is the one that knows the
+quantity.
+
+**Accepted leak:** a determined reader can infer roughly what we hold by
+stepping the quantity until the date flips. That is the price of an accurate
+delivery promise, and an accurate promise is worth more than a hidden number
+(§5.3 makes the delivery date the site's most important expectation-setting).
+
+#### Consequences
+
+**"Sold out" no longer exists for a seed**, anywhere. A seed at 0 g keeps its
+page, its price and its stepper; every order for it simply goes on the vendor
+run. The admin column therefore says "All bought in" in plain stone, not "Out
+of stock" in terracotta — colouring it as a fault would send the owner looking
+for a problem that is not there while the site happily takes orders.
+
+**Nothing is refused any more, so the three-layer cap is gone.** `sellable()`
+in the cart actions no longer reads stock at all; `hydrateCart` reads it only
+to pick a date. What survives is the per-line cap of **20 packs (2 kg)**, which
+is a wholesale threshold rather than an inventory one and applies to greens
+identically (`MAX_UNITS_PER_LINE`). The over-stock flag, the `soldOut` and
+`stockShort` error codes and the sold-out panel were all deleted.
+
+**A seed line no longer splits.** Order 500 g of something we hold 200 g of and
+all 500 g arrive together on the vendor's date — the same "one order, one trip,
+slowest line" rule §18.6 applies to a mixed grow-day cart, now shared by both
+kinds through `latestDate`.
+
+**A seed-only cart finally has a delivery date.** It used to have none, because
+§7 had set no dispatch rule for ad-hoc seed. It has one now, which closed that
+gap; a delivery *charge* for seed is still unset (§7).
+
+**Still a promise, not a reservation.** Two customers can both be told "next
+day" for the same 200 g, because nothing decrements stock until something takes
+payment (§9). The stakes are lower than they were under the cap — the second
+order is late rather than impossible — but checkout should still decrement
+under a `ConditionExpression` so the second customer is told the vendor date
+rather than the shelf one. §15's "two concurrent orders cannot oversell the
+same stock" becomes "cannot both be promised next day".
+
+### 22.3 `/admin/seeds` replaced `/admin/products`
+
+The generic screen is **deleted**, with its actions and its nav entry. It was
+one pipe-delimited textarea — `SEED-RAD-100 | pack=100g | 120 | 2500` — serving
+racks, trays, seeds and snacks at once, every string hardcoded in English, and
+the one category with real stock had to express it as a variant attribute.
+Nothing was lost: the table held zero product rows.
+
+`/admin/seeds` owns **two numbers and a toggle**, like `/admin/varieties`:
+
+- **Price per 100 g** and **grams held**, editable in the row.
+- A derived **"Next day"** column — whole packs, live as you type. It used to
+  read "Sells as" and flip to a red "Out of stock" below 100 g; both were
+  rewritten when §22.2 made stock a speed rather than a limit. An empty shelf
+  now reads **"All bought in"** in plain stone, because colouring it like a
+  fault would tell the owner a seed is unsellable while the site is still
+  taking orders for it.
+- Zero grams is a **legitimate value**, not an empty field. An empty field is
+  refused — the bug that once put every rack on sort order 0.
+- **A field error in a row is now printed, not just outlined** (17 Sep 2026).
+  `NumberField`'s compact variant returns a bare input so the row stays aligned
+  with its header, which meant a refused figure showed a red border and
+  `aria-invalid` and no sentence. Both this table and `/admin/trays` render the
+  message at row level.
+- A seed with no content file is flagged in red with the exact path and stays
+  off the site, exactly as a variety is.
+
+**Stock is set, never adjusted.** The field takes what the owner just weighed,
+not "+500 g received". A running total is only as good as every receipt and
+every order ever recorded; a count is right the moment it is typed and wrong
+only until it is re-counted.
+
+The admin overview's Products card became a Seeds card. Racks are still not
+counted there: three ranges of ~100 published models would be the loudest
+number on the page and the least actionable.
+
+### 22.4 One more content template, on the shared engine
+
+`content/seeds/<key>.json`, with its own contract
+(`src/lib/content/seed-contract.ts`) over the shared checker
+(`content-contract.ts`, extracted from the variety contract on 17 Sep 2026).
+The loader is shared too — `src/lib/content/source.ts`, which is
+`varieties.ts`'s folder reading, field-by-field English fallback, per-request
+cache and image URLs, parameterised by folder.
+
+Fields, and why they differ from a variety's:
+
+| Variety | Seed | Why |
+|---|---|---|
+| `flavourNotes` | — | a seed is not tasted before it is sown |
+| `growingTips` | `sowing` | for a seed this is the main event, not an aside |
+| `nutrition` | `specs` | same two-column table: germination, treatment, soak, sow rate, harvest window |
+| `nutritionNote` | `specsNote` | same honesty about how firm those figures are |
+| `benefits` | `uses` | what the seed is *for*, not what a nutrient does in the body |
+
+Two structural differences, both deliberate:
+
+- **`images` is optional.** The packet photography does not exist, and the
+  detail page falls back to the Sprout mark. A contract that failed on it would
+  block the copy being written — the wrong order of work.
+- **A day count is allowed in the prose.** The variety ban exists because
+  `growDays` lives in DynamoDB and copy would contradict it (§4.3). A seed has
+  no such field, and "uncover on day two" is the advice a grower wants.
+
+**Seed keys and variety keys are separate namespaces.**
+`content/seeds/radish.json` and `content/varieties/radish.json` are two
+different things to buy. `keys.test.ts` pins that they land on different
+DynamoDB partitions and different GSI1 partitions despite sharing a content
+key.
+
+### 22.5 `/seeds` and `/seeds/[key]`, not `/shop/seeds`
+
+Its own route, exactly as microgreens has one, because each seed carries a page
+of its own copy rather than being an interchangeable SKU in a grid.
+`/shop/seeds` **redirects** to `/seeds`, so a guessed URL and any old link
+still work, and `CATEGORY_HREF` in `src/lib/shop.ts` is the one place that
+mapping lives — the home tiles, the /shop index, the category strip and the
+footer all read it.
+
+**The detail page is the variety page.** `@/components/catalogue/DetailPage`
+was extracted from `/microgreens/[key]` and now renders both, with the gallery
+and the tile extracted alongside it
+(`components/catalogue/{Gallery,Tile,AddToCart}.tsx`). The layout decisions in
+it were each made against a real complaint — the tasting note moved out of the
+buy column to fill the hole beside it, the list column gained a header so its
+first line aligns with the table's first row, the price moved into the buy box
+because two copies of one number on one screen is where they start disagreeing
+(§18.10) — and none of that was worth discovering twice. The page passes
+already-translated labels and a buy-box slot; it resolves no messages itself,
+so a variety's "What is in it" and a seed's "What you are buying" stay in their
+own namespaces.
+
+**No seed page can be sold out** since §22.2 was rewritten. An empty shelf
+changes the date in the buy box, not the availability, so the page keeps its
+copy, its price and a working stepper. The sold-out panel that used to render
+at `max < 1` is deleted along with the branch that chose it — nothing in the
+catalogue is now listed-but-unbuyable, because a withdrawn item 404s instead.
+
+### 22.6 The cart learned about kinds
+
+A cart line is now **kind plus content key plus units**, wire format
+`v:broccoli:3|s:radish:2`. Keying on the content key alone would merge `radish`
+the green and `radish` the seed into one line and quote one of the two prices
+for both.
+
+> **A third kind followed the same day**, when trays became buyable: `t:` for a
+> tray or a drainage mat (§23.7). That is also where "a unit is 100 g" stopped
+> being true of every line, which had wider consequences than the extra letter.
+
+A **two-part chunk is read as a variety**, which is every cookie written before
+17 Sep 2026 — cheaper than a migration nobody can run, since the cookies are on
+other people's machines. It can go once no live cookie predates the change;
+they expire 30 days after their last write.
+
+What the cart page shows per kind, since §22.2 gave seed a dispatch rule:
+a green gets "Ready: Sat 26 Sept", a seed gets "From our shelf · Fri 18 Sept"
+or "Ordered in for you · by Sun 27 Sept". **Every line has a date and so does
+every cart**, including a seeds-only one, which used to quote none. A cart
+holding both says that seed travels on the same delivery (§7), and a cart whose
+date is being set by a vendor order says so rather than leaving ten days
+unexplained.
+
+### 22.7 The shelf was loaded from the owner's supplier list
+
+On 17 Sep 2026 the owner supplied `Microgreen_Seed_Price_List_50g.pdf` —
+eighteen varieties with a price per **50 g pack** — and said *"this is what I
+have … each I have 200 gms"*. That is the whole shelf, and it is now in
+DynamoDB with copy for every one of the eighteen.
+
+**The list is per 50 g and the column is per 100 g, so every figure was
+doubled.** `Seed.pricePer100g` is what the site sells by, because the minimum
+order is 100 g (§22.2), and a 100 g pack is two 50 g packs — linear, not a
+discount tier. The arithmetic lives in `scripts/seeds-fill.mjs` and is pinned
+by `src/lib/seeds/script-parity.test.ts`.
+
+| Seed | Key | List ₹/50 g | ₹/100 g |
+|---|---|---|---|
+| Spinach | `spinach` | 15 | 30 |
+| Mustard | `mustard` | 20 | 40 |
+| Sunflower | `sunflower` | 30 | 60 |
+| Radish Pink | `radish` | 40 | 80 |
+| Pak Choi | `pak-choi` | 45 | 90 |
+| Alfalfa | `alfalfa` | 60 | 120 |
+| Dill | `dill` | 60 | 120 |
+| Beet Root Red | `beetroot` | 75 | 150 |
+| Onion Red | `red-onion` | 75 | 150 |
+| Red Amaranthus | `red-amaranthus` | 75 | 150 |
+| Rocket Cultivated | `rocket` | 90 | 180 |
+| Swisschard | `swiss-chard` | 105 | 210 |
+| Kale | `kale` | 115 | 230 |
+| Garden Cress | `garden-cress` | 120 | 240 |
+| Basil Green | `basil` | 160 | 320 |
+| Cabbage | `cabbage` | 170 | 340 |
+| Broccoli | `broccoli` | 175 | 350 |
+| Cabbage Red | `red-cabbage` | 270 | 540 |
+
+**The unresolved question is whether that list is a sell price or a cost.** It
+has been loaded as the sell price, which is the reading of *"this is what I
+have"* that needs no assumption about margin. If it turns out to be what the
+seed was bought for, the fix is one command —
+`node --env-file=.env.local scripts/seeds-fill.mjs --markup=<percent>` — which
+is why the flag exists instead of eighteen hand edits on the admin screen.
+
+**Supplier word order is not URL order.** "Cabbage Red" is keyed
+`red-cabbage`, because the key is the URL segment and the display name is
+"Cabbage (red)". That made the grid's sort visible: `listSeeds` returns GSI1
+key order, so the shelf ran …Radish, Red Amaranthus, Cabbage, Onion, Rocket…
+`/seeds` now sorts on the **displayed name** with a locale-aware collator,
+because the name lives in the content file and the repository does not read it.
+
+**Two cultivar claims were softened to match the list.** The supplier says
+"Radish Pink", so the content no longer names China Rose specifically. The
+sunflower file still says "black oil", which is what microgreen sunflower seed
+is in practice — confirm it against the supplier's own description.
+
+**200 g of each is a thin shelf under a 100 g minimum: every seed sells as
+exactly two packs.** That is correct behaviour, not a bug, but it is worth
+knowing that the shelf is one two-pack order per seed away from sold out.
+
+### 22.8 Open
+
+- **Whether the supplier list is a sell price or a cost is unconfirmed** — see
+  §22.7. Loaded as the sell price; one flag re-runs it at any markup.
+- **Stock is 200 g of each**, as reported on 17 Sep 2026. Under §22.2 that is
+  no longer a ceiling — it is the line between a next-day order and a ten-day
+  one, so at 200 g a customer ordering three packs of anything is quoted the
+  vendor date. Re-count and re-enter on `/admin/seeds` as it moves.
+- **The vendor lead time is one constant for every seed.** Ten days is the
+  owner's figure and it is applied uniformly, but eighteen seeds do not all
+  come from one supplier at one speed. If they diverge it belongs per seed
+  (a `vendorLeadDays` on the row), not as a worse single average.
+- **Nothing tells the owner a vendor order is needed.** The customer is
+  promised ten days and the admin row still just shows grams; there is no
+  "to order" list, because there are no orders yet (§9). When checkout lands,
+  a paid line whose quantity exceeded stock is the trigger for a purchase —
+  that is the operational half of §22.2 and it is unbuilt.
+- **No photography, now across eighteen seeds.** `public/seeds/<key>/` is
+  empty, so every seed page and card renders the Sprout fallback. The card
+  treatment with the tilt and the marquee needs a transparent cut-out
+  (§17.4).
+- **The spec figures are ours to stand behind.** Germination, treatment, soak,
+  sow rate, blackout and harvest window in all eighteen content files are the
+  honest general figures for those seeds, not a lab report on a specific lot.
+  This seed is bought in and resold, so the supplier's own lot figures should
+  replace them as they arrive.
+- **Snacks still have no admin screen.** They had one only in the sense that the
+  generic form could write them; nothing did. Trays got theirs the same day
+  (§23); snacks need one when they are actually sold.
+
+---
+
+## 23. Trays & drainage — bought in, never held
+
+Built 17 Sep 2026, on the owner's instruction:
+
+> *"Next final product that I would like to have admin UI is for trays and drainage cells …
+> even these are ordered based on the request this would take minimum of seven days to deliver.
+> Can you add this three products into the trays and drainage cell category? And add same price
+> that is shown on the website … the drainage cell length and width is 50 centimeter L / 25 cm W"*
+
+Fourth purpose-built catalogue kind, after varieties, plans and seeds. Three items, from two
+suppliers, at the suppliers' own listed prices.
+
+### 23.1 One record shape for two different objects
+
+A drain cell mat is not a tray. It is in the same entity anyway, because what the record models is
+**not the object — it is the way the object is sold**, and on that the three items are identical:
+
+| | Seed (§22) | Tray & drainage (§23) |
+|---|---|---|
+| Held in stock | yes, in grams | **never** — the supplier holds it |
+| Fast path | next day off our shelf | **none** |
+| Every order is | maybe a purchase order | **always** a purchase order |
+| Sold by | weight, any quantity | the pack, at a fixed price |
+| Delivery promise | next day, else 10 days | a per-item lead time, floor **7 days** |
+
+The absence of a fast path is the whole difference. A seed's stock figure decides *which* of two
+promises a customer gets; a tray has one promise and the only question is how long it is.
+
+So there is no `kind` discriminator on the row. A field nothing branches on is a field that drifts,
+and the category is labelled **"Trays & drainage"** — the owner's own words — so the label carries
+the honesty instead.
+
+**Two rows, not one row with two variants.** The two tray kits are exactly the virgin-vs-recycled
+pair §3.0.1 anticipated, and they are still two rows: the owner asked for three products, the
+prices differ by ₹110, and with no detail page there is nowhere for a variant selector to live.
+Two cards side by side is what a buyer can actually compare.
+
+**The record holds two numbers and a toggle:**
+
+```ts
+type Tray = {
+  id: string          // UUID, never derived from the key
+  contentKey: string  // names content/trays/<key>.json
+  price: number       // ₹ for the whole pack, not per piece
+  leadDays: number    // 7..14, per item — see below
+  active: boolean
+}
+```
+
+**`leadDays` is per row, not a constant**, and that is the one place this chapter deliberately
+diverges from §22. Seven days is the owner's floor and all three launch items sit on it — but they
+already come from two suppliers, so a single global figure would be an average pretending to be a
+promise. §22.8 still lists exactly that as an open problem for eighteen seeds on one hard-coded ten
+days; here the divergence was visible on day one, so it went on the row.
+
+The bounds live in `src/lib/trays/lead-time.ts` and nowhere else:
+
+- **Floor 7**, the owner's figure. A shorter figure is **refused, not rounded up** — an operator
+  typing 3 means something the business cannot do, and quietly correcting it hides the
+  disagreement.
+- **Ceiling 14**, which is not a business rule at all: it is `MAX_LEAD_DAYS` from
+  `delivery-date.ts`, imported rather than restated. That module *clamps* to 14 as a last defence
+  against a bad constant printing a nonsense date, so accepting 30 on the admin screen would mean
+  an operator seeing 30 and a customer seeing a date 14 days out. The form refuses it instead. If a
+  supplier genuinely needs longer, both numbers move together.
+- `trayReadyDate` falls back to the **ceiling** for an unreadable figure, never the floor — the
+  same asymmetry as `seedSourcing`. A date the business can beat is recoverable; one it cannot meet
+  is a broken promise.
+
+### 23.2 The thinnest content template in the repo
+
+`content/trays/<key>.json`, with its own contract (`tray-contract.ts`) on the shared checker, and
+the shared loader (`content/source.ts`) parameterised by folder. Four fields:
+
+| Field | What it is |
+|---|---|
+| `name` | Short form. Two tray kits differ only by their plastic, so the name has to tell them apart |
+| `shortDescription` | **One line of judgement** — who should buy this one rather than the other |
+| `specs` | At least four rows: pack contents, size, thickness, material |
+| `imageAlt` | Optional; falls back to the name |
+
+What it drops from the seed template, and why:
+
+| Seed | Tray | Why |
+|---|---|---|
+| `description` | — | the detail page is four facts, a gallery and a buy box (§23.3) |
+| `sowing` | — | you do not sow a tray |
+| `specsNote` | — | a seed's germination is a lot-by-lot fact worth qualifying; a tray's 60 × 30 cm is 60 × 30 cm |
+| `uses`, `cautions`, `faq` | — | a card cannot carry them, and an unread field is worse than an absent one |
+
+A variety has five FAQs because a person decides what to eat by reading. A tray is decided by four
+facts and one sentence, and demanding a seed-shaped file for a sheet of moulded plastic gets met
+with padding.
+
+**Never write the price or the lead time into copy.** Both are printed from DynamoDB and both get
+tuned, so copy that restates either makes the card contradict itself — the same rule as the
+`growDays` ban on variety copy. `tray-contract.test.ts` enforces it as a scan for a rupee figure or
+a day count in either language, because this one is about *values* appearing in prose rather than a
+field existing.
+
+What *does* belong in the file is the supplier's own figures, which **do not change**: a 3 mm wall
+is 3 mm forever. That is why they get a git diff rather than an admin field, and it is also why the
+admin form stayed at two numbers instead of growing eight.
+
+### 23.3 `/shop/trays/[key]` — the detail page, after one reversal
+
+The first version of this chapter argued this page should not exist: a tray is
+four facts and a price, so a detail page would be a spec table and nothing else.
+The owner reversed it within the hour:
+
+> *"We need to build details page for Trays & drainage, very minimal to display
+> images, price, add to cart and dimension and quality and material."*
+
+The original reasoning was right about the **content** and wrong about what a
+page is *for*. Two things it missed:
+
+1. **Photographs need somewhere to live.** A grid card holds one square. A tray
+   with its drain hole, the same pair stacked, and a mat interlocked with its
+   neighbour are three pictures that sell the object, and there was nowhere to
+   put the second and the third.
+2. **Add to cart needs a page.** Three cards cannot carry three steppers and
+   three live totals without becoming a form, and somebody deciding between
+   ₹160 and ₹270 wants the specs and the price in one eyeful.
+
+**"Very minimal" is honoured literally.** `DetailPage` makes everything except
+the gallery, the title, the facts and the buy box optional, and this page passes
+nothing else — no long description, no FAQ, no cautions, no two-column band. The
+four spec rows from the content file *become* the facts, laid out two by two,
+which is the dimension, the grade and the material the owner asked for.
+
+The spec table is deliberately **not** rendered underneath as well. On a seed
+page the facts and the table say different things; here they would be the same
+four rows twice.
+
+**The card/page split:** the card carries the facts, so three items stay
+comparable at a glance; the page carries the photographs and the buy box. The
+price appears only in the buy box — two copies of one number on one screen is
+where they start disagreeing (§18.10).
+
+**The dated promise does not move with the quantity**, and that is the one place
+this page differs from a seed's. `AddToCart` takes `dispatch` as one line per
+reachable quantity because a seed's promise changes as the stepper passes what
+is on the shelf (§22.2). Five packs and one pack are the same single order to
+the same supplier, so every entry is identical — filled anyway rather than
+adding a "one string" variant to the component, because a customer stepping to
+twenty should see the date *not* move.
+
+### 23.4 `/admin/trays`
+
+Two numbers and a toggle per row, plus an add-by-key form — the `/admin/seeds` shape with the stock
+field replaced by lead days. Differences worth knowing:
+
+- **No search box.** Eighteen seeds earn a filter; three items do not, and this is a small range of
+  equipment rather than a catalogue.
+- **No stock column**, because there is no stock. The question the screen answers is what a pack
+  costs and how long it takes, and the second is the one an item can be wrong about in a way a
+  customer notices.
+- **A derived "What we promise" cell**, live as you type: `Ordered in, within 7 days`. Next to a
+  field reading 7 that looks redundant and is not — the field is a number an operator types, the
+  cell is the sentence a customer will read. Out of range it renders **nothing** rather than a
+  wrong promise, since the save will be refused anyway.
+- **Delete keeps the content file.** The row goes, `content/trays/<key>.json` stays on disk, so the
+  item can be added back at any time.
+- An item can be priced before its content file exists; the row is flagged in red with the exact
+  path and the public page skips it.
+
+There is **no out-of-stock state to fall into**, so the active toggle is the only way something
+leaves the shelf. Verified: hiding an item drops it from the grid and the `/shop` count, and
+unhiding restores it.
+
+### 23.5 `/shop/trays` — the grid
+
+**Its own static route**, which wins over `/shop/[category]` without a redirect, leaving that page
+to serve racks and snacks off `ProductEntity` untouched. The reason is the data, not the layout:
+trays left `Product` for their own entity and content files, so there is nothing for the generic
+page to read, and branching inside it would have put two catalogues in one component to save a
+file.
+
+It is still a **grid** rather than a described catalogue like `/seeds`, but every card links to
+`/shop/trays/[key]` (§23.3). The facts live on the card so the range is comparable in one glance;
+the photographs and the buy box live on the page.
+
+**Every card prints a real date**, computed per item from its own `leadDays` —
+"Ordered in for you — with you by Thu 24 Sept" — rather than "ordered on request". Same reasoning
+that put the dated promise in the seed buy box (§22.2): the one thing a buyer needs that the price
+does not tell them is *when*. That makes the page dynamic, which it is anyway, and a cached date
+would go stale overnight in the worst possible way — by a day, silently.
+
+**Cards are sorted on the displayed name**, not the content key, with a locale-aware collator.
+`listTrays` returns GSI1 key order and the name lives in the content file the repository does not
+read, so key order is whatever the keys happen to spell — the same fix `/seeds` needed (§22.7),
+applied here before it could be noticed.
+
+**The cards link but do not buy.** Photograph, name and price are one anchor — a buyer aims at the
+picture — while the spec list stays outside it, because wrapping a `dl` in an anchor turns
+drag-to-select into drag-to-navigate.
+
+**The panel is 3:2, not the square every other grid uses**, and that is an asset decision rather
+than a layout one. The detail page's gallery frame is 3:2, so a square master would letterbox there
+while a 3:2 master would be cropped at the sides here — one photograph could not have served both.
+Matching them means one file per shot. It also suits the subject: everything in this category is a
+wide flat object, and a square frame around a 60 × 30 cm tray is mostly margin.
+
+**The cards run the §17.4 motion** as of 17 Sep 2026, when the photography arrived (§23.8). On
+hover the cut-out scales out 10% and tilts 4° while the spec *labels* — "In the pack", "Size",
+"Thickness", "Material" — scroll up behind it, exactly as a variety tile scrolls its nutrients.
+Labels, never values, for the reason given in §17.4.
+
+This grid is **not** the shared `Tile` component, though it shares the marquee. `Tile` is a square
+carrying a name and one line of meta; a tray card carries a price, four spec rows and a dated
+promise under the picture. Only the panel is common, and it is shared as `Marquee`.
+
+### 23.6 The three items, at the suppliers' listed prices
+
+Loaded by `scripts/trays-fill.mjs`, which is the one place the list is written down, tied to the
+content folder by `src/lib/trays/script-parity.test.ts`.
+
+| Item | Key | ₹ | Pack | Size | Supplier |
+|---|---|---|---|---|---|
+| Microgreen trays — pair | `tray-pair` | 160 | 2 trays, 1 drained + 1 solid | 60 × 30 × 3 cm, 3 mm | bazodo.com/product/683 |
+| Microgreen trays — pair, food grade | `tray-pair-food-grade` | 270 | 2 trays, white drained + green solid | 60 × 30 × 3 cm, 3 mm | bazodo.com/product/691 |
+| Drainage cell mats — pack of five | `drain-cell-mat` | 300 | 5 mats | 50 × 25 cm each, 20 mm | pasumaithottakalai.com |
+
+**The drainage mat's dimensions came from the owner, not the page.** The listing gives the
+thickness and the material and no length or width; the owner supplied *"50 centimeter L / 25 cm
+W"*. The price is the pack-of-five variant, ₹300 against a ₹500 MRP.
+
+**Whether these are sell prices or costs is unconfirmed** — the same open question as the seed price
+list (§22.7). They are loaded as sell prices, which is the reading of *"add same price that is shown
+on the website"* that needs no assumption about margin. If they are costs, the fix is one command:
+`node --env-file=.env.local scripts/trays-fill.mjs --markup=<percent>`.
+
+A re-run keeps each row's `id`, `active` flag **and lead days**, and rewrites only the price. A lead
+time the owner has corrected by hand is better information than the figure the file launched with.
+
+### 23.7 The cart learned a third kind
+
+Adding the buy box meant the cart had to hold a tray, which is the change with
+the widest blast radius in this chapter. Wire format is now
+`v:broccoli:3|s:radish:2|t:tray-pair:1` (§22.6 for why a line carries a kind at
+all), and `keys.test.ts` plus `cart.test.ts` pin that one content key can name
+three different things to buy without merging.
+
+**What a "unit" is stopped being universal.** A variety unit and a seed unit are
+both 100 g; a tray unit is one pack, of two trays or five mats. Three
+consequences, each of which was a latent wrong number:
+
+| Was | Now | Why it mattered |
+|---|---|---|
+| `CartItem.pricePer100g` | `CartItem.unitPrice` | The field held ₹160 for a pack of two trays. A name like that is what gets multiplied by a weight two screens away |
+| `CartItem.grams: number` | `grams: number \| null` | 0 g reads as "we weighed it and it came to nothing"; null forces the page to branch instead of printing "1 pack · 0 g" |
+| `cartGrams = unitCount × 100` | sums the **weighed kinds only** | A cart holding one tray pack reported 100 g of nothing |
+
+`isWeighed(kind)` in `cart.ts` is the single home for that distinction, declared
+as a set rather than `kind !== "tray"` so a fourth kind has to make the decision
+rather than inherit the wrong default.
+
+**The delivery-date switch became a discriminated union.** With two kinds a
+`heldGrams: number | null` on the internal `Base` type was readable; at three it
+would have been two nullable numbers whose valid combinations existed only in a
+comment. `Timing` is now
+`{ by: "grow" } | { by: "shelf" } | { by: "supplier" }`, so the switch in
+`hydrateCart` is exhaustive and a fourth kind is a compile error. It also keeps
+the grams we hold off `CartItem`, which is the §22.2 instruction.
+
+**Three per-line wordings, because the reason differs:** a green gets
+"Ready: Mon 28 Sept", a seed "From our shelf · Fri 18 Sept" or "Ordered in for
+you · by Sun 27 Sept", a tray "Ordered in for you · by Thu 24 Sept". The
+stepper's own labels follow the kind too — "one less pack" rather than "one less
+100 g" — which is wrong only to a screen reader, and therefore exactly the kind
+of error that survives.
+
+**Two copy bugs surfaced by the first real mixed basket**, both older than this
+change:
+
+- `readyTrayNote` said a tray "takes the longest". A cart with a ten-day green
+  and a seven-day tray proved that false immediately. The note's job is to
+  explain the wait, not to rank the lines — `readySplit` above it already says
+  the order waits for the slowest thing.
+- `unavailableBody` said "One **variety** in your cart is no longer on sale".
+  It had been wrong for seeds since §22.6 and was plainly wrong for a tray. The
+  cart cannot name the kind there anyway: an unresolvable line is a bare key,
+  which is precisely why it could not be resolved. It now says "item".
+
+**Nothing gained a stock test.** A tray has no stock (§23.1) and a seed's
+stopped being a limit (§22.2), so `sellable()` is the same two questions for all
+three kinds: is the row active, and does it have a content file.
+
+### 23.8 The photography
+
+Three shots, supplied by the owner on 17 Sep 2026 and the first photography any category other than
+microgreens has had. Prompts and shot notes are in `docs/TRAY_PROMPT.md`; the assets live in
+`public/trays/<key>/`.
+
+**They arrived as transparent 3:2 cut-outs**, which is what made the §17.4 treatment possible here
+at all — the drain holes are holes in the alpha channel, so the panel colour shows through them.
+Each master is processed twice by `scripts/cutout.py`, because a card and a gallery want different
+files:
+
+| File | Built as | For |
+|---|---|---|
+| `cutout.webp` | 900 × 600, transparent WebP q85, subject at **88%** of the width | the card, where the panel and the marquee have to show through |
+| `hero.jpg` | 1500 × 1000, JPEG q82, flattened onto `--color-sand`, subject at **92%** | the gallery, whose frame is `object-contain` over that same `#f2ebe3` |
+
+Baking the ground into the hero rather than reusing the transparent file is deliberate: it costs a
+fraction of the bytes of a WebP carrying alpha, letterboxes invisibly, and does not care what the
+frame is restyled to later.
+
+**88% and 92% are two numbers because only one of the two surfaces moves.** The card scales the
+media 1.1 and rotates it 4° and then clips, so the subject's padding is what keeps its corners off
+the edge — measured on the 419 × 279 card at 1440px, the tray is 354px wide at rest and 402px
+hovered, leaving 8px each side. The gallery never moves, so the only thing 92% has to satisfy is
+that the three shots match each other.
+
+`scripts/cutout.py` was generalised from the square variety job to take `--aspect`, `--fill`,
+`--width` and `--bg`. The defaults reproduce the variety assets byte for byte, which is checked
+against the original algorithm rather than assumed.
+
+**One CSS change came out of this, and it is a real fix rather than a tidy-up.** The marquee loops
+by translating its block -50%, which only reads as continuous while one half of the block is taller
+than the panel. The line count was tuned for a square tile and the type size was set in `vw`, so
+the two stopped scaling together the moment the grid dropped to one column: measured at a 700px
+viewport, the card was 652 × 435 and half the marquee 182px — a 252px band of bare panel crossing
+the card once per cycle. `.mcard` is now a query container and the tray marquee sizes its type in
+`cqw`, which fixes the ratio at 1.20 by construction at every width and stops the scroll speed
+changing with the viewport. The variety and bundle cards are untouched.
+
+### 23.9 Open
+
+- ~~Trays are not in the cart.~~ **Closed 17 Sep 2026** — see §23.7.
+- **Nothing tells the owner to place the supplier order.** Identical to the seed gap in §22.8 and
+  worse here, because *every* tray order needs a purchase order rather than only the ones that
+  exceed stock. It needs checkout (§9) to have a trigger at all.
+- **The tray delivery rate is still unset** (§7). The ⟨⟩ in that section predates these rows; a
+  pack of five 50 × 25 cm mats is closer to a rack than to a bag of seed.
+- **Seven days is a floor, not a measured figure.** It is what the owner will promise. Neither
+  supplier page confirms it — Pasumai Thottakalai states "5 to 7 working days" shipping, Bazodo
+  states nothing — so the first real order is the first evidence.
+- ~~No photography, across all three.~~ **Closed 17 Sep 2026** — see §23.8. What is still open is
+  that each item has **one** shot. The gallery's thumbnail strip and the `images.gallery` array
+  both exist and are unused, so a second angle is a file and a line of JSON.
+- **The two tray kits may want to be one card with a choice.** They are the same object in two
+  plastics, and a buyer comparing them is reading two cards that differ in one row of the spec
+  table. Revisit if a detail page is ever built (§3.0.1).
+- **Machine-written Kannada**, like the rest of the content layer. The spec rows are short and
+  factual, which is the easiest kind to get right and the easiest kind to get subtly wrong.

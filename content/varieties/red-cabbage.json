@@ -1,8 +1,11 @@
 {
   "images": {
     "hero": "hero.jpg",
+    "cutout": "cutout.webp",
     "gallery": [
-      "bunch.jpg"
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
     ]
   },
   "en": {
@@ -43,6 +46,46 @@
       {
         "label": "Potassium",
         "value": "Moderate"
+      },
+      {
+        "label": "Calcium",
+        "value": "Present"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Present"
+      },
+      {
+        "label": "Phosphorus",
+        "value": "Present"
+      },
+      {
+        "label": "Iron",
+        "value": "Present"
+      },
+      {
+        "label": "Manganese",
+        "value": "Present"
+      },
+      {
+        "label": "Zinc",
+        "value": "Present"
+      },
+      {
+        "label": "Sulfur",
+        "value": "Present"
+      },
+      {
+        "label": "Phenolic compounds",
+        "value": "Present"
+      },
+      {
+        "label": "Flavonoids",
+        "value": "Present"
+      },
+      {
+        "label": "Chlorophylls",
+        "value": "Present"
       }
     ],
     "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
@@ -123,6 +166,46 @@
       {
         "label": "ಪೊಟ್ಯಾಸಿಯಂ",
         "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ರಂಜಕ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಂಗನೀಸ್",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಸತು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಗಂಧಕ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫೀನಾಲಿಕ್ ಸಂಯುಕ್ತಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫ್ಲೇವನಾಯ್ಡ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕ್ಲೋರೊಫಿಲ್‌ಗಳು",
+        "value": "ಇದೆ"
       }
     ],
     "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
