@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Kale",
     "shortDescription": "Sturdy, blue-green and mild — the microgreen that does not wilt on you.",
@@ -64,7 +68,7 @@
         "answer": "Yes, if the window is bright. Kale is not fussy about light levels the way red cabbage is — you lose some of the blue-green depth in dim light but the crop itself is fine."
       }
     ],
-    "imageAlt": "Small dark brown kale seed in a shallow dish"
+    "imageAlt": "A burlap sack spilling small dark brown kale seed onto a table"
   },
   "kn": {
     "name": "ಕೇಲ್",
@@ -131,6 +135,6 @@
         "answer": "ಕಿಟಕಿ ಪ್ರಕಾಶಮಾನವಾಗಿದ್ದರೆ ಹೌದು. ಕೆಂಪು ಎಲೆಕೋಸಿನಂತೆ ಕೇಲ್ ಬೆಳಕಿನ ಬಗ್ಗೆ ಜಿಗುಟಾಗಿಲ್ಲ — ಮಂದ ಬೆಳಕಿನಲ್ಲಿ ನೀಲಿ-ಹಸಿರಿನ ಗಾಢತೆ ಸ್ವಲ್ಪ ಕಡಿಮೆಯಾಗುತ್ತದೆ, ಆದರೆ ಬೆಳೆ ಚೆನ್ನಾಗಿರುತ್ತದೆ."
       }
     ],
-    "imageAlt": "ಚಪ್ಪಟೆ ಬಟ್ಟಲಿನಲ್ಲಿ ಸಣ್ಣ ಕಡು ಕಂದು ಕೇಲ್ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಸಣ್ಣ ಕಡು ಕಂದು ಕೇಲ್ ಬೀಜ"
   }
 }

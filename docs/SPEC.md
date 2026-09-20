@@ -170,7 +170,7 @@ Five categories with genuinely different commerce rules — this is the heart of
 
 | Category | How it sells | Inventory |
 |---|---|---|
-| **Microgreens** | Weekly subscription (min 1 month, prepaid) **and** one-off by the 100 g — see §18.6 | **No stock.** Variety catalogue carrying yield + grow-day metadata |
+| **Microgreens** | Weekly subscription (min 1 month, prepaid) **and** one-off by the tray — see §18.6, superseded 19 Sep 2026 | **No stock.** Variety catalogue carrying yield + grow-day metadata |
 | **Seeds** | One-off, buy anytime, by the 100 g — see §22 | **Real stock in grams**, but it is a *speed*, not a limit: any quantity sells, and the shelf sets the delivery date (§22.2) |
 | **Racks** | One-off, buy anytime | **None** — outsourced, assumed always available |
 | **Trays & drainage** | One-off. Bought in per order, min **7 days** — see §23 | **None, by design.** The supplier holds it; every order is a purchase order |
@@ -457,8 +457,21 @@ from the original section. **Plans no longer do** — their copy moved to `conte
 
 #### What a variety is, and what it is not
 
-A variety is a microgreen grown and sold **by the 100 g** for ad-hoc orders (§18.6). Its record
-holds only that: `pricePer100g`, `growDays`, `yieldGramsPerTray`, `seedGramsPerTray`, `active`.
+A variety is a microgreen grown and sold **by the tray** for ad-hoc orders (§18.6). Its record
+holds only that: `pricePerTray`, `growDays`, `yieldGramsPerTray`, `seedGramsPerTray`, `active`.
+
+#### SUPERSEDED 19 Sep 2026 — sold by the tray, not by the 100 g
+
+The paragraph above replaced "by the 100 g" with "by the tray". The owner's instruction: *ordering
+should be based on the tray, not by grams, and costing should also be decided based on trays* — a
+green was never actually weighed out of a sack the way a seed is; it is cut whole from a tray that
+was sown whole, so pricing and ordering it in grams implied a precision the operation never had.
+
+`pricePer100g` is renamed `pricePerTray` and is what a customer is charged per tray ordered.
+`yieldGramsPerTray` **stays on the record but no longer prices anything** — it is the owner's
+measured, approximate weight a tray of this variety yields, kept for the customer's information
+(shown alongside the tray count in the buy box) and for whatever the sow plan eventually wants it
+for. See `isWeighed` in `src/lib/cart/cart.ts` and the note on `Variety` in `src/lib/types.ts`.
 
 **`tier` was removed on 15 Sep 2026.** It was written by the admin form and read by nothing. Its
 only purpose was grouping varieties for the curated Essential/Exotic plans, but §5.1 has those
@@ -799,7 +812,7 @@ Not done, because it is a further change rather than part of this split.
 |---|---|---|---|
 | **Everyday Essentials** | `essential` | Owner (curated) | **Flat monthly price** |
 | **Rare & Exotic** | `exotic` | Owner (curated) — premium varieties *plus* the everyday basics | **Flat monthly price** |
-| **Pick Your Own** | `build-your-own` | Customer picks varieties and quantities | **Computed by weight** — sum of `pricePer100g × quantity` |
+| **Pick Your Own** | `build-your-own` | Customer picks varieties and quantities | **Computed by tray** — sum of `pricePerTray × trays` (superseded 19 Sep 2026; was by weight, `pricePer100g × quantity`) |
 
 **Named 15 Sep 2026.** They were Essential / Exotic / Build Your Own. Three problems: "Essential"
 is tier-speak (Basic / Pro / Enterprise) rather than a description of food; "Exotic" alone does not

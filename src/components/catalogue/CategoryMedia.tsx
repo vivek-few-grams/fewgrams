@@ -30,6 +30,19 @@ const CUTOUTS: Partial<Record<Category, string>> = {
      one tile for the category, not one per range — the other two appear on
      `/shop/racks` (SPEC §19.6). */
   racks: "/racks/shelf/cutout.webp",
+  /* The packet line-up, 20 Sep 2026 — a group shot rather than one packet,
+     because a seed sale is a shelf of varieties and no single pack stands in
+     for the range the way one rack model can. Built with the same
+     `scripts/cutout.py --aspect 3:2 --fill 0.88` recipe as the microgreens
+     tile's photo, which is the other landscape group shot on this page. */
+  seeds: "/shop/seeds-cutout.webp",
+  /* The pack line-up, 20 Sep 2026 — cell trays, the black growing tray pair
+     and the coloured drainage tray pair, stacked in one shot, the same
+     "group rather than one item" call as the seeds photo. Replaced same day
+     with a cleaner re-shoot of the same idea — the first version had all
+     three groups arranged side by side; this one stacks them vertically,
+     which is why the box below is portrait rather than 3:2. */
+  trays: "/shop/trays-cutout.webp",
 };
 
 /**
@@ -46,6 +59,16 @@ const CUTOUTS: Partial<Record<Category, string>> = {
  */
 const MEDIA_CLASS: Partial<Record<Category, string>> = {
   racks: "aspect-[4/5] h-[80%]",
+  /* Landscape, matching the 3:2 frame the cut-out was built to. Wider than
+     the microgreens tile's own 86% — the owner's "bit bigger" — and still
+     clears the hover: at 1.1x the box reaches 99% of the tile's width, 1%
+     of clearance either side combined. */
+  seeds: "aspect-[3/2] w-[90%]",
+  /* Portrait, matching the 2:3 frame the vertically-stacked cut-out was
+     built to — the same reasoning as `racks`: sizing by height rather than
+     width is what lets a tall subject read as the subject rather than a
+     narrow column floating in the panel. */
+  trays: "aspect-[2/3] h-[88%]",
 };
 
 export function categoryMediaClass(category: Category): string | undefined {

@@ -39,12 +39,14 @@
     "catalogue": "Catalogue",
     "pipeRacks": "Pipe racks",
     "seeds": "Seeds",
-    "trays": "Trays & drainage"
+    "trays": "Trays & drainage",
+    "settings": "Settings",
+    "productVisibility": "Product visibility"
   },
   "varieties": {
     "title": "Varieties",
-    "intro": "A variety is a microgreen you grow and sell by the 100 g. This screen owns the numbers only — what it costs, how long it takes, how much a tray yields. Every word a customer reads about it lives in content/varieties/[key].json.",
-    "introOps": "Grow days and yield per tray are the two figures the operation computes from. Grow days set the delivery date an ad-hoc order is promised; yield per tray sets how many trays get sown — ceil(grams ordered ÷ yield per tray). Both start as estimates, so revisit them after a few sows.",
+    "intro": "A variety is a microgreen you grow and sell by the tray. This screen owns the numbers only — what it costs, how long it takes, how much a tray yields. Every word a customer reads about it lives in content/varieties/[key].json.",
+    "introOps": "Grow days sets the delivery date an ad-hoc order is promised. Yield per tray is no longer used to price anything, and it is a range rather than one figure — no two cut trays weigh the same — so give the low and high you have actually measured, published so a customer knows roughly what a tray weighs. Both start as estimates, so revisit them after a few sows.",
     "addTitle": "Add a variety",
     "pick": "Key",
     "pickHint": "Lowercase letters and hyphens only — radish, red-amaranth, green-amaranth. No numbers or spaces. This names the content file and the page address, so it is an identifier, not a label.",
@@ -52,9 +54,10 @@
     "howTo": "Save it here first, then create content/varieties/[key].json for the name and description and drop photos in public/varieties/[key]/. Until that file exists the variety is flagged below and stays off the site.",
     "growDays": "Grow days",
     "growDaysHint": "Sow to harvest",
-    "yield": "Yield per tray (g)",
-    "yieldHint": "Your measured figure",
-    "price": "Price per 100 g (₹)",
+    "yieldMin": "Approx. weight per tray, low (g)",
+    "yieldMax": "Approx. weight per tray, high (g)",
+    "yieldHint": "Your measured range — informational only, shown to customers",
+    "price": "Price per tray (₹)",
     "priceHint": "Prices ad-hoc orders and Pick Your Own",
     "seed": "Seed per tray (g)",
     "seedHint": "Optional — adds a seed column to the sow plan",
@@ -65,9 +68,10 @@
     "colVariety": "Variety",
     "colKey": "Key",
     "colGrowDays": "Grow days",
-    "colYield": "Yield/tray",
+    "colYieldMin": "Yield low",
+    "colYieldMax": "Yield high",
     "colSeed": "Seed/tray",
-    "colPrice": "₹/100 g",
+    "colPrice": "₹/tray",
     "colActive": "Active",
     "hidden": "Hidden",
     "missingContent": "Some varieties have no content file yet, so they are hidden from the site.",
@@ -78,8 +82,9 @@
       "keyRequired": "Give this variety a key, like radish or red-amaranth.",
       "keyTaken": "\"{key}\" is already added.",
       "growDaysInvalid": "Grow days must be at least 1.",
-      "yieldInvalid": "Yield per tray must be at least 1 g.",
-      "priceInvalid": "Price per 100 g must be a positive number.",
+      "yieldInvalid": "Approximate weight per tray must be at least 1 g.",
+      "yieldRangeInvalid": "The high figure must be at least the low one.",
+      "priceInvalid": "Price per tray must be a positive number.",
       "notFound": "That variety no longer exists.",
       "keyInvalid": "Lowercase letters and hyphens only — no numbers or spaces. For example red-amaranth."
     },
@@ -412,7 +417,7 @@
   },
   "overview": {
     "varieties": "Varieties",
-    "varietiesHint": "Yield per tray and grow days — the two numbers the sow plan computes from",
+    "varietiesHint": "Price per tray and grow days — what an ad-hoc order is charged and when it arrives",
     "plans": "Plans",
     "plansHint": "The bundles on the home page, and their 4-week rotation",
     "seeds": "Seeds",
@@ -503,5 +508,11 @@
       "leadDaysInvalid": "Days to deliver must be a whole number from 7 to 14. Seven is the shortest this category can promise.",
       "notFound": "That item no longer exists."
     }
+  },
+  "settings": {
+    "title": "Product visibility",
+    "intro": "Turn a product type off to pull it from every menu on the site — the header, the footer and the shop's own category strip — and take its pages down. A visitor with an old link or a bookmark is sent back to /shop instead of an error. Nothing is deleted: prices, stock and content files are untouched, and turning it back on restores it exactly as it was.",
+    "visible": "Visible",
+    "hidden": "Hidden"
   }
 }

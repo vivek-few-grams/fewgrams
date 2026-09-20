@@ -32,13 +32,18 @@ function positive(fd: FormData, key: string, min: number): number | null {
   return Number.isFinite(n) && n >= min ? n : null;
 }
 
-/** The four numbers plus active — everything this screen is allowed to set.
+/** The numbers plus active — everything this screen is allowed to set.
  *  `tier` was removed on 15 Sep 2026: it was written here and read nowhere,
  *  and curated plans name their varieties explicitly per rotation week
  *  (SPEC §5.1), so grouping varieties by tier earned nothing. */
 type Ops = Pick<
   Variety,
-  "pricePer100g" | "yieldGramsPerTray" | "growDays" | "seedGramsPerTray" | "active"
+  | "pricePerTray"
+  | "yieldGramsPerTrayMin"
+  | "yieldGramsPerTrayMax"
+  | "growDays"
+  | "seedGramsPerTray"
+  | "active"
 >;
 
 function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
@@ -46,13 +51,31 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
   if (growDays === null)
     return { ok: false, state: { status: "error", code: "growDaysInvalid", field: "growDays" } };
 
-  const yieldGramsPerTray = positive(fd, "yieldGramsPerTray", 1);
-  if (yieldGramsPerTray === null)
-    return { ok: false, state: { status: "error", code: "yieldInvalid", field: "yieldGramsPerTray" } };
+  const yieldGramsPerTrayMin = positive(fd, "yieldGramsPerTrayMin", 1);
+  if (yieldGramsPerTrayMin === null)
+    return {
+      ok: false,
+      state: { status: "error", code: "yieldInvalid", field: "yieldGramsPerTrayMin" },
+    };
 
-  const pricePer100g = positive(fd, "pricePer100g", 1);
-  if (pricePer100g === null)
-    return { ok: false, state: { status: "error", code: "priceInvalid", field: "pricePer100g" } };
+  const yieldGramsPerTrayMax = positive(fd, "yieldGramsPerTrayMax", 1);
+  if (yieldGramsPerTrayMax === null)
+    return {
+      ok: false,
+      state: { status: "error", code: "yieldInvalid", field: "yieldGramsPerTrayMax" },
+    };
+
+  // The range has to be the right way round — a max below the min is not a
+  // typo the site can silently swap, since either figure could be the mistake.
+  if (yieldGramsPerTrayMax < yieldGramsPerTrayMin)
+    return {
+      ok: false,
+      state: { status: "error", code: "yieldRangeInvalid", field: "yieldGramsPerTrayMax" },
+    };
+
+  const pricePerTray = positive(fd, "pricePerTray", 1);
+  if (pricePerTray === null)
+    return { ok: false, state: { status: "error", code: "priceInvalid", field: "pricePerTray" } };
 
   const seedRaw = String(fd.get("seedGramsPerTray") ?? "").trim();
   const seed = seedRaw ? Number(seedRaw) : null;
@@ -61,8 +84,9 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
     ok: true,
     value: {
       growDays,
-      yieldGramsPerTray,
-      pricePer100g,
+      yieldGramsPerTrayMin,
+      yieldGramsPerTrayMax,
+      pricePerTray,
       ...(seed !== null && Number.isFinite(seed) && seed > 0
         ? { seedGramsPerTray: seed }
         : {}),

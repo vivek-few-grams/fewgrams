@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Dill",
     "shortDescription": "Feathery, aniseed-sweet and slow — sabsige at two weeks old.",
@@ -64,7 +68,7 @@
         "answer": "You can pair it with something on the same twelve-to-eighteen day clock, but not with a week-long crop. In practice most growers give the slow herbs their own trays so the harvest days do not fight."
       }
     ],
-    "imageAlt": "Flat oval winged dill seed in a small dish"
+    "imageAlt": "A burlap sack spilling flat oval pale tan dill seed onto a table"
   },
   "kn": {
     "name": "ಸಬ್ಬಸಿಗೆ",
@@ -131,6 +135,6 @@
         "answer": "ಅದೇ ಹನ್ನೆರಡರಿಂದ ಹದಿನೆಂಟು ದಿನದ ಸಮಯದ ಯಾವುದರ ಜೊತೆಯಾದರೂ ಜೋಡಿಸಬಹುದು, ಆದರೆ ಒಂದು ವಾರದ ಬೆಳೆಯ ಜೊತೆ ಬೇಡ. ಪ್ರಾಯೋಗಿಕವಾಗಿ ಬಹುತೇಕ ಬೆಳೆಗಾರರು ನಿಧಾನದ ಸೊಪ್ಪುಗಳಿಗೆ ಅವುಗಳದೇ ಟ್ರೇ ಕೊಡುತ್ತಾರೆ — ಕಟಾವಿನ ದಿನಗಳು ಜಗಳವಾಡದಿರಲಿ."
       }
     ],
-    "imageAlt": "ಸಣ್ಣ ಬಟ್ಟಲಿನಲ್ಲಿ ಚಪ್ಪಟೆ ಅಂಡಾಕಾರದ ರೆಕ್ಕೆಯುಳ್ಳ ಸಬ್ಬಸಿಗೆ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಚಪ್ಪಟೆ ಅಂಡಾಕಾರದ ತಿಳಿ ಕಂದು ಸಬ್ಬಸಿಗೆ ಬೀಜ"
   }
 }

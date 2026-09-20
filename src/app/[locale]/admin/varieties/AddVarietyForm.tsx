@@ -36,11 +36,13 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
 
   const keyError = errorFor("contentKey");
 
-  /* The four numbers sit on one row from `lg` up, so the form reads as a band
-     rather than a column of wide, half-empty inputs. */
+  /* The five numbers sit on one row from `lg` up, so the form reads as a band
+     rather than a column of wide, half-empty inputs. Five rather than four
+     since 19 Sep 2026, when the yield became a min/max pair instead of one
+     figure. */
   return (
-    <form action={action} className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <label className="block sm:col-span-2 lg:col-span-4">
+    <form action={action} className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <label className="block sm:col-span-2 lg:col-span-5">
         <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
           {t("pick")}
         </span>
@@ -87,20 +89,27 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
         error={errorFor("growDays")}
       />
       <NumberField
-        label={t("yield")}
-        name="yieldGramsPerTray"
-        defaultValue="300"
+        label={t("yieldMin")}
+        name="yieldGramsPerTrayMin"
+        defaultValue="250"
         min={1}
         hint={t("yieldHint")}
-        error={errorFor("yieldGramsPerTray")}
+        error={errorFor("yieldGramsPerTrayMin")}
+      />
+      <NumberField
+        label={t("yieldMax")}
+        name="yieldGramsPerTrayMax"
+        defaultValue="350"
+        min={1}
+        error={errorFor("yieldGramsPerTrayMax")}
       />
       <NumberField
         label={t("price")}
-        name="pricePer100g"
-        defaultValue="75"
+        name="pricePerTray"
+        defaultValue="200"
         min={1}
         hint={t("priceHint")}
-        error={errorFor("pricePer100g")}
+        error={errorFor("pricePerTray")}
       />
       <NumberField
         label={t("seed")}
@@ -109,12 +118,12 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
         hint={t("seedHint")}
       />
 
-      <label className="flex items-center gap-2 font-body text-sm text-forest sm:col-span-2 lg:col-span-4">
+      <label className="flex items-center gap-2 font-body text-sm text-forest sm:col-span-2 lg:col-span-5">
         <input type="checkbox" name="active" defaultChecked className="size-4" />
         {t("activeLabel")}
       </label>
 
-      <div className="flex items-center gap-4 sm:col-span-2 lg:col-span-4">
+      <div className="flex items-center gap-4 sm:col-span-2 lg:col-span-5">
         <button
           type="submit"
           disabled={pending}

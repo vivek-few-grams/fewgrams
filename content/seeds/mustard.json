@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Mustard",
     "shortDescription": "Hot, fast and cheap — the heat you add to a mix rather than eat a bowl of.",
@@ -64,7 +68,7 @@
         "answer": "Mostly not. The compound that carries it is volatile and breaks down with heat, so wilted mustard microgreens taste flat. Add it off the heat, at the end."
       }
     ],
-    "imageAlt": "Tiny round yellow-brown mustard seed heaped in a dish"
+    "imageAlt": "A burlap sack spilling tiny dark brown mustard seed onto a table"
   },
   "kn": {
     "name": "ಸಾಸಿವೆ",
@@ -131,6 +135,6 @@
         "answer": "ಬಹುಪಾಲು ಇಲ್ಲ. ಖಾರ ಹೊತ್ತಿರುವ ಸಂಯುಕ್ತ ಆವಿಯಾಗುವಂಥದ್ದು ಮತ್ತು ಶಾಖದಲ್ಲಿ ಒಡೆಯುತ್ತದೆ, ಹಾಗಾಗಿ ಬಾಡಿಸಿದ ಸಾಸಿವೆ ಮೈಕ್ರೋಗ್ರೀನ್ ರುಚಿ ಸಪ್ಪೆ. ಒಲೆಯಿಂದ ಇಳಿಸಿದ ಮೇಲೆ, ಕೊನೆಗೆ ಸೇರಿಸಿ."
       }
     ],
-    "imageAlt": "ಬಟ್ಟಲಿನಲ್ಲಿ ರಾಶಿಯಾಗಿ ಬಿದ್ದ ಅತಿ ಚಿಕ್ಕ ದುಂಡಾದ ಹಳದಿ-ಕಂದು ಸಾಸಿವೆ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಅತಿ ಚಿಕ್ಕ ಕಡು ಬಣ್ಣದ ಸಾಸಿವೆ ಬೀಜ"
   }
 }

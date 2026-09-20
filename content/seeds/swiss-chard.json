@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Swiss Chard",
     "shortDescription": "Beet's better-looking cousin — same earthiness, brighter stems, a little more patience.",
@@ -64,7 +68,7 @@
         "answer": "Yes, and it is one of the better choices for a Bengaluru balcony — sown thinly in a deep pot it will crop leaves for months."
       }
     ],
-    "imageAlt": "Knobbly pale brown Swiss chard seed clusters in a dish"
+    "imageAlt": "A burlap sack spilling knobbly dark brown Swiss chard seed clusters onto a table"
   },
   "kn": {
     "name": "ಸ್ವಿಸ್ ಚಾರ್ಡ್",
@@ -131,6 +135,6 @@
         "answer": "ಹೌದು, ಮತ್ತು ಬೆಂಗಳೂರಿನ ಬಾಲ್ಕನಿಗೆ ಇದು ಒಳ್ಳೆಯ ಆಯ್ಕೆಗಳಲ್ಲಿ ಒಂದು — ಆಳವಾದ ಕುಂಡದಲ್ಲಿ ತೆಳುವಾಗಿ ಬಿತ್ತಿದರೆ ತಿಂಗಳುಗಳ ಕಾಲ ಸೊಪ್ಪು ಕೊಡುತ್ತದೆ."
       }
     ],
-    "imageAlt": "ಬಟ್ಟಲಿನಲ್ಲಿ ಒರಟಾದ ತಿಳಿ ಕಂದು ಸ್ವಿಸ್ ಚಾರ್ಡ್ ಬೀಜದ ಗೊಂಚಲುಗಳು"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಒರಟಾದ ಕಡು ಕಂದು ಸ್ವಿಸ್ ಚಾರ್ಡ್ ಬೀಜದ ಗೊಂಚಲುಗಳು"
   }
 }

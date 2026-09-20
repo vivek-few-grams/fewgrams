@@ -26,9 +26,16 @@ const ITEMS = [
   { href: "/how-we-grow", key: "howWeGrow", match: "/how-we-grow" },
 ] as const;
 
-export function NavLinks() {
+export function NavLinks({
+  showMicrogreens,
+}: {
+  /** Passed down from `Header`, which is a server component and can read the
+   *  switch (`@/lib/catalogue/visibility`) — this one cannot, being client. */
+  showMicrogreens: boolean;
+}) {
   const t = useTranslations("common.nav");
   const pathname = usePathname();
+  const items = showMicrogreens ? ITEMS : ITEMS.filter((item) => item.key !== "microgreens");
 
   /* Two pieces of vertical bookkeeping, both load-bearing:
        - `pt-1` on each link matches its `pb-0.5 + border-b-2`, so the active
@@ -53,7 +60,7 @@ export function NavLinks() {
          overflows instead of scrolling. */
       className="col-start-2 row-start-2 flex min-w-0 items-center gap-5 overflow-x-auto lg:order-2 lg:ml-auto lg:w-auto lg:overflow-visible"
     >
-      {ITEMS.map((item) => {
+      {items.map((item) => {
         const active =
           pathname === item.match || pathname.startsWith(`${item.match}/`);
         return (

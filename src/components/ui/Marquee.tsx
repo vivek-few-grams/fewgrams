@@ -61,7 +61,7 @@ export function marqueeLines(
  * Display only. The content file is untouched and the detail page prints the
  * label in full.
  */
-function shorten(label: string): string {
+export function shorten(label: string): string {
   const [head] = label.split("(");
   return head.trim() || label;
 }

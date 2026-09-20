@@ -5,7 +5,7 @@
   "body": "Nothing is picked before you order it. The number under each variety is the days from sowing to your door — the honest answer to \"when can I have it?\", and the reason this is not next-day delivery.",
   "empty": "Nothing is listed right now — check back shortly.",
   "emptyLink": "See the rest of the shop",
-  "meta": "{days, number} days · ₹{price, number}/100 g",
+  "meta": "{days, number} days · ₹{price, number}/tray",
   "plansPrompt": "Want them every week without ordering?",
   "plansLink": "See the plans",
   "detail": {
@@ -30,19 +30,19 @@
     "nextPhotos": "More photos",
     "readyNote": "Order today and it goes into a tray tomorrow morning, then gets cut the day it reaches you. One-off orders are not held for the Sunday sow — that is only for weekly plans.",
     "quantity": "How much",
-    "decrease": "One less 100 g",
-    "increase": "One more 100 g",
+    "decrease": "One less tray",
+    "increase": "One more tray",
     "addToCart": "Add to cart",
     "added": "Added to your cart.",
     "viewCart": "View cart",
     "errors": {
-      "unitsInvalid": "Choose between 1 and 20 packs of 100 g.",
+      "unitsInvalid": "Choose between 1 and 20 trays.",
       "notSellable": "That variety is not on sale at the moment.",
       "cartFull": "Your cart is full at 12 varieties. Remove one to add another.",
       "generic": "That did not save. Please try again."
     },
     "lineTotal": "₹{total, number}",
-    "lineBreakdown": "{grams, number} g · ₹{price, number} per 100 g",
+    "lineBreakdown": "{trays, plural, one {# tray} other {# trays}} · ≈{gramsMin, number}–{gramsMax, number} g · ₹{price, number} per tray",
     "readyInline": "Ready by {date}",
     "updateCart": "Update cart",
     "updated": "Cart updated."

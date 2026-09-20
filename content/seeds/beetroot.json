@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Beetroot (red)",
     "shortDescription": "Crimson stems and an earthy sweetness — the colour crop that is actually cheap.",
@@ -64,7 +68,7 @@
         "answer": "Yes. It is ordinary red beet seed, so sown thinly into a deep pot or bed it will make roots given a couple of months."
       }
     ],
-    "imageAlt": "Knobbly brown beetroot seed clusters in a small dish"
+    "imageAlt": "A burlap sack spilling knobbly dark brown beetroot seed clusters onto a table"
   },
   "kn": {
     "name": "ಬೀಟ್‌ರೂಟ್ (ಕೆಂಪು)",
@@ -131,6 +135,6 @@
         "answer": "ಹೌದು. ಇದು ಸಾಮಾನ್ಯ ಕೆಂಪು ಬೀಟ್ ಬೀಜ, ಹಾಗಾಗಿ ಆಳವಾದ ಕುಂಡ ಅಥವಾ ಮಡಿಯಲ್ಲಿ ತೆಳುವಾಗಿ ಬಿತ್ತಿದರೆ ಒಂದೆರಡು ತಿಂಗಳಲ್ಲಿ ಗೆಡ್ಡೆ ಕಟ್ಟುತ್ತದೆ."
       }
     ],
-    "imageAlt": "ಸಣ್ಣ ಬಟ್ಟಲಿನಲ್ಲಿ ಒರಟಾದ ಕಂದು ಬೀಟ್‌ರೂಟ್ ಬೀಜದ ಗೊಂಚಲುಗಳು"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಒರಟಾದ ಕಡು ಕಂದು ಬೀಟ್‌ರೂಟ್ ಬೀಜದ ಗೊಂಚಲುಗಳು"
   }
 }

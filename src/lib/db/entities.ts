@@ -57,6 +57,14 @@ const localisedString = {
  * and generates the identical key string, because it does the same two jobs
  * a slug did (URL segment, stable identifier) plus one more: it names the
  * content file. src/lib/db/keys.test.ts pins that the bytes did not move.
+ *
+ * **`pricePer100g` became `pricePerTray` on 19 Sep 2026** — the owner's
+ * instruction: ordering and pricing both move to the tray, and
+ * `yieldGramsPerTray` becomes an approximate, informational weight rather
+ * than a figure anything is priced from. See the note on `Variety`.
+ *
+ * **`yieldGramsPerTray` split into `Min`/`Max` the same day** — a range
+ * rather than one number, because no two cut trays weigh the same.
  */
 export const VarietyEntity = new Entity(
   {
@@ -64,10 +72,11 @@ export const VarietyEntity = new Entity(
     attributes: {
       id: { type: "string", required: true },
       contentKey: { type: "string", required: true },
-      pricePer100g: { type: "number", required: true },
+      pricePerTray: { type: "number", required: true },
       /** The two fields the whole operation computes from (SPEC §3.1), so
        *  both are required on every variety. */
-      yieldGramsPerTray: { type: "number", required: true },
+      yieldGramsPerTrayMin: { type: "number", required: true },
+      yieldGramsPerTrayMax: { type: "number", required: true },
       growDays: { type: "number", required: true },
       /** Optional: present only for varieties whose seed rate is known, and
        *  it drives the sow plan's advisory seed column (SPEC §6). */
@@ -818,6 +827,35 @@ export const PipeRackModelEntity = new Entity(
       byId: {
         pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
         sk: { field: "SK", composite: ["id"], template: "PMODEL#${id}", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * Singleton. Which product types the owner has switched off — SPEC §12
+ * "settings". Absent entirely until the first toggle, which is why the repo
+ * treats a missing row as "nothing disabled" rather than seeding one at
+ * startup.
+ *
+ * A list of the disabled ones, not a map of every `ProductType` to a
+ * boolean: `PRODUCT_TYPES` grows over time (snacks arrived after racks;
+ * microgreens was there from the start), and a required map would need a
+ * migration on every addition. An absent entry already means "enabled" for a
+ * type that did not exist when this row was last written, which is the
+ * correct default for a brand-new type.
+ */
+export const CatalogueVisibilityEntity = new Entity(
+  {
+    model: { ...model, entity: "catalogueVisibility" },
+    attributes: {
+      disabled: { type: "list", required: true, items: { type: "string" } },
+    },
+    indexes: {
+      single: {
+        pk: { field: "PK", composite: [], template: "CATALOGUEVISIBILITY", casing: "none" },
+        sk: { field: "SK", composite: [], template: "SETTINGS", casing: "none" },
       },
     },
   },

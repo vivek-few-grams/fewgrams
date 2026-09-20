@@ -7,8 +7,8 @@ import { isValidRackCartKey } from "@/lib/racks/cart-key";
  * ## What the cart stores, and what it deliberately does not
  *
  * A line is **a kind, a content key and a quantity**. That is all. What one
- * unit means is the kind's business, not the cookie's — 100 g of a green or a
- * seed, one pack of trays.
+ * unit means is the kind's business, not the cookie's — one tray of a green,
+ * 100 g of a seed, one pack of trays.
  *
  * **No prices.** The cart lives in a cookie, which is client-supplied data, so
  * a price stored there is a price the customer can edit. SPEC §9 is explicit:
@@ -37,11 +37,12 @@ import { isValidRackCartKey } from "@/lib/racks/cart-key";
  * into one line and then quote one of the two prices for both.
  *
  * Trays followed the same day and made the kind carry a second job: **what a
- * unit *is*.** A variety unit and a seed unit are both 100 g; a tray unit is
- * one pack, of two trays or five mats. So `GRAMS_PER_UNIT` no longer applies
- * to every line, and `isWeighed` is what says which ones it applies to. A cart
- * holding one tray has a weight of zero and a subtotal of ₹160, and both of
- * those are correct.
+ * unit *is*.** A seed unit is 100 g; a tray-product unit is one pack, of two
+ * trays or five mats. A variety unit joined them on 19 Sep 2026 — it is now
+ * one grown tray, not 100 g — so `GRAMS_PER_UNIT` applies to a shrinking
+ * minority of kinds, and `isWeighed` is what says which. A cart holding one
+ * green tray or one tray-product pack has a weight of zero and a real
+ * subtotal, and both of those are correct.
  *
  * The kind is therefore part of a line's identity everywhere: `unitsFor`,
  * `upsertLine` and `removeFromCart` all take it, and there is no overload that
@@ -120,27 +121,31 @@ export function isValidKeyFor(kind: CartKind, key: string): boolean {
 /**
  * Which kinds are sold **by weight**, and so have a gram figure at all.
  *
- * Greens and seed are both sold by the 100 g. A tray or a drainage mat is sold
- * by the pack (SPEC §23.1) — its weight is a shipping fact about a moulded
- * plastic object, not the thing being bought, and printing "1 pack · 100 g"
- * would be an invented figure. A rack is sold by the rack, and weighs enough
- * that quoting it would read as a shipping figure we have not quoted.
+ * Only seed is. A green moved off weight on 19 Sep 2026 — the owner's
+ * instruction: ordering and pricing both move to the **tray**, with
+ * `Variety.yieldGramsPerTray` staying only as an approximate, informational
+ * figure a customer is told, not one anything is priced or counted from. A
+ * tray or a drainage mat is sold by the pack (SPEC §23.1) — its weight is a
+ * shipping fact about a moulded plastic object, not the thing being bought,
+ * and printing "1 pack · 100 g" would be an invented figure. A rack is sold
+ * by the rack, and weighs enough that quoting it would read as a shipping
+ * figure we have not quoted.
  *
  * Declared as a set rather than `kind !== "tray"` so that adding a kind forces
  * a decision here instead of inheriting the wrong default — which is exactly
  * what happened when racks arrived and this list did not have to change.
  */
-const WEIGHED: ReadonlySet<CartKind> = new Set<CartKind>(["variety", "seed"]);
+const WEIGHED: ReadonlySet<CartKind> = new Set<CartKind>(["seed"]);
 
 export function isWeighed(kind: CartKind): boolean {
   return WEIGHED.has(kind);
 }
 
 /**
- * One line caps at twenty units of a single item — 2 kg of a green or a seed,
- * or twenty packs of trays. Past this it is not an ad-hoc order, it is a
- * wholesale enquiry, and the sow plan (or the supplier) should be told about it
- * deliberately rather than by a spinner someone held down.
+ * One line caps at twenty units of a single item — twenty trays of a green,
+ * 2 kg of a seed, or twenty packs of trays. Past this it is not an ad-hoc
+ * order, it is a wholesale enquiry, and the sow plan (or the supplier) should
+ * be told about it deliberately rather than by a spinner someone held down.
  *
  * **The only cap left in the cart.** A seed line was once capped by stock as
  * well; since 17 Sep 2026 that is a delivery date rather than a ceiling (SPEC
@@ -155,10 +160,8 @@ export const MAX_LINES = 12;
 
 export const CART_COOKIE = "fewgrams_cart";
 
-/** Grams in one unit **of a weighed kind**. Greens are sold by the 100 g (SPEC
- *  §18.6) and a seed's minimum order is the same 100 g (SPEC §22.2), so one
- *  unit means one sellable pack of either. It does not apply to a tray — see
- *  `isWeighed`. */
+/** Grams in one unit **of a weighed kind** — a seed's minimum order (SPEC
+ *  §22.2). It does not apply to a green, a tray or a rack — see `isWeighed`. */
 export const GRAMS_PER_UNIT = 100;
 
 /** A line's identity — kind **and** key. Used as a React key and to compare

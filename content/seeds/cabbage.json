@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Cabbage (green)",
     "shortDescription": "Crisp, juicy and startlingly sweet — closer to a fresh salad than to a cabbage.",
@@ -64,7 +68,7 @@
         "answer": "Almost always an over-sown patch plus water sitting on top. The centre of a tray dries slowest, so any thick spot rots there first. Sow by weight, spread evenly, and keep a fan moving air across the surface."
       }
     ],
-    "imageAlt": "Round reddish-brown cabbage seed spread on a pale surface"
+    "imageAlt": "A burlap sack spilling reddish-brown cabbage seed, with a whole cabbage behind it"
   },
   "kn": {
     "name": "ಎಲೆಕೋಸು (ಹಸಿರು)",
@@ -131,6 +135,6 @@
         "answer": "ಬಹುತೇಕ ಸಂದರ್ಭಗಳಲ್ಲಿ ಒಂದೆಡೆ ಹೆಚ್ಚು ಬಿತ್ತಿದ್ದು, ಜೊತೆಗೆ ಮೇಲೆ ನೀರು ನಿಂತಿದ್ದು. ಟ್ರೇಯ ನಡುಭಾಗವೇ ಕೊನೆಗೆ ಒಣಗುವುದು, ಹಾಗಾಗಿ ದಪ್ಪವಾದ ಜಾಗ ಮೊದಲು ಅಲ್ಲೇ ಕೊಳೆಯುತ್ತದೆ. ತೂಕ ಮಾಡಿ ಬಿತ್ತಿ, ಸಮನಾಗಿ ಹರಡಿ, ಮತ್ತು ಮೇಲ್ಪದರದ ಮೇಲೆ ಫ್ಯಾನ್ ಗಾಳಿ ಓಡಾಡುವಂತೆ ನೋಡಿಕೊಳ್ಳಿ."
       }
     ],
-    "imageAlt": "ತಿಳಿ ಬಣ್ಣದ ಮೇಲ್ಮೈಯಲ್ಲಿ ಹರಡಿದ ದುಂಡಾದ ಕೆಂಪು-ಕಂದು ಎಲೆಕೋಸು ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಕೆಂಪು-ಕಂದು ಎಲೆಕೋಸು ಬೀಜ, ಹಿಂದೆ ಒಂದು ಎಲೆಕೋಸು"
   }
 }

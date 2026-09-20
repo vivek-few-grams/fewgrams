@@ -58,13 +58,15 @@ export type CartItem = {
   grams: number | null;
   name: string;
   /**
-   * ₹ for **one unit of this kind** — per 100 g for a green or a seed, per
-   * pack for a tray.
+   * ₹ for **one unit of this kind** — per tray for a green, per 100 g for a
+   * seed, per pack for a tray.
    *
    * Renamed from `pricePer100g` on 17 Sep 2026, when trays made that name
    * false for a third of the cart. The rename is the point: a field called
    * `pricePer100g` holding ₹160 for a pack of two trays is exactly the kind of
-   * thing that gets multiplied by a weight two screens away.
+   * thing that gets multiplied by a weight two screens away. A green stopped
+   * being priced per 100 g on 19 Sep 2026 and joined the kinds this name was
+   * written for.
    */
   unitPrice: number;
   /** `units × unitPrice`, in rupees. Computed, never stored. */
@@ -274,7 +276,7 @@ export async function hydrateCart(
       kind: "variety",
       key: v.contentKey,
       name: v.content.text.name,
-      unitPrice: v.pricePer100g,
+      unitPrice: v.pricePerTray,
       image: varietyHero(v.content),
       maxUnits: MAX_UNITS_PER_LINE,
       growDays: v.growDays,

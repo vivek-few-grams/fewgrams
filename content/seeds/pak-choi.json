@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Pak Choi",
     "shortDescription": "Succulent white stems and a clean mustardy bite — fast, cheap and hard to spoil.",
@@ -64,7 +68,7 @@
         "answer": "It goes stringy rather than bitter, and the stems start to hollow. Ten days is a real ceiling, not a suggestion."
       }
     ],
-    "imageAlt": "Tiny round dark pak choi seed in a small dish"
+    "imageAlt": "A burlap sack spilling small dark pak choi seed onto a table"
   },
   "kn": {
     "name": "ಪಾಕ್ ಚಾಯ್",
@@ -131,6 +135,6 @@
         "answer": "ಕಹಿಯಾಗುವುದಿಲ್ಲ, ಆದರೆ ನಾರುನಾರಾಗುತ್ತದೆ ಮತ್ತು ಕಾಂಡ ಒಳಗೆ ಪೊಳ್ಳಾಗಲು ಶುರುವಾಗುತ್ತದೆ. ಹತ್ತು ದಿನ ನಿಜವಾದ ಮಿತಿ, ಸಲಹೆಯಲ್ಲ."
       }
     ],
-    "imageAlt": "ಸಣ್ಣ ಬಟ್ಟಲಿನಲ್ಲಿ ಅತಿ ಚಿಕ್ಕ ದುಂಡಾದ ಕಡು ಬಣ್ಣದ ಪಾಕ್ ಚಾಯ್ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಸಣ್ಣ ಕಡು ಬಣ್ಣದ ಪಾಕ್ ಚಾಯ್ ಬೀಜ"
   }
 }

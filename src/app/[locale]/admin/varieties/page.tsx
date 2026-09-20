@@ -64,8 +64,9 @@ export default async function VarietiesAdmin() {
           variety: {
             id: v.id,
             contentKey: v.contentKey,
-            pricePer100g: v.pricePer100g,
-            yieldGramsPerTray: v.yieldGramsPerTray,
+            pricePerTray: v.pricePerTray,
+            yieldGramsPerTrayMin: v.yieldGramsPerTrayMin,
+            yieldGramsPerTrayMax: v.yieldGramsPerTrayMax,
             growDays: v.growDays,
             seedGramsPerTray: v.seedGramsPerTray,
             active: v.active,

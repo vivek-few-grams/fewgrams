@@ -58,6 +58,13 @@ export const ADMIN_NAV_GROUPS: {
       { label: "pipeRacks", href: "/admin/pipe-racks" },
     ],
   },
+  {
+    /* The first of the "settings" screens SPEC §12 lists — an owner switch
+       for a whole product type, on or off, rather than a per-item field on
+       one of the catalogue screens above (SPEC §12, added 20 Sep 2026). */
+    heading: "settings",
+    items: [{ label: "productVisibility", href: "/admin/settings" }],
+  },
 ];
 
 /** Every message key the nav renders, so the layout can resolve them all

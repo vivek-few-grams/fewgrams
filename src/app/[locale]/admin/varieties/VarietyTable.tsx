@@ -26,7 +26,7 @@ import { VarietyRow } from "./VarietyRow";
  * few hundred, move it to a query — not before.
  */
 const COLUMNS =
-  "minmax(11rem,1.6fr) repeat(4, minmax(4.5rem, 0.7fr)) 6rem 5.5rem 4rem";
+  "minmax(11rem,1.6fr) repeat(5, minmax(4.5rem, 0.7fr)) 6rem 5.5rem 4rem";
 
 /**
  * Below this the rows scroll sideways inside their own box rather than
@@ -134,7 +134,8 @@ export function VarietyTable({
             {[
               t("colVariety"),
               t("colGrowDays"),
-              t("colYield"),
+              t("colYieldMin"),
+              t("colYieldMax"),
               t("colPrice"),
               t("colSeed"),
               "",

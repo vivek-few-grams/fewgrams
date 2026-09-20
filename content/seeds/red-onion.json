@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Onion (red)",
     "shortDescription": "Thin green spears that taste exactly like onion — the longest wait here, and the most distinctive result.",
@@ -64,7 +68,7 @@
         "answer": "No. Everything else here is cut inside two weeks and onion needs three, so you would be harvesting over the top of seedlings. Onion gets its own tray."
       }
     ],
-    "imageAlt": "Small angular black onion seed in a shallow dish"
+    "imageAlt": "A burlap sack spilling tiny black onion seed, with red onions behind it"
   },
   "kn": {
     "name": "ಈರುಳ್ಳಿ (ಕೆಂಪು)",
@@ -131,6 +135,6 @@
         "answer": "ಬೇಡ. ಇಲ್ಲಿನ ಉಳಿದೆಲ್ಲವನ್ನೂ ಎರಡು ವಾರದೊಳಗೆ ಕತ್ತರಿಸುತ್ತೀರಿ, ಈರುಳ್ಳಿಗೆ ಮೂರು ವಾರ ಬೇಕು — ಅಂದರೆ ಸಸಿಗಳ ಮೇಲೆಯೇ ಕಟಾವು ಮಾಡಬೇಕಾಗುತ್ತದೆ. ಈರುಳ್ಳಿಗೆ ಅದರದೇ ಟ್ರೇ ಕೊಡಿ."
       }
     ],
-    "imageAlt": "ಚಪ್ಪಟೆ ಬಟ್ಟಲಿನಲ್ಲಿ ಸಣ್ಣ ಮೂಲೆಯುಳ್ಳ ಕಪ್ಪು ಈರುಳ್ಳಿ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಅತಿ ಚಿಕ್ಕ ಕಪ್ಪು ಈರುಳ್ಳಿ ಬೀಜ, ಹಿಂದೆ ಕೆಂಪು ಈರುಳ್ಳಿಗಳು"
   }
 }

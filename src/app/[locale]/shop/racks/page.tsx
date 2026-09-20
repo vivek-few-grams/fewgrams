@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { CATEGORY_PANELS } from "@/lib/shop";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Marquee } from "@/components/ui/Marquee";
 import { CategoryStrip } from "@/components/chrome/CategoryStrip";
 import { Link } from "@/i18n/navigation";
@@ -101,6 +102,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop/rac
 export default async function RacksPage({ params }: PageProps<"/[locale]/shop/racks">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await guardProductTypeEnabled("racks", locale);
 
   const t = await getTranslations("shop.racks");
   const c = await getTranslations("shop.category");
@@ -118,10 +120,10 @@ export default async function RacksPage({ params }: PageProps<"/[locale]/shop/ra
   });
 
   return (
-    <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
+    <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
       <CategoryStrip current="racks" />
 
-      <h1 className="mt-8 font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
+      <h1 className="mt-8 font-display text-[clamp(1.25rem,2.5vw,1.9rem)] font-bold leading-tight tracking-tight text-forest">
         {label("racks")}
       </h1>
       <p className="mt-3 max-w-xl font-body text-sm text-stone">{t("body")}</p>

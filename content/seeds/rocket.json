@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Rocket (cultivated)",
     "shortDescription": "Nutty, peppery and grown-up — the salad leaf everybody already knows, at ten days old.",
@@ -64,7 +68,7 @@
         "answer": "Not usefully as a microgreen. Cut above the medium and you take the growing point with the seed leaves. Sow on in a pot if you want a cut-and-come-again plant."
       }
     ],
-    "imageAlt": "Very fine pale brown rocket seed in a small dish"
+    "imageAlt": "A burlap sack spilling fine reddish-brown rocket seed onto a table"
   },
   "kn": {
     "name": "ರಾಕೆಟ್ (ಅರುಗುಲಾ)",
@@ -131,6 +135,6 @@
         "answer": "ಮೈಕ್ರೋಗ್ರೀನ್ ಆಗಿ ಉಪಯುಕ್ತವಾಗಿ ಬೆಳೆಯುವುದಿಲ್ಲ. ಮಾಧ್ಯಮದ ಮೇಲೆ ಕತ್ತರಿಸಿದಾಗ ಬೀಜದ ಎಲೆಗಳ ಜೊತೆ ಬೆಳವಣಿಗೆಯ ಬಿಂದುವೂ ಹೋಗುತ್ತದೆ. ಕತ್ತರಿಸಿ ಮತ್ತೆ ಬೆಳೆಯುವ ಗಿಡ ಬೇಕಿದ್ದರೆ ಕುಂಡದಲ್ಲಿ ಬಿತ್ತಿ."
       }
     ],
-    "imageAlt": "ಸಣ್ಣ ಬಟ್ಟಲಿನಲ್ಲಿ ಅತಿ ಸೂಕ್ಷ್ಮ ತಿಳಿ ಕಂದು ರಾಕೆಟ್ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಸೂಕ್ಷ್ಮ ಕೆಂಪು-ಕಂದು ರಾಕೆಟ್ ಬೀಜ"
   }
 }

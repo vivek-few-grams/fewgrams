@@ -1,0 +1,181 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Spinach",
+    "shortDescription": "Mild, earthy and iron-famous — the leaf everyone already trusts, cut younger and gentler.",
+    "description": "Spinach microgreens taste like the leaf everyone already knows, just softer and sweeter, without the slight metallic edge mature spinach can carry. That edge comes largely from oxalates, and the young leaf carries dramatically less of them than a full-grown bunch — one of the few cases where cutting a green early does not just concentrate its nutrients but also softens what makes it harder to eat in quantity. It keeps spinach's reputation for iron, folate and vitamin A, in a leaf mild enough to eat raw by the handful rather than needing a pan.",
+    "flavourNotes": "Mild, earthy and slightly sweet, with none of the toughness or metallic edge of the mature leaf. Tender enough to eat by the handful, raw.",
+    "growingTips": "Soak the seed for a few hours before sowing, keep the tray evenly moist, and give it good airflow — spinach seedlings are prone to damping off if the canopy stays wet. Cut once the first true leaf pair is fully open.",
+    "nutrition": [
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin E",
+        "value": "Good source"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Iron",
+        "value": "Moderate"
+      },
+      {
+        "label": "Calcium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Present"
+      },
+      {
+        "label": "Zinc",
+        "value": "Present"
+      },
+      {
+        "label": "Manganese",
+        "value": "Present — measured far higher in the young leaf than the mature one"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin A contributes to the maintenance of normal vision, skin and mucous membranes.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin C contributes to normal immune function and increases the absorption of iron from plant foods.",
+      "Folate contributes to normal blood formation.",
+      "Iron contributes to normal oxygen transport in the blood and to reducing tiredness and fatigue."
+    ],
+    "cautions": [
+      "Spinach contains oxalates, though at a much lower level in the young leaf than the mature one. If you have had kidney stones or have been told to eat a low-oxalate diet, keep portions modest and speak to your doctor.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Does it have the same metallic aftertaste as regular spinach?",
+        "answer": "Much less of it. That edge comes mostly from oxalates, and the young leaf carries a fraction of what a mature bunch does, so it eats cleaner and sweeter raw."
+      },
+      {
+        "question": "Is this actually lower in oxalates, or just smaller?",
+        "answer": "Genuinely lower, gram for gram — the plant makes most of its oxalate as it matures, so cutting it this young catches it before that build-up happens."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. It wilts faster than sturdier leaves like mustard, so keep it away from the coldest part of the fridge."
+      },
+      {
+        "question": "Can children eat it?",
+        "answer": "Yes — it is one of the mildest greens we grow, with no pepper or bitterness, and most children treat it like any other soft salad leaf."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Anywhere raw spinach goes: blended into a smoothie, folded into a sandwich, tossed through a salad, or piled onto curd rice or a dosa just before it comes off the tawa."
+      }
+    ],
+    "imageAlt": "Tray of spinach microgreens with tender green oval leaves on pale stems"
+  },
+  "kn": {
+    "name": "ಪಾಲಕ್",
+    "shortDescription": "ಸೌಮ್ಯ, ಮಣ್ಣಿನ ಪರಿಮಳ ಮತ್ತು ಕಬ್ಬಿಣಕ್ಕೆ ಹೆಸರುವಾಸಿ — ಎಲ್ಲರೂ ನಂಬುವ ಸೊಪ್ಪು, ಎಳೆಯದಾಗಿ ಮತ್ತು ಮೃದುವಾಗಿ ಕತ್ತರಿಸಿದ್ದು.",
+    "description": "ಪಾಲಕ್ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಎಲ್ಲರಿಗೂ ಗೊತ್ತಿರುವ ಸೊಪ್ಪಿನ ರುಚಿಯೇ, ಸ್ವಲ್ಪ ಮೃದು ಮತ್ತು ಸಿಹಿ, ಬೆಳೆದ ಪಾಲಕ್ ಹೊಂದಿರುವ ಸ್ವಲ್ಪ ಲೋಹದ ಅಂಚಿಲ್ಲದೆ. ಆ ಅಂಚು ಬಹುಪಾಲು ಆಕ್ಸಲೇಟ್‌ಗಳಿಂದ ಬರುತ್ತದೆ, ಮತ್ತು ಎಳೆಯ ಎಲೆ ಪೂರ್ತಿ ಬೆಳೆದ ಕಟ್ಟಿಗಿಂತ ಇವನ್ನು ಬಹಳ ಕಡಿಮೆ ಹೊಂದಿದೆ — ಎಳೆಯದಾಗಿ ಕತ್ತರಿಸುವುದು ಪೋಷಕಾಂಶವನ್ನು ಕೇಂದ್ರೀಕರಿಸುವುದು ಮಾತ್ರವಲ್ಲ, ಹೆಚ್ಚು ತಿನ್ನಲು ಕಷ್ಟವಾಗಿಸುವುದನ್ನೂ ಮೃದುಗೊಳಿಸುವ ಅಪರೂಪದ ಉದಾಹರಣೆ. ಪಾಲಕ್‌ನ ಕಬ್ಬಿಣ, ಫೋಲೇಟ್ ಮತ್ತು ವಿಟಮಿನ್ A ಹೆಸರುವಾಸಿಯನ್ನು ಇದು ಉಳಿಸಿಕೊಂಡಿದೆ, ಬಾಣಲೆ ಬೇಡದೆ ಹಿಡಿಯಷ್ಟು ಹಸಿಯಾಗಿ ತಿನ್ನುವಷ್ಟು ಸೌಮ್ಯ ಎಲೆಯಲ್ಲಿ.",
+    "flavourNotes": "ಸೌಮ್ಯ, ಮಣ್ಣಿನ ಪರಿಮಳ ಮತ್ತು ಸ್ವಲ್ಪ ಸಿಹಿ, ಬೆಳೆದ ಎಲೆಯ ಗಟ್ಟಿತನ ಅಥವಾ ಲೋಹದ ಅಂಚು ಇಲ್ಲದೆ. ಹಸಿಯಾಗಿ ಹಿಡಿಯಷ್ಟು ತಿನ್ನುವಷ್ಟು ಮೃದು.",
+    "growingTips": "ಬಿತ್ತುವ ಮೊದಲು ಬೀಜವನ್ನು ಕೆಲವು ಗಂಟೆ ನೆನೆಸಿ, ಟ್ರೇಯನ್ನು ಸಮನಾಗಿ ಒದ್ದೆಯಾಗಿಡಿ, ಮತ್ತು ಒಳ್ಳೆಯ ಗಾಳಿ ಕೊಡಿ — ಮೇಲ್ಪದರ ಒದ್ದೆಯಾಗಿದ್ದರೆ ಪಾಲಕ್ ಮೊಳಕೆ ಬೇಗ ಕೊಳೆಯುತ್ತದೆ. ಮೊದಲ ಜೋಡಿ ನಿಜವಾದ ಎಲೆ ಪೂರ್ತಿ ತೆರೆದ ಕೂಡಲೇ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ E",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಸತು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಂಗನೀಸ್",
+        "value": "ಇದೆ — ಎಳೆಯ ಎಲೆಯಲ್ಲಿ ಬೆಳೆದ ಎಲೆಗಿಂತ ಬಹಳ ಹೆಚ್ಚು ಅಳೆಯಲಾಗಿದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ, ಚರ್ಮ ಮತ್ತು ಲೋಳೆಪಟಲಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಸಸ್ಯ ಆಹಾರಗಳಿಂದ ಕಬ್ಬಿಣದ ಹೀರಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕಬ್ಬಿಣ ರಕ್ತದಲ್ಲಿ ಸಾಮಾನ್ಯ ಆಮ್ಲಜನಕ ಸಾಗಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಹಾಗೂ ಬಳಲಿಕೆ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಪಾಲಕ್‌ನಲ್ಲಿ ಆಕ್ಸಲೇಟ್ ಇರುತ್ತದೆ, ಆದರೂ ಎಳೆಯ ಎಲೆಯಲ್ಲಿ ಬೆಳೆದ ಎಲೆಗಿಂತ ಬಹಳ ಕಡಿಮೆ. ಮೂತ್ರಪಿಂಡದ ಕಲ್ಲು ಆಗಿದ್ದರೆ ಅಥವಾ ಕಡಿಮೆ ಆಕ್ಸಲೇಟ್ ಆಹಾರ ಹೇಳಿದ್ದರೆ ಪ್ರಮಾಣ ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದಕ್ಕೂ ಸಾಮಾನ್ಯ ಪಾಲಕ್‌ನ ಲೋಹದ ಹಿಂಬರುಚಿ ಇದೆಯೇ?",
+        "answer": "ಬಹಳ ಕಡಿಮೆ. ಆ ಅಂಚು ಬಹುಪಾಲು ಆಕ್ಸಲೇಟ್‌ಗಳಿಂದ ಬರುತ್ತದೆ, ಮತ್ತು ಎಳೆಯ ಎಲೆ ಬೆಳೆದ ಕಟ್ಟಿನ ಒಂದು ಭಾಗ ಮಾತ್ರ ಹೊಂದಿದೆ, ಆದ್ದರಿಂದ ಹಸಿಯಾಗಿ ಸ್ವಚ್ಛ ಮತ್ತು ಸಿಹಿಯಾಗಿ ತಿನ್ನುತ್ತದೆ."
+      },
+      {
+        "question": "ಇದು ನಿಜವಾಗಿ ಕಡಿಮೆ ಆಕ್ಸಲೇಟ್ ಹೊಂದಿದೆಯೇ, ಅಥವಾ ಚಿಕ್ಕದಾಗಿರುವುದರಿಂದ ಮಾತ್ರವೇ?",
+        "answer": "ಗ್ರಾಂಗೆ ಗ್ರಾಂ ನಿಜವಾಗಿ ಕಡಿಮೆ — ಗಿಡ ಬೆಳೆಯುತ್ತಾ ಬಹುಪಾಲು ಆಕ್ಸಲೇಟ್ ತಯಾರಿಸುತ್ತದೆ, ಆದ್ದರಿಂದ ಇಷ್ಟು ಎಳೆಯದಾಗಿ ಕತ್ತರಿಸುವುದು ಆ ಶೇಖರಣೆ ಆಗುವ ಮೊದಲೇ ಹಿಡಿಯುತ್ತದೆ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಸಾಸಿವೆಯಂತಹ ಗಟ್ಟಿ ಎಲೆಗಳಿಗಿಂತ ಬೇಗ ಬಾಡುತ್ತದೆ, ಆದ್ದರಿಂದ ಫ್ರಿಜ್‌ನ ಅತಿ ತಣ್ಣನೆಯ ಭಾಗದಿಂದ ದೂರ ಇಡಿ."
+      },
+      {
+        "question": "ಮಕ್ಕಳು ತಿನ್ನಬಹುದೇ?",
+        "answer": "ಹೌದು — ನಾವು ಬೆಳೆಸುವ ಅತಿ ಸೌಮ್ಯ ಸೊಪ್ಪುಗಳಲ್ಲಿ ಒಂದು, ಖಾರ ಅಥವಾ ಕಹಿ ಇಲ್ಲದೆ, ಮತ್ತು ಬಹುತೇಕ ಮಕ್ಕಳು ಇದನ್ನು ಸಾಮಾನ್ಯ ಮೃದು ಸಲಾಡ್ ಎಲೆಯಂತೆ ತಿನ್ನುತ್ತಾರೆ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಹಸಿ ಪಾಲಕ್ ಹೋಗುವ ಎಲ್ಲಾ ಕಡೆ: ಸ್ಮೂದಿಯಲ್ಲಿ ಬ್ಲೆಂಡ್ ಮಾಡಿ, ಸ್ಯಾಂಡ್‌ವಿಚ್‌ನಲ್ಲಿ ಸೇರಿಸಿ, ಸಲಾಡ್‌ನಲ್ಲಿ ಕಲಸಿ, ಅಥವಾ ಮೊಸರನ್ನ ಅಥವಾ ದೋಸೆ ತವಾದಿಂದ ಇಳಿಯುವ ಮೊದಲು ಮೇಲೆ ಹಾಕಿ."
+      }
+    ],
+    "imageAlt": "ತೆಳು ಕಾಂಡಗಳ ಮೇಲೆ ಮೃದು ಹಸಿರು ದುಂಡು ಎಲೆಗಳ ಪಾಲಕ್ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

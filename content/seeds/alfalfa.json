@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Alfalfa",
     "shortDescription": "The classic jar sprout — mild, nutty and up in three days with no soil at all.",
@@ -64,7 +68,7 @@
         "answer": "For most healthy adults, with proper rinsing and cold storage, yes — and that is how alfalfa is normally eaten. But raw sprouts are one of the genuine food-safety exceptions, so see the cautions above before serving them to anyone vulnerable."
       }
     ],
-    "imageAlt": "Tiny hard yellow-brown alfalfa seed in a small dish"
+    "imageAlt": "A burlap sack spilling pale tan alfalfa seed onto a table"
   },
   "kn": {
     "name": "ಅಲ್ಫಾಲ್ಫಾ",
@@ -131,6 +135,6 @@
         "answer": "ಸರಿಯಾಗಿ ತೊಳೆದು ತಂಪಿನಲ್ಲಿ ಇಟ್ಟರೆ ಬಹುತೇಕ ಆರೋಗ್ಯವಂತ ವಯಸ್ಕರಿಗೆ ಹೌದು — ಮತ್ತು ಅಲ್ಫಾಲ್ಫಾವನ್ನು ಸಾಮಾನ್ಯವಾಗಿ ಹಾಗೆಯೇ ತಿನ್ನುತ್ತಾರೆ. ಆದರೆ ಹಸಿ ಮೊಳಕೆ ಆಹಾರ ಸುರಕ್ಷತೆಯ ನಿಜವಾದ ಅಪವಾದಗಳಲ್ಲಿ ಒಂದು, ಹಾಗಾಗಿ ದುರ್ಬಲರಿಗೆ ಬಡಿಸುವ ಮುನ್ನ ಮೇಲಿನ ಎಚ್ಚರಿಕೆಗಳನ್ನು ನೋಡಿ."
       }
     ],
-    "imageAlt": "ಸಣ್ಣ ಬಟ್ಟಲಿನಲ್ಲಿ ಅತಿ ಚಿಕ್ಕ ಗಟ್ಟಿ ಹಳದಿ-ಕಂದು ಅಲ್ಫಾಲ್ಫಾ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ತಿಳಿ ಕಂದು ಅಲ್ಫಾಲ್ಫಾ ಬೀಜ"
   }
 }

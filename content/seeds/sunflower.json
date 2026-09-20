@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Sunflower (black oil)",
     "shortDescription": "The seed to start with. Thick, sweet, nutty shoots and the most forgiving crop in the tray.",
@@ -64,7 +68,7 @@
         "answer": "Usually not. Snacking seed is striped-variety, often roasted, often hulled, and always sold with no attention to whether it is still alive — all three kill germination. This is raw black oil seed cleaned for sowing, which is a different product that happens to look similar."
       }
     ],
-    "imageAlt": "Black oil sunflower seed in a scoop beside a freshly sown tray"
+    "imageAlt": "A burlap sack spilling black oil sunflower seed onto a table"
   },
   "kn": {
     "name": "ಸೂರ್ಯಕಾಂತಿ (ಕಪ್ಪು ಎಣ್ಣೆ ಬೀಜ)",
@@ -131,6 +135,6 @@
         "answer": "ಸಾಮಾನ್ಯವಾಗಿ ಇಲ್ಲ. ತಿಂಡಿಯ ಬೀಜ ಪಟ್ಟೆ ತಳಿ, ಬಹುತೇಕ ಹುರಿದದ್ದು, ಬಹುತೇಕ ಸಿಪ್ಪೆ ತೆಗೆದದ್ದು, ಮತ್ತು ಅದು ಇನ್ನೂ ಜೀವಂತವೇ ಎಂಬ ಗಮನವಿಲ್ಲದೆ ಮಾರಿದ್ದು — ಈ ಮೂರೂ ಮೊಳಕೆಯನ್ನು ಕೊಲ್ಲುತ್ತವೆ. ಇದು ಬಿತ್ತನೆಗಾಗಿ ಶುದ್ಧೀಕರಿಸಿದ ಹಸಿ ಕಪ್ಪು ಎಣ್ಣೆ ಬೀಜ — ನೋಡಲು ಹೋಲುವ ಬೇರೆಯದೇ ವಸ್ತು."
       }
     ],
-    "imageAlt": "ಹೊಸದಾಗಿ ಬಿತ್ತಿದ ಟ್ರೇ ಪಕ್ಕದಲ್ಲಿ ಸೌಟಿನಲ್ಲಿ ಕಪ್ಪು ಎಣ್ಣೆ ಸೂರ್ಯಕಾಂತಿ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಕಪ್ಪು ಎಣ್ಣೆ ಸೂರ್ಯಕಾಂತಿ ಬೀಜ"
   }
 }

@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Cabbage (red)",
     "shortDescription": "Magenta stems under a blue-green leaf — the one you grow to make a plate look built.",
@@ -64,7 +68,7 @@
         "answer": "No. Heat turns the magenta a dull blue-grey and acid turns it bright pink. Use it raw and add it last, or you have paid for a colour you then destroy."
       }
     ],
-    "imageAlt": "Dark round red cabbage seed in a small heap"
+    "imageAlt": "A burlap sack spilling dark reddish-brown red cabbage seed onto a table"
   },
   "kn": {
     "name": "ಎಲೆಕೋಸು (ಕೆಂಪು)",
@@ -131,6 +135,6 @@
         "answer": "ಇಲ್ಲ. ಶಾಖ ಕಡು ಗುಲಾಬಿಯನ್ನು ಮಂದ ನೀಲಿ-ಬೂದು ಮಾಡುತ್ತದೆ, ಆಮ್ಲ ಅದನ್ನು ಪ್ರಕಾಶಮಾನ ಗುಲಾಬಿ ಮಾಡುತ್ತದೆ. ಹಸಿಯಾಗಿಯೇ ಬಳಸಿ, ಕೊನೆಗೆ ಸೇರಿಸಿ — ಇಲ್ಲದಿದ್ದರೆ ದುಡ್ಡು ಕೊಟ್ಟ ಬಣ್ಣವನ್ನೇ ನಾಶ ಮಾಡಿದಂತಾಗುತ್ತದೆ."
       }
     ],
-    "imageAlt": "ಸಣ್ಣ ರಾಶಿಯಲ್ಲಿ ಕಡು ಬಣ್ಣದ ದುಂಡಾದ ಕೆಂಪು ಎಲೆಕೋಸು ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಕಡು ಕೆಂಪು-ಕಂದು ಕೆಂಪು ಎಲೆಕೋಸು ಬೀಜ"
   }
 }

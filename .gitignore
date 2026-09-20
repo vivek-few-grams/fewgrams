@@ -44,3 +44,4 @@ next-env.d.ts
 /.dynamodb/bin/
 /.dynamodb/data/
 .screens/
+.playwright-mcp/

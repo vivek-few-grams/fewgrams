@@ -1,0 +1,189 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Pak Choi",
+    "shortDescription": "Mild, faintly sweet and gentle for a brassica. The one to reach for when mustard is too much.",
+    "description": "Pak choi is a brassica like mustard and cabbage, but it carries almost none of the family's usual bite. As a microgreen it comes up pale green with tender leaves and a crisp little stem, closer in temperament to a soft lettuce than to its sharper relatives on this list. It is the same plant used in Chinese and other East and Southeast Asian cooking, cut here at the seedling stage rather than grown to a full head — mild enough to eat by the handful without a single dish arguing with it.",
+    "flavourNotes": "Mild and faintly sweet with a clean, watery crunch. No heat, no bitterness — the gentlest brassica we grow.",
+    "growingTips": "Germinates evenly at a moderate density. Keep the canopy moist but never waterlogged, and cut once the first true leaves show clearly above the seed hulls.",
+    "nutrition": [
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin E",
+        "value": "Present"
+      },
+      {
+        "label": "Calcium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Iron",
+        "value": "Moderate"
+      },
+      {
+        "label": "Potassium",
+        "value": "Present"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Present"
+      },
+      {
+        "label": "Glucosinolates",
+        "value": "Present"
+      },
+      {
+        "label": "Flavonoids (including kaempferol and quercetin)",
+        "value": "Present"
+      },
+      {
+        "label": "Chlorophylls",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin C contributes to normal immune function and protects cells from oxidative stress.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin A contributes to the maintenance of normal vision and normal skin.",
+      "Calcium contributes to the maintenance of normal bones and teeth and to normal muscle function.",
+      "Iron contributes to normal oxygen transport in the blood and to reducing tiredness and fatigue."
+    ],
+    "cautions": [
+      "Pak choi is a brassica and contains goitrogens, which in large regular amounts can interfere with thyroid function. If you have a thyroid condition, keep portions moderate and ask your doctor.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Is it as sharp as mustard or red cabbage microgreens?",
+        "answer": "No, and that is the point of growing it. Pak choi is the mildest brassica on our list — no heat, no real bitterness — so it is the one to hand someone who finds mustard or radish too much."
+      },
+      {
+        "question": "Is this the same vegetable I buy for stir-fries?",
+        "answer": "Same plant, Brassica rapa subsp. chinensis, cut as a seedling instead of grown to a full head. The mature vegetable is usually cooked; this stage is tender enough to eat raw and works as a garnish rather than a stir-fry ingredient."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. The stems stay crisp for most of that window even as the leaves soften slightly."
+      },
+      {
+        "question": "Can children eat it?",
+        "answer": "Easily — it is one of the mildest things we grow, with a faintly sweet taste rather than anything sharp or bitter. A good first microgreen for a fussy eater."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Scattered over a noodle bowl or fried rice off the heat, folded into a sandwich, tossed through a salad, or used as the pale, crunchy contrast on top of anything richer — a curry, a dal, or a bowl of curd rice."
+      }
+    ],
+    "imageAlt": "Tray of pale green pak choi microgreens with tender rounded leaves"
+  },
+  "kn": {
+    "name": "ಪಾಕ್ ಚೋಯ್",
+    "shortDescription": "ಸೌಮ್ಯ, ಸ್ವಲ್ಪ ಸಿಹಿ, ಬ್ರಾಸಿಕಾ ಆಗಿದ್ದೂ ಮೃದು. ಸಾಸಿವೆ ಹೆಚ್ಚಾದಾಗ ಕೈಗೆತ್ತಿಕೊಳ್ಳುವ ಸೊಪ್ಪು.",
+    "description": "ಪಾಕ್ ಚೋಯ್ ಸಾಸಿವೆ ಮತ್ತು ಎಲೆಕೋಸಿನಂತೆ ಬ್ರಾಸಿಕಾ, ಆದರೆ ಕುಟುಂಬದ ಸಾಮಾನ್ಯ ಖಾರ ಇದರಲ್ಲಿ ಇಲ್ಲವೇ ಇಲ್ಲ. ಮೈಕ್ರೋಗ್ರೀನ್ ಆಗಿ ಇದು ತಿಳಿ ಹಸಿರು, ಮೃದು ಎಲೆಗಳು ಮತ್ತು ಪುಟ್ಟ ಗರಿಗರಿ ಕಾಂಡದೊಂದಿಗೆ ಬರುತ್ತದೆ, ಈ ಪಟ್ಟಿಯ ಚುರುಕಾದ ಸಂಬಂಧಿಗಳಿಗಿಂತ ಮೃದು ಲೆಟ್ಯೂಸ್‌ಗೆ ಹತ್ತಿರದ ಸ್ವಭಾವ. ಇದು ಚೀನೀ ಮತ್ತು ಇತರ ಪೂರ್ವ-ಆಗ್ನೇಯ ಏಷ್ಯಾದ ಅಡುಗೆಯಲ್ಲಿ ಬಳಸುವ ಅದೇ ಗಿಡ, ಇಲ್ಲಿ ಪೂರ್ತಿ ಹೂವಾಗಿ ಬೆಳೆಸುವ ಬದಲು ಮೊಳಕೆಯ ಹಂತದಲ್ಲಿ ಕತ್ತರಿಸಿದ್ದು — ಯಾವ ಅಡುಗೆಯೊಂದಿಗೂ ಜಗಳವಾಡದೆ ಹಿಡಿಯಷ್ಟು ತಿನ್ನುವಷ್ಟು ಸೌಮ್ಯ.",
+    "flavourNotes": "ಸೌಮ್ಯ ಮತ್ತು ಸ್ವಲ್ಪ ಸಿಹಿ, ಸ್ವಚ್ಛ ನೀರಿನಂಶದ ಗರಿಗರಿ. ಖಾರವಿಲ್ಲ, ಕಹಿಯಿಲ್ಲ — ನಾವು ಬೆಳೆಸುವ ಅತಿ ಸೌಮ್ಯ ಬ್ರಾಸಿಕಾ.",
+    "growingTips": "ಮಧ್ಯಮ ಸಾಂದ್ರತೆಯಲ್ಲಿ ಸಮನಾಗಿ ಮೊಳಕೆಯೊಡೆಯುತ್ತದೆ. ಮೇಲ್ಪದರ ತೇವವಾಗಿರಲಿ ಆದರೆ ಎಂದಿಗೂ ನೀರು ನಿಲ್ಲದಿರಲಿ, ಮತ್ತು ಮೊದಲ ನಿಜವಾದ ಎಲೆಗಳು ಬೀಜದ ಸಿಪ್ಪೆಯಿಂದ ಸ್ಪಷ್ಟವಾಗಿ ಎದ್ದು ಕಂಡಾಗ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ E",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫ್ಲೇವನಾಯ್ಡ್‌ಗಳು (ಕೇಂಫೆರಾಲ್ ಮತ್ತು ಕ್ವೆರ್ಸೆಟಿನ್ ಸೇರಿ)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕ್ಲೋರೊಫಿಲ್‌ಗಳು",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ ಮತ್ತು ಸಾಮಾನ್ಯ ಚರ್ಮದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕ್ಯಾಲ್ಸಿಯಂ ಸಾಮಾನ್ಯ ಮೂಳೆ ಹಾಗೂ ಹಲ್ಲುಗಳ ನಿರ್ವಹಣೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕಬ್ಬಿಣ ರಕ್ತದಲ್ಲಿ ಸಾಮಾನ್ಯ ಆಮ್ಲಜನಕ ಸಾಗಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಹಾಗೂ ಬಳಲಿಕೆ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಪಾಕ್ ಚೋಯ್ ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು ಮತ್ತು ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳನ್ನು ಹೊಂದಿದೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು. ಥೈರಾಯ್ಡ್ ಸಮಸ್ಯೆ ಇದ್ದರೆ ಪ್ರಮಾಣವನ್ನು ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ — ಹಠಾತ್ತನೆ ಹೆಚ್ಚು ತಿನ್ನಬೇಡಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಸಾಸಿವೆ ಅಥವಾ ಕೆಂಪು ಎಲೆಕೋಸಿನಷ್ಟು ಚುರುಕಾಗಿದೆಯೇ?",
+        "answer": "ಇಲ್ಲ, ಅದೇ ಇದನ್ನು ಬೆಳೆಸುವ ಉದ್ದೇಶ. ಪಾಕ್ ಚೋಯ್ ನಮ್ಮ ಪಟ್ಟಿಯ ಅತಿ ಸೌಮ್ಯ ಬ್ರಾಸಿಕಾ — ಖಾರವಿಲ್ಲ, ನಿಜವಾದ ಕಹಿಯಿಲ್ಲ — ಆದ್ದರಿಂದ ಸಾಸಿವೆ ಅಥವಾ ಮೂಲಂಗಿ ಹೆಚ್ಚು ಎನಿಸುವವರಿಗೆ ಕೈಗೆತ್ತಿಕೊಳ್ಳುವ ಸೊಪ್ಪು."
+      },
+      {
+        "question": "ಸ್ಟಿರ್-ಫ್ರೈಗೆ ಕೊಳ್ಳುವ ಅದೇ ತರಕಾರಿಯೇ?",
+        "answer": "ಅದೇ ಗಿಡ, ಪೂರ್ತಿ ಹೂವಾಗಿ ಬೆಳೆಸುವ ಬದಲು ಮೊಳಕೆಯ ಹಂತದಲ್ಲಿ ಕತ್ತರಿಸಿದ್ದು. ಬೆಳೆದ ತರಕಾರಿಯನ್ನು ಸಾಮಾನ್ಯವಾಗಿ ಬೇಯಿಸುತ್ತಾರೆ; ಈ ಹಂತ ಹಸಿಯಾಗಿ ತಿನ್ನುವಷ್ಟು ಮೃದು ಮತ್ತು ಸ್ಟಿರ್-ಫ್ರೈ ಪದಾರ್ಥಕ್ಕಿಂತ ಅಲಂಕಾರವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಎಲೆಗಳು ಸ್ವಲ್ಪ ಮೆತ್ತಗಾದರೂ ಕಾಂಡಗಳು ಬಹುಪಾಲು ಆ ಅವಧಿಯಲ್ಲಿ ಗರಿಗರಿಯಾಗಿ ಉಳಿಯುತ್ತವೆ."
+      },
+      {
+        "question": "ಮಕ್ಕಳು ತಿನ್ನಬಹುದೇ?",
+        "answer": "ಸುಲಭವಾಗಿ — ನಾವು ಬೆಳೆಸುವ ಅತಿ ಸೌಮ್ಯವಾದದ್ದು, ಚುರುಕು ಅಥವಾ ಕಹಿಯ ಬದಲು ಸ್ವಲ್ಪ ಸಿಹಿ ರುಚಿ. ಮೀನಮೇಷ ಮಾಡುವ ಮಕ್ಕಳಿಗೆ ಒಳ್ಳೆಯ ಮೊದಲ ಮೈಕ್ರೋಗ್ರೀನ್."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ನೂಡಲ್ಸ್ ಬಟ್ಟಲಿನ ಮೇಲೆ ಅಥವಾ ಫ್ರೈಡ್ ರೈಸ್ ಮೇಲೆ ಶಾಖದಿಂದ ಹೊರಗೆ ಚೆಲ್ಲಿ, ಸ್ಯಾಂಡ್‌ವಿಚ್‌ನಲ್ಲಿ ಬೆರೆಸಿ, ಸಲಾಡ್‌ನಲ್ಲಿ ಬೆರೆಸಿ, ಅಥವಾ ಗಟ್ಟಿಯಾದ ಯಾವುದರ ಮೇಲೂ ತಿಳಿ ಗರಿಗರಿ ವ್ಯತಿರಿಕ್ತವಾಗಿ ಬಳಸಿ — ಒಂದು ಕರಿ, ಬೇಳೆ, ಅಥವಾ ಮೊಸರನ್ನದ ಬಟ್ಟಲು."
+      }
+    ],
+    "imageAlt": "ಮೃದು ದುಂಡು ಎಲೆಗಳ ತಿಳಿ ಹಸಿರು ಪಾಕ್ ಚೋಯ್ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

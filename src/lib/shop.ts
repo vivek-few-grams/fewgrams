@@ -10,7 +10,11 @@ export const CATEGORY_PANELS: Record<
   { panelClass: string; marqueeClass: string }
 > = {
   racks: { panelClass: "bg-sand", marqueeClass: "text-forest/15" },
-  seeds: { panelClass: "bg-forest", marqueeClass: "text-mint/25" },
+  /* Light, not dark forest — changed 20 Sep 2026 so the packet photo
+     (`CategoryMedia`'s `seeds` cut-out) reads the way the microgreens tile's
+     own photo does: a light ground under a full-colour photograph, rather
+     than a photograph competing with a dark panel. */
+  seeds: { panelClass: "bg-sage/30", marqueeClass: "text-forest/25" },
   trays: { panelClass: "bg-sage", marqueeClass: "text-forest/25" },
   snacks: { panelClass: "bg-mint", marqueeClass: "text-forest/20" },
 };

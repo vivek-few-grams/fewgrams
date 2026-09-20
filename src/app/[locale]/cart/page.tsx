@@ -121,12 +121,13 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                     {item.name}
                   </span>
                   {/* The unit differs by kind, so both halves of this line
-                      do: a green and a seed are priced per 100 g and counted
-                      in grams, a tray per pack, a rack per rack.
-                      `item.grams` is null for both unweighed kinds rather than
-                      0, which is what makes this a branch instead of a "0 g" —
-                      but null alone no longer says *which* unit, so the kind
-                      is what picks the words. */}
+                      do: a seed is priced per 100 g and counted in grams, a
+                      green per tray (since 19 Sep 2026), a tray-product per
+                      pack, a rack per rack. `item.grams` is null for every
+                      unweighed kind rather than 0, which is what makes this a
+                      branch instead of a "0 g" — but null alone no longer
+                      says *which* unit, so the kind is what picks the
+                      words. */}
                   <span className="mt-0.5 block font-body text-xs text-stone">
                     {lineUnits(item, t)}
                   </span>
@@ -334,6 +335,13 @@ function lineUnits(
   if (item.kind === "rack") {
     return `${t("linePriceRack", { price: item.unitPrice })} · ${t("lineRacks", { count: item.units })}`;
   }
+  /* A green moved from the 100 g to the tray on 19 Sep 2026 — its own wording
+     rather than falling into the pack branch below, because "pack" is a
+     tray-product's unit (a moulded plastic pack), not a grown tray of
+     greens. Checked first, since it is also `grams === null` now. */
+  if (item.kind === "variety") {
+    return `${t("linePriceTray", { price: item.unitPrice })} · ${t("lineTrays", { count: item.units })}`;
+  }
   if (item.grams === null) {
     return `${t("linePricePack", { price: item.unitPrice })} · ${t("linePacks", { count: item.units })}`;
   }
@@ -350,6 +358,7 @@ function lineUnits(
 function stepKey(kind: string, dir: "decrease" | "increase"): string {
   if (kind === "rack") return dir === "decrease" ? "decreaseRack" : "increaseRack";
   if (kind === "tray") return dir === "decrease" ? "decreasePack" : "increasePack";
+  if (kind === "variety") return dir === "decrease" ? "decreaseTray" : "increaseTray";
   return dir;
 }
 

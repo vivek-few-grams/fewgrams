@@ -1,0 +1,173 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Rocket",
+    "shortDescription": "Peppery and nutty, sharper than mustard's heat and gone just as fast.",
+    "description": "Rocket microgreens carry the same pepper as the salad leaf, but concentrated into a leaf small enough to eat by the handful. The bite comes from a glucosinolate family that produces erucin rather than the sulforaphane broccoli makes, which is why rocket tastes distinctly nuttier and greener than a brassica like mustard, even though the chemistry is related. It also carries a real amount of nitrate, the same compound that makes beetroot juice a pre-workout drink, alongside the vitamin K and calcium the leaf is already known for at full size. Cut this young, the pepper is brighter and the leaf is tender enough to skip chopping entirely.",
+    "flavourNotes": "Peppery and nutty, with a green bitterness underneath. Sharper than lettuce, milder and rounder than mustard.",
+    "growingTips": "Tiny seed, so scatter it thin and resist covering it too deep. Keep the tray evenly moist rather than wet, and cut once the first true leaf unfurls — a later cut turns bitter fast.",
+    "nutrition": [
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Good source"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Calcium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Nitrates",
+        "value": "Present — the same compound found in beetroot"
+      },
+      {
+        "label": "Glucosinolates (including erucin)",
+        "value": "Present"
+      },
+      {
+        "label": "Flavonoids (including rutin and quercetin glucosides)",
+        "value": "Present"
+      },
+      {
+        "label": "Carotenoids",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin C contributes to normal immune function and protects cells from oxidative stress.",
+      "Vitamin A contributes to the maintenance of normal vision and normal skin.",
+      "Folate contributes to normal blood formation.",
+      "Calcium contributes to the maintenance of normal bones and teeth."
+    ],
+    "cautions": [
+      "Rocket is naturally high in nitrates. This is not a concern for most healthy adults in normal amounts, but anyone advised to limit nitrate intake, or feeding a very young infant, should ask a doctor first.",
+      "If you take warfarin or another vitamin K antagonist, keep your intake of vitamin K rich greens steady from week to week rather than eating a large amount suddenly.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "How is this different from mustard's heat?",
+        "answer": "Related but not the same. Mustard's bite comes from a compound that behaves like wasabi; rocket's comes from a cousin compound that reads as peppery and nutty rather than sharp and nasal. Side by side, rocket is the rounder, greener heat."
+      },
+      {
+        "question": "Is this the same rocket used in salads?",
+        "answer": "Same plant, cut as a seedling instead of a full leaf. It has all the pepper of a mature rocket leaf with none of the toughness, so you can use a full handful where you might have used a few leaves before."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. It wilts a little faster than sturdier leaves like mustard, so eat it in the first half of that window if you can."
+      },
+      {
+        "question": "Can children eat it?",
+        "answer": "Yes, though the pepper is more noticeable to a child's palate than an adult's. Start with a small amount mixed into something milder."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Anywhere you'd use salad rocket: on a pizza just out of the oven, tossed with lemon and olive oil, over a grain bowl, or scattered on top of a sandwich or wrap for the pepper without the stalk."
+      }
+    ],
+    "imageAlt": "Tray of rocket microgreens with slender green leaves and pale stems"
+  },
+  "kn": {
+    "name": "ರಾಕೆಟ್",
+    "shortDescription": "ಖಾರ ಮತ್ತು ಕಾಯಿಯ ರುಚಿ, ಸಾಸಿವೆಯ ಖಾರಕ್ಕಿಂತ ಚುರುಕು ಮತ್ತು ಅಷ್ಟೇ ಬೇಗ ಮಾಯ.",
+    "description": "ರಾಕೆಟ್ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಸಲಾಡ್ ಎಲೆಯ ಅದೇ ಖಾರವನ್ನು ಹೊಂದಿದೆ, ಆದರೆ ಹಿಡಿಯಷ್ಟು ತಿನ್ನಬಹುದಾದ ಚಿಕ್ಕ ಎಲೆಯಲ್ಲಿ ಕೇಂದ್ರೀಕೃತವಾಗಿದೆ. ಖಾರ ಬರುವುದು ಬ್ರೊಕೊಲಿ ತಯಾರಿಸುವ ಸಲ್ಫೊರಾಫೇನ್ ಬದಲು ಎರುಸಿನ್ ಉತ್ಪಾದಿಸುವ ಒಂದು ಗ್ಲುಕೊಸಿನೊಲೇಟ್ ಕುಟುಂಬದಿಂದ, ಅದಕ್ಕಾಗಿಯೇ ಸಾಸಿವೆಯಂತಹ ಬ್ರಾಸಿಕಾ ಜೊತೆ ರಸಾಯನಶಾಸ್ತ್ರ ಸಂಬಂಧಿಸಿದ್ದಾದರೂ ರಾಕೆಟ್ ಹೆಚ್ಚು ಕಾಯಿಯ ಮತ್ತು ಹಸಿರಿನ ರುಚಿ ಕೊಡುತ್ತದೆ. ಇದು ಬೀಟ್‌ರೂಟ್ ಜ್ಯೂಸ್ ಅನ್ನು ವ್ಯಾಯಾಮದ ಮುನ್ನ ಕುಡಿಯುವಂತೆ ಮಾಡುವ ಅದೇ ನೈಟ್ರೇಟ್ ಸಂಯುಕ್ತವನ್ನೂ ಗಣನೀಯ ಪ್ರಮಾಣದಲ್ಲಿ ಹೊಂದಿದೆ, ಜೊತೆಗೆ ಪೂರ್ತಿ ಗಿಡ ಈಗಾಗಲೇ ಹೆಸರುವಾಸಿಯಾದ ವಿಟಮಿನ್ K ಮತ್ತು ಕ್ಯಾಲ್ಸಿಯಂ. ಇಷ್ಟು ಎಳೆಯದಾಗಿ ಕತ್ತರಿಸಿದಾಗ ಖಾರ ಹೆಚ್ಚು ಪ್ರಕಾಶಮಾನ ಮತ್ತು ಎಲೆ ಕತ್ತರಿಸದೆ ತಿನ್ನುವಷ್ಟು ಮೃದು.",
+    "flavourNotes": "ಖಾರ ಮತ್ತು ಕಾಯಿಯ ರುಚಿ, ಕೆಳಗೆ ಹಸಿರಿನ ಕಹಿ. ಲೆಟಿಸ್‌ಗಿಂತ ಚುರುಕು, ಸಾಸಿವೆಗಿಂತ ಸೌಮ್ಯ ಮತ್ತು ದುಂಡು.",
+    "growingTips": "ಬೀಜ ಅತಿ ಸಣ್ಣದು, ಆದ್ದರಿಂದ ತೆಳುವಾಗಿ ಚೆಲ್ಲಿ ಮತ್ತು ಹೆಚ್ಚು ಆಳ ಹೂಳಬೇಡಿ. ಟ್ರೇಯನ್ನು ಸಮನಾಗಿ ಒದ್ದೆಯಾಗಿಡಿ ಆದರೆ ನೀರು ನಿಲ್ಲದಂತೆ, ಮತ್ತು ಮೊದಲ ನಿಜವಾದ ಎಲೆ ತೆರೆದ ಕೂಡಲೇ ಕತ್ತರಿಸಿ — ತಡವಾದರೆ ಬೇಗ ಕಹಿಯಾಗುತ್ತದೆ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ನೈಟ್ರೇಟ್‌ಗಳು",
+        "value": "ಇದೆ — ಬೀಟ್‌ರೂಟ್‌ನಲ್ಲಿ ಸಿಗುವ ಅದೇ ಸಂಯುಕ್ತ"
+      },
+      {
+        "label": "ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು (ಎರುಸಿನ್ ಸೇರಿ)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫ್ಲೇವನಾಯ್ಡ್‌ಗಳು (ರುಟಿನ್ ಮತ್ತು ಕ್ವೆರ್ಸೆಟಿನ್ ಗ್ಲುಕೊಸೈಡ್‌ಗಳು ಸೇರಿ)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಕ್ಯಾರೊಟಿನಾಯ್ಡ್‌ಗಳು",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ A ಸಾಮಾನ್ಯ ದೃಷ್ಟಿ ಮತ್ತು ಸಾಮಾನ್ಯ ಚರ್ಮದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕ್ಯಾಲ್ಸಿಯಂ ಸಾಮಾನ್ಯ ಮೂಳೆ ಮತ್ತು ಹಲ್ಲುಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ರಾಕೆಟ್ ಸ್ವಾಭಾವಿಕವಾಗಿ ನೈಟ್ರೇಟ್ ಅಧಿಕವಾಗಿ ಹೊಂದಿದೆ. ಬಹುತೇಕ ಆರೋಗ್ಯವಂತ ವಯಸ್ಕರಿಗೆ ಸಾಮಾನ್ಯ ಪ್ರಮಾಣದಲ್ಲಿ ಇದು ಸಮಸ್ಯೆಯಲ್ಲ, ಆದರೆ ನೈಟ್ರೇಟ್ ಮಿತಿಗೊಳಿಸಲು ಸಲಹೆ ಪಡೆದವರು ಅಥವಾ ಬಹಳ ಚಿಕ್ಕ ಶಿಶುವಿಗೆ ನೀಡುವ ಮುನ್ನ ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ನೀವು ವಾರ್ಫರಿನ್ ಅಥವಾ ಇತರ ವಿಟಮಿನ್ K ವಿರೋಧಿ ಔಷಧವನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತಿದ್ದರೆ, ವಿಟಮಿನ್ K ಸಮೃದ್ಧ ಸೊಪ್ಪಿನ ಸೇವನೆಯನ್ನು ವಾರದಿಂದ ವಾರಕ್ಕೆ ಸ್ಥಿರವಾಗಿ ಇರಿಸಿ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದು ಸಾಸಿವೆಯ ಖಾರಕ್ಕಿಂತ ಹೇಗೆ ಬೇರೆ?",
+        "answer": "ಸಂಬಂಧಿಸಿದ್ದಾದರೂ ಒಂದೇ ಅಲ್ಲ. ಸಾಸಿವೆಯ ಖಾರ ವಸಾಬಿಯಂತೆ ವರ್ತಿಸುವ ಸಂಯುಕ್ತದಿಂದ; ರಾಕೆಟ್‌ನದು ಖಾರ ಮತ್ತು ಕಾಯಿಯ ರುಚಿ ಕೊಡುವ ಸೋದರ ಸಂಯುಕ್ತದಿಂದ, ಚುರುಕು ಮತ್ತು ಮೂಗಿಗೇರುವ ಬದಲು. ಪಕ್ಕದಲ್ಲಿಟ್ಟು ನೋಡಿದರೆ ರಾಕೆಟ್ ಹೆಚ್ಚು ದುಂಡು, ಹಸಿರಿನ ಖಾರ."
+      },
+      {
+        "question": "ಇದು ಸಲಾಡ್‌ನಲ್ಲಿ ಬಳಸುವ ಅದೇ ರಾಕೆಟ್ಟೇ?",
+        "answer": "ಅದೇ ಗಿಡ, ಪೂರ್ತಿ ಎಲೆಯ ಬದಲು ಮೊಳಕೆ ಹಂತದಲ್ಲಿ ಕತ್ತರಿಸಿದ್ದು. ಬೆಳೆದ ರಾಕೆಟ್ ಎಲೆಯ ಎಲ್ಲಾ ಖಾರವನ್ನೂ ಹೊಂದಿದೆ, ಗಟ್ಟಿತನ ಇಲ್ಲದೆ — ಆದ್ದರಿಂದ ಮೊದಲು ಕೆಲವು ಎಲೆ ಬಳಸುತ್ತಿದ್ದ ಕಡೆ ಇಡೀ ಹಿಡಿ ಬಳಸಬಹುದು."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಸಾಸಿವೆಯಂತಹ ಗಟ್ಟಿ ಎಲೆಗಳಿಗಿಂತ ಸ್ವಲ್ಪ ಬೇಗ ಬಾಡುತ್ತದೆ, ಆದ್ದರಿಂದ ಸಾಧ್ಯವಾದರೆ ಮೊದಲ ಅರ್ಧದಲ್ಲಿ ತಿನ್ನಿ."
+      },
+      {
+        "question": "ಮಕ್ಕಳು ತಿನ್ನಬಹುದೇ?",
+        "answer": "ಹೌದು, ಆದರೆ ಖಾರ ಮಕ್ಕಳ ನಾಲಿಗೆಗೆ ವಯಸ್ಕರಿಗಿಂತ ಹೆಚ್ಚು ಗಮನಕ್ಕೆ ಬರುತ್ತದೆ. ಸೌಮ್ಯ ಆಹಾರದೊಂದಿಗೆ ಸ್ವಲ್ಪ ಪ್ರಮಾಣದಿಂದ ಆರಂಭಿಸಿ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಸಲಾಡ್ ರಾಕೆಟ್ ಹೋಗುವ ಎಲ್ಲಾ ಕಡೆ: ಒಲೆಯಿಂದ ಇಳಿಸಿದ ಪಿಜ್ಜಾ ಮೇಲೆ, ನಿಂಬೆ ಮತ್ತು ಆಲಿವ್ ಎಣ್ಣೆಯೊಂದಿಗೆ ಕಲಸಿ, ಗ್ರೇನ್ ಬೌಲ್ ಮೇಲೆ, ಅಥವಾ ಕಾಂಡ ಇಲ್ಲದೆ ಖಾರ ಬೇಕಾದ ಸ್ಯಾಂಡ್‌ವಿಚ್ ಅಥವಾ ರ‍್ಯಾಪ್ ಮೇಲೆ ಉದುರಿಸಿ."
+      }
+    ],
+    "imageAlt": "ತೆಳು ಕಾಂಡಗಳ ಮೇಲೆ ಹಸಿರು ಎಲೆಗಳ ರಾಕೆಟ್ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

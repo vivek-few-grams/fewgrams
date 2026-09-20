@@ -1,7 +1,8 @@
 {
   "images": {
     "hero": "hero.jpg",
-    "cutout": "cutout.webp"
+    "cutout": "cutout.webp",
+    "gallery": ["dimensions.webp", "how-it-works.webp"]
   },
   "en": {
     "name": "Microgreen trays — pair",

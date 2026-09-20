@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { t as localised, CATEGORIES, type Category } from "@/lib/types";
 import { listByCategory } from "@/lib/repo/products";
 import { CATEGORY_PANELS } from "@/lib/shop";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { redirect } from "@/i18n/navigation";
 import { Sprout } from "@/components/ui/Sprout";
 import { CategoryStrip } from "@/components/chrome/CategoryStrip";
@@ -56,6 +57,7 @@ export default async function CategoryPage({
   if (category === "microgreens") redirect({ href: "/microgreens", locale });
   if (category === "seeds") redirect({ href: "/seeds", locale });
   if (!isCategory(category)) notFound();
+  await guardProductTypeEnabled(category, locale);
 
   const t = await getTranslations("shop.category");
   const label = await getTranslations("common.categories");
@@ -63,10 +65,10 @@ export default async function CategoryPage({
   const panel = CATEGORY_PANELS[category];
 
   return (
-    <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
+    <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
       <CategoryStrip current={category} />
 
-      <h1 className="mt-8 font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
+      <h1 className="mt-8 font-display text-[clamp(1.25rem,2.5vw,1.9rem)] font-bold leading-tight tracking-tight text-forest">
         {label(category)}
       </h1>
       <p className="mt-3 max-w-xl font-body text-sm text-stone">{t("body")}</p>

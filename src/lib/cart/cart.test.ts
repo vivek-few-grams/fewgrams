@@ -297,9 +297,9 @@ describe("asCartKind — the only way a string becomes a kind", () => {
 
 describe("totals", () => {
   it("counts units and grams across the weighed kinds", () => {
-    const lines = [green("broccoli", 3), seed("radish", 2)];
-    expect(cartUnitCount(lines)).toBe(5);
-    expect(cartGrams(lines)).toBe(500);
+    const lines = [seed("radish", 2), tray("tray-pair", 1)];
+    expect(cartUnitCount(lines)).toBe(3);
+    expect(cartGrams(lines)).toBe(200);
   });
 
   it("is zero for an empty cart", () => {
@@ -311,12 +311,14 @@ describe("totals", () => {
    * The bug this replaced: `cartGrams` was `cartUnitCount × 100`, which was
    * right while every kind was sold by weight and became a lie the moment
    * trays arrived. A cart holding one pack of trays would have reported 100 g
-   * of nothing.
+   * of nothing. A green joined the unweighed side on 19 Sep 2026, when
+   * ordering moved from the 100 g to the tray, so it now belongs in this
+   * test rather than in the one above.
    */
-  it("counts a tray in the unit count but not in the weight", () => {
+  it("counts a green and a tray in the unit count but not in the weight", () => {
     const lines = [green("broccoli", 3), tray("tray-pair", 2)];
     expect(cartUnitCount(lines)).toBe(5);
-    expect(cartGrams(lines)).toBe(300);
+    expect(cartGrams(lines)).toBe(0);
   });
 
   it("gives a trays-only cart no weight at all", () => {
@@ -327,8 +329,8 @@ describe("totals", () => {
 });
 
 describe("isWeighed — which kinds have a gram figure at all", () => {
-  it("weighs greens and seed, and not trays", () => {
-    expect(isWeighed("variety")).toBe(true);
+  it("weighs seed only, since a green moved to the tray on 19 Sep 2026", () => {
+    expect(isWeighed("variety")).toBe(false);
     expect(isWeighed("seed")).toBe(true);
     expect(isWeighed("tray")).toBe(false);
   });

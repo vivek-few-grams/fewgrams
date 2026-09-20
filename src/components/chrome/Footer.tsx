@@ -3,11 +3,14 @@ import { Link } from "@/i18n/navigation";
 import { brand } from "@/lib/brand";
 import { NAV_CATEGORIES } from "@/lib/types";
 import { CATEGORY_HREF } from "@/lib/shop";
+import { enabledProductTypes } from "@/lib/catalogue/visibility";
 
 export async function Footer() {
   const t = await getTranslations("common.footer");
   const b = await getTranslations("common.brand");
   const c = await getTranslations("common.categories");
+  const enabled = await enabledProductTypes();
+  const navCategories = NAV_CATEGORIES.filter((cat) => enabled.includes(cat.slug));
 
   return (
     <footer className="mt-24 bg-forest text-cream">
@@ -22,7 +25,7 @@ export async function Footer() {
           </div>
 
           <FooterCol title={t("shop")}>
-            {NAV_CATEGORIES.map((cat) => (
+            {navCategories.map((cat) => (
               /* Microgreens and seeds are described catalogues with routes of
                  their own; the rest are `/shop/<slug>`. `CATEGORY_HREF` is the
                  one place that mapping lives, so a footer link cannot drift

@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Spinach",
     "shortDescription": "The cheapest seed here and the hardest to grow well — worth trying once you have the easy ones right.",
@@ -64,7 +68,7 @@
         "answer": "The seed is cheap; the trouble is not. Grow it when you want the flavour or when the weather is cool, and lean on radish, pak choi and the brassicas for volume."
       }
     ],
-    "imageAlt": "Hard angular pale spinach seed in a small dish"
+    "imageAlt": "A burlap sack spilling hard angular pale brown spinach seed onto a table"
   },
   "kn": {
     "name": "ಪಾಲಕ್",
@@ -131,6 +135,6 @@
         "answer": "ಬೀಜ ಅಗ್ಗ; ತೊಂದರೆ ಅಗ್ಗವಲ್ಲ. ರುಚಿ ಬೇಕಿದ್ದಾಗ ಅಥವಾ ವಾತಾವರಣ ತಂಪಿದ್ದಾಗ ಬೆಳೆಸಿ, ಮತ್ತು ಪ್ರಮಾಣಕ್ಕೆ ಮೂಲಂಗಿ, ಪಾಕ್ ಚಾಯ್ ಹಾಗೂ ಬ್ರಾಸಿಕಾಗಳನ್ನು ನೆಚ್ಚಿಕೊಳ್ಳಿ."
       }
     ],
-    "imageAlt": "ಸಣ್ಣ ಬಟ್ಟಲಿನಲ್ಲಿ ಗಟ್ಟಿ, ಮೂಲೆಯುಳ್ಳ ತಿಳಿ ಬಣ್ಣದ ಪಾಲಕ್ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಗಟ್ಟಿ, ಮೂಲೆಯುಳ್ಳ ತಿಳಿ ಕಂದು ಪಾಲಕ್ ಬೀಜ"
   }
 }

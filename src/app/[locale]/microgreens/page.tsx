@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Tile } from "@/components/catalogue/Tile";
 import { listVarieties } from "@/lib/repo/varieties";
 import { attachContent, varietyCutout, varietyHero } from "@/lib/content/varieties";
@@ -15,7 +16,7 @@ import { currentActor } from "@/lib/auth/guard";
  * never did. For the page selling the hero product that matters more than
  * the transition did.
  *
- * Greens are sold two ways (§18.6): by the 100 g ad hoc from the detail page,
+ * Greens are sold two ways (§18.6): by the tray ad hoc from the detail page,
  * or as a weekly plan. Both routes are offered here rather than assuming
  * which one a visitor wants.
  */
@@ -32,6 +33,7 @@ export default async function MicrogreensPage({
 }: PageProps<"/[locale]/microgreens">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await guardProductTypeEnabled("microgreens", locale);
 
   const t = await getTranslations("microgreens");
   const counts = await getTranslations("common.counts");
@@ -50,11 +52,11 @@ export default async function MicrogreensPage({
   );
 
   return (
-    <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
+    <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
       <p className="font-body text-[11px] uppercase tracking-widest text-stone">
         {counts("varieties", { count: varieties.length })}
       </p>
-      <h1 className="mt-3 max-w-2xl font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
+      <h1 className="mt-3 max-w-2xl font-display text-[clamp(1.25rem,2.5vw,1.9rem)] font-bold leading-tight tracking-tight text-forest">
         {t("heading")}
       </h1>
       <p className="mt-4 max-w-xl font-body text-sm text-stone">
@@ -93,7 +95,7 @@ export default async function MicrogreensPage({
               <Tile
                 href={`/microgreens/${v.contentKey}`}
                 name={v.content.text.name}
-                meta={t("meta", { days: v.growDays, price: v.pricePer100g })}
+                meta={t("meta", { days: v.growDays, price: v.pricePerTray })}
                 index={i}
                 cutout={varietyCutout(v.content)}
                 hero={varietyHero(v.content)}

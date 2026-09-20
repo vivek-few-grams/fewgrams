@@ -5,6 +5,7 @@ import { attachTrayContent, trayCutout, trayHero } from "@/lib/content/trays";
 import { formatDeliveryDate } from "@/lib/delivery-date";
 import { trayReadyDate } from "@/lib/trays/lead-time";
 import { CATEGORY_PANELS } from "@/lib/shop";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Sprout } from "@/components/ui/Sprout";
 import { Marquee } from "@/components/ui/Marquee";
 import { CategoryStrip } from "@/components/chrome/CategoryStrip";
@@ -59,6 +60,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop/tra
 export default async function TraysPage({ params }: PageProps<"/[locale]/shop/trays">) {
   const { locale } = await params;
   setRequestLocale(locale);
+  await guardProductTypeEnabled("trays", locale);
 
   const t = await getTranslations("shop.trays");
   const c = await getTranslations("shop.category");
@@ -83,10 +85,10 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
   const panel = CATEGORY_PANELS.trays;
 
   return (
-    <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
+    <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
       <CategoryStrip current="trays" />
 
-      <h1 className="mt-8 font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
+      <h1 className="mt-8 font-display text-[clamp(1.25rem,2.5vw,1.9rem)] font-bold leading-tight tracking-tight text-forest">
         {label("trays")}
       </h1>
       <p className="mt-3 max-w-xl font-body text-sm text-stone">{t("body")}</p>

@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Red Amaranthus",
     "shortDescription": "The most striking tray you can grow — magenta from stem to leaf, from a seed like dust.",
@@ -64,7 +68,7 @@
         "answer": "They were watered from above. Amaranthus stems are fine and hollow and they do not recover from being flattened. Bottom-water from the moment they are standing."
       }
     ],
-    "imageAlt": "Dust-fine dark amaranthus seed heaped in a tiny dish"
+    "imageAlt": "A burlap sack spilling dust-fine dark amaranthus seed onto a table"
   },
   "kn": {
     "name": "ಕೆಂಪು ಹರಿವೆ",
@@ -131,6 +135,6 @@
         "answer": "ಮೇಲಿನಿಂದ ನೀರು ಕೊಟ್ಟದ್ದು. ಹರಿವೆಯ ಕಾಂಡ ಸೂಕ್ಷ್ಮ ಮತ್ತು ಒಳಗೆ ಪೊಳ್ಳು; ಒಮ್ಮೆ ಚಪ್ಪಟೆಯಾದರೆ ಅವು ಚೇತರಿಸುವುದಿಲ್ಲ. ನೆಟ್ಟಗೆ ನಿಂತ ಕ್ಷಣದಿಂದಲೇ ಕೆಳಗಿನಿಂದ ನೀರು ಕೊಡಿ."
       }
     ],
-    "imageAlt": "ಅತಿ ಸಣ್ಣ ಬಟ್ಟಲಿನಲ್ಲಿ ಧೂಳಿನಷ್ಟು ಸೂಕ್ಷ್ಮ ಕಡು ಬಣ್ಣದ ಹರಿವೆ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಧೂಳಿನಷ್ಟು ಸೂಕ್ಷ್ಮ ಕಡು ಬಣ್ಣದ ಹರಿವೆ ಬೀಜ"
   }
 }

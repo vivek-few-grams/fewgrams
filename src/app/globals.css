@@ -238,6 +238,36 @@
   to   { transform: translateY(-50%); }
 }
 
+/* `ScatterMarquee`'s word-cloud copy — sits inside the same
+   `.mcard__marquee-inner` loop as `.mcard__marquee-line`, but wraps instead
+   of stacking one word per row, so words of different sizes share a row and
+   the block fills the panel's width rather than a centred column of it. */
+.mcard__marquee-scatter {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: center;
+  gap: 1.5cqw 3cqw;
+  padding: 0 3cqw;
+}
+
+.mcard__marquee-scatter-word {
+  display: inline-block;
+  max-width: 88cqw;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 0.92;
+  /* `sizeFor` in `ScatterMarquee` already keeps a word's estimated width
+     under the panel's — `max-width` plus wrapping here is the backstop for
+     when the estimate is wrong, not the mechanism. A word that hits it wraps
+     onto a second line inside its own box; it never runs past the panel
+     edge the way an unclipped `nowrap` span would. */
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 /* Every hover effect above is desktop-only, exactly as the
    reference does it. Touch devices get no hover state. */
 @media (pointer: fine) {

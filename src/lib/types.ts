@@ -16,6 +16,14 @@ export function t(s: LocalisedString | undefined, locale = "en"): string {
 export const CATEGORIES = ["racks", "seeds", "trays", "snacks"] as const;
 export type Category = (typeof CATEGORIES)[number];
 
+/** Every kind of thing the site sells, for the admin on/off switch
+ *  (`src/lib/catalogue/visibility.ts`). Microgreens is not a `Category` — it
+ *  is the described catalogue at `/microgreens`, not a `/shop/<slug>` grid —
+ *  but it is still a product type an owner may want to pull from sale, so the
+ *  switch covers it too. */
+export const PRODUCT_TYPES = ["microgreens", ...CATEGORIES] as const;
+export type ProductType = (typeof PRODUCT_TYPES)[number];
+
 /**
  * SPEC §3.1 / §4.3. `yieldGramsPerTray` and `growDays` are the two fields the
  * whole operation computes from, so every variety must publish both.
@@ -25,16 +33,32 @@ export type Category = (typeof CATEGORIES)[number];
  * is loaded by src/lib/content/varieties.ts. What is left here is exactly
  * what the business tunes — price, yield, grow days, seed rate, active.
  *
- * `id` is a UUID and never changes. `contentKey` names the content file and
- * is also the public URL segment, so it is an identifier rather than a label:
- * renaming the *display* name is an edit inside the file and moves neither.
+ * **Sold by the tray, not by weight (changed 19 Sep 2026).** `pricePer100g`
+ * priced a green the same way as a seed, but a green is never weighed out of
+ * a sack — it is cut from a tray that was sown whole, so a per-100 g rate
+ * implied a precision the operation does not have. `pricePerTray` is what the
+ * customer is actually charged per unit ordered; `yieldGramsPerTray` stays,
+ * but its job changed too — it is now the owner's **approximate** weight a
+ * tray of this variety yields, published for a customer's information, and it
+ * prices nothing. See `isWeighed` in `src/lib/cart/cart.ts`.
+ *
+ * **The yield is a range, not one number (also 19 Sep 2026).** A tray never
+ * cuts to exactly the same weight twice, so a single `yieldGramsPerTray`
+ * implied a precision the owner does not have. `yieldGramsPerTrayMin`/`Max`
+ * publish the owner's observed low and high instead — still informational,
+ * still pricing nothing.
  */
 export type Variety = {
   id: string;
   /** Kebab-case, e.g. `red-amaranth`. Names the content file and the URL. */
   contentKey: string;
-  pricePer100g: number;
-  yieldGramsPerTray: number;
+  /** ₹ for **one tray**, the same unit the cart counts in. */
+  pricePerTray: number;
+  /** The owner's measured, approximate low and high grams a tray yields —
+   *  informational, shown to the customer as a range, and no part of any
+   *  price calculation. `yieldGramsPerTrayMax >= yieldGramsPerTrayMin`. */
+  yieldGramsPerTrayMin: number;
+  yieldGramsPerTrayMax: number;
   growDays: number;
   seedGramsPerTray?: number;
   active: boolean;

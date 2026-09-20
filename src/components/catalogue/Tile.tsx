@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Sprout } from "@/components/ui/Sprout";
-import { Marquee } from "@/components/ui/Marquee";
+import { ScatterMarquee } from "@/components/ui/ScatterMarquee";
 
 /**
  * One tile in a catalogue grid — the §17.4 card motion, applied to whatever
@@ -87,7 +87,7 @@ export function Tile({
       >
         {cutout ? (
           <>
-            <Marquee words={words} toneClass="text-forest/45" />
+            <ScatterMarquee words={words} toneClass="text-forest/45" />
             {/* 96%, against the 70% `.mcard` uses elsewhere. The cut-out is
                 itself padded to 86% of its own frame by the build step, so the
                 punnet lands at ~83% of the tile at rest.

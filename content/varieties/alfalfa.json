@@ -1,0 +1,161 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Alfalfa",
+    "shortDescription": "Mild, nutty and pea-sweet — the gentlest thing on this shelf, grown as a tray leaf rather than a jar sprout.",
+    "description": "Alfalfa as a tray microgreen is a different texture from the jar sprout most people know it as: real leaves on pale stems, grown under light rather than in the dark, with a milder, greener taste and none of the sliminess a jar can pick up if it drains poorly. It is a legume rather than a brassica, so it carries none of the pepper or heat of the rest of this shelf — which is exactly why it earns its place underneath something that does. The seed itself is already a familiar kitchen-counter sprout the world over; this is the same plant grown out one stage further, as a leaf instead of a tangle.",
+    "flavourNotes": "Mild, nutty and faintly sweet, with a hint of young pea. No pepper, no bitterness, no heat.",
+    "growingTips": "Sow evenly over a moist mat and mist rather than pour — alfalfa dislikes standing water at every stage. Cut once the stems carry a full head of small leaves.",
+    "nutrition": [
+      {
+        "label": "Vitamin K",
+        "value": "High"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Moderate"
+      },
+      {
+        "label": "Calcium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Saponins (the compound this legume is best known for)",
+        "value": "Present"
+      },
+      {
+        "label": "Flavonoids",
+        "value": "Present"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
+      "Vitamin C contributes to normal immune function and protects cells from oxidative stress.",
+      "Calcium contributes to normal muscle function and to the maintenance of normal bones and teeth.",
+      "Folate contributes to normal blood formation."
+    ],
+    "cautions": [
+      "Alfalfa in large regular amounts is not advised for people with lupus or similar autoimmune conditions, because of a compound in the seed called canavanine. Ordinary garnish quantities are a different matter from eating bowls of it daily.",
+      "Rinse before eating. These are grown on a tray and cut fresh, not sprouted in a jar or washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Is this the same as jar-sprouted alfalfa?",
+        "answer": "Related but not identical. A jar sprout is the whole seedling grown in water with no light, eaten stem, leaf and seed coat together. This tray microgreen is grown in a thin mat under light and cut above the root, so it has real leaves and a cleaner, greener taste. If you want the classic jar texture, look for our alfalfa seed instead."
+      },
+      {
+        "question": "What does it taste like?",
+        "answer": "Mild and nutty with a faint pea-like sweetness. It has none of the pepper or bite of mustard or radish, which makes it a good base layer under something sharper."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. It is one of the more delicate leaves here, so eat it in the first half of that window if you can."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Use it the way you would a jar sprout, but with better texture — piled into a sandwich, scattered over a salad, folded into a wrap, or as the crunchy layer under a sharper microgreen like mustard or radish."
+      },
+      {
+        "question": "Can children eat it?",
+        "answer": "Yes. It is one of the mildest things we grow, with no heat and no bitterness, which makes it an easy one to introduce."
+      }
+    ],
+    "imageAlt": "Tray of pale, fine-stemmed alfalfa microgreens with tiny rounded leaves"
+  },
+  "kn": {
+    "name": "ಅಲ್ಫಾಲ್ಫಾ",
+    "shortDescription": "ಸೌಮ್ಯ, ಬೀಜದ ರುಚಿ ಮತ್ತು ಬಟಾಣಿಯಂತೆ ಸಿಹಿ — ಜಾರ್ ಮೊಳಕೆಗಿಂತ ಟ್ರೇ ಎಲೆಯಾಗಿ ಬೆಳೆಸಿದ ಈ ಶೆಲ್ಫಿನ ಅತಿ ಸೌಮ್ಯ ಸೊಪ್ಪು.",
+    "description": "ಟ್ರೇ ಮೈಕ್ರೋಗ್ರೀನ್ ಆಗಿ ಅಲ್ಫಾಲ್ಫಾ ಬಹುತೇಕರಿಗೆ ಗೊತ್ತಿರುವ ಜಾರ್ ಮೊಳಕೆಗಿಂತ ಬೇರೆ ಅನುಭವ: ತಿಳಿ ಕಾಂಡಗಳ ಮೇಲೆ ನಿಜವಾದ ಎಲೆಗಳು, ಕತ್ತಲಲ್ಲಿ ಅಲ್ಲ ಬೆಳಕಿನಲ್ಲಿ ಬೆಳೆದದ್ದು, ಸೌಮ್ಯ ಮತ್ತು ಹೆಚ್ಚು ಹಸಿರಿನ ರುಚಿ, ಮತ್ತು ಸರಿಯಾಗಿ ಬಸಿಯದ ಜಾರ್‌ನಲ್ಲಿ ಬರುವ ಜಿಗುಟುತನ ಇಲ್ಲ. ಇದು ಬ್ರಾಸಿಕಾ ಅಲ್ಲ, ದ್ವಿದಳ ಕುಟುಂಬದ್ದು, ಹಾಗಾಗಿ ಈ ಶೆಲ್ಫಿನ ಉಳಿದವುಗಳ ಖಾರ ಅಥವಾ ಚುರುಕು ಇದರಲ್ಲಿ ಇಲ್ಲ — ಅದೇ ಕಾರಣಕ್ಕೆ ಖಾರವಾದ ಯಾವುದರ ಕೆಳಗೂ ಇದು ಚೆನ್ನಾಗಿ ಒಗ್ಗುತ್ತದೆ. ಈ ಬೀಜ ಈಗಾಗಲೇ ಪ್ರಪಂಚದಾದ್ಯಂತ ಅಡುಗೆಮನೆಯ ಕಟ್ಟೆಯ ಮೊಳಕೆಯಾಗಿ ಪರಿಚಿತ; ಇದು ಅದೇ ಗಿಡವನ್ನು ಒಂದು ಹಂತ ಮುಂದೆ, ಎಲೆಯಾಗಿ ಬೆಳೆಸಿದ್ದು.",
+    "flavourNotes": "ಸೌಮ್ಯ, ಬೀಜದ ರುಚಿ ಮತ್ತು ಸ್ವಲ್ಪ ಸಿಹಿ, ಎಳೆಯ ಬಟಾಣಿಯ ಸುಳಿವಿನೊಂದಿಗೆ. ಖಾರವಿಲ್ಲ, ಕಹಿಯಿಲ್ಲ, ಚುರುಕಿಲ್ಲ.",
+    "growingTips": "ತೇವದ ಹಾಸಿನ ಮೇಲೆ ಸಮನಾಗಿ ಬಿತ್ತಿ ಮತ್ತು ಸುರಿಯುವ ಬದಲು ಸಿಂಪಡಿಸಿ — ಅಲ್ಫಾಲ್ಫಾಗೆ ಯಾವ ಹಂತದಲ್ಲೂ ನಿಂತ ನೀರು ಇಷ್ಟವಿಲ್ಲ. ಕಾಂಡಗಳ ಮೇಲೆ ಸಣ್ಣ ಎಲೆಗಳ ಪೂರ್ತಿ ತೊಪ್ಪೆ ಬಂದಾಗ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ K",
+        "value": "ಅಧಿಕ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಸಪೋನಿನ್‌ಗಳು (ಈ ದ್ವಿದಳ ಬೀಜದ ಪ್ರಸಿದ್ಧ ಸಂಯುಕ್ತ)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫ್ಲೇವನಾಯ್ಡ್‌ಗಳು",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ಕ್ಯಾಲ್ಸಿಯಂ ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆ ಹಾಗೂ ಹಲ್ಲುಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಬೀಜದಲ್ಲಿರುವ ಕೆನವನೈನ್ ಎಂಬ ಸಂಯುಕ್ತದ ಕಾರಣ, ಲೂಪಸ್ ಅಥವಾ ಅಂಥ ಸ್ವಯಂ-ನಿರೋಧಕ ಸಮಸ್ಯೆ ಇರುವವರಿಗೆ ಹೆಚ್ಚು ಪ್ರಮಾಣದ ಅಲ್ಫಾಲ್ಫಾ ನಿಯಮಿತ ಸೇವನೆ ಸಲಹೆಯಲ್ಲ. ಅಲಂಕಾರದ ಸಾಮಾನ್ಯ ಪ್ರಮಾಣ ಮತ್ತು ದಿನವೂ ಬಟ್ಟಲು ತುಂಬಿ ತಿನ್ನುವುದು ಬೇರೆ ಬೇರೆ ವಿಷಯಗಳು.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಟ್ರೇಯಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ಜಾರ್‌ನಲ್ಲಿ ಮೊಳಕೆ ಬರಿಸಿದವಲ್ಲ, ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದು ಜಾರ್‌ನಲ್ಲಿ ಮೊಳಕೆ ಬರಿಸಿದ ಅಲ್ಫಾಲ್ಫಾವೇ?",
+        "answer": "ಸಂಬಂಧಿಸಿದೆ, ಆದರೆ ಒಂದೇ ಅಲ್ಲ. ಜಾರ್ ಮೊಳಕೆ ಎಂದರೆ ಕತ್ತಲಲ್ಲಿ ನೀರಿನಲ್ಲಿ ಬೆಳೆದ ಪೂರ್ತಿ ಮೊಳಕೆ — ಕಾಂಡ, ಎಲೆ ಮತ್ತು ಬೀಜದ ಕವಚ ಎಲ್ಲವನ್ನೂ ಒಟ್ಟಿಗೆ ತಿನ್ನುತ್ತೀರಿ. ಈ ಟ್ರೇ ಮೈಕ್ರೋಗ್ರೀನ್ ಬೆಳಕಿನಲ್ಲಿ ತೆಳು ಹಾಸಿನಲ್ಲಿ ಬೆಳೆದು ಬೇರಿನ ಮೇಲೆ ಕತ್ತರಿಸಿದ್ದು, ಆದ್ದರಿಂದ ಇದಕ್ಕೆ ನಿಜವಾದ ಎಲೆಗಳಿವೆ ಮತ್ತು ರುಚಿ ಸ್ವಚ್ಛ, ಹೆಚ್ಚು ಹಸಿರು. ಜಾರ್‌ನ ಪಾರಂಪರಿಕ ವಿನ್ಯಾಸ ಬೇಕಿದ್ದರೆ ನಮ್ಮ ಅಲ್ಫಾಲ್ಫಾ ಬೀಜವನ್ನು ನೋಡಿ."
+      },
+      {
+        "question": "ಇದರ ರುಚಿ ಹೇಗಿದೆ?",
+        "answer": "ಸೌಮ್ಯ, ಬೀಜದ ರುಚಿ ಮತ್ತು ಬಟಾಣಿಯಂತೆ ಸ್ವಲ್ಪ ಸಿಹಿ. ಸಾಸಿವೆ ಅಥವಾ ಮೂಲಂಗಿಯ ಖಾರ ಅಥವಾ ಚುರುಕು ಇದರಲ್ಲಿ ಇಲ್ಲ, ಹಾಗಾಗಿ ಖಾರವಾದ ಯಾವುದರ ಕೆಳಗೂ ಒಂದು ಒಳ್ಳೆಯ ತಳಪಾಯ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಇದು ಇಲ್ಲಿನ ಸೂಕ್ಷ್ಮ ಎಲೆಗಳಲ್ಲಿ ಒಂದು, ಆದ್ದರಿಂದ ಸಾಧ್ಯವಾದರೆ ಮೊದಲ ಅರ್ಧದಲ್ಲೇ ತಿನ್ನಿ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಜಾರ್ ಮೊಳಕೆಯಂತೆ ಬಳಸಿ, ಆದರೆ ಉತ್ತಮ ವಿನ್ಯಾಸದೊಂದಿಗೆ — ಸ್ಯಾಂಡ್‌ವಿಚ್‌ನಲ್ಲಿ ತುಂಬಿ, ಸಲಾಡ್‌ನ ಮೇಲೆ ಚೆಲ್ಲಿ, ರ‍್ಯಾಪ್‌ನಲ್ಲಿ ಸೇರಿಸಿ, ಅಥವಾ ಸಾಸಿವೆ ಅಥವಾ ಮೂಲಂಗಿಯಂತಹ ಖಾರದ ಸೊಪ್ಪಿನ ಕೆಳಗೆ ಗರಿಗರಿ ಪದರವಾಗಿ."
+      },
+      {
+        "question": "ಮಕ್ಕಳು ಇದನ್ನು ತಿನ್ನಬಹುದೇ?",
+        "answer": "ಹೌದು. ನಾವು ಬೆಳೆಸುವ ಅತಿ ಸೌಮ್ಯ ಸೊಪ್ಪುಗಳಲ್ಲಿ ಇದು ಒಂದು, ಖಾರವಿಲ್ಲ ಕಹಿಯಿಲ್ಲ, ಆದ್ದರಿಂದ ಪರಿಚಯಿಸಲು ಸುಲಭ."
+      }
+    ],
+    "imageAlt": "ತಿಳಿ, ತೆಳು ಕಾಂಡಗಳ ಮೇಲೆ ಸಣ್ಣ ದುಂಡು ಎಲೆಗಳ ಅಲ್ಫಾಲ್ಫಾ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

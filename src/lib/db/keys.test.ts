@@ -5,6 +5,7 @@ import {
   AddressEntity,
   AngleGradeEntity,
   AngleRackModelEntity,
+  CatalogueVisibilityEntity,
   PlanEntity,
   PlanWeekEntity,
   ProductEntity,
@@ -40,8 +41,9 @@ import {
 const variety = {
   id: "radish",
   contentKey: "radish",
-  pricePer100g: 90,
-  yieldGramsPerTray: 300,
+  pricePerTray: 90,
+  yieldGramsPerTrayMin: 250,
+  yieldGramsPerTrayMax: 350,
   growDays: 7,
   active: true,
 };
@@ -104,8 +106,9 @@ describe("variety keys", () => {
       GSI1SK: "radish",
       id: "radish",
       contentKey: "radish",
-      pricePer100g: 60,
-      yieldGramsPerTray: 300,
+      pricePerTray: 60,
+      yieldGramsPerTrayMin: 250,
+      yieldGramsPerTrayMax: 350,
       growDays: 7,
       active: true,
     };
@@ -610,5 +613,15 @@ describe("rack rate card keys — SPEC §19", () => {
     ]) {
       expect(params.Item.GSI1PK).toBeUndefined();
     }
+  });
+});
+
+describe("catalogue visibility — the product on/off switch", () => {
+  it("is its own singleton, off GSI1", () => {
+    const params = CatalogueVisibilityEntity.put({ disabled: ["snacks"] }).params();
+    expect(params.Item.PK).toBe("CATALOGUEVISIBILITY");
+    expect(params.Item.SK).toBe("SETTINGS");
+    expect(params.TableName).toBe(TABLES.catalogue);
+    expect(params.Item.GSI1PK).toBeUndefined();
   });
 });

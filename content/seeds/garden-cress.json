@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Garden Cress",
     "shortDescription": "Sharp, tangy and up in a day — the seed that behaves like nothing else in the range.",
@@ -65,7 +69,7 @@
         "answer": "About 25 to 30 grams for a 10 by 20 inch tray. Do not go heavier — a thick cress sowing gels into a solid mat that water cannot get through."
       }
     ],
-    "imageAlt": "Small flat reddish-brown garden cress seed in a dish"
+    "imageAlt": "A burlap sack spilling fine orange-red garden cress seed onto a table"
   },
   "kn": {
     "name": "ಗಾರ್ಡನ್ ಕ್ರೆಸ್ (ಅಲಿವ)",
@@ -133,6 +137,6 @@
         "answer": "10 × 20 ಇಂಚಿನ ಟ್ರೇಗೆ ಸುಮಾರು 25ರಿಂದ 30 ಗ್ರಾಂ. ಹೆಚ್ಚು ಹಾಕಬೇಡಿ — ದಪ್ಪವಾಗಿ ಬಿತ್ತಿದ ಕ್ರೆಸ್ ಜೆಲ್ ಆಗಿ ಗಟ್ಟಿ ಹಾಸಿಗೆಯಾಗುತ್ತದೆ, ಅದರ ಒಳಗೆ ನೀರೇ ಹೋಗುವುದಿಲ್ಲ."
       }
     ],
-    "imageAlt": "ಬಟ್ಟಲಿನಲ್ಲಿ ಸಣ್ಣ ಚಪ್ಪಟೆ ಕೆಂಪು-ಕಂದು ಗಾರ್ಡನ್ ಕ್ರೆಸ್ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಸೂಕ್ಷ್ಮ ಕಿತ್ತಳೆ-ಕೆಂಪು ಗಾರ್ಡನ್ ಕ್ರೆಸ್ ಬೀಜ"
   }
 }

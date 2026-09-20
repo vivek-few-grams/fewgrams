@@ -1,0 +1,163 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Red Onion",
+    "shortDescription": "Sharp allium bite that mellows to sweet. Magenta stems, and a smell that clears the room for a minute.",
+    "description": "Red onion microgreens carry the same sulphur chemistry as the bulb — cut into a cell and the enzymes make allicin, which is what gives raw onion its sting — but in a leaf this young the effect is a bright, fleeting sharpness rather than a punch that lasts an hour. The magenta runs right up the stem, the same anthocyanin family that colours the bulb's outer skin. It is not a leaf you eat by the handful; it is a leaf you use the way you would use a raw onion slice, in small amounts, where you want the bite without the crunch.",
+    "flavourNotes": "Sharp and oniony, sweeter than the raw bulb and gone faster. Best added just before serving — it softens quickly once it sits.",
+    "growingTips": "Soak the seed overnight, sow it a little denser than most trays, and keep the canopy on the drier side — onion seedlings rot fast in standing water. Cut once the true leaf starts to open.",
+    "nutrition": [
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Quercetin (flavonoid)",
+        "value": "Present — the source of much of the antioxidant activity"
+      },
+      {
+        "label": "Anthocyanins",
+        "value": "Present — the source of the magenta"
+      },
+      {
+        "label": "Sulfur compounds (including allicin precursors)",
+        "value": "Present"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Potassium",
+        "value": "Moderate"
+      },
+      {
+        "label": "Calcium",
+        "value": "Present"
+      },
+      {
+        "label": "Manganese",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin C contributes to normal immune function and protects cells from oxidative stress.",
+      "Vitamin C also increases the absorption of iron from plant foods.",
+      "Folate contributes to normal blood formation and to normal amino acid synthesis.",
+      "Potassium contributes to normal muscle function and to the maintenance of normal blood pressure."
+    ],
+    "cautions": [
+      "Onion is a common trigger for reflux and bloating in people with a sensitive stomach, even in small amounts — this leaf carries the same compounds as the bulb.",
+      "The sulphur compounds that give it its bite can irritate eyes and sensitive skin during handling, exactly as a cut onion does.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Does it taste as strong as a raw onion?",
+        "answer": "Sharp but shorter-lived — the sting arrives fast and fades within a minute or two, rather than lingering the way a raw slice does. Think of it as onion flavour with the aftertaste edited out."
+      },
+      {
+        "question": "Why is it magenta all the way up the stem?",
+        "answer": "The same anthocyanin pigment that colours the outside of a red onion's skin, made early and right through the seedling rather than concentrated in one layer."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. It gets milder as it sits, so a slightly older batch is actually easier to use raw."
+      },
+      {
+        "question": "Can I cook with it?",
+        "answer": "You can, but the point of it raw is the bite — heat mellows it to a soft, sweet green fairly quickly, closer to a cooked leek than an onion."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "Anywhere a raw onion slice would go in small amounts: on top of chaat, folded into a raita, scattered over dal or eggs, or tucked into a sandwich where you want the sharpness without the crunch."
+      }
+    ],
+    "imageAlt": "Tray of red onion microgreens with magenta stems and slender pale-green leaves"
+  },
+  "kn": {
+    "name": "ಕೆಂಪು ಈರುಳ್ಳಿ",
+    "shortDescription": "ಚುರುಕಾದ ಈರುಳ್ಳಿ ಖಾರ, ಸಿಹಿಯಾಗಿ ಇಳಿಯುತ್ತದೆ. ಕಡುಗುಲಾಬಿ ಕಾಂಡ, ಒಂದು ಕ್ಷಣ ಕೋಣೆ ತೆರವುಗೊಳಿಸುವ ವಾಸನೆ.",
+    "description": "ಕೆಂಪು ಈರುಳ್ಳಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಬಲ್ಬ್‌ನ ಅದೇ ಗಂಧಕ ರಸಾಯನಶಾಸ್ತ್ರವನ್ನು ಹೊಂದಿದೆ — ಜೀವಕೋಶ ಕತ್ತರಿಸಿದಾಗ ಕಿಣ್ವಗಳು ಅಲಿಸಿನ್ ಉತ್ಪಾದಿಸುತ್ತವೆ, ಹಸಿ ಈರುಳ್ಳಿಯ ಚುರುಕಿಗೆ ಕಾರಣ ಅದೇ — ಆದರೆ ಇಷ್ಟು ಎಳೆಯ ಎಲೆಯಲ್ಲಿ ಅದು ಗಂಟೆಗಳ ಕಾಲ ಉಳಿಯುವ ಹೊಡೆತವಲ್ಲ, ಪ್ರಕಾಶಮಾನ ಮತ್ತು ಕ್ಷಣಿಕ ಚುರುಕು ಮಾತ್ರ. ಕಡುಗುಲಾಬಿ ಬಣ್ಣ ಕಾಂಡದ ತುದಿಯವರೆಗೆ ಹರಡಿದೆ, ಬಲ್ಬ್‌ನ ಹೊರ ಸಿಪ್ಪೆಗೆ ಬಣ್ಣ ಕೊಡುವ ಅದೇ ಆಂಥೋಸಯಾನಿನ್ ಕುಟುಂಬ. ಇದನ್ನು ಹಿಡಿಯಷ್ಟು ತಿನ್ನುವ ಸೊಪ್ಪಲ್ಲ; ಹಸಿ ಈರುಳ್ಳಿ ಹೋಳನ್ನು ಬಳಸುವ ರೀತಿಯಲ್ಲಿ, ಸ್ವಲ್ಪ ಪ್ರಮಾಣದಲ್ಲಿ, ಗರಿಗರಿ ಇಲ್ಲದೆ ಖಾರ ಬೇಕಾದಾಗ ಬಳಸುವ ಸೊಪ್ಪು.",
+    "flavourNotes": "ಚುರುಕು ಮತ್ತು ಈರುಳ್ಳಿಯಂತೆ, ಹಸಿ ಬಲ್ಬ್‌ಗಿಂತ ಸಿಹಿ ಮತ್ತು ಬೇಗ ಮಾಯ. ಬಡಿಸುವ ಕೊನೆಯ ಕ್ಷಣದಲ್ಲಿ ಸೇರಿಸುವುದು ಉತ್ತಮ — ಕುಳಿತಷ್ಟೂ ಬೇಗ ಮೆತ್ತಗಾಗುತ್ತದೆ.",
+    "growingTips": "ಬೀಜವನ್ನು ರಾತ್ರಿಯಿಡೀ ನೆನೆಸಿ, ಬಹುತೇಕ ಟ್ರೇಗಳಿಗಿಂತ ಸ್ವಲ್ಪ ದಟ್ಟವಾಗಿ ಬಿತ್ತಿ, ಮತ್ತು ಮೇಲ್ಪದರ ಒಣಗಿನ ಬದಿಯಲ್ಲಿ ಇರಿಸಿ — ನೀರು ನಿಂತರೆ ಈರುಳ್ಳಿ ಮೊಳಕೆ ಬೇಗ ಕೊಳೆಯುತ್ತದೆ. ನಿಜವಾದ ಎಲೆ ತೆರೆಯಲು ಶುರುವಾದ ಕೂಡಲೇ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ಕ್ವೆರ್ಸೆಟಿನ್ (ಫ್ಲೇವನಾಯ್ಡ್)",
+        "value": "ಇದೆ — ಬಹುಪಾಲು ಆಂಟಿಆಕ್ಸಿಡೆಂಟ್ ಚಟುವಟಿಕೆಯ ಮೂಲ"
+      },
+      {
+        "label": "ಆಂಥೋಸಯಾನಿನ್‌ಗಳು",
+        "value": "ಇದೆ — ಕಡುಗುಲಾಬಿ ಬಣ್ಣದ ಮೂಲ"
+      },
+      {
+        "label": "ಗಂಧಕ ಸಂಯುಕ್ತಗಳು (ಅಲಿಸಿನ್ ಪೂರ್ವಗಾಮಿ ಸೇರಿ)",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಂಗನೀಸ್",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ C ಸಸ್ಯ ಆಹಾರಗಳಿಂದ ಕಬ್ಬಿಣದ ಹೀರಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಅಮೈನೋ ಆಮ್ಲ ಸಂಶ್ಲೇಷಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಪೊಟ್ಯಾಸಿಯಂ ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಸಾಮಾನ್ಯ ರಕ್ತದೊತ್ತಡದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಸೂಕ್ಷ್ಮ ಹೊಟ್ಟೆ ಇರುವವರಲ್ಲಿ ಈರುಳ್ಳಿ ಸಾಮಾನ್ಯವಾಗಿ ಎದೆಯುರಿ ಅಥವಾ ಗ್ಯಾಸ್‌ಗೆ ಕಾರಣವಾಗುತ್ತದೆ, ಸ್ವಲ್ಪ ಪ್ರಮಾಣದಲ್ಲಿಯೂ — ಈ ಸೊಪ್ಪು ಬಲ್ಬ್‌ನ ಅದೇ ಸಂಯುಕ್ತಗಳನ್ನು ಹೊಂದಿದೆ.",
+      "ಖಾರ ಕೊಡುವ ಗಂಧಕ ಸಂಯುಕ್ತಗಳು ನಿರ್ವಹಣೆಯ ಸಮಯದಲ್ಲಿ ಕಣ್ಣು ಮತ್ತು ಸೂಕ್ಷ್ಮ ಚರ್ಮಕ್ಕೆ ಕಿರಿಕಿರಿ ಉಂಟುಮಾಡಬಹುದು, ಕತ್ತರಿಸಿದ ಈರುಳ್ಳಿಯಂತೆಯೇ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದು ಹಸಿ ಈರುಳ್ಳಿಯಷ್ಟೇ ಖಾರವೇ?",
+        "answer": "ಚುರುಕು ಆದರೆ ಬೇಗ ಮಾಯ — ಚುರುಕು ಬೇಗ ಬಂದು ಒಂದೆರಡು ಕ್ಷಣದಲ್ಲಿ ಇಳಿಯುತ್ತದೆ, ಹಸಿ ಹೋಳಿನಂತೆ ಉಳಿಯುವುದಿಲ್ಲ. ಈರುಳ್ಳಿ ರುಚಿ, ಆದರೆ ಹಿಂದಿನ ರುಚಿ ಇಲ್ಲದೆ ಎಂದು ಯೋಚಿಸಿ."
+      },
+      {
+        "question": "ಕಾಂಡದ ತುದಿಯವರೆಗೆ ಕಡುಗುಲಾಬಿ ಏಕೆ?",
+        "answer": "ಕೆಂಪು ಈರುಳ್ಳಿಯ ಹೊರ ಸಿಪ್ಪೆಗೆ ಬಣ್ಣ ಕೊಡುವ ಅದೇ ಆಂಥೋಸಯಾನಿನ್ ವರ್ಣದ್ರವ್ಯ, ಒಂದೇ ಪದರದಲ್ಲಿ ಕೇಂದ್ರೀಕೃತವಾಗುವ ಬದಲು ಮೊಳಕೆಯ ಉದ್ದಕ್ಕೂ ಬೇಗ ತಯಾರಾಗುತ್ತದೆ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಕುಳಿತಷ್ಟೂ ಸೌಮ್ಯವಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಸ್ವಲ್ಪ ಹಳೆಯ ಬ್ಯಾಚ್ ಹಸಿಯಾಗಿ ಬಳಸಲು ಇನ್ನೂ ಸುಲಭ."
+      },
+      {
+        "question": "ಇದನ್ನು ಬೇಯಿಸಬಹುದೇ?",
+        "answer": "ಬೇಯಿಸಬಹುದು, ಆದರೆ ಹಸಿಯಾಗಿ ತಿನ್ನುವ ಅಂದವೇ ಇದರ ಚುರುಕು. ಶಾಖ ಇದನ್ನು ಬೇಗ ಮೃದು, ಸಿಹಿ ಸೊಪ್ಪಾಗಿಸುತ್ತದೆ, ಈರುಳ್ಳಿಗಿಂತ ಬೇಯಿಸಿದ ಲೀಕ್‌ಗೆ ಹತ್ತಿರ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಹಸಿ ಈರುಳ್ಳಿ ಹೋಳು ಹೋಗುವ ಎಲ್ಲಾ ಕಡೆ ಸ್ವಲ್ಪ ಪ್ರಮಾಣದಲ್ಲಿ: ಚಾಟ್ ಮೇಲೆ, ರಾಯತದಲ್ಲಿ, ಬೇಳೆ ಅಥವಾ ಮೊಟ್ಟೆಯ ಮೇಲೆ ಉದುರಿಸಿ, ಅಥವಾ ಗರಿಗರಿ ಇಲ್ಲದೆ ಚುರುಕು ಬೇಕಾದ ಸ್ಯಾಂಡ್‌ವಿಚ್‌ನಲ್ಲಿ ಸೇರಿಸಿ."
+      }
+    ],
+    "imageAlt": "ಕಡುಗುಲಾಬಿ ಕಾಂಡಗಳ ಕೆಂಪು ಈರುಳ್ಳಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

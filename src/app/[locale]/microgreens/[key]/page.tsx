@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getVarietyByKey } from "@/lib/repo/varieties";
 import {
   getVarietyContent,
@@ -81,6 +82,7 @@ export default async function VarietyPage({
 }: PageProps<"/[locale]/microgreens/[key]">) {
   const { locale, key } = await params;
   setRequestLocale(locale);
+  await guardProductTypeEnabled("microgreens", locale);
 
   const found = await load(key, locale);
   if (!found) notFound();
@@ -163,12 +165,18 @@ export default async function VarietyPage({
                the client. 20 short strings is cheaper than a second
                translation system. */
             totals: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
-              d("lineTotal", { total: (i + 1) * row.pricePer100g }),
+              d("lineTotal", { total: (i + 1) * row.pricePerTray }),
             ),
+            /* Weight is `yieldGramsPerTrayMin/Max × trays` — the owner's
+               measured, approximate range (SPEC §3.1), shown for information
+               only. It prices nothing; `lineTotal` above is
+               trays × pricePerTray. */
             breakdowns: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
               d("lineBreakdown", {
-                grams: (i + 1) * 100,
-                price: row.pricePer100g,
+                trays: i + 1,
+                gramsMin: (i + 1) * row.yieldGramsPerTrayMin,
+                gramsMax: (i + 1) * row.yieldGramsPerTrayMax,
+                price: row.pricePerTray,
               }),
             ),
             note: d("readyNote"),

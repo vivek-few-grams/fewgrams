@@ -8,6 +8,7 @@ import { CURTAIN_ATTR } from "./curtain-anchor";
 import { LocaleSwitch } from "./LocaleSwitch";
 import type { Role } from "@/lib/auth/roles";
 import { readCartCount } from "@/lib/cart/server";
+import { isProductTypeEnabled } from "@/lib/catalogue/visibility";
 
 /**
  * Global header — SPEC §18.1.
@@ -61,6 +62,7 @@ export async function Header({
   /* Reads the cookie only — no catalogue query, because a count needs no
      names or prices. The badge was a hardcoded "0" until 15 Sep 2026. */
   const cartCount = await readCartCount();
+  const showMicrogreens = await isProductTypeEnabled("microgreens");
 
   return (
     <header className="sticky top-0 z-[70] border-b border-forest/10 bg-cream/90 backdrop-blur-md">
@@ -114,7 +116,7 @@ export async function Header({
           />
         </Link>
 
-        <NavLinks />
+        <NavLinks showMicrogreens={showMicrogreens} />
 
         {/* `md:ml-12` is the separation between the two groups: navigation on the
             left of it, utilities on the right. Without it the container's own

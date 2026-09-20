@@ -1,7 +1,8 @@
 {
   "images": {
     "hero": "hero.jpg",
-    "cutout": "cutout.webp"
+    "cutout": "cutout.webp",
+    "gallery": ["in-use.webp", "planted-2.webp", "on-rack.webp"]
   },
   "en": {
     "name": "Drainage cell mats — pack of five",

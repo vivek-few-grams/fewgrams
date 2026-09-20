@@ -1,6 +1,6 @@
 {
   "title": "Your cart",
-  "description": "Microgreens sown to order, by the 100 g.",
+  "description": "Microgreens sown to order, by the tray.",
   "heading": "Your cart",
   "empty": "Nothing in here yet.",
   "emptyBody": "Greens are sown once you order them, so the cart is where you say what to sow.",
@@ -44,6 +44,10 @@
   "linePacks": "{count, plural, one {# pack} other {# packs}}",
   "decreasePack": "One less pack of {name}",
   "increasePack": "One more pack of {name}",
+  "linePriceTray": "₹{price, number} per tray",
+  "lineTrays": "{count, plural, one {# tray} other {# trays}}",
+  "decreaseTray": "One less tray of {name}",
+  "increaseTray": "One more tray of {name}",
   "lineSupplier": "Ordered in for you · by {date}",
   "readyTray": "Nothing in this order is kept in stock, so we place it with our supplier the day you order. That is what sets the date.",
   "readyTrayNote": "A tray or a mat in your cart is not kept in stock — we order it in for you, which takes a few days longer than something off our shelf. Everything travels together once it arrives.",

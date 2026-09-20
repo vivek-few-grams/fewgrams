@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Broccoli",
     "shortDescription": "Mild, sweet and the one green nobody at the table argues about.",
@@ -64,7 +68,7 @@
         "answer": "Not enough weight during blackout, or a tray that dried out at the top. A light weight — a second tray with a couple of bricks in it — makes the seedlings push the coats off as they lift. Misting the surface just before you uncover helps the stragglers let go."
       }
     ],
-    "imageAlt": "Small round brown broccoli seed in a shallow dish"
+    "imageAlt": "A burlap sack spilling dark brown broccoli seed, with a broccoli floret behind it"
   },
   "kn": {
     "name": "ಬ್ರೊಕೊಲಿ",
@@ -131,6 +135,6 @@
         "answer": "ಕತ್ತಲೆ ಅವಧಿಯಲ್ಲಿ ಭಾರ ಸಾಲದು, ಅಥವಾ ಮೇಲ್ಪದರ ಒಣಗಿಹೋಗಿದೆ. ಹಗುರ ಭಾರ — ಎರಡು ಇಟ್ಟಿಗೆ ಇಟ್ಟ ಇನ್ನೊಂದು ಟ್ರೇ — ಇದ್ದರೆ ಸಸಿಗಳು ಮೇಲೆ ಏಳುವಾಗಲೇ ಸಿಪ್ಪೆಯನ್ನು ಕಳಚುತ್ತವೆ. ತೆರೆಯುವ ಮುನ್ನ ಮೇಲ್ಪದರಕ್ಕೆ ನೀರು ಸಿಂಪಡಿಸಿದರೆ ಉಳಿದವೂ ಬಿಡುತ್ತವೆ."
       }
     ],
-    "imageAlt": "ಚಪ್ಪಟೆ ಬಟ್ಟಲಿನಲ್ಲಿ ಸಣ್ಣ ದುಂಡಾದ ಕಂದು ಬ್ರೊಕೊಲಿ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಕಂದು ಬ್ರೊಕೊಲಿ ಬೀಜ, ಹಿಂದೆ ಒಂದು ಬ್ರೊಕೊಲಿ ಗುಚ್ಛ"
   }
 }

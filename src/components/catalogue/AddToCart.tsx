@@ -8,8 +8,11 @@ import type { CartKind } from "@/lib/cart/cart";
 import { setCartQuantity } from "@/app/[locale]/cart/actions";
 
 /**
- * The buy box — price, quantity in 100 g units, and add to cart (SPEC §18.6,
- * §22.2).
+ * The buy box — price, quantity, and add to cart (SPEC §18.6, §22.2).
+ *
+ * Shared by every kind that sells this way; what one unit *is* — a tray, a
+ * 100 g pack — is entirely the caller's business, carried in `labels` (see
+ * `microgreens/[key]/page.tsx` and `seeds/[key]/page.tsx`).
  *
  * ## Why this is one filled panel
  *
@@ -20,16 +23,16 @@ import { setCartQuantity } from "@/app/[locale]/cart/actions";
  * hunting for a line of text. It is the only filled panel in its column,
  * deliberately: a second one flattens the emphasis this one exists to carry.
  *
- * **The total for the chosen quantity is the headline; the per-100 g rate is
+ * **The total for the chosen quantity is the headline; the per-unit rate is
  * the caption.** That ordering matters. The total is what gets charged, so it
  * is what the customer is agreeing to; the rate is the comparison figure
  * against a weekly plan. Setting the rate larger would emphasise the one
  * number that does not change whatever the customer does.
  *
  * The stepper is deliberately not a free-text number field. Everything here
- * sells in whole 100 g units, so every value in between is invalid, and a
- * text input invites "2.5" and "100" and then has to reject them. Two buttons
- * and a readout cannot express a wrong quantity.
+ * sells in whole units — a tray, a 100 g pack — so every value in between is
+ * invalid, and a text input invites "2.5" and "100" and then has to reject
+ * them. Two buttons and a readout cannot express a wrong quantity.
  *
  * ## The stepper shows the cart, not "how many to add"
  *
@@ -76,7 +79,7 @@ export function AddToCart({
   /** Ceiling for the stepper — the per-line wholesale cap. See above for why
    *  it is no longer also a stock figure. */
   max: number;
-  /** 100 g units of this item already in the cart, 0 if none. */
+  /** Units of this item already in the cart, 0 if none. */
   inCart: number;
   labels: {
     quantity: string;

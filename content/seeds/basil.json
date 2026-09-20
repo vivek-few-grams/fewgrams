@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Basil (green)",
     "shortDescription": "Pure sweet basil at two weeks old — slow, delicate and worth the wait.",
@@ -64,7 +68,7 @@
         "answer": "In yield terms, no — mustard would have given you two crops. In flavour terms it is the only microgreen here you cannot approximate with something else, so most growers keep one tray of it going regardless."
       }
     ],
-    "imageAlt": "Tiny glossy black basil seed in a small dish"
+    "imageAlt": "A burlap sack spilling tiny glossy black basil seed onto a table"
   },
   "kn": {
     "name": "ಬೆಸಿಲ್ (ಹಸಿರು ಸಿಹಿ ತುಳಸಿ)",
@@ -131,6 +135,6 @@
         "answer": "ಇಳುವರಿಯ ಲೆಕ್ಕದಲ್ಲಿ ಇಲ್ಲ — ಅಷ್ಟು ಕಾಲದಲ್ಲಿ ಸಾಸಿವೆ ಎರಡು ಬೆಳೆ ಕೊಡುತ್ತಿತ್ತು. ರುಚಿಯ ಲೆಕ್ಕದಲ್ಲಿ, ಬೇರೆ ಯಾವುದರಿಂದಲೂ ಹತ್ತಿರಕ್ಕೂ ತರಲಾಗದ ಒಂದೇ ಮೈಕ್ರೋಗ್ರೀನ್ ಇದು — ಹಾಗಾಗಿ ಬಹುತೇಕ ಬೆಳೆಗಾರರು ಒಂದು ಟ್ರೇಯನ್ನಾದರೂ ಸದಾ ಇಟ್ಟುಕೊಳ್ಳುತ್ತಾರೆ."
       }
     ],
-    "imageAlt": "ಸಣ್ಣ ಬಟ್ಟಲಿನಲ್ಲಿ ಅತಿ ಚಿಕ್ಕ ಹೊಳಪಿನ ಕಪ್ಪು ಬೆಸಿಲ್ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಅತಿ ಚಿಕ್ಕ ಹೊಳಪಿನ ಕಪ್ಪು ಬೆಸಿಲ್ ಬೀಜ"
   }
 }

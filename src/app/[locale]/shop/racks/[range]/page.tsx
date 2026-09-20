@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { DetailPage } from "@/components/catalogue/DetailPage";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import type { Shot } from "@/components/catalogue/Gallery";
@@ -127,6 +128,7 @@ export default async function RackRangePage({
 }: PageProps<"/[locale]/shop/racks/[range]">) {
   const { locale, range } = await params;
   setRequestLocale(locale);
+  await guardProductTypeEnabled("racks", locale);
 
   const r = rackRangeOf(range);
   if (!r) notFound();
@@ -202,6 +204,15 @@ export default async function RackRangePage({
       src: `/racks/${r}/cutout.webp`,
       alt: t(`ranges.${r}.imageAlt`),
     },
+    /* All three ranges now have a joint-detail close-up and a what's-included
+       flat lay, alongside the cut-out rather than replacing it. */
+    { src: `/racks/${r}/joint-detail-2.webp`, alt: t(`ranges.${r}.jointAlt`) },
+    { src: `/racks/${r}/whats-included-2.webp`, alt: t(`ranges.${r}.includedAlt`) },
+    /* Pipe is the only range shown loaded with drainage cell mats so far —
+       the same shot also appears on the mat's own gallery. */
+    ...(r === "pipe"
+      ? [{ src: `/racks/${r}/with-mats-2.webp`, alt: t(`ranges.${r}.withMatsAlt`) }]
+      : []),
   ];
 
   const facts = rack
@@ -225,10 +236,6 @@ export default async function RackRangePage({
               },
             ]
           : []),
-        /* The SKU, shown deliberately: it is what a packing slip and a
-           WhatsApp message about the order will both say, and a customer who
-           can quote it is a customer we can answer quickly. */
-        { label: d("sku"), value: rack.sku },
       ]
     : [];
 

@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getSeedByKey } from "@/lib/repo/seeds";
-import { getSeedContent, seedHero, seedImageUrl } from "@/lib/content/seeds";
+import { getSeedContent, seedCutout, seedHero, seedImageUrl } from "@/lib/content/seeds";
 import { DetailPage } from "@/components/catalogue/DetailPage";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import type { Shot } from "@/components/catalogue/Gallery";
@@ -80,6 +81,7 @@ export async function generateMetadata({
 export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[key]">) {
   const { locale, key } = await params;
   setRequestLocale(locale);
+  await guardProductTypeEnabled("seeds", locale);
 
   const found = await load(key, locale);
   if (!found) notFound();
@@ -91,9 +93,14 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
   const e = await getTranslations("seeds.detail.errors");
 
   const hero = seedHero(content);
+  /* Second shot: the same cutout the /seeds grid tile shows, so a buyer who
+     followed the packet-and-scatter photo in from the list sees it again here
+     rather than only the flat hero. */
+  const cutout = seedCutout(content);
   const inCart = await readCartUnitsFor("seed", row.contentKey);
   const shots: Shot[] = [
     ...(hero ? [hero] : []),
+    ...(cutout ? [cutout] : []),
     ...(content.images.gallery ?? []).map((file) => ({
       src: seedImageUrl(content.key, file),
       alt: d("galleryAlt", { name: text.name }),

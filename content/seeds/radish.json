@@ -1,4 +1,8 @@
 {
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp"
+  },
   "en": {
     "name": "Radish (pink)",
     "shortDescription": "Peppery, quick and almost impossible to fail — the seed to prove a new set-up with.",
@@ -64,7 +68,7 @@
         "answer": "Sealed, cool and dry, radish seed holds well for a year and usually two. You will notice it as slower and patchier germination before you ever see a tray fail outright. Buy a season's worth rather than a sack that has to sit through a Bengaluru monsoon."
       }
     ],
-    "imageAlt": "Fine reddish-brown pink radish seed in a small dish"
+    "imageAlt": "A burlap sack spilling tan radish seed, with pink radish roots behind it"
   },
   "kn": {
     "name": "ಮೂಲಂಗಿ (ಗುಲಾಬಿ)",
@@ -131,6 +135,6 @@
         "answer": "ಮುಚ್ಚಿದ, ತಣ್ಣನೆಯ, ಒಣ ಜಾಗದಲ್ಲಿ ಮೂಲಂಗಿ ಬೀಜ ಒಂದು ವರ್ಷ ಚೆನ್ನಾಗಿ, ಸಾಮಾನ್ಯವಾಗಿ ಎರಡು ವರ್ಷವೂ ಉಳಿಯುತ್ತದೆ. ಟ್ರೇ ಪೂರ್ತಿ ವಿಫಲವಾಗುವುದಕ್ಕಿಂತ ಮುಂಚೆಯೇ ನಿಧಾನ, ಅಸಮ ಮೊಳಕೆಯಾಗಿ ಗಮನಕ್ಕೆ ಬರುತ್ತದೆ. ಬೆಂಗಳೂರಿನ ಮಳೆಗಾಲ ಪೂರ್ತಿ ಕುಳಿತಿರುವ ಚೀಲಕ್ಕಿಂತ ಒಂದು ಋತುವಿಗೆ ಬೇಕಾದಷ್ಟು ಖರೀದಿಸಿ."
       }
     ],
-    "imageAlt": "ಸಣ್ಣ ಬಟ್ಟಲಿನಲ್ಲಿ ಸೂಕ್ಷ್ಮ ಕೆಂಪು-ಕಂದು ಗುಲಾಬಿ ಮೂಲಂಗಿ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ತಿಳಿ ಕಂದು ಮೂಲಂಗಿ ಬೀಜ, ಹಿಂದೆ ಗುಲಾಬಿ ಮೂಲಂಗಿಗಳು"
   }
 }

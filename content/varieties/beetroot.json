@@ -1,0 +1,163 @@
+{
+  "images": {
+    "hero": "hero.jpg",
+    "cutout": "cutout.webp",
+    "gallery": [
+      "bunch.jpg",
+      "bunch-2.jpg",
+      "bunch-3.jpg"
+    ]
+  },
+  "en": {
+    "name": "Beetroot",
+    "shortDescription": "Magenta stems and an earthy sweetness — the other betalain green, alongside red amaranthus.",
+    "description": "Beetroot as a microgreen is the leaf rather than the root: fine pink-magenta stems holding small green blades that carry the same earthy sweetness as a young beet, without the density of the bulb. The colour comes from betalains, the same pigment family that colours red amaranthus and the mature beetroot itself, made in quantity in the plant's first days of life. It tastes closer to a mild spinach than to the vegetable it grows into — softer, sweeter, with none of the heaviness a boiled beet can have.",
+    "flavourNotes": "Earthy and sweet, closer to the leaf of a young beet than the root. Tender stems with a faint mineral note.",
+    "growingTips": "Soak overnight to soften the hard seed coat and speed germination. Keep the canopy on the dry side between waterings — beetroot rots from the middle faster than most if the mat stays wet. Cut once the pink stems stand fully upright.",
+    "nutrition": [
+      {
+        "label": "Betalain pigments",
+        "value": "Present — the source of the magenta"
+      },
+      {
+        "label": "Vitamin C",
+        "value": "Good source"
+      },
+      {
+        "label": "Vitamin A (as beta-carotene)",
+        "value": "Moderate"
+      },
+      {
+        "label": "Folate",
+        "value": "Moderate"
+      },
+      {
+        "label": "Iron",
+        "value": "Present"
+      },
+      {
+        "label": "Potassium",
+        "value": "Present"
+      },
+      {
+        "label": "Magnesium",
+        "value": "Present"
+      },
+      {
+        "label": "Manganese",
+        "value": "Present"
+      }
+    ],
+    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "benefits": [
+      "Vitamin C contributes to normal immune function and protects cells from oxidative stress.",
+      "Folate contributes to normal blood formation and to normal amino acid synthesis.",
+      "Iron contributes to normal oxygen transport in the blood and to reducing tiredness and fatigue.",
+      "Potassium contributes to normal muscle function and to the maintenance of normal blood pressure."
+    ],
+    "cautions": [
+      "Beetroot leaves contain oxalates. If you have had kidney stones or follow a low-oxalate diet, keep portions modest and speak to your doctor.",
+      "Betalains can tint urine or stool pink to red after a generous serving. This is harmless and passes within a day.",
+      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+    ],
+    "faq": [
+      {
+        "question": "Why did my urine turn pink after eating this?",
+        "answer": "The betalain pigment, passing through mostly unchanged. It is the same harmless effect some people get from eating beetroot itself, and it clears up within a day. It is not blood and nothing to worry about."
+      },
+      {
+        "question": "What does it taste like?",
+        "answer": "Earthy and sweet, milder than the root and closer to a soft spinach in texture. None of the heaviness a cooked beet can have."
+      },
+      {
+        "question": "How should I store it and how long does it keep?",
+        "answer": "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Five to seven days. The magenta stems stay bright longer than the leaves stay perfect, so a slightly tired batch still looks good scattered over something pale."
+      },
+      {
+        "question": "What do I actually do with it?",
+        "answer": "As the colour on top of anything that needs it — curd rice, hummus, a grain bowl, a plain soup — or folded into a salad with something citrusy, which sets off the sweetness."
+      },
+      {
+        "question": "Is this the same as the beetroot I cook with?",
+        "answer": "Same plant, earlier stage. The root you cook with takes months to bulk up; this is the seedling leaf, cut within its first couple of weeks, eaten raw rather than boiled."
+      }
+    ],
+    "imageAlt": "Tray of beetroot microgreens with magenta-pink stems and small green leaves"
+  },
+  "kn": {
+    "name": "ಬೀಟ್‌ರೂಟ್ (ಕೆಂಪು)",
+    "shortDescription": "ಕಡುಗುಲಾಬಿ ಕಾಂಡ ಮತ್ತು ಮಣ್ಣಿನ ಸಿಹಿ — ಕೆಂಪು ಹರಿವೆಯ ಜೊತೆಗಿನ ಇನ್ನೊಂದು ಬೆಟಾಲೈನ್ ಸೊಪ್ಪು.",
+    "description": "ಮೈಕ್ರೋಗ್ರೀನ್ ಆಗಿ ಬೀಟ್‌ರೂಟ್ ಎಂದರೆ ಬೇರಲ್ಲ, ಎಲೆ: ತೆಳು ಗುಲಾಬಿ-ಕಡುಗುಲಾಬಿ ಕಾಂಡಗಳ ಮೇಲೆ ಸಣ್ಣ ಹಸಿರು ಎಲೆಗಳು, ಗಡ್ಡೆಯ ಸಾಂದ್ರತೆ ಇಲ್ಲದೆ ಎಳೆಯ ಬೀಟ್‌ರೂಟಿನ ಅದೇ ಮಣ್ಣಿನ ಸಿಹಿಯನ್ನು ಹೊಂದಿವೆ. ಆ ಬಣ್ಣ ಬೆಟಾಲೈನ್‌ಗಳಿಂದ ಬರುತ್ತದೆ — ಕೆಂಪು ಹರಿವೆ ಮತ್ತು ಬೆಳೆದ ಬೀಟ್‌ರೂಟ್‌ಗೂ ಬಣ್ಣ ಕೊಡುವ ಅದೇ ವರ್ಣದ್ರವ್ಯ ಕುಟುಂಬ, ಗಿಡ ತನ್ನ ಮೊದಲ ದಿನಗಳಲ್ಲೇ ಹೆಚ್ಚಿನ ಪ್ರಮಾಣದಲ್ಲಿ ತಯಾರಿಸುತ್ತದೆ. ರುಚಿ ಗಡ್ಡೆಗಿಂತ ಸೌಮ್ಯ ಪಾಲಕ್‌ಗೆ ಹತ್ತಿರ — ಮೃದು, ಸಿಹಿ, ಬೇಯಿಸಿದ ಬೀಟ್‌ರೂಟ್‌ನಲ್ಲಿರುವ ಭಾರ ಇಲ್ಲ.",
+    "flavourNotes": "ಮಣ್ಣಿನ ಪರಿಮಳ ಮತ್ತು ಸಿಹಿ, ಗಡ್ಡೆಗಿಂತ ಎಳೆಯ ಬೀಟ್‌ರೂಟ್ ಎಲೆಗೆ ಹತ್ತಿರ. ಮೃದು ಕಾಂಡ, ಸ್ವಲ್ಪ ಖನಿಜದ ಸುಳಿವು.",
+    "growingTips": "ಗಟ್ಟಿ ಬೀಜದ ಕವಚ ಮೆತ್ತಗಾಗಿಸಿ ಬೇಗ ಮೊಳಕೆಯೊಡೆಯಲು ರಾತ್ರಿಯಿಡೀ ನೆನೆಸಿ. ನೀರುಣಿಸುವ ನಡುವೆ ಮೇಲ್ಪದರ ಸ್ವಲ್ಪ ಒಣಗಿರಲಿ — ಮೇಲ್ಪದರ ಒದ್ದೆಯಾಗಿದ್ದರೆ ಬೀಟ್‌ರೂಟ್ ಬಹುತೇಕವುಗಳಿಗಿಂತ ಬೇಗ ಮಧ್ಯದಿಂದ ಕೊಳೆಯುತ್ತದೆ. ಗುಲಾಬಿ ಕಾಂಡಗಳು ಪೂರ್ತಿ ನೆಟ್ಟಗೆ ನಿಂತಾಗ ಕತ್ತರಿಸಿ.",
+    "nutrition": [
+      {
+        "label": "ಬೆಟಾಲೈನ್ ವರ್ಣದ್ರವ್ಯಗಳು",
+        "value": "ಇದೆ — ಕಡುಗುಲಾಬಿ ಬಣ್ಣದ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ C",
+        "value": "ಉತ್ತಮ ಮೂಲ"
+      },
+      {
+        "label": "ವಿಟಮಿನ್ A (ಬೀಟಾ-ಕ್ಯಾರೋಟಿನ್ ರೂಪದಲ್ಲಿ)",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಫೋಲೇಟ್",
+        "value": "ಮಧ್ಯಮ"
+      },
+      {
+        "label": "ಕಬ್ಬಿಣ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಪೊಟ್ಯಾಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಗ್ನೀಸಿಯಂ",
+        "value": "ಇದೆ"
+      },
+      {
+        "label": "ಮ್ಯಾಂಗನೀಸ್",
+        "value": "ಇದೆ"
+      }
+    ],
+    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "benefits": [
+      "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ ಮತ್ತು ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
+      "ಫೋಲೇಟ್ ಸಾಮಾನ್ಯ ರಕ್ತ ರಚನೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಅಮೈನೋ ಆಮ್ಲ ಸಂಶ್ಲೇಷಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಕಬ್ಬಿಣ ರಕ್ತದಲ್ಲಿ ಸಾಮಾನ್ಯ ಆಮ್ಲಜನಕ ಸಾಗಣೆಗೆ ಮತ್ತು ಆಯಾಸ ಹಾಗೂ ಬಳಲಿಕೆ ಕಡಿಮೆ ಮಾಡಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ಪೊಟ್ಯಾಸಿಯಂ ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಸಾಮಾನ್ಯ ರಕ್ತದೊತ್ತಡದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+    ],
+    "cautions": [
+      "ಬೀಟ್‌ರೂಟ್ ಎಲೆಗಳಲ್ಲಿ ಆಕ್ಸಲೇಟ್‌ಗಳಿವೆ. ಮೂತ್ರಪಿಂಡದ ಕಲ್ಲುಗಳ ಇತಿಹಾಸ ಇದ್ದರೆ ಅಥವಾ ಕಡಿಮೆ-ಆಕ್ಸಲೇಟ್ ಆಹಾರ ಪಾಲಿಸುತ್ತಿದ್ದರೆ, ಪ್ರಮಾಣವನ್ನು ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ಹೆಚ್ಚು ಪ್ರಮಾಣ ತಿಂದ ಮೇಲೆ ಬೆಟಾಲೈನ್‌ಗಳು ಮೂತ್ರ ಅಥವಾ ಮಲವನ್ನು ಗುಲಾಬಿಯಿಂದ ಕೆಂಪು ಬಣ್ಣಕ್ಕೆ ತಿರುಗಿಸಬಹುದು. ಇದು ನಿರುಪದ್ರವಿ ಮತ್ತು ಒಂದು ದಿನದಲ್ಲಿ ಸಹಜ ಸ್ಥಿತಿಗೆ ಬರುತ್ತದೆ.",
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+    ],
+    "faq": [
+      {
+        "question": "ಇದನ್ನು ತಿಂದ ಮೇಲೆ ನನ್ನ ಮೂತ್ರ ಗುಲಾಬಿ ಬಣ್ಣಕ್ಕೆ ಏಕೆ ತಿರುಗಿತು?",
+        "answer": "ಬೆಟಾಲೈನ್ ವರ್ಣದ್ರವ್ಯ ಬಹುತೇಕ ಬದಲಾಗದೆ ದೇಹದ ಮೂಲಕ ಹಾದುಹೋಗುತ್ತದೆ. ಬೀಟ್‌ರೂಟ್ ತಿಂದಾಗ ಕೆಲವರಿಗೆ ಆಗುವ ಅದೇ ನಿರುಪದ್ರವಿ ಪರಿಣಾಮ, ಒಂದು ದಿನದಲ್ಲಿ ಸರಿಯಾಗುತ್ತದೆ. ಇದು ರಕ್ತವಲ್ಲ, ಆತಂಕ ಪಡುವ ವಿಷಯವಲ್ಲ."
+      },
+      {
+        "question": "ಇದರ ರುಚಿ ಹೇಗಿದೆ?",
+        "answer": "ಮಣ್ಣಿನ ಪರಿಮಳ ಮತ್ತು ಸಿಹಿ, ಗಡ್ಡೆಗಿಂತ ಸೌಮ್ಯ, ಮೃದು ಪಾಲಕ್‌ನ ವಿನ್ಯಾಸಕ್ಕೆ ಹತ್ತಿರ. ಬೇಯಿಸಿದ ಬೀಟ್‌ರೂಟ್‌ನಲ್ಲಿರುವ ಭಾರ ಇಲ್ಲ."
+      },
+      {
+        "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
+        "answer": "ತೊಳೆಯದೆ, ಒಣ ಕಿಚನ್ ಪೇಪರ್ ಹಾಕಿದ ಮುಚ್ಚಳದ ಡಬ್ಬಿಯಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಐದರಿಂದ ಏಳು ದಿನ. ಕಡುಗುಲಾಬಿ ಕಾಂಡಗಳು ಎಲೆಗಿಂತ ಹೆಚ್ಚು ಕಾಲ ಪ್ರಕಾಶಮಾನವಾಗಿ ಇರುತ್ತವೆ, ಆದ್ದರಿಂದ ಸ್ವಲ್ಪ ಸೋತ ಬ್ಯಾಚ್ ಸಹ ತಿಳಿ ಬಣ್ಣದ ಯಾವುದರ ಮೇಲೆ ಚೆಲ್ಲಿದಾಗ ಚೆನ್ನಾಗಿ ಕಾಣುತ್ತದೆ."
+      },
+      {
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "answer": "ಬಣ್ಣ ಬೇಕಿರುವ ಯಾವುದರ ಮೇಲೂ — ಮೊಸರನ್ನ, ಹಮ್ಮಸ್, ಒಂದು ಧಾನ್ಯದ ಬಟ್ಟಲು, ಸಾದಾ ಸೂಪ್ — ಅಥವಾ ಸಿಟ್ರಸ್ ಸೇರಿದ ಸಲಾಡ್‌ನಲ್ಲಿ ಮಡಿಚಿ, ಅದು ಸಿಹಿಯನ್ನು ಇನ್ನೂ ಚೆನ್ನಾಗಿ ಎತ್ತಿ ತೋರಿಸುತ್ತದೆ."
+      },
+      {
+        "question": "ಇದೇ ನಾವು ಅಡುಗೆಗೆ ಬಳಸುವ ಬೀಟ್‌ರೂಟ್ ಅಲ್ಲವೇ?",
+        "answer": "ಅದೇ ಗಿಡ, ಬೇರೆ ಹಂತ. ಅಡುಗೆಗೆ ಬಳಸುವ ಗಡ್ಡೆ ದೊಡ್ಡದಾಗಲು ಮಾಸಗಳು ಬೇಕು; ಇದು ಮೊದಲ ಎರಡು ವಾರಗಳಲ್ಲೇ ಕತ್ತರಿಸುವ ಮೊಳಕೆ ಎಲೆ, ಬೇಯಿಸದೆ ಹಸಿಯಾಗಿ ತಿನ್ನುವುದು."
+      }
+    ],
+    "imageAlt": "ಕಡುಗುಲಾಬಿ ಕಾಂಡಗಳ ಮೇಲೆ ಸಣ್ಣ ಹಸಿರು ಎಲೆಗಳ ಬೀಟ್‌ರೂಟ್ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ"
+  }
+}

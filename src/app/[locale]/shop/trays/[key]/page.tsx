@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
+import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getTrayByKey } from "@/lib/repo/trays";
 import { getTrayContent, trayHero, trayImageUrl } from "@/lib/content/trays";
 import { DetailPage } from "@/components/catalogue/DetailPage";
@@ -99,6 +100,7 @@ export default async function TrayPage({
 }: PageProps<"/[locale]/shop/trays/[key]">) {
   const { locale, key } = await params;
   setRequestLocale(locale);
+  await guardProductTypeEnabled("trays", locale);
 
   const found = await load(key, locale);
   if (!found) notFound();
