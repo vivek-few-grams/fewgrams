@@ -6,6 +6,7 @@ import { Tile } from "@/components/catalogue/Tile";
 import { listSeeds } from "@/lib/repo/seeds";
 import { attachSeedContent, seedCutout, seedHero } from "@/lib/content/seeds";
 import { currentActor } from "@/lib/auth/guard";
+import { CategoryStrip } from "@/components/chrome/CategoryStrip";
 
 /**
  * /seeds — SPEC §22.5. The seed grid.
@@ -74,11 +75,13 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
   seeds.sort((a, b) => collator.compare(a.content.text.name, b.content.text.name));
 
   return (
-    <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
-      <p className="font-body text-[11px] uppercase tracking-widest text-stone">
+    <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
+      <CategoryStrip current="seeds" />
+
+      <p className="mt-8 font-body text-[11px] uppercase tracking-widest text-stone">
         {counts("seeds", { count: seeds.length })}
       </p>
-      <h1 className="mt-3 max-w-2xl font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
+      <h1 className="mt-3 max-w-2xl font-display text-[clamp(1.25rem,2.5vw,1.9rem)] font-bold leading-tight tracking-tight text-forest">
         {t("heading")}
       </h1>
       <p className="mt-4 max-w-xl font-body text-sm text-stone">{t("body")}</p>
