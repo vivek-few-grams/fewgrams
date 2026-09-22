@@ -12,6 +12,32 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/**": ["./content/**/*"],
   },
+
+  images: {
+    /**
+     * Storybook plates carry a `?v=<mtime>` so that replacing an illustration
+     * in place is actually visible — see `storyImageUrl` in
+     * `src/lib/content/story.ts` for the full reasoning. Next blocks a query
+     * string on a local image unless the path is listed here, so this is what
+     * makes that work.
+     *
+     * Two entries, not one. Declaring `localPatterns` at all opts every local
+     * image into the allow-list, so the second entry is what keeps the
+     * varieties, seeds, trays and racks working; without it they 400.
+     *
+     * The `/story/**` entry omits `search`, which allows **any** query string
+     * on those thirteen files. That is a real if small trade-off: each
+     * distinct `?v=` is a separate entry in the optimizer's cache, so it can
+     * be made to grow. It is confined to one folder of static marketing
+     * artwork, and `search` only does exact matches, so pinning it would mean
+     * listing a literal value per file per swap. Do not widen the pattern
+     * beyond `/story/`.
+     */
+    localPatterns: [
+      { pathname: "/story/**" },
+      { pathname: "/**", search: "" },
+    ],
+  },
 };
 
 /* SPEC §4.4 — wires src/i18n/request.ts into every server render. */

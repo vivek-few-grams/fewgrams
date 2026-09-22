@@ -1416,7 +1416,10 @@ Then:
 - **A visitor outside the delivery zone learns so only at checkout** — the deliberate choice
   in §7. The refusal there has to be unmistakable and has to arrive before the payment step,
   not with it, because it is now the *only* place the constraint is stated.
-- **"How we grow" — 3D models vs photography undecided (§18.5).**
+- **"How we grow" artwork is not final (§18.5).** The page is built and the copy is done in both
+  languages, but six of the thirteen illustrations carry baked-in English labels a Kannada reader
+  cannot read, and the set spans two illustration styles. Neither blocks launch; both are visible
+  to every visitor. Regeneration notes are in `public/story/README.md`.
 - **Bundle prices do not exist yet.** §18.4 is built against a typed placeholder until Phase 2
   ships the admin UI.
 - **Tray delivery rate not set**, and it matters more since 17 Sep 2026 because trays are now real
@@ -2346,15 +2349,99 @@ than 86%, not widening the box.
 **List page only** — the detail page prints the same nutrients as a table with their values, and
 carries no `.mcard__media` or `.mcard__marquee`.
 
-### 18.5 How we grow
+### 18.5 How we grow — built 22 Sep 2026
 
-The animated process page: seed procurement → quality check → soak → sow → germinate → harvest →
-deliver.
+`/how-we-grow`, and it closes the one dead link in the public nav (§4.4's admin note).
 
-Requested as rotating 3D models. **Recommendation: a scroll-driven sequence of Fewgrams' own
-photographs instead.** Rotating 3D needs modelled assets (a seed, a tray, a sprout) — either paid
-asset work or a large time cost — and for a food brand real photographs of your own trays read as
-more credible than a synthetic seed, while loading faster. **Open decision.**
+**Decided, and it was neither option.** The question was posed as rotating 3D models versus our own
+photographs. The answer is a **scroll-turned storybook of commissioned illustrations**: thirteen
+pages, illustration on the left leaf, words on the right, one page turned per viewport of scroll.
+
+The photography does not exist and will not for months — the room, the racks and the trays are all
+real, but none of it is shot, and the process page is the one page that cannot ship with
+placeholders. 3D models were the more expensive half of the same problem. Illustration buys the
+whole sequence now, at a consistent quality, and it does something neither option could: it lets
+the page carry the **reason** alongside the method. A photograph of a sterilised tray says what we
+do; a page that opens on a child eating crisps says why anyone should care, and the hygiene claim
+three pages later is then read by somebody who wants it to be true.
+
+**The running order**, which is the argument and not just a sequence of steps:
+
+| | Pages | |
+|---|---|---|
+| Why | 1–6 | the hands that feed a family → engineers by day → too much of the wrong stuff → the doubt about "organic" → what if we grew it ourselves → so we started Few grams |
+| How | 7–12 | seed quality → clean before green → fresh cocopeat → dark then light → cut on the day → back to zero |
+| Close | 13 | better food, healthier families — then the CTA band, outside the book |
+
+**Full bleed, and the pictures are never cropped.** The book fills the viewport under the header
+rather than sitting in it as an object — a 900px spread in a 1440px window read as a widget, not a
+page. Each illustration renders at its own natural size rather than being stretched into a box,
+because the masters are not one shape — they run 1.34 (`cover`) to 3.0 (`closing`) — and
+`cover` on a portrait leaf was throwing away a third to a half of every one of them. The paper left over under each picture carries a one-line `caption`, which is the field that
+stops the left leaf looking like a layout bug.
+
+**One paper, and it is white.** Forest-green pages were tried on 22 Sep 2026 and reverted the same
+day. The field that used to select a paper (`ground: light | dark`, dark on the two pages where the
+story drops its voice) did **not** come back with the cream: one colour means one value means no
+field, and a schema offering a choice nobody can make invites the next person to set it and wonder
+why nothing happened. Two papers again is a deliberate three-part change — field, contract check,
+branch — not a key typed hopefully.
+
+**A plate is the whole illustration, with nothing added to its edge** — no border, and no soft
+edge either. A radial-gradient mask that dissolved each rectangle into the paper was built and
+removed on 22 Sep 2026, in two tunings: the argument for it was that thirteen hard rectangles down
+a book read as thirteen screenshots pasted onto pages, and what a reader actually saw was a blur
+over the outside of every picture. The masters are already on near-white backgrounds, so they meet
+cream paper without help.
+
+`story.ts` reads each file's **real pixel dimensions out of the WebP header** rather than taking
+them from the content file, and the plate renders at that natural aspect inside a `max-w` /
+`max-h` box. The thirteen masters run 1.34 to 3.0; one fixed `aspect-[3/2]` frame letterboxed the
+wide ones, put cream bars down the sides of the tall ones, and left the caption a different
+distance below the picture on every page. Measured rather than declared because a declared
+dimension can disagree with the file and nothing would fail.
+
+**Each plate's URL carries `?v=<mtime>`.** Illustrations are replaced in place — the filename is
+the page key — so the URL would otherwise never change, and `next/image` answers the browser's
+revalidation with a `304` built from an ETag that does not track the source file. The old picture
+then stays on screen indefinitely while the correct bytes sit on disk, which is exactly what
+happened twice on 22 Sep 2026 before the cause was found. The version is the file's modification
+time, so there is no number to remember to bump, and `story-contract.test.ts` asserts it is
+present and correct on every page. `images.localPatterns` in `next.config.ts` is what permits the
+query string; it is scoped to `/story/**` because omitting `search` allows any query string and
+each distinct one is a fresh entry in the image optimizer's cache.
+
+A spiral binding was built and removed the same day (22 Sep 2026).
+
+**The page number is printed on the paper** as a folio in the spread's top-right corner, reading
+`3 / 13` — the position in the book, not a bare numeral, so a reader knows how much is left
+without a progress bar. Once per spread, not once per leaf, since both leaves share a number and
+printing it twice read as a bug. There is no counter chrome; the same count is announced to
+assistive technology from an `sr-only` live region.
+
+**Copy lives in `content/story/book.json`**, both languages, guarded by `story-contract.test.ts`.
+Nothing on the page is a number the business tunes, so there is no DynamoDB row and no admin
+screen — the book is edited in git and reviewed in a diff. Grow durations are banned from the copy
+for the same reason they are banned from variety copy: `growDays` is tuned in admin and printed on
+the variety page, and this is the most-read prose on the site to have a stale number in.
+
+**Two modes, and the plain one is the server render.** The stack — thirteen pages in a column, no
+transforms — is what the server sends, what a phone gets, what reduced motion gets and what a
+visitor with no JavaScript gets. A `lg` viewport with no motion preference is upgraded to the book
+on mount. Same call `Reveal` makes, same reasoning: the failure mode has to be "no page-turn",
+not "no content".
+
+**Mechanism** (`StoryBook.tsx`, `.book__*` in globals.css): the book is `sticky` inside a tall
+empty rail, so the scroll distance is the book itself and the wheel is never hijacked. One custom
+property `--p` — sheets turned, fractional — is written to one DOM node per frame and every leaf
+derives its own angle from it in CSS. A spread's two halves come from *different* sheets: leaf `k`
+carries page `k`'s words on its front and page `k+1`'s illustration on its back, so every face is
+unique and DOM order is reading order.
+
+**Open: the artwork is not final.** Six of the thirteen illustrations carry baked-in English scene
+labels (seed names, "Cocopeat", "Used Cocopeat (Dispose)"), which a Kannada reader cannot read.
+Accepted for now as depicted props rather than interface copy, and recorded in
+`public/story/README.md` as an exception that must not grow.
 
 ### 18.6 Model change: microgreens are individually buyable
 

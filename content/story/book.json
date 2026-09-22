@@ -1,0 +1,356 @@
+{
+  "pages": [
+    {
+      "key": "cover",
+      "image": "cover.webp"
+    },
+    {
+      "key": "engineers",
+      "image": "engineers.webp"
+    },
+    {
+      "key": "concern",
+      "image": "concern.webp"
+    },
+    {
+      "key": "doubt",
+      "image": "doubt.webp"
+    },
+    {
+      "key": "turning-point",
+      "image": "turning-point.webp"
+    },
+    {
+      "key": "few-grams",
+      "image": "few-grams.webp"
+    },
+    {
+      "key": "seed",
+      "image": "seed.webp"
+    },
+    {
+      "key": "clean",
+      "image": "clean.webp"
+    },
+    {
+      "key": "sow",
+      "image": "sow.webp"
+    },
+    {
+      "key": "germinate",
+      "image": "germinate.webp"
+    },
+    {
+      "key": "harvest",
+      "image": "harvest.webp"
+    },
+    {
+      "key": "reset",
+      "image": "reset.webp"
+    },
+    {
+      "key": "closing",
+      "image": "closing.webp"
+    }
+  ],
+  "en": {
+    "cover": {
+      "eyebrow": "Our story",
+      "heading": "A few grams. A whole generation.",
+      "body": [
+        "Every day, in millions of kitchens, one person quietly decides what a family will become.",
+        "Not a doctor. Not a label. Not an advertisement. The person who cooks.",
+        "She holds more power over her family's health than anyone ever thinks to tell her — and she uses it three times a day, without applause.",
+        "This is the story of trying to put something better into those hands."
+      ],
+      "caption": "The kitchen is where a generation is decided.",
+      "imageAlt": "Two parents and their young daughter leaning over a tray of microgreens on a sunlit kitchen table."
+    },
+    "engineers": {
+      "eyebrow": "The beginning",
+      "heading": "We build software by day.",
+      "body": [
+        "We are a husband and wife, both software engineers. We spend our days writing code that makes things work better for other people.",
+        "We are also parents, which means we spend our evenings worrying about something code cannot fix.",
+        "We had found her a good school, a clean home, steady habits. Then we looked properly at what was on her plate."
+      ],
+      "caption": "Two engineers, one worry.",
+      "imageAlt": "A husband and wife at a desk in the evening, working together at one laptop between two lit screens of code."
+    },
+    "concern": {
+      "eyebrow": "The real concern",
+      "heading": "Too much of the wrong stuff.",
+      "body": [
+        "Packets. Colours. Words on the back of a wrapper that we could not pronounce and did not want to.",
+        "We grew up on food that came from a field. Our daughter is growing up on food that comes from a factory.",
+        "We were not trying to raise a perfect child. We simply did not want to spend the next twenty years feeding her things we could not explain."
+      ],
+      "caption": "Everything we could not pronounce.",
+      "imageAlt": "Two small children at a table sharing a wooden bowl of packaged snack crackers."
+    },
+    "doubt": {
+      "eyebrow": "The doubt",
+      "heading": "Then we read the news.",
+      "body": [
+        "Organic felt like the answer. We paid more for it, gladly. It felt like buying peace of mind.",
+        "Then came the reports. Residue turning up in produce sold as organic. Certificates worth less than the sticker they were printed on. Supply chains long enough that nobody, anywhere, could tell you where a bunch of spinach had actually been.",
+        "That was the hard part. Not that some of it was untrue, but that we had no way of knowing which part.",
+        "A label is a promise made by a stranger. We wanted something better than a promise."
+      ],
+      "caption": "A label is a promise made by a stranger.",
+      "imageAlt": "A woman in her kitchen frowning at her phone, holding a bunch of microgreens with the roots still on, a basket of vegetables beside her."
+    },
+    "turning-point": {
+      "eyebrow": "The turning point",
+      "heading": "What if we grew it ourselves?",
+      "body": [
+        "Microgreens changed the question entirely.",
+        "A tray. A shelf. A week or so of patience. No field, no farm gate, no lorry, no middleman, and no certificate — because there is nothing in between left to certify.",
+        "We choose the seed. We choose the medium. We choose the water. And we watch every single day of it happen, an arm's length from where we eat.",
+        "That is not trust. It is better than trust. It is knowing."
+      ],
+      "caption": "Not trust. Knowing.",
+      "imageAlt": "Two growers in a grow room, each holding up a handful of freshly pulled microgreens with the roots still on, trays of greens on racks behind them."
+    },
+    "few-grams": {
+      "eyebrow": "Our journey",
+      "heading": "That is how Few grams came to be.",
+      "body": [
+        "It started as one tray on a kitchen counter, grown for one child.",
+        "Then the neighbours asked. Then their friends asked. And we realised that the thing we had been worrying about alone was something every family was worrying about alone.",
+        "So we took what we had — an engineer's discipline and a parent's caution — and turned it into something we could hand to your kitchen too.",
+        "Few grams. Because it does not take much. It only has to be right."
+      ],
+      "caption": "One tray, grown for one child.",
+      "imageAlt": "The family gathered around a tray of fresh microgreens in a bright room full of plants."
+    },
+    "seed": {
+      "eyebrow": "Step one",
+      "heading": "Nothing good grows from a doubtful seed.",
+      "body": [
+        "Every batch is checked before it is ever sown — purity, size, moisture, germination, and anything in there that should not be.",
+        "Non-GMO, untreated, open-pollinated, and bought from growers we can actually telephone.",
+        "If a batch does not pass, it does not get planted. There is no version of this where we sow something and hope."
+      ],
+      "caption": "Checked before it is ever sown.",
+      "imageAlt": "A grower examining a handful of seeds through a magnifying glass, beside a quality-check list, labelled sample bags and four bowls of different seed."
+    },
+    "clean": {
+      "eyebrow": "Step two",
+      "heading": "We clean like it is going onto our own child's plate.",
+      "body": [
+        "Because it is.",
+        "Every tray is washed and sterilised before it is used. Every surface, every tool, gloves on, each time.",
+        "Microgreens are eaten raw and eaten whole. No peeling, no cooking, nothing in between to make up for a shortcut — so there are no shortcuts."
+      ],
+      "caption": "Gloves on. Every tray, every time.",
+      "imageAlt": "Two growers in gloves wiping down and spraying growing trays at a clean work table."
+    },
+    "sow": {
+      "eyebrow": "Step three",
+      "heading": "Fresh cocopeat. Every single tray.",
+      "body": [
+        "Not soil, and never a reused medium. Clean, washed cocopeat, fresh for every crop.",
+        "Then the seed goes down by hand — spread even, never crowded, because greens that fight each other for air are the ones that rot.",
+        "Then water. Only water. Nothing else goes into that tray for the rest of its life."
+      ],
+      "caption": "Fresh for every crop. Never reused.",
+      "imageAlt": "Two growers sowing seed by hand into trays of fresh cocopeat at a sunlit table."
+    },
+    "germinate": {
+      "eyebrow": "Step four",
+      "heading": "Dark first. Then light.",
+      "body": [
+        "For the first stretch the tray stays covered. Seeds want darkness to wake up in.",
+        "Then the lights come on, and they reach for them.",
+        "We look at every tray every day — temperature, humidity, airflow, the way the leaves are sitting. Every crop tells you when it is ready if you are paying attention.",
+        "No growth boosters. No sprays. No pesticides. There is nothing to spray for in a young tray standing in a clean room."
+      ],
+      "caption": "Seeds want darkness to wake up in.",
+      "imageAlt": "Seedlings pushing up through cocopeat under the tilted lid of a covered tray, lit by a thin band of light."
+    },
+    "harvest": {
+      "eyebrow": "Step five",
+      "heading": "Cut on the day it reaches you.",
+      "body": [
+        "We harvest at peak — the day the leaves are fullest, not a day early and not a week late.",
+        "Scissors, not machines. Straight into a clean box. No washing, no wilting, no week in cold storage.",
+        "From our shelf to your kitchen on the same day. That is the entire point of growing something this small, this close."
+      ],
+      "caption": "Scissors, not machines.",
+      "imageAlt": "Two growers cutting mature microgreens with scissors and packing them straight into a clean Few grams box."
+    },
+    "reset": {
+      "eyebrow": "Step six",
+      "heading": "Every tray goes back to zero.",
+      "body": [
+        "Used cocopeat is composted out and never reused. Trays are stripped, scrubbed, sterilised and stacked clean.",
+        "No batch ever inherits anything from the batch before it.",
+        "It is the least glamorous step and the one we are most particular about — because it is the step nobody would ever know we had skipped."
+      ],
+      "caption": "The step nobody would know we had skipped.",
+      "imageAlt": "Two growers tipping used cocopeat out of a tray into a waste bin and scrubbing empty trays clean for the next sowing."
+    },
+    "closing": {
+      "eyebrow": "Few grams",
+      "heading": "Better food. Healthier families. A greener tomorrow.",
+      "body": [
+        "We are not asking anyone to change their whole life.",
+        "Just a few grams. On the dal, in the sandwich, over the rice. Small enough that nobody argues about it, real enough that it counts.",
+        "Small steps. Big impact."
+      ],
+      "caption": "A few grams, on everything.",
+      "imageAlt": "A wooden bowl heaped with fresh microgreens on a table, with green foliage blurred behind it."
+    }
+  },
+  "kn": {
+    "cover": {
+      "eyebrow": "ನಮ್ಮ ಕಥೆ",
+      "heading": "ಕೆಲವು ಗ್ರಾಂ. ಒಂದು ಇಡೀ ತಲೆಮಾರು.",
+      "body": [
+        "ಪ್ರತಿದಿನ, ಲಕ್ಷಾಂತರ ಅಡುಗೆಮನೆಗಳಲ್ಲಿ, ಒಬ್ಬ ವ್ಯಕ್ತಿ ಒಂದು ಕುಟುಂಬ ಹೇಗಾಗಬೇಕು ಎಂಬುದನ್ನು ಮೌನವಾಗಿ ನಿರ್ಧರಿಸುತ್ತಾರೆ.",
+        "ವೈದ್ಯರಲ್ಲ. ಲೇಬಲ್ ಅಲ್ಲ. ಜಾಹೀರಾತೂ ಅಲ್ಲ. ಅಡುಗೆ ಮಾಡುವವರು.",
+        "ತನ್ನ ಕುಟುಂಬದ ಆರೋಗ್ಯದ ಮೇಲೆ ಆಕೆಗೆ ಎಷ್ಟು ಅಧಿಕಾರವಿದೆ ಎಂಬುದನ್ನು ಯಾರೂ ಆಕೆಗೆ ಹೇಳುವುದೇ ಇಲ್ಲ — ಆದರೆ ಆಕೆ ಅದನ್ನು ದಿನಕ್ಕೆ ಮೂರು ಬಾರಿ, ಯಾವ ಮೆಚ್ಚುಗೆಯೂ ಇಲ್ಲದೆ ಬಳಸುತ್ತಾಳೆ.",
+        "ಆ ಕೈಗಳಿಗೆ ಇನ್ನೂ ಒಳ್ಳೆಯದನ್ನು ಇಡಲು ನಡೆಸಿದ ಪ್ರಯತ್ನದ ಕಥೆ ಇದು."
+      ],
+      "caption": "ಒಂದು ತಲೆಮಾರು ನಿರ್ಧಾರವಾಗುವುದು ಅಡುಗೆಮನೆಯಲ್ಲಿ.",
+      "imageAlt": "ಬಿಸಿಲು ಬೀಳುವ ಅಡುಗೆಮನೆಯ ಮೇಜಿನ ಮೇಲಿನ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ ಮೇಲೆ ಬಾಗಿರುವ ತಂದೆ, ತಾಯಿ ಮತ್ತು ಅವರ ಪುಟ್ಟ ಮಗಳು."
+    },
+    "engineers": {
+      "eyebrow": "ಆರಂಭ",
+      "heading": "ಹಗಲಿನಲ್ಲಿ ನಾವು ಸಾಫ್ಟ್‌ವೇರ್ ಕಟ್ಟುತ್ತೇವೆ.",
+      "body": [
+        "ನಾವು ಗಂಡ–ಹೆಂಡತಿ, ಇಬ್ಬರೂ ಸಾಫ್ಟ್‌ವೇರ್ ಎಂಜಿನಿಯರ್‌ಗಳು. ಬೇರೆಯವರ ಕೆಲಸ ಸುಲಭವಾಗಿಸುವ ಕೋಡ್ ಬರೆಯುತ್ತಾ ನಮ್ಮ ಹಗಲು ಕಳೆಯುತ್ತದೆ.",
+        "ನಾವು ತಂದೆ–ತಾಯಿಯೂ ಹೌದು. ಅಂದರೆ, ಕೋಡ್‌ನಿಂದ ಸರಿಪಡಿಸಲಾಗದ ಒಂದು ಚಿಂತೆಯಲ್ಲಿ ನಮ್ಮ ಸಂಜೆ ಕಳೆಯುತ್ತದೆ.",
+        "ಒಳ್ಳೆಯ ಶಾಲೆ, ಶುಚಿಯಾದ ಮನೆ, ಒಳ್ಳೆಯ ಅಭ್ಯಾಸಗಳು — ಎಲ್ಲವನ್ನೂ ಕೊಟ್ಟಿದ್ದೆವು. ಆಮೇಲೆ ಆಕೆಯ ತಟ್ಟೆಯಲ್ಲಿ ಏನಿದೆ ಎಂದು ಸರಿಯಾಗಿ ನೋಡಿದೆವು."
+      ],
+      "caption": "ಇಬ್ಬರು ಎಂಜಿನಿಯರ್‌ಗಳು, ಒಂದೇ ಚಿಂತೆ.",
+      "imageAlt": "ಸಂಜೆ ಹೊತ್ತಿನಲ್ಲಿ ಮೇಜಿನ ಮುಂದೆ, ಕೋಡ್ ತೋರಿಸುತ್ತಿರುವ ಎರಡು ಪರದೆಗಳ ನಡುವೆ ಒಂದೇ ಲ್ಯಾಪ್‌ಟಾಪ್‌ನಲ್ಲಿ ಒಟ್ಟಿಗೆ ಕೆಲಸ ಮಾಡುತ್ತಿರುವ ಗಂಡ-ಹೆಂಡತಿ."
+    },
+    "concern": {
+      "eyebrow": "ನಿಜವಾದ ಚಿಂತೆ",
+      "heading": "ಬೇಡದ್ದೇ ಹೆಚ್ಚು.",
+      "body": [
+        "ಪೊಟ್ಟಣಗಳು. ಬಣ್ಣಗಳು. ಹೊದಿಕೆಯ ಹಿಂಬದಿಯಲ್ಲಿ ನಮಗೆ ಉಚ್ಚರಿಸಲೂ ಬಾರದ, ಉಚ್ಚರಿಸಲು ಮನಸ್ಸೂ ಇಲ್ಲದ ಪದಗಳು.",
+        "ನಾವು ಬೆಳೆದದ್ದು ಹೊಲದಿಂದ ಬಂದ ಆಹಾರದಲ್ಲಿ. ನಮ್ಮ ಮಗಳು ಬೆಳೆಯುತ್ತಿರುವುದು ಕಾರ್ಖಾನೆಯಿಂದ ಬಂದ ಆಹಾರದಲ್ಲಿ.",
+        "ಪರಿಪೂರ್ಣ ಮಗುವನ್ನು ಬೆಳೆಸಬೇಕೆಂಬ ಹಟ ನಮಗಿರಲಿಲ್ಲ. ವಿವರಿಸಲಾಗದ ವಸ್ತುಗಳನ್ನು ಮುಂದಿನ ಇಪ್ಪತ್ತು ವರ್ಷ ಆಕೆಗೆ ತಿನ್ನಿಸುವುದು ಬೇಡವಷ್ಟೆ."
+      ],
+      "caption": "ನಮಗೆ ಉಚ್ಚರಿಸಲೂ ಬಾರದ ಎಲ್ಲವೂ.",
+      "imageAlt": "ಮೇಜಿನ ಬಳಿ ಕುಳಿತ ಇಬ್ಬರು ಪುಟ್ಟ ಮಕ್ಕಳು ಒಂದು ಮರದ ಬಟ್ಟಲಿನಿಂದ ಪೊಟ್ಟಣದ ತಿಂಡಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತಿದ್ದಾರೆ."
+    },
+    "doubt": {
+      "eyebrow": "ಅನುಮಾನ",
+      "heading": "ಆಮೇಲೆ ಸುದ್ದಿ ಓದಿದೆವು.",
+      "body": [
+        "ಸಾವಯವವೇ ಉತ್ತರ ಎನಿಸಿತು. ಹೆಚ್ಚು ಹಣ ಕೊಡಲು ಸಂತೋಷದಿಂದಲೇ ಒಪ್ಪಿದೆವು. ಮನಶ್ಶಾಂತಿಯನ್ನು ಕೊಂಡಂತೆ ಅನಿಸಿತು.",
+        "ಆಮೇಲೆ ವರದಿಗಳು ಬಂದವು. ಸಾವಯವ ಎಂದು ಮಾರಾಟವಾಗುವ ತರಕಾರಿಯಲ್ಲಿ ಉಳಿಕೆ ಪತ್ತೆ. ಅಂಟಿಸಿದ ಸ್ಟಿಕರ್‌ಗಿಂತಲೂ ಕಡಿಮೆ ಬೆಲೆಯ ಪ್ರಮಾಣಪತ್ರಗಳು. ಒಂದು ಕಟ್ಟು ಪಾಲಕ್ ಎಲ್ಲಿಂದ ಬಂತು ಎಂದು ಯಾರಿಗೂ ಹೇಳಲಾಗದಷ್ಟು ಉದ್ದದ ಪೂರೈಕೆ ಸರಪಳಿ.",
+        "ಕಷ್ಟವಾದದ್ದು ಅದೇ. ಕೆಲವು ಸುಳ್ಳು ಎಂಬುದಲ್ಲ — ಯಾವುದು ಸುಳ್ಳು ಎಂದು ತಿಳಿಯಲು ನಮಗೆ ದಾರಿಯೇ ಇರಲಿಲ್ಲ ಎಂಬುದು.",
+        "ಲೇಬಲ್ ಎಂದರೆ ಅಪರಿಚಿತರೊಬ್ಬರು ಕೊಟ್ಟ ಮಾತು. ನಮಗೆ ಮಾತಿಗಿಂತ ಹೆಚ್ಚಿನದು ಬೇಕಿತ್ತು."
+      ],
+      "caption": "ಲೇಬಲ್ ಎಂದರೆ ಅಪರಿಚಿತರೊಬ್ಬರ ಮಾತು.",
+      "imageAlt": "ಅಡುಗೆಮನೆಯಲ್ಲಿ ಹುಬ್ಬು ಗಂಟಿಕ್ಕಿ ಮೊಬೈಲ್ ನೋಡುತ್ತಿರುವ ಮಹಿಳೆ; ಕೈಯಲ್ಲಿ ಬೇರು ಸಹಿತ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಕಟ್ಟು, ಪಕ್ಕದಲ್ಲಿ ತರಕಾರಿ ಬುಟ್ಟಿ."
+    },
+    "turning-point": {
+      "eyebrow": "ತಿರುವು",
+      "heading": "ನಾವೇ ಬೆಳೆದರೆ ಹೇಗೆ?",
+      "body": [
+        "ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಪ್ರಶ್ನೆಯನ್ನೇ ಬದಲಿಸಿಬಿಟ್ಟವು.",
+        "ಒಂದು ಟ್ರೇ. ಒಂದು ಕಪಾಟು. ಒಂದಿಷ್ಟು ತಾಳ್ಮೆ. ಹೊಲವಿಲ್ಲ, ಮಂಡಿ ಇಲ್ಲ, ಲಾರಿ ಇಲ್ಲ, ದಲ್ಲಾಳಿ ಇಲ್ಲ, ಪ್ರಮಾಣಪತ್ರವೂ ಇಲ್ಲ — ಏಕೆಂದರೆ ಪ್ರಮಾಣೀಕರಿಸಲು ನಡುವೆ ಏನೂ ಉಳಿದಿಲ್ಲ.",
+        "ಬೀಜ ನಾವು ಆರಿಸುತ್ತೇವೆ. ಮಾಧ್ಯಮ ನಾವು ಆರಿಸುತ್ತೇವೆ. ನೀರು ನಾವು ಆರಿಸುತ್ತೇವೆ. ಮತ್ತು ಅದರ ಪ್ರತಿ ದಿನವನ್ನೂ, ನಾವು ಊಟ ಮಾಡುವ ಜಾಗದಿಂದ ಕೈಯಗಲದ ದೂರದಲ್ಲಿ ನೋಡುತ್ತೇವೆ.",
+        "ಇದು ನಂಬಿಕೆಯಲ್ಲ. ನಂಬಿಕೆಗಿಂತ ಹೆಚ್ಚು. ಇದು ಗೊತ್ತಿರುವುದು."
+      ],
+      "caption": "ನಂಬಿಕೆಯಲ್ಲ. ಗೊತ್ತಿರುವುದು.",
+      "imageAlt": "ಬೆಳೆಯುವ ಕೋಣೆಯಲ್ಲಿ ಇಬ್ಬರು ಬೆಳೆಗಾರರು, ಬೇರು ಸಹಿತ ತಾಜಾವಾಗಿ ಕಿತ್ತ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಹಿಡಿಯನ್ನು ಮೇಲೆತ್ತಿ ಹಿಡಿದಿದ್ದಾರೆ; ಹಿಂದೆ ರ‍್ಯಾಕ್‌ಗಳ ಮೇಲೆ ಸೊಪ್ಪಿನ ಟ್ರೇಗಳು."
+    },
+    "few-grams": {
+      "eyebrow": "ನಮ್ಮ ಪಯಣ",
+      "heading": "ಹೀಗೆ ಫ್ಯೂ ಗ್ರಾಮ್ಸ್ ಹುಟ್ಟಿತು.",
+      "body": [
+        "ಒಂದು ಮಗುವಿಗಾಗಿ, ಅಡುಗೆಮನೆಯ ಕಟ್ಟೆಯ ಮೇಲಿನ ಒಂದೇ ಟ್ರೇಯಿಂದ ಶುರುವಾಯಿತು.",
+        "ಆಮೇಲೆ ಪಕ್ಕದ ಮನೆಯವರು ಕೇಳಿದರು. ಆಮೇಲೆ ಅವರ ಸ್ನೇಹಿತರು ಕೇಳಿದರು. ನಾವು ಒಬ್ಬರೇ ಚಿಂತಿಸುತ್ತಿದ್ದೇವೆ ಎಂದುಕೊಂಡಿದ್ದ ವಿಷಯದ ಬಗ್ಗೆ ಪ್ರತಿ ಕುಟುಂಬವೂ ಒಬ್ಬೊಬ್ಬರೇ ಚಿಂತಿಸುತ್ತಿದ್ದರು ಎಂದು ಆಗ ಅರಿವಾಯಿತು.",
+        "ಹಾಗಾಗಿ ನಮ್ಮಲ್ಲಿದ್ದದ್ದನ್ನೇ — ಎಂಜಿನಿಯರ್‌ನ ಶಿಸ್ತು ಮತ್ತು ಹೆತ್ತವರ ಎಚ್ಚರ — ನಿಮ್ಮ ಅಡುಗೆಮನೆಗೂ ಕೊಡಬಹುದಾದ ಒಂದು ವಸ್ತುವಾಗಿ ಮಾಡಿದೆವು.",
+        "ಫ್ಯೂ ಗ್ರಾಮ್ಸ್. ಏಕೆಂದರೆ ಹೆಚ್ಚು ಬೇಕಿಲ್ಲ. ಇರುವಷ್ಟು ಸರಿಯಾಗಿದ್ದರೆ ಸಾಕು."
+      ],
+      "caption": "ಒಂದು ಮಗುವಿಗಾಗಿ ಬೆಳೆದ ಒಂದೇ ಟ್ರೇ.",
+      "imageAlt": "ಗಿಡಗಳಿಂದ ತುಂಬಿದ ಬೆಳಕಿನ ಕೋಣೆಯಲ್ಲಿ ತಾಜಾ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಟ್ರೇ ಸುತ್ತ ಸೇರಿರುವ ಕುಟುಂಬ."
+    },
+    "seed": {
+      "eyebrow": "ಮೊದಲ ಹೆಜ್ಜೆ",
+      "heading": "ಅನುಮಾನದ ಬೀಜದಿಂದ ಒಳ್ಳೆಯದೇನೂ ಬೆಳೆಯುವುದಿಲ್ಲ.",
+      "body": [
+        "ಬಿತ್ತುವ ಮೊದಲೇ ಪ್ರತಿ ಬ್ಯಾಚ್ ಪರೀಕ್ಷೆಗೆ ಒಳಗಾಗುತ್ತದೆ — ಶುದ್ಧತೆ, ಗಾತ್ರ, ತೇವಾಂಶ, ಮೊಳಕೆ ಪ್ರಮಾಣ, ಮತ್ತು ಇರಬಾರದ ಯಾವುದೇ ಕಲಬೆರಕೆ.",
+        "ಜಿಎಂಒ ಅಲ್ಲದ, ರಾಸಾಯನಿಕ ಲೇಪನವಿಲ್ಲದ, ಮುಕ್ತ ಪರಾಗಸ್ಪರ್ಶದ ಬೀಜ — ಫೋನ್ ಮಾಡಿ ಮಾತನಾಡಬಹುದಾದ ಬೆಳೆಗಾರರಿಂದಲೇ ಖರೀದಿ.",
+        "ಪರೀಕ್ಷೆಯಲ್ಲಿ ಉತ್ತೀರ್ಣವಾಗದ ಬ್ಯಾಚ್ ಟ್ರೇ ಸೇರುವುದಿಲ್ಲ. ಬಿತ್ತಿ ನೋಡೋಣ ಎನ್ನುವ ದಾರಿಯೇ ಇಲ್ಲಿ ಇಲ್ಲ."
+      ],
+      "caption": "ಬಿತ್ತುವ ಮೊದಲೇ ಪರೀಕ್ಷೆ.",
+      "imageAlt": "ಭೂತಗನ್ನಡಿಯ ಮೂಲಕ ಹಿಡಿ ಬೀಜಗಳನ್ನು ಪರಿಶೀಲಿಸುತ್ತಿರುವ ಬೆಳೆಗಾರ; ಪಕ್ಕದಲ್ಲಿ ಗುಣಮಟ್ಟ ಪರಿಶೀಲನೆಯ ಪಟ್ಟಿ, ಹೆಸರು ಬರೆದ ಮಾದರಿ ಚೀಲಗಳು ಮತ್ತು ನಾಲ್ಕು ಬಗೆಯ ಬೀಜದ ಬಟ್ಟಲುಗಳು."
+    },
+    "clean": {
+      "eyebrow": "ಎರಡನೇ ಹೆಜ್ಜೆ",
+      "heading": "ನಮ್ಮದೇ ಮಗುವಿನ ತಟ್ಟೆಗೆ ಹೋಗುವಂತೆ ಶುಚಿ ಮಾಡುತ್ತೇವೆ.",
+      "body": [
+        "ಏಕೆಂದರೆ ನಿಜವಾಗಿಯೂ ಹೋಗುತ್ತದೆ.",
+        "ಬಳಸುವ ಮೊದಲು ಪ್ರತಿ ಟ್ರೇ ತೊಳೆದು ಸೋಂಕುರಹಿತಗೊಳಿಸಲಾಗುತ್ತದೆ. ಪ್ರತಿ ಮೇಲ್ಮೈ, ಪ್ರತಿ ಸಾಧನ, ಪ್ರತಿ ಬಾರಿಯೂ ಕೈಗವಸು.",
+        "ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಹಸಿಯಾಗಿ, ಪೂರ್ತಿಯಾಗಿ ತಿನ್ನುವಂಥದ್ದು. ಸಿಪ್ಪೆ ತೆಗೆಯುವುದಿಲ್ಲ, ಬೇಯಿಸುವುದಿಲ್ಲ, ಅಡ್ಡದಾರಿಯನ್ನು ಸರಿಪಡಿಸುವ ಯಾವ ಹಂತವೂ ನಡುವೆ ಇಲ್ಲ — ಹಾಗಾಗಿ ಅಡ್ಡದಾರಿಗಳೇ ಇಲ್ಲ."
+      ],
+      "caption": "ಕೈಗವಸು. ಪ್ರತಿ ಟ್ರೇಗೂ, ಪ್ರತಿ ಬಾರಿಯೂ.",
+      "imageAlt": "ಶುಚಿಯಾದ ಮೇಜಿನ ಮೇಲೆ ಕೈಗವಸು ಧರಿಸಿ ಬೆಳೆಯುವ ಟ್ರೇಗಳನ್ನು ಒರೆಸಿ ಸಿಂಪಡಿಸುತ್ತಿರುವ ಇಬ್ಬರು ಬೆಳೆಗಾರರು."
+    },
+    "sow": {
+      "eyebrow": "ಮೂರನೇ ಹೆಜ್ಜೆ",
+      "heading": "ಪ್ರತಿ ಟ್ರೇಗೂ ಹೊಸ ಕೊಕೊಪೀಟ್.",
+      "body": [
+        "ಮಣ್ಣಲ್ಲ, ಮತ್ತು ಮರುಬಳಕೆಯ ಮಾಧ್ಯಮವಂತೂ ಎಂದಿಗೂ ಅಲ್ಲ. ಪ್ರತಿ ಬೆಳೆಗೂ ತೊಳೆದ, ಶುಚಿಯಾದ, ಹೊಸ ಕೊಕೊಪೀಟ್.",
+        "ಆಮೇಲೆ ಬೀಜ ಕೈಯಿಂದಲೇ — ಸಮನಾಗಿ ಹರಡಿ, ಎಂದಿಗೂ ಒತ್ತೊತ್ತಾಗಿ ಅಲ್ಲ. ಗಾಳಿಗಾಗಿ ಕಾದಾಡುವ ಸಸಿಗಳೇ ಕೊಳೆಯುವುದು.",
+        "ಆಮೇಲೆ ನೀರು. ನೀರು ಮಾತ್ರ. ಅದರ ಉಳಿದ ಆಯುಷ್ಯದಲ್ಲಿ ಆ ಟ್ರೇಗೆ ಬೇರೇನೂ ಸೇರುವುದಿಲ್ಲ."
+      ],
+      "caption": "ಪ್ರತಿ ಬೆಳೆಗೂ ಹೊಸದು. ಮರುಬಳಕೆ ಎಂದಿಗೂ ಇಲ್ಲ.",
+      "imageAlt": "ಬಿಸಿಲು ಬೀಳುವ ಮೇಜಿನ ಮೇಲೆ, ಹೊಸ ಕೊಕೊಪೀಟ್ ತುಂಬಿದ ಟ್ರೇಗಳಿಗೆ ಕೈಯಿಂದ ಬೀಜ ಬಿತ್ತುತ್ತಿರುವ ಇಬ್ಬರು ಬೆಳೆಗಾರರು."
+    },
+    "germinate": {
+      "eyebrow": "ನಾಲ್ಕನೇ ಹೆಜ್ಜೆ",
+      "heading": "ಮೊದಲು ಕತ್ತಲು. ಆಮೇಲೆ ಬೆಳಕು.",
+      "body": [
+        "ಮೊದಲ ಹಂತದಲ್ಲಿ ಟ್ರೇ ಮುಚ್ಚಿಯೇ ಇರುತ್ತದೆ. ಎಚ್ಚರಗೊಳ್ಳಲು ಬೀಜಕ್ಕೆ ಕತ್ತಲೇ ಬೇಕು.",
+        "ಆಮೇಲೆ ದೀಪ ಹೊತ್ತಿಸಿದಾಗ, ಅವು ಅದರತ್ತ ಚಾಚಿಕೊಳ್ಳುತ್ತವೆ.",
+        "ಪ್ರತಿ ಟ್ರೇಯನ್ನೂ ಪ್ರತಿ ದಿನ ನೋಡುತ್ತೇವೆ — ಉಷ್ಣತೆ, ತೇವಾಂಶ, ಗಾಳಿಯಾಟ, ಎಲೆಗಳು ನಿಂತಿರುವ ರೀತಿ. ಗಮನಿಸುವವರಿಗೆ ಪ್ರತಿ ಬೆಳೆಯೂ ತಾನು ಸಿದ್ಧ ಎಂದು ತಾನೇ ಹೇಳುತ್ತದೆ.",
+        "ಬೆಳವಣಿಗೆಯ ಔಷಧಿ ಇಲ್ಲ. ಸಿಂಪಡಣೆ ಇಲ್ಲ. ಕೀಟನಾಶಕ ಇಲ್ಲ. ಶುಚಿಯಾದ ಕೋಣೆಯಲ್ಲಿ ನಿಂತ ಎಳೆಯ ಟ್ರೇಗೆ ಸಿಂಪಡಿಸಲು ಕಾರಣವೇ ಇಲ್ಲ."
+      ],
+      "caption": "ಎಚ್ಚರಗೊಳ್ಳಲು ಬೀಜಕ್ಕೆ ಕತ್ತಲೇ ಬೇಕು.",
+      "imageAlt": "ಮುಚ್ಚಿದ ಟ್ರೇಯ ಓರೆಯಾದ ಮುಚ್ಚಳದಡಿ, ತೆಳು ಬೆಳಕಿನ ಪಟ್ಟಿಯಲ್ಲಿ ಕೊಕೊಪೀಟ್ ಸೀಳಿ ಮೇಲೇಳುತ್ತಿರುವ ಮೊಳಕೆಗಳು."
+    },
+    "harvest": {
+      "eyebrow": "ಐದನೇ ಹೆಜ್ಜೆ",
+      "heading": "ನಿಮ್ಮನ್ನು ತಲುಪುವ ದಿನವೇ ಕತ್ತರಿಸುತ್ತೇವೆ.",
+      "body": [
+        "ಉತ್ತುಂಗದಲ್ಲಿ ಕೊಯ್ಲು — ಎಲೆ ಪೂರ್ಣವಾಗಿ ತುಂಬಿದ ದಿನ. ಒಂದು ದಿನ ಮೊದಲೂ ಅಲ್ಲ, ಒಂದು ವಾರ ತಡವಾಗಿಯೂ ಅಲ್ಲ.",
+        "ಯಂತ್ರವಲ್ಲ, ಕತ್ತರಿ. ನೇರವಾಗಿ ಶುಚಿಯಾದ ಡಬ್ಬಿಗೆ. ತೊಳೆಯುವುದಿಲ್ಲ, ಬಾಡುವುದಿಲ್ಲ, ಶೀತಲ ಗೃಹದಲ್ಲಿ ವಾರ ಕಳೆಯುವುದಿಲ್ಲ.",
+        "ನಮ್ಮ ಕಪಾಟಿನಿಂದ ನಿಮ್ಮ ಅಡುಗೆಮನೆಗೆ ಅದೇ ದಿನ. ಇಷ್ಟು ಸಣ್ಣದನ್ನು, ಇಷ್ಟು ಹತ್ತಿರದಲ್ಲಿ ಬೆಳೆಯುವ ಉದ್ದೇಶವೇ ಅದು."
+      ],
+      "caption": "ಯಂತ್ರವಲ್ಲ, ಕತ್ತರಿ.",
+      "imageAlt": "ಬೆಳೆದ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಅನ್ನು ಕತ್ತರಿಯಿಂದ ಕೊಯ್ದು ನೇರವಾಗಿ ಶುಚಿಯಾದ ಫ್ಯೂ ಗ್ರಾಮ್ಸ್ ಪೆಟ್ಟಿಗೆಗೆ ತುಂಬುತ್ತಿರುವ ಇಬ್ಬರು ಬೆಳೆಗಾರರು."
+    },
+    "reset": {
+      "eyebrow": "ಆರನೇ ಹೆಜ್ಜೆ",
+      "heading": "ಪ್ರತಿ ಟ್ರೇ ಮತ್ತೆ ಶೂನ್ಯಕ್ಕೆ ಮರಳುತ್ತದೆ.",
+      "body": [
+        "ಬಳಸಿದ ಕೊಕೊಪೀಟ್ ಗೊಬ್ಬರಕ್ಕೆ ಹೋಗುತ್ತದೆ, ಮರುಬಳಕೆಗೆ ಎಂದಿಗೂ ಅಲ್ಲ. ಟ್ರೇಗಳನ್ನು ಖಾಲಿ ಮಾಡಿ, ಉಜ್ಜಿ, ಸೋಂಕುರಹಿತಗೊಳಿಸಿ ಶುಚಿಯಾಗಿ ಜೋಡಿಸಲಾಗುತ್ತದೆ.",
+        "ಹಿಂದಿನ ಬ್ಯಾಚ್‌ನಿಂದ ಯಾವ ಬ್ಯಾಚ್ ಕೂಡ ಏನನ್ನೂ ಪಡೆಯುವುದಿಲ್ಲ.",
+        "ಇದು ಅತ್ಯಂತ ಆಕರ್ಷಣೆ ಇಲ್ಲದ ಹೆಜ್ಜೆ, ಆದರೆ ನಾವು ಅತಿ ಹೆಚ್ಚು ಕಟ್ಟುನಿಟ್ಟಾಗಿರುವುದು ಇಲ್ಲಿಯೇ — ಏಕೆಂದರೆ ಇದನ್ನು ಬಿಟ್ಟರೆ ಯಾರಿಗೂ ಗೊತ್ತಾಗುವುದಿಲ್ಲ."
+      ],
+      "caption": "ಬಿಟ್ಟರೆ ಯಾರಿಗೂ ಗೊತ್ತಾಗದ ಹೆಜ್ಜೆ.",
+      "imageAlt": "ಟ್ರೇಯಿಂದ ಬಳಸಿದ ಕೊಕೊಪೀಟ್ ಅನ್ನು ತ್ಯಾಜ್ಯದ ಬಕೆಟ್‌ಗೆ ಸುರಿದು, ಮುಂದಿನ ಬಿತ್ತನೆಗೆ ಖಾಲಿ ಟ್ರೇಗಳನ್ನು ಉಜ್ಜಿ ಶುಚಿಗೊಳಿಸುತ್ತಿರುವ ಇಬ್ಬರು ಬೆಳೆಗಾರರು."
+    },
+    "closing": {
+      "eyebrow": "ಫ್ಯೂ ಗ್ರಾಮ್ಸ್",
+      "heading": "ಒಳ್ಳೆಯ ಆಹಾರ. ಆರೋಗ್ಯವಂತ ಕುಟುಂಬ. ಹಸಿರಾದ ನಾಳೆ.",
+      "body": [
+        "ಇಡೀ ಜೀವನಶೈಲಿಯನ್ನು ಬದಲಿಸಿ ಎಂದು ನಾವು ಯಾರಿಗೂ ಹೇಳುತ್ತಿಲ್ಲ.",
+        "ಕೆಲವು ಗ್ರಾಂ ಸಾಕು. ಬೇಳೆಸಾರಿನ ಮೇಲೆ, ಸ್ಯಾಂಡ್‌ವಿಚ್‌ನೊಳಗೆ, ಅನ್ನದ ಮೇಲೆ. ಯಾರೂ ವಾದಿಸದಷ್ಟು ಚಿಕ್ಕದು, ಆದರೆ ಲೆಕ್ಕಕ್ಕೆ ಬರುವಷ್ಟು ನಿಜ.",
+        "ಸಣ್ಣ ಹೆಜ್ಜೆ. ದೊಡ್ಡ ಬದಲಾವಣೆ."
+      ],
+      "caption": "ಎಲ್ಲದರ ಮೇಲೂ ಕೆಲವು ಗ್ರಾಂ.",
+      "imageAlt": "ಮೇಜಿನ ಮೇಲೆ ತಾಜಾ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ತುಂಬಿದ ಮರದ ಬಟ್ಟಲು, ಹಿಂದೆ ಮಸುಕಾದ ಹಸಿರು ಎಲೆಗಳು."
+    }
+  }
+}

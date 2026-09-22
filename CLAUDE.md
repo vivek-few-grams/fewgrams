@@ -30,6 +30,7 @@ checkout and a translator can be handed a single file:
 | `shop.json` | `/shop`, `/shop/[category]`, `/shop/trays` and tray detail pages (SPEC §23) |
 | `microgreens.json` | `/microgreens` and variety pages |
 | `seeds.json` | `/seeds` and seed pages (SPEC §22) |
+| `story.json` | `/how-we-grow` — **chrome only**; the book's thirteen pages are editorial copy and live in `content/story/book.json` (SPEC §18.5) |
 | `cart.json` | `/cart` — the ad-hoc basket (SPEC §18.6.1) |
 | `auth.json` | Login, verify, forbidden |
 | `account.json` | `/account` and its profile, addresses and orders screens |
@@ -157,6 +158,77 @@ add a row, not nine ternaries.
   scripts.
 - A plan with no content file is **skipped** on the home page and flagged in
   red in admin, exactly like a variety.
+
+## The storybook is a sequence, so it is one file
+
+`content/story/book.json` holds all thirteen pages of `/how-we-grow`, in both
+languages, loaded by `src/lib/content/story.ts`. It is the **one content file
+that is not one-per-item**, and deliberately so: a catalogue is a set, a book
+is an order. Split across thirteen files the running order has to be restated
+as a `sortOrder` in each of them, which is how two pages end up numbered 7.
+The order lives in the `pages` array and nowhere else.
+
+- **No DynamoDB, and no admin screen.** Nothing on the page is a number the
+  business tunes — no price, no lead time, no count — so there is nothing for
+  a row to hold. Edited in git, reviewed in a diff.
+- **No grow duration in the copy**, same rule as variety text and enforced the
+  same way. `growDays` is tuned in admin and printed on the variety page; a day
+  count here goes stale the first time it is retuned. "The same day" and "every
+  day" are fine — they are claims about the operation, not the crop.
+- **No nutrient claim, on any page.** Not enforceable by regex, so it is a
+  review rule: a nutrient content claim needs analysis behind it under the FSS
+  (Advertising and Claims) Regulations 2018, and this is the page where the
+  temptation is greatest. The book's actual argument is stronger anyway — *you
+  can see it grow* describes the operation, not the food.
+- **The plain stack is the server render**, and the 3D book is the
+  enhancement, gated on `lg` **and** `prefers-reduced-motion: no-preference`.
+  Same call `Reveal` makes: if the book were the server render, a visitor with
+  no JavaScript would get thirteen leaves piled on one another and a
+  one-page story. The failure mode has to be "no page-turn", not "no content".
+- **A spread's two halves come from different sheets.** Leaf `k` carries page
+  `k`'s words on its front and page `k+1`'s *illustration* on its back, because
+  that is how a bound book works — the left page is the back of the sheet you
+  already turned. The payoff is that no face is rendered twice, so nothing
+  needs `aria-hidden` to stop the book being read out to a screen reader
+  twice, and DOM order is reading order.
+- **One paper colour, and therefore no field for it.** Every page is cream.
+  There was a `ground` of `light | dark` while two pages were set apart for
+  emphasis; once the book settled on one paper it had one reachable value,
+  which is worse than no field — a schema that offers a choice nobody can make
+  invites the next person to set it and wonder why nothing happened. The
+  contract now *rejects* a page that declares it, so a stale edit fails loudly
+  rather than quietly doing nothing.
+- **The folio is printed once per spread, not once per leaf**, and it reads
+  `3 / 13` rather than a bare numeral. A "page" here is a whole spread, so both
+  leaves carry the same number; printing it on each put two identical figures
+  on one screen and read as a bug.
+- **A plate is rendered at its natural size, never stretched into a box.**
+  `story.ts` reads each illustration's real pixels out of the WebP header. The
+  masters run 1.34 to 3.0, so one fixed `aspect-[3/2]` frame letterboxed half
+  of them and put cream bars down the sides of the rest. Measured, not
+  declared — a number in the content file can disagree with the file it
+  describes and nothing fails.
+- **A plate's URL carries `?v=<mtime>`, and it is load-bearing.** Artwork is
+  replaced in place, so the URL never changes on its own — and `next/image`
+  answers the browser's revalidation with a `304` off an ETag that does *not*
+  track the source file, so the old picture stays on screen forever with the
+  right bytes on disk. Verified: overwriting a file with entirely different
+  content still returned `304` and the same ETag. `next.config.ts` lists
+  `/story/**` in `images.localPatterns` so the query string is allowed; do not
+  widen that pattern, because omitting `search` allows any query string and
+  each distinct one is another entry in the optimizer's cache.
+- **Do not add `sizes` to the book plate.** `width: auto` on a replaced
+  element uses the *density-corrected* intrinsic width, which with a
+  `w`-descriptor srcset comes from `sizes` rather than from the file — it
+  rendered every plate at 450px instead of filling the leaf. The mobile card
+  sets `w-full` so it is unaffected and keeps its `sizes`.
+- **A plate has no border and no soft edge.** A radial-gradient mask that
+  dissolved each rectangle into the paper was built and removed the same day
+  (22 Sep 2026), in two tunings — it read as a blur rather than as torn paper,
+  and it ate whatever the illustration had near its edge. The masters are
+  already on near-white backgrounds and meet cream paper on their own. If it
+  comes up again: the argument for it was that thirteen hard rectangles read
+  as thirteen screenshots, and that turned out not to be what a reader sees.
 
 ## A cart unit is not always 100 g
 

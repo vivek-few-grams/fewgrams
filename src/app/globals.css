@@ -700,3 +700,171 @@ html[data-loader="out"] .loader__mark {
      multiplier if it still feels off.                                       */
   font-size: calc(var(--label-size, 0.8125rem) * 1.06);
 }
+
+/* ─────────────────────────────────────────────────────────────
+   The storybook — SPEC §18.5
+
+   `/how-we-grow` is a picture book you turn by scrolling. Everything here is
+   the 3D page-turn and nothing else; layout and type are Tailwind on the
+   component, because they are the parts that change when the copy changes.
+
+   ## How the turn is driven
+
+   ONE custom property. `StoryBook` writes `--p` (pages turned so far, a
+   fraction) onto `.book` on each scroll frame, and every leaf derives its own
+   angle from it against its own index `--k`:
+
+       angle = -180deg × clamp(0, --p − --k, 1)
+
+   So leaf 3 is flat at `--p ≤ 3`, edge-on at 3.5 and fully turned at `--p ≥ 4`,
+   and no leaf needs to be told anything about any other. This is why the
+   scroll handler can write one string to one node instead of re-rendering
+   thirteen React elements sixty times a second — the arithmetic is declarative
+   and the browser does it on the compositor.
+
+   `--p` is deliberately NOT animated or transitioned. It already tracks the
+   scroll position, and a transition on top of that adds lag between the
+   wheel and the paper, which reads as the book being broken rather than as
+   easing.
+
+   ## Why the hinge is the left edge
+
+   The leaves are stacked in the RIGHT half of the spread and hinged on the
+   spine, so a turn sweeps a leaf across onto the LEFT half — where it lands
+   exactly on top of the previously turned ones, like a real book. That is
+   also why each leaf carries two faces: the front is page k as you read it on
+   the right, and the back is the same page seen from the left once you have
+   turned past it. The back is pre-flipped 180° so it is not mirrored, and the
+   component marks it `aria-hidden` so a screen reader reads each page once.
+
+   ## Z-ordering
+
+   Cannot be expressed here, because it inverts at the halfway point: before
+   the turn the earliest leaf must be on top of the pile on the right, after
+   it the latest must be on top of the pile on the left. The component sets
+   `z-index` per leaf from the current page index, which changes once per turn
+   rather than once per frame — and it changes at 90°, where the leaf is
+   edge-on and the swap has nothing visible to swap.
+
+   ## Reduced motion
+
+   There is no rule for it here, and there must not be one. `StoryBook` gates
+   the whole book behind `prefers-reduced-motion: no-preference` AND a `lg`
+   viewport; anything else gets the plain vertical stack, which is also what
+   the server renders. A `@media` override that flattened the transforms would
+   leave thirteen leaves piled on one another with no scroll handler to
+   separate them.
+   ───────────────────────────────────────────────────────────── */
+/* The perspective sits on the leaves' DIRECT parent, not on `.book`. A
+   `perspective` only applies to an element's own children, so declaring it one
+   level up would need `transform-style: preserve-3d` on the spread in between
+   — which is both an extra thing to get right and unreliable on a flex or
+   grid container. Putting it here means the leaves are children of the
+   perspective and nothing sits in the middle.
+
+   `perspective-origin: 0` is the left edge of the right-hand page, which is
+   the spine — the point a reader's eye is actually over. Centred on the
+   right-hand page instead, the leaf furthest through its turn swings visibly
+   towards the viewer and the spread reads as lopsided. */
+.book__leaves {
+  position: relative;
+  /* Deliberately long. At 2600px the leaf swung far enough towards the
+     viewer mid-turn to render ~15% larger than the book it belongs to, which
+     reads as the page detaching rather than turning. A distant camera keeps
+     the sheet the size of the paper it came off. */
+  perspective: 3600px;
+  perspective-origin: 0 45%;
+}
+
+.book__leaf {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  /* The spine. With the leaves living in the right half of the spread, this
+     is the centre line of the book. */
+  transform-origin: left center;
+  transform: rotateY(calc(-180deg * clamp(0, var(--p, 0) - var(--k, 0), 1)));
+}
+
+.book__face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  /* Paper is opaque. Without this the face behind shows through mid-turn and
+     the two pages composite into an unreadable double exposure. */
+  background-color: var(--color-cream);
+}
+
+.book__face--back {
+  transform: rotateY(180deg);
+}
+
+/* The gutter. A real spread is darkest where the paper curves into the
+   binding, and this one line of shading does more for the illusion than the
+   transform does — without it two flat rectangles sit side by side and read
+   as cards.
+
+   Applied per face so it follows the page through the turn, and
+   `pointer-events: none` so it can never eat a click on anything beneath.
+
+   Kept tight — 11% of the leaf. Wider was tried while a wire binding sat on
+   top of it and needed something to cast onto; with the wire gone, the two
+   shadows met in the middle of the spread and the gutter read as a grey wash
+   rather than as paper curving into a fold. */
+.book__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgb(3 57 35 / 0.2) 0,
+    rgb(3 57 35 / 0.06) 3%,
+    transparent 11%
+  );
+}
+
+.book__face--back::after {
+  /* The back face is flipped, so its bound edge is the one on the right. */
+  background: linear-gradient(
+    to left,
+    rgb(3 57 35 / 0.2) 0,
+    rgb(3 57 35 / 0.06) 3%,
+    transparent 11%
+  );
+}
+
+/* The left half before anything has been turned, and the surface every
+   turned leaf lands on. It is not decoration: a spread is
+   illustration-left / words-right, and the left leaf of the FIRST spread has
+   no sheet in front of it to be the back of — so the opening illustration
+   lives here. Same paper, same gutter, mirrored like a back face because
+   that is the side of the binding it is on. */
+.book__base {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--color-sand);
+}
+
+.book__base::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to left,
+    rgb(3 57 35 / 0.2) 0,
+    rgb(3 57 35 / 0.06) 3%,
+    transparent 11%
+  );
+}
+
+/* A page sizes its own type against its own width, not the viewport's. The
+   same face renders at ~560px inside the book and at full width in the mobile
+   stack, and a `vw` clamp would set 34px headings on a phone and 20px ones
+   inside the book — exactly backwards. */
+.story-page {
+  container-type: inline-size;
+}
+

@@ -1,0 +1,16 @@
+{
+  "title": "How we grow",
+  "description": "The story of why two software engineers started growing microgreens for their own daughter, and the discipline behind every tray we hand to your kitchen.",
+  "bookLabel": "Our story, page by page",
+  "hint": "Scroll to turn the page",
+  "pageOf": "Page {current} of {total}",
+  "folio": "{current} / {total}",
+  "previous": "Previous page",
+  "next": "Next page",
+  "close": {
+    "heading": "Start with a few grams.",
+    "shop": "Shop fresh greens",
+    "grow": "Grow your own"
+  },
+  "empty": "This story is being written. In the meantime, the greens are already growing."
+}
