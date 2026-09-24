@@ -1,6 +1,8 @@
+import { volumetricGrams } from "./weight";
 import { describe, expect, it } from "vitest";
 import {
   parcelGrams,
+  pipeLines,
   rackBox,
   trayStack,
   travelsOnOwnRun,
@@ -9,7 +11,7 @@ import {
   type TrayPacking,
 } from "./parcel";
 
-const rules: PackingRules = { seedPackingGrams: 50, shelfStackCm: 2 };
+const rules: PackingRules = { seedPackingGrams: 50 };
 
 /* The owner's own example: a tray is 60 × 30 × 3 cm and each stacked tray
    adds 3 cm. Sold two to a pack. */
@@ -23,7 +25,14 @@ const tray: TrayPacking = {
 };
 
 /* The owner's own worked rack: 6 ft, 5 shelves, 1.25 × 3 ft plate. */
-const rack: RackPacking = { heightFt: 6, shelves: 5, depthFt: 1.25, lengthFt: 3, gramsPerShelf: 2500 };
+const rack: RackPacking = {
+  heightFt: 6,
+  shelves: 5,
+  depthFt: 1.25,
+  lengthFt: 3,
+  gramsPerShelf: 2500,
+  stack: { kind: "plates", shelfCm: 2 },
+};
 
 describe("travelsOnOwnRun", () => {
   it("is true as soon as one line is a green, whatever rides with it", () => {
@@ -53,8 +62,8 @@ describe("trayStack", () => {
 });
 
 describe("rackBox", () => {
-  it("lets the legs set the length and stacks the shelves", () => {
-    const r = rackBox(rack, 2);
+  it("lets the legs set the length and stacks the plates", () => {
+    const r = rackBox(rack);
     expect(r.grams).toBe(12500);
     expect(r.box.length).toBeCloseTo(182.88);
     expect(r.box.width).toBeCloseTo(38.1);
@@ -62,7 +71,30 @@ describe("rackBox", () => {
   });
 
   it("uses the shelf length when it is longer than the rack is tall", () => {
-    expect(rackBox({ ...rack, heightFt: 2, lengthFt: 4 }, 2).box.length).toBeCloseTo(121.92);
+    expect(rackBox({ ...rack, heightFt: 2, lengthFt: 4 }).box.length).toBeCloseTo(121.92);
+  });
+
+  /* The owner's numbers, 24 Sep 2026: 2 in slotted angle, 1 cm a piece.
+     A 6 ft, 5-shelf open-frame rack is 4 legs + 5 × 5 frame pieces = 29. */
+  it("packs an angle rack as a bundle of pieces, not a stack of shelves", () => {
+    const angle: RackPacking = { ...rack, depthFt: 1, lengthFt: 4, stack: { kind: "bundle", pieces: 29, widthCm: 5, stackCm: 1 } };
+    const r = rackBox(angle);
+    expect(r.box).toEqual({ length: expect.closeTo(182.88), width: 5, height: 29 });
+    /* 182.88 × 5 × 29 ÷ 5000 = 5.3 kg — against 111 kg as a box of shelves. */
+    expect(volumetricGrams(r.box)).toBe(5304);
+  });
+
+  /* The owner's rule for pipe: it does not nest, and cut pieces lie end to
+     end. Four 4 ft legs of 1 in pipe are a 2 × 2 in bundle. */
+  it("groups four legs of pipe two by two", () => {
+    const pipe: RackPacking = { ...rack, heightFt: 4, lengthFt: 2, stack: { kind: "pipes", piecesFt: [4, 4, 4, 4], diameterCm: 2.54 } };
+    expect(rackBox(pipe).box).toEqual({ length: expect.closeTo(121.92), width: 5.08, height: 5.08 });
+  });
+
+  it("lays two 2 ft pieces end to end in one 4 ft line", () => {
+    expect(pipeLines([4, 2, 2], 4)).toBe(2);
+    expect(pipeLines([2, 2, 2, 2, 2, 2], 6)).toBe(2);
+    expect(pipeLines([6, 6, 6, 6, 1.5, 1.5, 1.5], 6)).toBe(5);
   });
 });
 

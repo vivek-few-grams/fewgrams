@@ -4,7 +4,7 @@ import { loadRateCard } from "@/lib/repo/racks";
 import { getShippingSettings } from "@/lib/repo/shipping";
 import { listTrays } from "@/lib/repo/trays";
 import { listGrowMedia } from "@/lib/repo/grow-media";
-import { shippingProvider } from "@/lib/shipping";
+import { shippingProvider, shippingProviders, type CourierName } from "@/lib/shipping";
 import { DeliveryForm } from "./DeliveryForm";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +39,7 @@ export default async function DeliveryAdmin() {
       .filter((x) => x.active && x.packPieces === undefined)
       .map((x) => ({ screen: "growMedia", label: x.contentKey, href: "/admin/grow-media" })),
     ...card.plates
-      .filter((x) => x.active && x.gramsPerShelf === undefined)
+      .filter((x) => x.active && (x.gramsPerShelf === undefined || x.packedCm === undefined))
       .map((x) => ({ screen: "plates", label: t("sizePlate", { depth: x.depthFt, length: x.lengthFt, thickness: x.thicknessMm }), href: "/admin/racks" })),
     ...card.frames
       .filter((x) => x.active && x.gramsPerShelf === undefined)
@@ -47,6 +47,14 @@ export default async function DeliveryAdmin() {
     ...card.pipes
       .filter((x) => x.active && x.gramsPerShelf === undefined)
       .map((x) => ({ screen: "pipes", label: t("sizeFootprint", { depth: x.depthFt, length: x.lengthFt }), href: "/admin/pipe-racks" })),
+    /* The bundle figures are range-wide, so one entry each rather than one
+       per size: every angle or pipe rack waits on the same two numbers. */
+    ...(card.settings && (card.settings.angleWidthCm === undefined || card.settings.angleStackCm === undefined)
+      ? [{ screen: "frames", label: t("anglePacking"), href: "/admin/racks" }]
+      : []),
+    ...(card.pipeSettings && card.pipeSettings.pipeDiameterCm === undefined
+      ? [{ screen: "pipes", label: t("pipePacking"), href: "/admin/pipe-racks" }]
+      : []),
   ];
 
   let check: { ok: true; price: number; pickup: boolean } | { ok: false; detail: string } | null = null;
@@ -62,6 +70,25 @@ export default async function DeliveryAdmin() {
       check = { ok: false, detail: e instanceof Error ? e.message : String(e) };
     }
   }
+
+  /* Ekart and Shiprocket, asked the same 500 g question. Delhivery keeps its
+     own line above because it also answers whether it collects from the
+     pickup PIN; these two are only asked for a price. */
+  const connected = new Map(shippingProviders().map((p) => [p.name, p]));
+  const others = await Promise.all(
+    (["ekart", "shiprocket"] as const satisfies readonly CourierName[]).map(async (name) => {
+      const p = connected.get(name);
+      if (!p) return { name, state: "off" as const };
+      if (!settings) return { name, state: "noSettings" as const };
+      const pin = settings.pickup.pincode;
+      try {
+        const opts = await p.options({ originPin: pin, destinationPin: pin, grams: 500, speed: "surface" });
+        return { name, state: "ok" as const, price: opts[0].total, count: opts.length };
+      } catch (e) {
+        return { name, state: "error" as const, detail: e instanceof Error ? e.message : String(e) };
+      }
+    }),
+  );
 
   return (
     <div>
@@ -88,6 +115,22 @@ export default async function DeliveryAdmin() {
                   : t("statusNoPickup", { pincode: settings.pickup.pincode })
                 : t("statusError", { mode: provider.mode, detail: check?.ok === false ? check.detail : "" })}
         </p>
+        <ul className="mt-2 space-y-1 font-body text-sm text-forest">
+          {others.map((o) => {
+            const courier = t(`courierName.${o.name}`);
+            return (
+              <li key={o.name}>
+                {o.state === "off"
+                  ? t(`statusOtherOff.${o.name}`)
+                  : o.state === "noSettings"
+                    ? t("statusOtherNoSettings", { courier })
+                    : o.state === "ok"
+                      ? t("statusOtherOk", { courier, price: o.price, count: o.count, pincode: settings!.pickup.pincode })
+                      : t("statusOtherError", { courier, detail: o.detail })}
+              </li>
+            );
+          })}
+        </ul>
       </section>
 
       {unmeasured.length > 0 && (

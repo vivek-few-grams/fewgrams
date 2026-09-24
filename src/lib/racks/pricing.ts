@@ -219,6 +219,10 @@ export function frameFeetPerShelf(size: Pick<FrameSize, "depthFt" | "lengthFt">)
   return 3 * size.lengthFt + 2 * size.depthFt;
 }
 
+/** The same five pieces as `frameFeetPerShelf`, counted rather than measured —
+ *  what an open-frame rack's courier bundle holds per level (SPEC §7). */
+export const ANGLE_PIECES_PER_SHELF = 5;
+
 /** Every running foot of angle in a finished open-frame rack — the legs plus
  *  the framing. Shown in the admin table because it is the one figure that can
  *  be checked straight against a vendor invoice: the rack is angle and almost
@@ -348,7 +352,7 @@ export const PIPE_MID_SUPPORT_LEGS = 2;
  *  support on anything long enough to need one. */
 export function pipeRackLegs(
   size: Pick<PipeSize, "lengthFt">,
-  settings: RackSettings,
+  settings: Pick<RackSettings, "legsPerRack">,
 ): number {
   return (
     settings.legsPerRack +
@@ -375,6 +379,30 @@ export function pipeFeetPerShelf(
   size: Pick<PipeSize, "depthFt" | "lengthFt">,
 ): number {
   return 2 * (size.lengthFt + size.depthFt);
+}
+
+/**
+ * Every piece of pipe in a pipe rack, by length in feet — what its courier
+ * bundle has to hold (SPEC §7). The uprights at the rack's height (corners
+ * plus any middle support), then each level's rails: two across the depth,
+ * and two along the length — or four halves once the middle support cuts each
+ * long rail in two (see `pipeFeetPerShelf`).
+ */
+export function pipeRackPiecesFt(
+  config: Pick<PipeRackConfig, "heightFt" | "shelves">,
+  size: Pick<PipeSize, "depthFt" | "lengthFt">,
+  settings: Pick<RackSettings, "legsPerRack">,
+): number[] {
+  const split = size.lengthFt >= PIPE_MID_SUPPORT_FROM_LENGTH_FT;
+  const level = [
+    size.depthFt,
+    size.depthFt,
+    ...(split ? Array(4).fill(size.lengthFt / 2) : [size.lengthFt, size.lengthFt]),
+  ];
+  return [
+    ...Array(pipeRackLegs(size, settings)).fill(config.heightFt),
+    ...Array.from({ length: config.shelves }, () => level).flat(),
+  ];
 }
 
 /** Every running foot of pipe in a finished rack — uprights plus frames.

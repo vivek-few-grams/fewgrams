@@ -47,9 +47,10 @@ import Image from "next/image";
  * `leadNote` carries the one thing a dated promise does not explain by itself:
  * *"for racks within Bangalore location, the delivery timeline is three days"*.
  * Three days on a made-to-order steel rack is fast enough that a buyer will
- * wonder whether it is a city figure, so the note says so — and says we do not
- * deliver them outside Bengaluru, which is true of the whole site (SPEC §7) but
- * least obvious here.
+ * wonder whether it is a city figure, so the note says what it covers — the
+ * build — and that the rack then goes by courier anywhere in India, priced at
+ * checkout. The delivery area limits fresh greens only (the owner, 24 Sep
+ * 2026; SPEC §7); it once applied to the whole site, and this note said so.
  *
  * The earlier version of this note said nothing here was priced online. It was
  * replaced rather than added to, because it is no longer true.

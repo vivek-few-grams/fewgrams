@@ -28,7 +28,6 @@ const TEXT = ["pickupName", "pickupAddress", "pickupCity"] as const;
 const NUMBERS = [
   "greenRunFee",
   "seedPackingGrams",
-  "shelfStackCm",
 ] as const;
 
 export async function saveShippingSettings(_prev: FormState, fd: FormData): Promise<FormState> {
@@ -64,7 +63,7 @@ export async function saveShippingSettings(_prev: FormState, fd: FormData): Prom
     },
     /* Whole rupees: it is added to a total the gateway charges in rupees. */
     greenRunFee: Math.round(n.greenRunFee),
-    packing: { seedPackingGrams: n.seedPackingGrams, shelfStackCm: n.shelfStackCm },
+    packing: { seedPackingGrams: n.seedPackingGrams },
   });
 
   revalidatePath("/[locale]/admin/delivery", "page");

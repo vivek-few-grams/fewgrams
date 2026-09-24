@@ -1,4 +1,4 @@
-import type { AreaCheck } from "@/lib/pincode/place";
+import type { PinPlace } from "@/lib/pincode/place";
 
 /**
  * Account form validation — pure, so it can be tested without a browser, a
@@ -163,13 +163,18 @@ function readGeo(fd: FormData): Validated<AddressInput["geo"]> {
 }
 
 /**
- * `area` is `checkDeliveryArea`'s answer for the PIN — required, so no caller
- * can validate an address without asking whether we deliver there. Its
- * `place` only fills a district or state the form sent blank: the browser
- * normally fills both first, and what the customer typed wins, because on a
- * PIN split between two districts they know which side they live on.
+ * `place` is India Post's answer for the PIN, or null. It only fills a
+ * district or state the form sent blank: the browser normally fills both
+ * first, and what the customer typed wins, because on a PIN split between two
+ * districts they know which side they live on.
+ *
+ * **Any Indian PIN is a valid address** (the owner, 24 Sep 2026). The
+ * delivery area limits fresh greens only — the owner's own run — and seeds,
+ * trays, coir and racks go by courier anywhere. So the area is checked at
+ * checkout, for a cart with greens in it, and not here: an address is not a
+ * promise about what can be sent to it.
  */
-export function validateAddress(fd: FormData, area: AreaCheck): Validated<AddressInput> {
+export function validateAddress(fd: FormData, place: PinPlace | null): Validated<AddressInput> {
   const recipient = clean(fd.get("recipient"));
   if (!recipient) return fail("recipient", "recipientRequired");
 
@@ -181,13 +186,6 @@ export function validateAddress(fd: FormData, area: AreaCheck): Validated<Addres
 
   const pincode = readPincode(fd);
   if (!/^\d{6}$/.test(pincode)) return fail("pincode", "pincodeInvalid");
-  // SPEC §7: the delivery area is a hard gate, applied here on save and not
-  // only by the PIN step in the browser.
-  if (!area.served) {
-    return fail("pincode", "pincodeNotServed", { pincode });
-  }
-
-  const { place } = area;
   const district = clean(fd.get("district")) || place?.district || "";
   if (!district) return fail("district", "districtRequired");
   if (district.length > PLACE_MAX) return fail("district", "placeTooLong");

@@ -1,12 +1,12 @@
 import type { CartKind } from "@/lib/cart/cart";
 import type { ShippingQuote } from "@/lib/orders/order";
-import { findSellableRack } from "@/lib/racks/catalogue";
+import { findSellableRack, type SellableRack } from "@/lib/racks/catalogue";
 import { getShippingSettings } from "@/lib/repo/shipping";
 import { listTrays } from "@/lib/repo/trays";
 import { listGrowMedia } from "@/lib/repo/grow-media";
 import type { GrowMedium, Tray } from "@/lib/types";
-import { shippingProvider } from "./index";
-import { parcelGrams, travelsOnOwnRun, type ParcelLine, type TrayPacking } from "./parcel";
+import { shippingProviders, type CourierName, type CourierOption } from "./index";
+import { parcelGrams, travelsOnOwnRun, type ParcelLine, type RackPacking, type TrayPacking } from "./parcel";
 
 /**
  * The delivery charge for one order to one PIN — SPEC §7. Two rules, both the
@@ -24,18 +24,42 @@ import { parcelGrams, travelsOnOwnRun, type ParcelLine, type TrayPacking } from 
  * A subscription pays none — its price includes delivery — and does not come
  * through this path.
  *
+ * **Every connected courier is asked at once** (the owner, 24 Sep 2026) —
+ * Delhivery, Ekart and Shiprocket's carriers — and the customer is shown each
+ * price, cheapest picked, free to pick another. No single courier wins
+ * everywhere: Ekart's flat rate beats Delhivery on a 2 kg tray pack in every
+ * city tested and loses on a 500 g seed packet in every one.
+ *
  * Never falls back to free. With no settings saved, an item not yet measured,
- * no courier token, or a courier that does not answer, the result says so
- * and checkout does not open, because an order placed at ₹0 delivery is a
- * charge nobody can take back after payment.
+ * no courier token, or no courier that answers, the result says so and
+ * checkout does not open, because an order placed at ₹0 delivery is a charge
+ * nobody can take back after payment. One courier failing is not that: the
+ * others' prices still stand.
  */
+export type DeliveryFailure = "notConfigured" | "noCourier" | "notMeasured" | "unavailable";
+
+/** One courier option as checkout shows and charges it: rupees, rounded up. */
+export type DeliveryOption = {
+  id: string;
+  courier: CourierName;
+  carrier: string | null;
+  amount: number;
+  days: number | null;
+  quote: ShippingQuote;
+};
+
+export type DeliveryOptions =
+  | { ok: true; method: "own_run"; amount: number }
+  | { ok: true; method: "courier"; options: DeliveryOption[] }
+  | { ok: false; reason: DeliveryFailure };
+
 export type DeliveryCharge =
   | { ok: true; method: "own_run"; amount: number; quote: null }
-  | { ok: true; method: "courier"; amount: number; quote: ShippingQuote }
-  | { ok: false; reason: "notConfigured" | "noCourier" | "notMeasured" | "unavailable" };
+  | { ok: true; method: "courier"; amount: number; quote: ShippingQuote; days: number | null }
+  | { ok: false; reason: DeliveryFailure | "optionGone" };
 
 /** What checkout and the order hold for a line — enough to find its packing. */
-export type ChargeLine = { kind: CartKind; key: string; units: number; grams: number | null };
+export type ChargeLine = { kind: CartKind; key: string; units: number; grams: number | null; lineTotal: number };
 
 /** A tray's or a grow medium's six packing figures, or null until all six
  *  are measured. Both rows carry the same fields (SPEC §24). */
@@ -61,6 +85,29 @@ function trayPacking(t: Tray | GrowMedium | undefined): TrayPacking | null {
   };
 }
 
+/** A rack's packing, or null until every figure it needs is measured —
+ *  grams per shelf, and either its plate's thickness or the angle or pipe
+ *  bundle's section (SPEC §7). */
+function rackPacking(r: SellableRack): RackPacking | null {
+  if (r.gramsPerShelf === null) return null;
+  const base = {
+    heightFt: r.heightFt,
+    shelves: r.shelves,
+    depthFt: r.depthFt,
+    lengthFt: r.lengthFt,
+    gramsPerShelf: r.gramsPerShelf,
+  };
+  const p = r.packing;
+  if (p.kind === "plates") {
+    return p.shelfCm === null ? null : { ...base, stack: { kind: "plates", shelfCm: p.shelfCm } };
+  }
+  if (p.kind === "pipes") {
+    return p.diameterCm === null ? null : { ...base, stack: { kind: "pipes", piecesFt: p.piecesFt, diameterCm: p.diameterCm } };
+  }
+  if (p.widthCm === null || p.stackCm === null) return null;
+  return { ...base, stack: { kind: "bundle", pieces: p.pieces, widthCm: p.widthCm, stackCm: p.stackCm } };
+}
+
 /** Joins each line to where its measurements live: a tray to its row, a
  *  rack to its model and shelf size. */
 async function toParcelLines(lines: readonly ChargeLine[]): Promise<ParcelLine[]> {
@@ -84,21 +131,7 @@ async function toParcelLines(lines: readonly ChargeLine[]): Promise<ParcelLine[]
           return { kind: "media", units: l.units, packing: trayPacking(media.get(l.key)) };
         case "rack": {
           const found = await findSellableRack(l.key);
-          const r = found?.rack;
-          return {
-            kind: "rack",
-            units: l.units,
-            packing:
-              r && r.gramsPerShelf !== null
-                ? {
-                    heightFt: r.heightFt,
-                    shelves: r.shelves,
-                    depthFt: r.depthFt,
-                    lengthFt: r.lengthFt,
-                    gramsPerShelf: r.gramsPerShelf,
-                  }
-                : null,
-          };
+          return { kind: "rack", units: l.units, packing: found ? rackPacking(found.rack) : null };
         }
         default: {
           const never: never = l.kind;
@@ -109,18 +142,54 @@ async function toParcelLines(lines: readonly ChargeLine[]): Promise<ParcelLine[]
   );
 }
 
-export async function deliveryCharge(lines: readonly ChargeLine[], pincode: string): Promise<DeliveryCharge> {
+/**
+ * A scan is kept for ten minutes per origin, destination and weight. The
+ * customer sees a scan's prices and pays against them a minute later; a
+ * fresh scan at that moment would ask three couriers again, and if one of
+ * them had stopped answering in between, the option the customer chose would
+ * vanish under them. Rate cards do not move in ten minutes. Per process, so
+ * a cold instance simply scans again.
+ */
+const SCAN_TTL_MS = 10 * 60_000;
+const scans = new Map<string, { until: number; options: CourierOption[] }>();
+
+async function scanCouriers(originPin: string, destinationPin: string, grams: number, value: number) {
+  const key = `${originPin}>${destinationPin}:${grams}`;
+  const hit = scans.get(key);
+  if (hit && hit.until > Date.now()) return hit.options;
+
+  const providers = shippingProviders();
+  const settled = await Promise.allSettled(
+    providers.map((p) => p.options({ originPin, destinationPin, grams, speed: "surface", value })),
+  );
+  const options = settled
+    .flatMap((r, i) => {
+      if (r.status === "fulfilled") return r.value;
+      console.error(`[shipping] ${providers[i].name} gave no price to ${destinationPin} for ${grams} g`, r.reason);
+      return [];
+    })
+    .sort((a, b) => a.total - b.total);
+  /* Only a scan with an answer is kept: an empty one would hold a courier
+     outage in place for ten minutes. */
+  if (options.length > 0) {
+    if (scans.size > 500) scans.clear();
+    scans.set(key, { until: Date.now() + SCAN_TTL_MS, options });
+  }
+  return options;
+}
+
+/** Every way to deliver this order to this PIN, cheapest first. */
+export async function deliveryOptions(lines: readonly ChargeLine[], pincode: string): Promise<DeliveryOptions> {
   const settings = await getShippingSettings();
   if (!settings) return { ok: false, reason: "notConfigured" };
 
   if (travelsOnOwnRun(lines)) {
-    return { ok: true, method: "own_run", amount: settings.greenRunFee, quote: null };
+    return { ok: true, method: "own_run", amount: settings.greenRunFee };
   }
 
-  const provider = shippingProvider();
   /* Its own reason, not `notConfigured`: "no fee saved" and "no courier
      token" are fixed in different places, and the admin note has to say which. */
-  if (!provider) return { ok: false, reason: "noCourier" };
+  if (shippingProviders().length === 0) return { ok: false, reason: "noCourier" };
 
   const grams = parcelGrams(await toParcelLines(lines), settings.packing);
   if (grams === null) {
@@ -129,21 +198,46 @@ export async function deliveryCharge(lines: readonly ChargeLine[], pincode: stri
   }
   if (grams <= 0) return { ok: false, reason: "notConfigured" };
 
-  try {
-    const q = await provider.quote({
-      originPin: settings.pickup.pincode,
-      destinationPin: pincode,
-      grams,
-      speed: "surface",
-    });
-    return {
-      ok: true,
-      method: "courier",
-      amount: Math.ceil(q.total),
-      quote: { courier: provider.name, quotedTotal: q.total, chargedGrams: q.chargedGrams, zone: q.zone },
-    };
-  } catch (e) {
-    console.error(`[shipping] no quote to ${pincode} for ${grams} g`, e);
-    return { ok: false, reason: "unavailable" };
-  }
+  /* The goods' worth, for couriers that ask for a declared value. */
+  const value = lines.reduce((sum, l) => sum + l.lineTotal, 0);
+  const found = await scanCouriers(settings.pickup.pincode, pincode, grams, value);
+  if (found.length === 0) return { ok: false, reason: "unavailable" };
+
+  return {
+    ok: true,
+    method: "courier",
+    options: found.map((o) => ({
+      id: o.id,
+      courier: o.courier,
+      carrier: o.carrier,
+      amount: Math.ceil(o.total),
+      days: o.days,
+      quote: {
+        courier: o.courier,
+        ...(o.carrier ? { carrier: o.carrier } : {}),
+        ...(o.serviceId ? { serviceId: o.serviceId } : {}),
+        quotedTotal: o.total,
+        chargedGrams: o.chargedGrams,
+        zone: o.zone,
+      },
+    })),
+  };
+}
+
+/**
+ * The charge for the option the customer chose. `optionGone` when that
+ * option is no longer offered — checkout then refuses and re-scans rather
+ * than charging a different courier's price.
+ */
+export async function deliveryCharge(
+  lines: readonly ChargeLine[],
+  pincode: string,
+  optionId: string | null,
+): Promise<DeliveryCharge> {
+  const found = await deliveryOptions(lines, pincode);
+  if (!found.ok) return found;
+  if (found.method === "own_run") return { ok: true, method: "own_run", amount: found.amount, quote: null };
+  const chosen = found.options.find((o) => o.id === optionId);
+  if (!chosen) return { ok: false, reason: "optionGone" };
+  return { ok: true, method: "courier", amount: chosen.amount, quote: chosen.quote, days: chosen.days };
 }

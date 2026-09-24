@@ -76,7 +76,17 @@ export async function savePipeRates(
   const bushPrice = money(fd, "bushPrice");
   if (bushPrice === null) return err("rateInvalid", "bushPrice");
 
-  await putPipeSettings({ ratePerFt, connectorPrice, bushPrice });
+  /* Optional: flagged while blank; a pipe rack cannot go by courier until it
+     is set (SPEC §7). */
+  const pipeDiameterCm = optionalPositive(fd, "pipeDiameterCm");
+  if (pipeDiameterCm === "invalid") return err("packedInvalid", "pipeDiameterCm");
+
+  await putPipeSettings({
+    ratePerFt,
+    connectorPrice,
+    bushPrice,
+    ...(pipeDiameterCm !== undefined ? { pipeDiameterCm } : {}),
+  });
   await cascade();
   return { status: "saved" };
 }

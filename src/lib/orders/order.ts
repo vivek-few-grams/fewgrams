@@ -53,7 +53,13 @@ export type OrderAddress = Pick<
 >;
 
 export type ShippingQuote = {
-  courier: "delhivery";
+  /** The account it is booked on. Older orders are all Delhivery. */
+  courier: "delhivery" | "ekart" | "shiprocket";
+  /** For Shiprocket, the carrier the customer chose (`Xpressbees`) and
+   *  Shiprocket's id for it, which booking the shipment needs. Absent for a
+   *  courier that carries its own parcels, and on older orders. */
+  carrier?: string;
+  serviceId?: string;
   /** Rupees to the paisa, before rounding up into `deliveryCharge`. */
   quotedTotal: number;
   chargedGrams: number;

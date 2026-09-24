@@ -13,12 +13,14 @@ import {
   type Order,
 } from "@/lib/orders/order";
 import { paymentProvider } from "@/lib/payments";
-import { deliveryCharge } from "@/lib/shipping/charge";
+import { getTranslations } from "next-intl/server";
+import { deliveryCharge, deliveryOptions } from "@/lib/shipping/charge";
 import { checkDeliveryArea } from "@/lib/pincode/place";
-import { istDateISO } from "@/lib/delivery-date";
+import { travelsOnOwnRun } from "@/lib/shipping/parcel";
+import { courierArrival, courierPickup, istDateISO } from "@/lib/delivery-date";
 import { getAddress, getProfile } from "@/lib/repo/profile";
 import { createOrder, setProviderOrderId } from "@/lib/repo/orders";
-import type { CheckoutState } from "./state";
+import type { CheckoutState, DeliveryScan } from "./state";
 
 const fail = (code: string, values?: Record<string, string>): CheckoutState => ({
   status: "error",
@@ -32,7 +34,8 @@ const fail = (code: string, values?: Record<string, string>): CheckoutState => (
  * **Every figure is recomputed here.** The form sends an address id and the
  * total the customer was looking at, nothing else. The lines, prices and
  * delivery date come from `hydrateCart`, the same read the cart page makes,
- * and the delivery charge from a fresh courier quote for that address;
+ * and the delivery charge from the courier option the customer chose, looked
+ * up again in a scan for that address (`deliveryCharge`);
  * the total the browser saw is used only to refuse the order when the two
  * disagree, so that nobody is charged a price they have not been shown.
  *
@@ -54,22 +57,23 @@ export async function startCheckout(
 
   const address = await getAddress(actor.userId, String(fd.get("addrId") ?? ""));
   if (!address) return fail("addressMissing");
-  /* SPEC §7: the PIN gate is enforced here, server-side, whatever the
-     address book held when the address was saved. */
-  if (!(await checkDeliveryArea(address.pincode)).served) {
-    return fail("pincodeNotServed", { pincode: address.pincode });
-  }
-
   const cart = await hydrateCart(locale);
   if (cart.items.length === 0) return fail("cartEmpty");
   if (cart.unavailable.length > 0 || !cart.readyDate) return fail("cartChanged");
 
   const lines = linesFromCart(cart);
+  /* SPEC §7: the area gate, enforced here server-side whatever the address
+     book holds — for fresh greens only, which go on the owner's own run.
+     Everything else goes by courier, and a courier that cannot reach the
+     PIN simply offers no price. */
+  if (travelsOnOwnRun(lines) && !(await checkDeliveryArea(address.pincode)).served) {
+    return fail("pincodeNotServed", { pincode: address.pincode });
+  }
   /* Quoted again here, for the address chosen, rather than taken from the
      page: the page's figure is only what the customer was shown, and a
      mismatch below refuses the order just as a moved price does. */
-  const delivery = await deliveryCharge(lines, address.pincode);
-  if (!delivery.ok) return fail("deliveryUnavailable");
+  const delivery = await deliveryCharge(lines, address.pincode, String(fd.get("deliveryOption") ?? "") || null);
+  if (!delivery.ok) return fail(delivery.reason === "optionGone" ? "deliveryChanged" : "deliveryUnavailable");
   const total = orderTotal(lines) + delivery.amount;
   if (Number(fd.get("total")) !== total) return fail("priceChanged");
 
@@ -87,7 +91,15 @@ export async function startCheckout(
     deliveryCharge: delivery.amount,
     deliveryMethod: delivery.method,
     shippingQuote: delivery.quote,
-    deliveryDate: istDateISO(cart.readyDate),
+    /* A courier order is packed for a day, collected, and arrives the
+       courier's days after that; the own run delivers on the ready date
+       itself. With no transit time, the pickup day is the best that can be
+       said. */
+    deliveryDate: istDateISO(
+      delivery.method === "courier"
+        ? courierArrival(courierPickup(cart.readyDate), delivery.days ?? 0)
+        : cart.readyDate,
+    ),
     address: addressSnapshot(address),
     locale,
     provider: provider.name,
@@ -134,4 +146,55 @@ export async function startCheckout(
     console.error(`[payments] could not open a gateway order for ${order.id}`, e);
     return fail("gatewayError");
   }
+}
+
+/**
+ * Ask every connected courier what delivering this cart to this address
+ * costs — the "finding the cheapest delivery" step (SPEC §7, the owner,
+ * 24 Sep 2026). Called when an address is accepted, so the page itself never
+ * waits on three couriers, and a customer who never gets that far never
+ * costs a quote.
+ *
+ * Reads the cart and the address itself; the browser sends only which
+ * address. `startCheckout` looks the chosen option up again before charging.
+ */
+export async function scanDelivery(addrId: string, rawLocale: string): Promise<DeliveryScan> {
+  const actor = await assertRole("customer");
+  const locale = hasLocale(routing.locales, rawLocale) ? rawLocale : routing.defaultLocale;
+  const none: DeliveryScan = { status: "none", operatorNote: null };
+
+  const address = await getAddress(actor.userId, addrId);
+  if (!address) return none;
+  const cart = await hydrateCart(locale);
+  if (cart.items.length === 0) return none;
+  const lines = linesFromCart(cart);
+  if (travelsOnOwnRun(lines) && !(await checkDeliveryArea(address.pincode)).served) return none;
+
+  const found = await deliveryOptions(lines, address.pincode);
+  if (found.ok) {
+    return found.method === "own_run"
+      ? { status: "ownRun", amount: found.amount }
+      : {
+          status: "options",
+          pickup: cart.readyDate ? istDateISO(courierPickup(cart.readyDate)) : null,
+          options: found.options.map(({ id, courier, carrier, amount, days }) => ({
+            id,
+            courier,
+            carrier,
+            amount,
+            arrives:
+              days !== null && cart.readyDate
+                ? istDateISO(courierArrival(courierPickup(cart.readyDate), days))
+                : null,
+          })),
+        };
+  }
+  /* Something not set up is the owner's to fix, not the customer's to wait
+     out — named for an admin, and only for an admin. A courier that did not
+     answer is neither's fault, so it carries no note. */
+  if (actor.role === "admin" && found.reason !== "unavailable") {
+    const ta = await getTranslations({ locale, namespace: "admin.checkoutDelivery" });
+    return { status: "none", operatorNote: { body: ta(found.reason), cta: ta("cta") } };
+  }
+  return none;
 }

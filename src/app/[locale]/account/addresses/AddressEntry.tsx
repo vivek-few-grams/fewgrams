@@ -24,6 +24,7 @@ export function AddressEntry({
   onDone,
   onCancel,
   offerDefault,
+  greensOnly,
   layout = (pin, form) => (
     <div className="space-y-5">
       {pin}
@@ -37,6 +38,8 @@ export function AddressEntry({
   onDone: () => void;
   onCancel?: () => void;
   offerDefault?: boolean;
+  /** See `PinStep`: refuse a PIN the own run cannot reach. */
+  greensOnly?: boolean;
   /** `form` is null until the PIN has passed. */
   layout?: (pin: ReactNode, form: ReactNode | null) => ReactNode;
 }) {
@@ -58,6 +61,7 @@ export function AddressEntry({
       onChecked={setChecked}
       onChange={() => setChecked(null)}
       onCancel={onCancel}
+      greensOnly={greensOnly}
     />,
     checked && (
       <AddressForm

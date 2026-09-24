@@ -90,7 +90,14 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                   <span className="block text-xs text-stone">
                     {order.shippingQuote
                       ? t("deliveryQuote", {
-                          courier: t(`courier.${order.shippingQuote.courier}`),
+                          /* Shiprocket's quote names the carrier chosen, which is
+                             what booking the shipment has to match. */
+                          courier: order.shippingQuote.carrier
+                            ? t("courierVia", {
+                                carrier: order.shippingQuote.carrier,
+                                courier: t(`courier.${order.shippingQuote.courier}`),
+                              })
+                            : t(`courier.${order.shippingQuote.courier}`),
                           zone: order.shippingQuote.zone,
                           quoted: order.shippingQuote.quotedTotal,
                         })

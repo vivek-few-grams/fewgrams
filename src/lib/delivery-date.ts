@@ -94,6 +94,28 @@ export function daysFromToday(days: number, now: Date = new Date()): Date {
   return new Date(istMidnight(now).getTime() + d * DAY_MS);
 }
 
+/** A whole day to pack a courier order before it is handed over — the
+ *  owner, 24 Sep 2026: "minimum 24 hours needed to pack it". */
+export const COURIER_PACKING_DAYS = 1;
+
+/**
+ * The day the courier collects: the day after the cart is ready, since
+ * packing takes a day of its own. `ready` is the cart's date — next day off
+ * the seed shelf, a tray's lead time, a rack's build — so an order of seed
+ * placed on the 24th is ready on the 25th and collected on the 26th.
+ */
+export function courierPickup(ready: Date): Date {
+  return new Date(ready.getTime() + COURIER_PACKING_DAYS * DAY_MS);
+}
+
+/**
+ * When a courier parcel arrives: the pickup day plus the courier's own days
+ * on the road. Calendar days, the way every courier quotes its transit time.
+ */
+export function courierArrival(pickup: Date, transitDays: number): Date {
+  return new Date(pickup.getTime() + Math.max(0, Math.ceil(transitDays)) * DAY_MS);
+}
+
 /**
  * The latest of a set of dates, or null for none.
  *
@@ -193,6 +215,12 @@ export function adhocReadyDate(growDays: number, now: Date = new Date()): Date {
  */
 export function istDateISO(date: Date): string {
   return new Date(date.getTime() + IST_OFFSET_MS).toISOString().slice(0, 10);
+}
+
+/** The inverse of `istDateISO`: 00:00 IST on a `YYYY-MM-DD` date. For a
+ *  date that crossed from server to client as a string. */
+export function fromIstDateISO(iso: string): Date {
+  return new Date(`${iso}T00:00:00+05:30`);
 }
 
 /**

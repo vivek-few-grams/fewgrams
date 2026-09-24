@@ -241,6 +241,26 @@ far (serviceability, quote, expected delivery) is read-only and spends nothing. 
 `DELHIVERY_ENV` must be spelled out, as with Cashfree. In Amplify, set both variables per
 branch; production uses `production`.
 
+## Couriers — Ekart and Shiprocket (added 24 Sep 2026)
+
+Checkout asks every configured courier at once and lets the customer pick (SPEC §7). Each is
+optional; leave one out and it simply is not asked.
+
+```
+EKART_CLIENT_ID=EKART_...        # Ekart Elite dashboard, beside the API settings
+EKART_USERNAME=...
+EKART_PASSWORD=...
+SHIPROCKET_EMAIL=...             # the API user (Settings → API Users), not the account login
+SHIPROCKET_PASSWORD="..."
+```
+
+**Escape a `$` in any password as `\$`.** Next expands `$NAME` in env files, so an unescaped
+`$6Q` silently becomes empty and sign-in fails with a wrong-password error.
+
+Both are production-only and read-only here: a quote spends nothing. The Shiprocket API user
+needs the **Courier** module at least (Orders, Shipments and Settings for booking later).
+Admin → delivery shows whether each one is answering.
+
 Vendor reference docs are installed as the project skill `.claude/skills/app-check-config`
 (git-ignored; re-install with `npx @cashfreepayments/agent-skills add skills --frameworks
 claude-code`, then remove the telemetry steps the installer adds — see SPEC §9.2).

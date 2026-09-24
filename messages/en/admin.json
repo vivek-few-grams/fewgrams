@@ -261,10 +261,18 @@
       "colourInvalid": "Pick colours from the list.",
       "heightTooShort": "Every height must be at least 2 ft — a rack has height minus one shelves, so a 1 ft rack would have none.",
       "heightUnknown": "That height is not one you sell. Add it to Heights above.",
-      "gramsInvalid": "Grams per shelf must be more than zero, or blank."
+      "gramsInvalid": "Grams per shelf must be more than zero, or blank.",
+      "packedInvalid": "Packed thickness must be more than zero, or blank."
     },
     "colGramsPerShelf": "g / shelf",
-    "gramsMissing": "Not weighed yet — courier orders for racks on this size can't be priced"
+    "gramsMissing": "Not weighed yet — courier orders for racks on this size can't be priced",
+    "colPackedCm": "cm / shelf packed",
+    "packedMissing": "Not measured yet — stack a few plates flat and measure the height each adds. Courier orders for racks on this size can't be priced until it's set.",
+    "anglePackHeading": "Slotted angle packing, for courier prices",
+    "anglePackHint": "An open-frame angle rack ships as a bundle of slotted angle — its four legs and five pieces per shelf — not as a box of shelves. The bundle is as long as the longest piece; across it, each L-shaped angle is this wide, and each one nested on the next adds this much. Leave blank until measured: angle racks can't be sent by courier until both are set.",
+    "angleWidthCm": "Angle width (cm)",
+    "angleStackCm": "Each angle adds (cm)",
+    "packMissing": "Not measured yet — courier orders for these racks can't be priced"
   },
   "angleRacks": {
     "title": "Angle racks",
@@ -342,7 +350,9 @@
       "gramsInvalid": "Grams per shelf must be more than zero, or blank."
     },
     "colGramsPerShelf": "g / shelf",
-    "gramsMissing": "Not weighed yet — courier orders for racks on this size can't be priced"
+    "gramsMissing": "Not weighed yet — courier orders for racks on this size can't be priced",
+    "cm": "{value, number} cm",
+    "notMeasured": "Not measured — no courier price yet"
   },
   "pipeRacks": {
     "title": "Pipe racks",
@@ -423,10 +433,14 @@
       "heightUnknown": "That height is not one you sell. Add it to Heights on Shelf racks.",
       "heightTooTall": "Pipe racks stop at {max} ft.",
       "duplicateRack": "That exact rack is already on sale.",
-      "gramsInvalid": "Grams per shelf must be more than zero, or blank."
+      "gramsInvalid": "Grams per shelf must be more than zero, or blank.",
+      "packedInvalid": "Must be more than zero, or blank."
     },
     "colGramsPerShelf": "g / shelf",
-    "gramsMissing": "Not weighed yet — courier orders for racks on this size can't be priced"
+    "gramsMissing": "Not weighed yet — courier orders for racks on this size can't be priced",
+    "pipeDiameterCm": "Pipe outer diameter (cm)",
+    "pipeDiameterCmHint": "For courier prices. A pipe rack ships as a bundle: every piece of pipe laid end to end in lines as long as the longest piece, and the lines grouped square — four 4 ft legs of 1 in pipe are 2 × 2 in. 1 inch UPVC is about 3.3 cm across.",
+    "packMissing": "Not measured yet — courier orders for pipe racks can't be priced"
   },
   "overview": {
     "varieties": "Varieties",
@@ -667,7 +681,9 @@
     "deliveryLine": "Delivery",
     "deliveryQuote": "{courier} quote ₹{quoted, number}, zone {zone} — rounded up for the customer",
     "courier": {
-      "delhivery": "Delhivery"
+      "delhivery": "Delhivery",
+      "ekart": "Ekart",
+      "shiprocket": "Shiprocket"
     },
     "total": "Total",
     "deliverTo": "Deliver to",
@@ -704,12 +720,13 @@
     "failedTitle": "Mark this delivery failed?",
     "failedConfirm": "The customer sees “Delivery failed” on their order page. It cannot be moved back from here.",
     "failedYes": "Yes, mark failed",
-    "deliveryOwnRun": "Own same-day run — fixed microgreens fee"
+    "deliveryOwnRun": "Own same-day run — fixed microgreens fee",
+    "courierVia": "{carrier} via {courier}"
   },
   "delivery": {
     "title": "Delivery",
     "intro": "Orders with microgreens go on your own same-day run and pay the fixed fee below. Every other order pays the courier's live price, quoted at checkout from the pickup address to the customer's PIN for the parcel weight worked out from the packing figures. Subscriptions pay no delivery. Until this is saved (and, for courier orders, the courier is connected), checkout shows no price and does not take payment.",
-    "statusHeading": "Courier connection",
+    "statusHeading": "Courier connections",
     "statusNoToken": "Delhivery is not connected. Set DELHIVERY_ENV and DELHIVERY_API_TOKEN in the environment.",
     "statusNoSettings": "Delhivery ({mode}) is connected. Save the pickup address and packing below to start quoting.",
     "statusOk": "Delhivery ({mode}) is working: 500 g within {pincode} quotes ₹{price, number}.",
@@ -729,7 +746,7 @@
     "greensHeading": "Microgreens delivery",
     "greensHint": "A fixed fee for any order with microgreens in it, whatever else rides along — they go on your own same-day run, not by courier. Set it from your average cost per drop and review it monthly.",
     "packingHeading": "Packing",
-    "packingHint": "Order-wide figures for courier orders. Each tray's size and weight is set on its row in Trays & drainage, and each rack's grams per shelf on its shelf size in Shelf racks, Angle racks and Pipe racks. Seeds are weighed by what's ordered, in 5 × 5 × 5 cm packets per 100 g.",
+    "packingHint": "Order-wide figures for courier orders. Each tray's size and weight is set on its row in Trays & drainage. Racks pack two ways: a shelf rack is a stack of plates, each adding its plate's packed thickness (Shelf racks → plates); an angle or pipe rack is a bundle of legs and rails, measured by the angle's width and stacking (Shelf racks → angle rates) or the pipe's diameter (Pipe racks → rates). Grams per shelf is on each plate, frame and pipe size. Seeds are weighed by what's ordered, in 5 × 5 × 5 cm packets per 100 g.",
     "field": {
       "greenRunFee": "Fee per order (₹)",
       "pickupName": "Business name",
@@ -737,8 +754,7 @@
       "pickupAddress": "Street address",
       "pickupCity": "City",
       "pickupPincode": "PIN code",
-      "seedPackingGrams": "Seed box and padding, per order (g)",
-      "shelfStackCm": "Height each flat-packed rack shelf adds (cm)"
+      "seedPackingGrams": "Seed box and padding, per order (g)"
     },
     "save": "Save",
     "saving": "Saving…",
@@ -750,11 +766,24 @@
       "positive": "Must be more than zero."
     },
     "sizePlate": "{depth, number} × {length, number} ft, {thickness, number} mm",
-    "sizeFootprint": "{depth, number} × {length, number} ft"
+    "sizeFootprint": "{depth, number} × {length, number} ft",
+    "courierName": {
+      "ekart": "Ekart",
+      "shiprocket": "Shiprocket"
+    },
+    "statusOtherOff": {
+      "ekart": "Ekart is not connected. Set EKART_CLIENT_ID, EKART_USERNAME and EKART_PASSWORD to add it to the checkout comparison.",
+      "shiprocket": "Shiprocket is not connected. Set SHIPROCKET_EMAIL and SHIPROCKET_PASSWORD (the API user, not the account login) to add it to the checkout comparison."
+    },
+    "statusOtherNoSettings": "{courier} is connected. Save the pickup address below to start quoting.",
+    "statusOtherOk": "{courier} is working: 500 g within {pincode} quotes from ₹{price, number} ({count, plural, one {# option} other {# options}}).",
+    "statusOtherError": "{courier} did not answer: {detail}",
+    "anglePacking": "slotted angle width and stacking, in the angle rates on Shelf racks",
+    "pipePacking": "pipe outer diameter, in the pipe rates"
   },
   "checkoutDelivery": {
     "notConfigured": "Only you see this. No delivery fee is saved yet, so checkout can't price delivery. Customers see \"not available right now\" and can't pay.",
-    "noCourier": "Only you see this. Nothing in this cart is microgreens, so it goes by courier — and no courier is connected (DELHIVERY_API_TOKEN isn't set). Customers see \"not available right now\" and can't pay.",
+    "noCourier": "Only you see this. Nothing in this cart is microgreens, so it goes by courier — and no courier is connected (set DELHIVERY_API_TOKEN, the EKART_ variables or the SHIPROCKET_ variables). Customers see \"not available right now\" and can't pay.",
     "notMeasured": "Only you see this. An item in this cart has no packing measurements, so the courier can't price the parcel. Delivery settings lists which item and where to add them.",
     "cta": "Open delivery settings"
   }

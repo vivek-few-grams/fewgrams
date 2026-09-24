@@ -40,7 +40,7 @@ import { CheckField, NumberField } from "../fields";
  * `varieties/VarietyTable.tsx` declares its widths.
  */
 const COLUMNS =
-  "repeat(6, minmax(4.5rem, 1fr)) 6rem 5.5rem 4rem";
+  "repeat(7, minmax(4.5rem, 1fr)) 6rem 5.5rem 4rem";
 /** Below this the rows scroll sideways inside their own box rather than
  *  widening the page.
  *
@@ -50,7 +50,7 @@ const COLUMNS =
  *  document 344px wide — taking the rail with them. Stacking to one column is
  *  not the alternative: a compact row's inputs carry their label only as an
  *  `aria-label`, so it would give an operator three unlabelled boxes. */
-const MIN_WIDTH = "min-w-[54rem]";
+const MIN_WIDTH = "min-w-[59rem]";
 
 export function PlateTable({ plates }: { plates: ShelfPlate[] }) {
   const t = useTranslations("admin.racks");
@@ -76,6 +76,7 @@ export function PlateTable({ plates }: { plates: ShelfPlate[] }) {
               <span>{t("colCapacity")}</span>
               <span>{t("colPlatePrice")}</span>
               <span>{t("colGramsPerShelf")}</span>
+              <span>{t("colPackedCm")}</span>
               <span />
               <span />
               <span />
@@ -119,6 +120,7 @@ function PlateRow({ plate }: { plate: ShelfPlate }) {
         <NumberField compact label={t("colCapacity")} name="capacityKg" min={0} defaultValue={plate.capacityKg} error={errorFor("capacityKg")} />
         <NumberField compact label={t("colPlatePrice")} name="price" min={0} defaultValue={plate.price} error={errorFor("price")} />
         <NumberField compact label={t("colGramsPerShelf")} name="gramsPerShelf" min={0} defaultValue={plate.gramsPerShelf} error={errorFor("gramsPerShelf") ?? (plate.gramsPerShelf === undefined ? t("gramsMissing") : undefined)} />
+        <NumberField compact label={t("colPackedCm")} name="packedCm" min={0} step="any" defaultValue={plate.packedCm} error={errorFor("packedCm") ?? (plate.packedCm === undefined ? t("packedMissing") : undefined)} />
 
         <button
           type="submit"
@@ -198,6 +200,7 @@ function AddPlateForm() {
         <NumberField label={t("colCapacity")} name="capacityKg" min={0} error={errorFor("capacityKg")} />
         <NumberField label={t("colPlatePrice")} name="price" min={0} error={errorFor("price")} />
         <NumberField label={t("colGramsPerShelf")} name="gramsPerShelf" min={0} error={errorFor("gramsPerShelf")} />
+        <NumberField label={t("colPackedCm")} name="packedCm" min={0} step="any" error={errorFor("packedCm")} />
         <button
           type="submit"
           disabled={pending}

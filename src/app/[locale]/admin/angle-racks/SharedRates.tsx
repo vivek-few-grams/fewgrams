@@ -46,6 +46,11 @@ export async function SharedRates({
           <Fact label={t("boltSetsPerShelf")} value={String(settings.boltSetsPerShelf)} />
           <Fact label={t("bushesPerRack")} value={String(settings.bushesPerRack)} />
           <Fact label={t("heightsFt")} value={settings.heightsFt.join(", ")} />
+          {/* The courier bundle for this range — SPEC §7. Blank reads as
+              "not measured", because until it is set no angle rack can be
+              priced for courier delivery. */}
+          <Fact label={tr("angleWidthCm")} value={settings.angleWidthCm !== undefined ? t("cm", { value: settings.angleWidthCm }) : t("notMeasured")} />
+          <Fact label={tr("angleStackCm")} value={settings.angleStackCm !== undefined ? t("cm", { value: settings.angleStackCm }) : t("notMeasured")} />
         </dl>
       )}
 

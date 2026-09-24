@@ -73,7 +73,6 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
         <p className="font-body text-xs text-stone">{t("packingHint")}</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {num("seedPackingGrams", k?.seedPackingGrams)}
-          {num("shelfStackCm", k?.shelfStackCm)}
         </div>
       </fieldset>
 

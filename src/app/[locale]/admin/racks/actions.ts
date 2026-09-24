@@ -108,6 +108,13 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
   const roundUpToNearest = count(fd, "roundUpToNearest");
   if (roundUpToNearest === null) return err("countInvalid", "roundUpToNearest");
 
+  /* Optional, like a plate's grams: flagged while blank, and an angle rack
+     cannot go by courier until both are set (SPEC §7). */
+  const angleWidthCm = optionalPositive(fd, "angleWidthCm");
+  if (angleWidthCm === "invalid") return err("packedInvalid", "angleWidthCm");
+  const angleStackCm = optionalPositive(fd, "angleStackCm");
+  if (angleStackCm === "invalid") return err("packedInvalid", "angleStackCm");
+
   const settings: RackSettings = {
     boltSetPrice,
     bushPrice,
@@ -117,6 +124,8 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
     heightsFt,
     markupPercent,
     roundUpToNearest,
+    ...(angleWidthCm !== undefined ? { angleWidthCm } : {}),
+    ...(angleStackCm !== undefined ? { angleStackCm } : {}),
   };
   await putRackSettings(settings);
   /* Markup and rounding live on this row, so this save can move every price
@@ -142,6 +151,9 @@ function readPlate(fd: FormData): { ok: true; value: Omit<ShelfPlate, "id"> } | 
      flagged on the row and refused at courier checkout (SPEC §7). */
   const gramsPerShelf = optionalPositive(fd, "gramsPerShelf");
   if (gramsPerShelf === "invalid") return { ok: false, state: err("gramsInvalid", "gramsPerShelf") };
+  /* Same rule: optional, flagged while blank, refused at courier checkout. */
+  const packedCm = optionalPositive(fd, "packedCm");
+  if (packedCm === "invalid") return { ok: false, state: err("packedInvalid", "packedCm") };
 
   return {
     ok: true,
@@ -153,6 +165,7 @@ function readPlate(fd: FormData): { ok: true; value: Omit<ShelfPlate, "id"> } | 
       price,
       active: fd.get("active") === "on",
       ...(gramsPerShelf !== undefined ? { gramsPerShelf } : {}),
+      ...(packedCm !== undefined ? { packedCm } : {}),
     },
   };
 }

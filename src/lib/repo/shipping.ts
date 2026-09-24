@@ -34,7 +34,7 @@ function fromRow(r: Row): ShippingSettings {
       pincode: r.pickupPincode,
     },
     greenRunFee: r.greenRunFee,
-    packing: { seedPackingGrams: r.seedPackingGrams, shelfStackCm: r.shelfStackCm },
+    packing: { seedPackingGrams: r.seedPackingGrams },
     updatedAt: r.updatedAt,
   };
 }
@@ -55,7 +55,6 @@ export async function putShippingSettings(s: Omit<ShippingSettings, "updatedAt">
     pickupPincode: p.pincode,
     greenRunFee: s.greenRunFee,
     seedPackingGrams: s.packing.seedPackingGrams,
-    shelfStackCm: s.packing.shelfStackCm,
     updatedAt: new Date().toISOString(),
   }).go();
 }

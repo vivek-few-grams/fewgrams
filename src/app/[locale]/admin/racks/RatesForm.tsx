@@ -116,6 +116,29 @@ export function RatesForm({ settings }: { settings: RackSettings | null }) {
         />
       </div>
 
+      <div className="border-t border-forest/12 pt-6">
+        <h3 className="font-display text-sm font-semibold text-forest">{t("anglePackHeading")}</h3>
+        <p className="mt-1 max-w-3xl font-body text-xs leading-relaxed text-stone">{t("anglePackHint")}</p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <NumberField
+            label={t("angleWidthCm")}
+            name="angleWidthCm"
+            min={0}
+            step="any"
+            defaultValue={settings?.angleWidthCm ?? ""}
+            error={errorFor("angleWidthCm") ?? (settings && settings.angleWidthCm === undefined ? t("packMissing") : undefined)}
+          />
+          <NumberField
+            label={t("angleStackCm")}
+            name="angleStackCm"
+            min={0}
+            step="any"
+            defaultValue={settings?.angleStackCm ?? ""}
+            error={errorFor("angleStackCm") ?? (settings && settings.angleStackCm === undefined ? t("packMissing") : undefined)}
+          />
+        </div>
+      </div>
+
       {caps.length > 0 && (
         <ul className="flex flex-wrap gap-2">
           {caps.map(({ h, shelves }) => (

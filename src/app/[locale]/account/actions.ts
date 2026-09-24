@@ -58,15 +58,13 @@ export async function saveAddressAction(
 ): Promise<FormState> {
   const actor = await assertRole("customer");
 
-  /* The area is checked again here whatever the PIN step said — the browser
-     is convenience, this is the gate. Cached, so it is a read, not a call;
-     its place also fills a district or state the form sent blank. */
+  /* India Post's place for the PIN fills a district or state the form sent
+     blank. Cached, so it is a read, not a call. No area gate: an address
+     anywhere in India saves, and checkout applies the area to greens. */
   const pincode = readPincode(fd);
-  const area = /^\d{6}$/.test(pincode)
-    ? await checkDeliveryArea(pincode)
-    : { served: false, place: null };
+  const place = /^\d{6}$/.test(pincode) ? (await checkDeliveryArea(pincode)).place : null;
 
-  const parsed = validateAddress(fd, area);
+  const parsed = validateAddress(fd, place);
   if (!parsed.ok) return { status: "error", ...parsed.error };
 
   const addrId = String(fd.get("addrId") ?? "").trim();
@@ -97,18 +95,18 @@ export async function saveAddressAction(
 
 /** What the address form learns about a PIN the moment it is complete. */
 export type PinLookup =
-  | { status: "served"; place: PinPlace | null }
-  | { status: "notServed" }
+  /** `inArea`: the own run reaches it, so fresh greens can go there too. */
+  | { status: "found"; place: PinPlace | null; inArea: boolean }
   | { status: "invalid" };
 
 /**
  * Called by the address form on the sixth digit — SPEC §7.
  *
- * One India Post lookup answers both questions — is it in the area (a
- * district, `area.ts`), and what are its district and state — so a customer
- * outside the area hears so before typing the rest of an address. `place:
- * null` is not an error: the form leaves the fields for the customer to type.
- * This decides nothing — `saveAddressAction` checks the PIN again.
+ * One India Post lookup answers both questions — is it in the greens area (a
+ * district, `area.ts`), and what are its district and state. Any valid PIN
+ * is found; `inArea` only matters to a checkout with greens in the cart,
+ * which then tells the customer before they type the rest. `place: null` is
+ * not an error: the form leaves the fields for the customer to type.
  *
  * Signed-in only, like every action here: it spends a rate-limited key.
  */
@@ -117,7 +115,7 @@ export async function lookupPinAction(raw: string): Promise<PinLookup> {
   const pincode = String(raw ?? "").replace(/\D/g, "");
   if (!/^\d{6}$/.test(pincode)) return { status: "invalid" };
   const area = await checkDeliveryArea(pincode);
-  return area.served ? { status: "served", place: area.place } : { status: "notServed" };
+  return { status: "found", place: area.place, inArea: area.served };
 }
 
 export async function deleteAddressAction(fd: FormData): Promise<void> {

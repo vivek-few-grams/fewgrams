@@ -23,3 +23,17 @@ export function chargeableGrams(deadGrams: number, box: BoxCm | null): number {
   const dead = Math.ceil(deadGrams);
   return box ? Math.max(dead, volumetricGrams(box)) : dead;
 }
+
+/**
+ * A cube whose volumetric weight does not exceed `grams` — the box to declare
+ * to a courier that asks for dimensions. We have already priced the parcel at
+ * its chargeable weight (the larger of dead and volumetric, summed over every
+ * box in the order), and an order of several boxes has no one set of
+ * dimensions. Declaring this cube makes the courier bill the grams we send,
+ * so every courier prices the same weight. Side = ⌊∛(grams × 5)⌋ cm, since a
+ * cube of side s is s³ ÷ 5 g by volume.
+ */
+export function boxForGrams(grams: number): BoxCm {
+  const side = Math.max(1, Math.floor(Math.cbrt((grams * VOLUMETRIC_DIVISOR) / 1000)));
+  return { length: side, width: side, height: side };
+}

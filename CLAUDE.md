@@ -475,10 +475,15 @@ payload.
 
 - **The gateway sits behind `PaymentProvider`** (`src/lib/payments/`). Business
   code never imports `cashfree.ts` directly.
-- **The courier sits behind `ShippingProvider`** (`src/lib/shipping/`), the same way.
-  Business code never imports `delhivery.ts` directly, and quotes the **chargeable**
-  weight from `chargeableGrams`, never the dead weight — a courier bills a long light
-  box by its size.
+- **The couriers sit behind `ShippingProvider`** (`src/lib/shipping/`), the same way —
+  Delhivery, Ekart and Shiprocket, all asked at once by `deliveryOptions` in `charge.ts`,
+  and the customer picks. Business code never imports a courier file directly, and quotes
+  the **chargeable** weight from `chargeableGrams`, never the dead weight — a courier bills
+  a long light box by its size. Charge only the option the customer chose
+  (`deliveryCharge(…, optionId)`); never substitute the cheapest.
+- **The delivery area is for fresh greens only** (the owner, 24 Sep 2026). Addresses save
+  anywhere in India; the area is checked at checkout, and only for a cart with greens
+  (`travelsOnOwnRun`). Do not put the area check back into `validateAddress`.
 - **Once-per-order work goes behind `markOrderPaid` returning true** — the
   receipt number and seed drawdown. It is a conditional write, so the webhook
   and the return page can race and only one wins.

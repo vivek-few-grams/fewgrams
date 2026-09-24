@@ -21,6 +21,7 @@ import {
   repricedRows,
   retailPrice,
   shelvesForHeight,
+  pipeRackPiecesFt,
 } from "./pricing";
 import type { AngleRackConfig, PipeRackConfig, RackConfig } from "@/lib/types";
 
@@ -717,5 +718,22 @@ describe("repricedRows", () => {
     );
     expect(angleRows[0].price).toBe(7720);
     expect(pipeRows[0].price).toBe(7930);
+  });
+});
+
+describe("pipeRackPiecesFt", () => {
+  it("lists four uprights and four rails a level on a short shelf", () => {
+    expect(pipeRackPiecesFt({ heightFt: 4, shelves: 3 }, { depthFt: 1, lengthFt: 3 }, { legsPerRack: 4 })).toEqual([
+      4, 4, 4, 4,
+      1, 1, 3, 3,
+      1, 1, 3, 3,
+      1, 1, 3, 3,
+    ]);
+  });
+
+  it("adds the middle supports and splits the long rails from 4 ft", () => {
+    const pieces = pipeRackPiecesFt({ heightFt: 6, shelves: 5 }, { depthFt: 2, lengthFt: 4 }, { legsPerRack: 4 });
+    expect(pieces.filter((p) => p === 6)).toHaveLength(6);
+    expect(pieces.filter((p) => p === 2)).toHaveLength(30); // 2 across + 4 halves, × 5
   });
 });

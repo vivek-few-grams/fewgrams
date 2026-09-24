@@ -1,15 +1,20 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState, type ReactNode } from "react";
-import { useTranslations } from "next-intl";
-import { ArrowRight, Check, ChevronRight, Home, Info, Lock, MapPin, PenLine, Phone, Plus, ReceiptText, ShieldCheck, Truck } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { ArrowRight, CalendarCheck, Check, ChevronRight, Home, Info, Lock, MapPin, PenLine, Phone, Plus, ReceiptText, ShieldCheck, Truck } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { MAX_ADDRESSES } from "@/lib/account/validation";
+import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
 import { AddressEntry } from "../account/addresses/AddressEntry";
 import { setDefaultAddressAction } from "../account/actions";
-import { startCheckout } from "./actions";
+import { scanDelivery, startCheckout } from "./actions";
+import { DeliveryPartners, type PartnerName } from "./DeliveryPartners";
 import { DeliveryRide } from "./DeliveryRide";
-import { CHECKOUT_IDLE, type CheckoutState } from "./state";
+import { CHECKOUT_IDLE, type CheckoutState, type DeliveryScan } from "./state";
+
+/** How long the delivery scan stays on screen at the least. */
+const MIN_SCAN_MS = 1800;
 
 export type PayAddress = {
   addrId: string;
@@ -21,8 +26,6 @@ export type PayAddress = {
   /** Display form, `98450 12345`. */
   phone: string;
   isDefault: boolean;
-  /** Rupees to deliver to this address, or null when no price could be had. */
-  delivery: number | null;
 };
 
 /** What a first address is pre-filled with — the account holder, usually. */
@@ -48,11 +51,23 @@ export type AddressPrefill = { recipient: string; phone: string };
  * renders both because the right column depends on the left one's state.
  * Below `lg` they stack, delivery first.
  *
+ * ## Delivery partner (the owner, 24 Sep 2026)
+ *
+ * Accepting an address starts a scan (`scanDelivery`): every connected
+ * courier is asked for its price to that address, the step shows each one
+ * being checked, and then lists every option with the cheapest picked. The
+ * customer may pick another. A cart with greens skips the comparison — it
+ * goes on the owner's own run at the fixed fee.
+ *
+ * The scan is held on screen for at least `MIN_SCAN_MS` so it reads as a
+ * comparison; a scan that comes back in 200 ms would otherwise flash past.
+ *
  * ## Payment
  *
- * **Shown only once an address is accepted**, because the delivery charge —
- * and so the total — is per address. It is items + delivery = total, then
- * the pay button, or the "not open yet" notice when no gateway is set.
+ * **Shown only once an address is accepted and priced**, because the
+ * delivery charge — and so the total — is per address and per partner. It is
+ * items + delivery = total, then the pay button, or the "not open yet" notice
+ * when no gateway is set.
  *
  * The add form and the default switch post to the account's own actions, so
  * an address added here is the same row the account page shows, validated by
@@ -73,7 +88,10 @@ export function PayForm({
   summary,
   payable,
   subtotal,
-  operatorNote,
+  partners,
+  greensOnly,
+  readyDate,
+  pickupDate,
   addresses,
   savedCount,
   emptyBody,
@@ -86,9 +104,17 @@ export function PayForm({
       pay button is replaced by a notice. */
   payable: boolean;
   subtotal: number;
-  /** Why there is no delivery price, in operator wording — only ever
-   *  non-null for an admin (the page resolves it from `admin` messages). */
-  operatorNote: { body: string; cta: string } | null;
+  /** The couriers a scan will ask, for its "checking" rows. */
+  partners: PartnerName[];
+  /** Fresh greens in the cart: only the own run's area can be delivered to,
+   *  so a new address outside it is turned away at the PIN step. */
+  greensOnly: boolean;
+  /** `YYYY-MM-DD` IST: when the whole cart is ready — the arrival date for
+   *  the own run, and the ready-to-ship date a courier's days count from. */
+  readyDate: string | null;
+  /** `YYYY-MM-DD` IST: the courier's collection day — `readyDate` plus a day
+   *  to pack (`courierPickup`). */
+  pickupDate: string | null;
   /** Deliverable addresses only, default first. */
   addresses: PayAddress[];
   /** Every saved address, deliverable or not — the limit counts them all. */
@@ -130,9 +156,60 @@ export function PayForm({
   }
 
   const selected = addresses.find((a) => a.addrId === addrId) ?? null;
-  const delivery = selected?.delivery ?? null;
-  const total = delivery === null ? null : subtotal + delivery;
   const canAdd = savedCount < MAX_ADDRESSES;
+  const confirmed = !!selected && accepted && !changing;
+
+  /* The scan for the accepted address. Keyed by address so a scan that
+     lands after the customer has moved on is dropped, and `round` so a
+     re-scan can be forced for the same address. */
+  const [scan, setScan] = useState<{ key: string; result: DeliveryScan } | null>(null);
+  const [chosen, setChosen] = useState<string | null>(null);
+  const [round, setRound] = useState(0);
+  const scanKey = confirmed && selected ? `${selected.addrId}#${round}` : null;
+  const current = scan && scan.key === scanKey ? scan.result : null;
+
+  useEffect(() => {
+    if (!scanKey || !selected) return;
+    let live = true;
+    Promise.all([
+      scanDelivery(selected.addrId, locale).catch((): DeliveryScan => ({ status: "none", operatorNote: null })),
+      new Promise((r) => setTimeout(r, MIN_SCAN_MS)),
+    ]).then(([result]) => {
+      if (!live) return;
+      setScan({ key: scanKey, result });
+      setChosen(result.status === "options" ? (result.options[0]?.id ?? null) : null);
+    });
+    return () => {
+      live = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `scanKey` names the address and the round; `selected` follows it.
+  }, [scanKey, locale]);
+
+  const delivery =
+    current?.status === "ownRun"
+      ? current.amount
+      : current?.status === "options"
+        ? (current.options.find((o) => o.id === chosen)?.amount ?? null)
+        : null;
+  const scanning = confirmed && current === null;
+  const total = delivery === null ? null : subtotal + delivery;
+
+  /* The date under the order summary follows the partner chosen (the owner,
+     24 Sep 2026): a courier option's own arrival, the ready date for the own
+     run, and until a partner is picked, when the order is ready to ship. */
+  const localeTag = useLocale() === "kn" ? "kn-IN" : "en-IN";
+  const chosenArrival =
+    current?.status === "options" ? (current.options.find((o) => o.id === chosen)?.arrives ?? null) : null;
+  const dateLine =
+    readyDate === null
+      ? null
+      : greensOnly || current?.status === "ownRun"
+        ? { key: "arrives", iso: readyDate }
+        : chosenArrival
+          ? { key: "arrives", iso: chosenArrival }
+          : pickupDate
+            ? { key: "readyToShip", iso: pickupDate }
+            : null;
 
   /* The gateway hand-off happens inside the action, not in an effect after
      it: `pending` then stays true until the payment screen has replaced the
@@ -140,6 +217,10 @@ export function PayForm({
   const [state, action, pending] = useActionState(
     async (prev: CheckoutState, fd: FormData): Promise<CheckoutState> => {
       const next = await startCheckout(prev, fd);
+      /* The delivery prices on screen are what moved — ask the couriers again. */
+      if (next.status === "error" && (next.code === "deliveryChanged" || next.code === "deliveryUnavailable")) {
+        setRound((r) => r + 1);
+      }
       if (next.status !== "ready") return next;
       try {
         const { load } = await import("@cashfreepayments/cashfree-js");
@@ -165,7 +246,10 @@ export function PayForm({
   useEffect(() => {
     if (
       state.status === "error" &&
-      (state.code === "priceChanged" || state.code === "cartChanged" || state.code === "deliveryUnavailable")
+      (state.code === "priceChanged" ||
+        state.code === "cartChanged" ||
+        state.code === "deliveryUnavailable" ||
+        state.code === "deliveryChanged")
     ) {
       router.refresh();
     }
@@ -220,6 +304,7 @@ export function PayForm({
       onDone={addressSaved}
       onCancel={addresses.length > 0 ? () => setAdding(false) : undefined}
       offerDefault={savedCount > 0}
+      greensOnly={greensOnly}
       layout={layout}
     />
   );
@@ -270,8 +355,6 @@ export function PayForm({
       <p className="mt-4 font-body text-sm text-terracotta">{t("addressLimit", { max: MAX_ADDRESSES })}</p>
     </section>
   );
-
-  const confirmed = !!selected && accepted && !changing;
 
   const deliveryStep = !selected ? (
     empty
@@ -427,7 +510,9 @@ export function PayForm({
     ? t("paying")
     : !confirmed
       ? t("payLocked")
-      : total === null
+      : scanning
+        ? t("payScanning")
+        : total === null
         ? t("payUnavailable")
         : t("pay", { amount: total });
 
@@ -447,6 +532,20 @@ export function PayForm({
       <div className="space-y-5">
         {deliveryStep}
 
+        <DeliveryPartners
+          n={selected ? 2 : 3}
+          locked={!confirmed}
+          partners={partners}
+          scan={current}
+          chosen={chosen}
+          onChoose={setChosen}
+          heading={({ id, n, done, muted, children }) => (
+            <StepHeading id={id} n={n} done={done} muted={muted}>
+              {children}
+            </StepHeading>
+          )}
+        />
+
         {/* Payment sits under delivery, in the wide column: it is the step
             that follows, and the right card is only what is being bought.
             On the page from the start, dimmed and locked, so the customer
@@ -455,7 +554,7 @@ export function PayForm({
           aria-labelledby="pay-heading"
           className={`co-card co-card--leaf p-5 transition-opacity duration-300 md:p-6 ${confirmed ? "" : "opacity-80"}`}
         >
-          <StepHeading id="pay-heading" n={selected ? 2 : 3} muted={!confirmed}>
+          <StepHeading id="pay-heading" n={selected ? 3 : 4} muted={!confirmed}>
             {t("payHeading")}
           </StepHeading>
 
@@ -480,6 +579,8 @@ export function PayForm({
                     {t("deliveryPending")}
                     <ChevronRight aria-hidden size={15} strokeWidth={2} />
                   </span>
+                ) : scanning ? (
+                  <span className="font-normal text-stone">{t("deliveryScanning")}</span>
                 ) : delivery === null ? (
                   <span className="text-terracotta">{t("deliveryUnavailableShort")}</span>
                 ) : (
@@ -497,22 +598,6 @@ export function PayForm({
             )}
           </dl>
 
-          {confirmed && total === null &&
-            (operatorNote ? (
-              <div role="status" className="mt-4 rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta">
-                <p>{operatorNote.body}</p>
-                <Link
-                  href="/admin/delivery"
-                  className="mt-2 inline-block font-semibold underline underline-offset-4 transition-colors hover:text-forest"
-                >
-                  {operatorNote.cta}
-                </Link>
-              </div>
-            ) : (
-              <p role="status" className="mt-4 rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta">
-                {t("deliveryUnavailableBody")}
-              </p>
-            ))}
 
           {!payable ? (
             <div className="mt-5 flex items-start gap-3 rounded-xl border border-sage/50 bg-sage/20 p-4">
@@ -529,6 +614,7 @@ export function PayForm({
               <input type="hidden" name="locale" value={locale} />
               <input type="hidden" name="addrId" value={selected.addrId} />
               <input type="hidden" name="total" value={total ?? ""} />
+              <input type="hidden" name="deliveryOption" value={chosen ?? ""} />
               {error && (
                 <p role="alert" className="rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta">
                   {error}
@@ -563,7 +649,20 @@ export function PayForm({
           payment step, in the left column. */}
       <aside ref={asideRef} className="pay-pin relative lg:self-start">
         <DeliveryRide className="absolute inset-x-0 bottom-full mb-3 hidden lg:block" />
-        <div className="pay-pin__scroll co-card co-card--dark p-5 md:p-6">{summary}</div>
+        <div className="pay-pin__scroll co-card co-card--dark p-5 md:p-6">
+          {summary}
+          {dateLine && (
+            <p className="mt-4 flex items-center gap-2.5 rounded-xl bg-cream/10 px-3.5 py-2.5 font-body text-[13px] text-cream/85">
+              <CalendarCheck size={16} strokeWidth={1.75} className="shrink-0 text-cream" />
+              <span aria-live="polite">
+                {t.rich(dateLine.key, {
+                  date: formatDeliveryDate(fromIstDateISO(dateLine.iso), localeTag),
+                  b: (chunks) => <strong className="font-semibold text-cream">{chunks}</strong>,
+                })}
+              </span>
+            </p>
+          )}
+        </div>
       </aside>
     </div>
   );

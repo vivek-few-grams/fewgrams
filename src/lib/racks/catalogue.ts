@@ -7,7 +7,9 @@ import {
   priceable,
 } from "@/lib/repo/racks";
 import {
+  ANGLE_PIECES_PER_SHELF,
   angleRackSku,
+  pipeRackPiecesFt,
   pipeRackSku,
   rackCapacityKg,
   rackSku,
@@ -84,6 +86,24 @@ export type SellableRack = {
   /** Packed grams per shelf, from the plate, frame or pipe size — or null
    *  until the owner has weighed one, when a courier cannot price it. */
   gramsPerShelf: number | null;
+  /**
+   * How it packs for the courier — SPEC §7 (the owner, 24 Sep 2026).
+   *
+   * - **Shelf racks** are a stack of plates: each adds the plate's
+   *   `packedCm`.
+   * - **Angle racks** are a bundle of slotted angle: the L-shaped pieces nest,
+   *   each taking `widthCm` across and adding `stackCm`.
+   * - **Pipe racks** are a bundle of pipe, which cannot nest: every piece is
+   *   listed by length and laid into lines, and the lines are grouped square,
+   *   each pipe a `diameterCm` each way (`rackBox`).
+   *
+   * Any figure null until the owner has measured it, when a courier cannot
+   * price the rack.
+   */
+  packing:
+    | { kind: "plates"; shelfCm: number | null }
+    | { kind: "bundle"; pieces: number; widthCm: number | null; stackCm: number | null }
+    | { kind: "pipes"; piecesFt: number[]; diameterCm: number | null };
 };
 
 /**
@@ -135,6 +155,7 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       colours,
       price: m.price,
       gramsPerShelf: plate.gramsPerShelf ?? null,
+      packing: { kind: "plates", shelfCm: plate.packedCm ?? null },
     });
   }
 
@@ -156,6 +177,12 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       colours,
       price: m.price,
       gramsPerShelf: frame.gramsPerShelf ?? null,
+      packing: {
+        kind: "bundle",
+        pieces: card.settings.legsPerRack + m.config.shelves * ANGLE_PIECES_PER_SHELF,
+        widthCm: card.settings.angleWidthCm ?? null,
+        stackCm: card.settings.angleStackCm ?? null,
+      },
     });
   }
 
@@ -174,6 +201,11 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       colours: [],
       price: m.price,
       gramsPerShelf: size.gramsPerShelf ?? null,
+      packing: {
+        kind: "pipes",
+        piecesFt: pipeRackPiecesFt(m.config, size, card.settings),
+        diameterCm: card.pipeSettings?.pipeDiameterCm ?? null,
+      },
     });
   }
 

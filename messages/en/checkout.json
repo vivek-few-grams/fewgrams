@@ -22,7 +22,7 @@
   "closedBody": "Online payment is not switched on yet. Nothing has been ordered and nothing has been charged, and your cart stays saved.",
   "noAddressHeading": "Where should we deliver?",
   "noAddressBody": "Tell us where to deliver. We'll save it to your account, so you only type it once.",
-  "noDeliverableBody": "None of your saved addresses is in our delivery area yet. Add one that is.",
+  "noDeliverableBody": "Fresh greens are delivered only in selected areas, and none of your saved addresses is in one. Add one that is, or remove the greens from your cart to ship the rest by courier.",
   "addressHeading": "Deliver to",
   "payHeading": "Payment",
   "pay": "Pay ₹{amount, number}",
@@ -33,13 +33,14 @@
   "errors": {
     "paymentsClosed": "Online payment is not switched on yet.",
     "addressMissing": "Choose a delivery address.",
-    "pincodeNotServed": "We don't deliver to {pincode} yet.",
+    "pincodeNotServed": "Fresh greens don't reach {pincode} yet.",
     "cartEmpty": "Your cart is empty.",
     "cartChanged": "Something in your cart changed. Review it and try again.",
     "priceChanged": "A price changed since you opened this page. Check the new total and pay again.",
     "deliveryUnavailable": "We couldn't price delivery to this address just now. Nothing has been charged — please try again shortly.",
     "gatewayError": "We couldn't open the payment screen. Please try again in a moment.",
-    "notCompleted": "The payment was not completed. Your cart is still here, so you can try again."
+    "notCompleted": "The payment was not completed. Your cart is still here, so you can try again.",
+    "deliveryChanged": "Delivery prices changed since you checked. We've looked again — pick a delivery partner and pay."
   },
   "changeAddress": "Change",
   "changeAddressLabel": "Change delivery address",
@@ -47,5 +48,28 @@
   "useThisAddress": "Deliver here",
   "addAnother": "Add another address",
   "newAddressHeading": "New delivery address",
-  "addressLimit": "You have {max, number} saved addresses, the most we keep. Remove one in your account to add another."
+  "addressLimit": "You have {max, number} saved addresses, the most we keep. Remove one in your account to add another.",
+  "partnerHeading": "Delivery partner",
+  "partnerLocked": "Confirm your address and we'll compare delivery partners for it.",
+  "scanning": "Finding the cheapest delivery…",
+  "scanningBody": "Asking each delivery partner for today's price to your address.",
+  "checking": "Checking",
+  "scanned": "Compared {count, plural, one {# partner} other {# partners}} and picked the cheapest.",
+  "cheapest": "Cheapest",
+  "via": "{carrier} via {partner}",
+  "ownRunTitle": "Our own delivery run",
+  "ownRunBody": "Your order has fresh greens, so we bring it ourselves rather than by courier.",
+  "chooseOption": "Choose a delivery partner",
+  "deliveryScanning": "Checking…",
+  "payScanning": "Finding the cheapest delivery…",
+  "partners": {
+    "delhivery": "Delhivery",
+    "ekart": "Ekart",
+    "shiprocket": "Shiprocket"
+  },
+  "showOthers": "{count, plural, one {See # other partner} other {See # other partners}}",
+  "hideOthers": "Hide other partners",
+  "readyToShip": "Handed to the courier <b>{date}</b> — the arrival date follows the delivery partner",
+  "arrivesLabel": "Arrives",
+  "pickupNote": "We take a day to pack your order and hand it to the courier on <b>{date}</b>. Each arrival date counts from then."
 }

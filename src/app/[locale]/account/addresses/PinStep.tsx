@@ -15,11 +15,11 @@ export type CheckedPin = { pincode: string; place: PinPlace | null };
  * The first step of every address: the PIN, on its own — the owner's layout,
  * 23 Sep 2026.
  *
- * Asked before anything else so that a customer outside the delivery area
- * hears it before typing a whole address, and so that district and state
- * arrive already filled. `lookupPinAction` checks the area first and only
- * then asks India Post. It decides nothing: `saveAddressAction` checks the
- * PIN again.
+ * Asked before anything else so that district and state arrive already
+ * filled, and — at a checkout with fresh greens in the cart — so that a
+ * customer outside the greens area hears it before typing a whole address.
+ * Anywhere else every PIN passes. It decides nothing: `startCheckout` checks
+ * the area again for greens.
  *
  * Checked on the sixth digit, and on Check / Enter for anyone who pastes or
  * edits in the middle. Once passed it collapses to one line with "Change".
@@ -29,6 +29,7 @@ export function PinStep({
   onChecked,
   onChange,
   onCancel,
+  greensOnly = false,
 }: {
   checked: CheckedPin | null;
   onChecked: (c: CheckedPin) => void;
@@ -38,6 +39,10 @@ export function PinStep({
    *  once a PIN has passed, so without this a PIN we do not serve left the
    *  customer in a box with no way out. */
   onCancel?: () => void;
+  /** Checkout with fresh greens in the cart: only the own run's area will
+   *  do. Everywhere else any PIN passes, since everything but greens goes
+   *  by courier (the owner, 24 Sep 2026). */
+  greensOnly?: boolean;
 }) {
   const t = useTranslations("account.addresses");
   const e = useTranslations("account.errors");
@@ -57,10 +62,12 @@ export function PinStep({
     lookupPinAction(value)
       .then((r) => {
         if (asked.current !== value) return;
-        if (r.status === "served") {
+        if (r.status === "invalid") setStatus("invalid");
+        else if (greensOnly && !r.inArea) setStatus("notServed");
+        else {
           setStatus("idle");
           onChecked({ pincode: value, place: r.place });
-        } else setStatus(r.status);
+        }
       })
       .catch(() => asked.current === value && setStatus("failed"));
   }

@@ -959,6 +959,13 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
 
 ## 7. Delivery & serviceability
 
+- **The delivery area limits fresh greens only** (the owner, 24 Sep 2026). Greens go on the
+  owner's own run, so a cart with greens in it can only be delivered inside the area below.
+  Everything else — seeds, trays, coir, racks — goes by courier **anywhere in India** the
+  couriers reach. So an address anywhere in India saves (`validateAddress` no longer checks the
+  area); the PIN step turns an out-of-area PIN away only at a checkout with greens in the cart,
+  with the "order on WhatsApp" card; and `startCheckout` enforces the area server-side for greens
+  alone. A courier that cannot reach a PIN simply offers no price.
 - **The delivery area is a district, not a PIN list** (set 23 Sep 2026, replacing eighteen PINs
   hard-coded in `brand.ts`, which refused Bengaluru PINs nobody had typed in). A PIN is served
   when India Post's directory (data.gov.in, `src/lib/pincode/`) places it in **Bengaluru Urban** —
@@ -998,8 +1005,23 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
         pieces of one product go in one stack (a 60 × 30 × 3 cm tray, +3 cm each). A drainage set
         of five is recorded as one piece.
       - *Racks* from the model: length = the longer of rack height and shelf length (the legs),
-        width = shelf depth, height = shelves × the stacking height from admin → delivery; weight
-        = shelves × **grams per shelf**, set on each plate, frame and pipe size.
+        and across it one of two builds (the owner, 24 Sep 2026); weight = shelves × **grams per
+        shelf**, set on each plate, frame and pipe size.
+        - *Shelf racks* are a stack of plates: width = shelf depth, height = shelves × the
+          plate's **packed thickness**, set per plate on admin → racks. A single order-wide 20 cm
+          on admin → delivery had billed a 6 ft, 5-shelf rack as a 111 kg box, ₹2,923 to Salem.
+        - *Angle racks* are a **bundle of slotted angle**, not a box of shelves: 4 legs + 5
+          pieces per shelf (3 along the length, 2 across). The L-shaped pieces nest, each taking
+          the angle's width and adding its stacking (2 in × 1 cm, on the angle rates). A 6 ft,
+          5-shelf angle rack is 29 pieces, 183 × 5 × 29 cm, 5.3 kg by size.
+        - *Pipe racks* are a **bundle of pipe**, which does not nest (the owner, 24 Sep 2026):
+          every piece is listed by length — uprights at the rack's height, and per level two
+          depth rails and two length rails, or four halves once the middle support splits them —
+          laid end to end into lines as long as the longest piece, and the lines grouped square,
+          one pipe diameter each (on the pipe rates). Four 4 ft legs of 1 in pipe are 2 × 2 in; a
+          6 ft, 5-shelf, 2 × 4 ft rack is 16 lines, 4 × 4 pipes, about 6.4 kg by size at 3.3 cm.
+        - Any of these unmeasured blocks courier checkout for the racks it covers, like grams,
+          and is listed on admin → delivery.
       - An item with any figure missing is flagged on its row and listed on admin → delivery, and
         a courier order containing it is refused rather than guessed.
     - Order-wide figures (pickup, own-run fee, seed padding, shelf stacking) live on admin →
@@ -1012,6 +1034,34 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
     A courier bills the larger of dead and volumetric weight (`L×W×H ÷ 5000`), so
     `chargeableGrams` is what is quoted, never the dead weight alone. Microgreens stay on the
     Saturday run: a courier's hub-and-spoke overnight has no cold chain.
+- **Checkout compares couriers, and the customer picks** (the owner, 24 Sep 2026). Once an
+  address is accepted, `scanDelivery` asks every connected courier at once — Delhivery direct,
+  Ekart direct (Flat plan) and Shiprocket, which answers with its **one cheapest carrier** — and
+  the "Delivery partner" step shows each being checked, then lists every price with the cheapest
+  picked. The customer may choose another; `startCheckout` charges the option posted back,
+  looked up again in the scan, and refuses (`deliveryChanged`) if it is no longer offered rather
+  than charge a different courier. One courier failing leaves the others' prices standing.
+  - **Each option carries its own arrival date** (the owner, 24 Sep 2026): the cart's ready
+    date (seed shelf, tray lead time, rack build — `latestDate` as before), **plus one day to
+    pack** ("minimum 24 hours needed to pack it" — seed ordered on the 24th is ready on the 25th
+    and collected on the 26th; `courierPickup`), plus that courier's days on the road — Delhivery's `expected_tat`, Ekart's `tat.max` from
+    `/data/v3/serviceability` (which also prices, so it replaced the estimate call), and
+    Shiprocket's `estimated_delivery_days`. The pickup day is stated above the options, and
+    each row shows its arrival in bold in its own column beside the price — as prominent as
+    the price, by the owner's instruction. The order summary's date follows the partner
+    chosen ("Handed to the courier …" until one is), and the order
+    stores that arrival as `deliveryDate`. A courier that gives no transit time is still
+    offered, dated by the ready date alone. The own run (greens) is unchanged.
+  - A scan is cached ten minutes per origin, destination and weight, so the price shown is the
+    price charged a minute later. Each courier is sent the same chargeable grams, with a cube
+    whose volume weighs no more (`boxForGrams`), so all three price the same weight.
+  - The order stores which courier and, for Shiprocket, the carrier and its id — booking the
+    shipment has to go through the same account and carrier.
+  - Why: no single courier wins. In 85 live quotes from Bengaluru (24 Sep 2026) Ekart's flat
+    ₹106 beat Delhivery on a 2 kg tray pack in every city and lost on a 500 g seed packet in
+    every one; for 10–12 kg Ekart wins far away and Delhivery in the metros and nearby.
+  - Shiprocket's `rate` is taken as GST-inclusive (no tax field; its Delhivery rate lands within
+    2% of Delhivery's own inclusive quote). Confirm against the first invoice.
 - Everything consolidates onto the **same Saturday run**.
 - **Seed has its own dispatch rule, set 17 Sep 2026** (§22.2): up to what is on the shelf goes out
   **next day**, and anything beyond it is bought in from the supplier and promised **within 10

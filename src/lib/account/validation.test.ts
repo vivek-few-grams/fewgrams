@@ -9,10 +9,8 @@ import {
 
 const served = "560034";
 
-/* `checkDeliveryArea`'s two answers, without the directory: the area rule
-   itself is `area.ts`'s and is tested there. */
-const IN = { served: true, place: null };
-const OUT = { served: false, place: null };
+/* No India Post answer: the form's own district and state stand. */
+const IN = null;
 
 function form(fields: Record<string, string>): FormData {
   const fd = new FormData();
@@ -99,18 +97,13 @@ describe("validateAddress", () => {
   });
 
   /**
-   * The load-bearing test. SPEC §7 and §8: a non-serviceable PIN must be
-   * refused server-side, not merely hidden in the UI. An address saved with
-   * an unserviceable PIN would pass a checkout gate that only re-reads the
-   * saved address.
+   * The owner's rule, 24 Sep 2026: the delivery area limits fresh greens
+   * only, so an address anywhere in India saves. Checkout applies the area to
+   * a cart with greens in it (`checkout/actions.ts`).
    */
-  it("refuses a PIN code outside the service area", () => {
-    const r = validateAddress(form({ ...goodAddress, pincode: "110001" }), OUT);
-    expect(r.ok).toBe(false);
-    if (!r.ok) {
-      expect(r.error.code).toBe("pincodeNotServed");
-      expect(r.error.values).toEqual({ pincode: "110001" });
-    }
+  it("accepts a PIN code outside the greens delivery area", () => {
+    const r = validateAddress(form({ ...goodAddress, district: "New Delhi", state: "Delhi", pincode: "110001" }), IN);
+    expect(r.ok).toBe(true);
   });
 
   it("refuses a PIN that is not six digits", () => {
@@ -136,7 +129,7 @@ describe("validateAddress", () => {
     const place = { district: "Bengaluru Urban", state: "Karnataka" };
     const r = validateAddress(
       form({ ...goodAddress, district: "", state: " " }),
-      { served: true, place },
+      place,
     );
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value).toMatchObject(place);
@@ -147,7 +140,7 @@ describe("validateAddress", () => {
   it("keeps what the customer typed over the looked-up place", () => {
     const r = validateAddress(
       form({ ...goodAddress, district: "Bengaluru Rural" }),
-      { served: true, place: { district: "Bengaluru Urban", state: "Karnataka" } },
+      { district: "Bengaluru Urban", state: "Karnataka" },
     );
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value.district).toBe("Bengaluru Rural");

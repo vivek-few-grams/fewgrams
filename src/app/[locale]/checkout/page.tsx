@@ -1,16 +1,16 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
-import { CalendarCheck, ShoppingBag, Sprout } from "lucide-react";
+import { ShoppingBag, Sprout } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { lineId } from "@/lib/cart/cart";
 import { lineUnits } from "@/lib/cart/line-display";
 import { hydrateCart } from "@/lib/cart/server";
-import { formatDeliveryDate } from "@/lib/delivery-date";
-import { linesFromCart } from "@/lib/orders/order";
+import { courierPickup, istDateISO } from "@/lib/delivery-date";
 import { paymentProvider } from "@/lib/payments";
-import { deliveryCharge } from "@/lib/shipping/charge";
+import { shippingProviders } from "@/lib/shipping";
+import { travelsOnOwnRun } from "@/lib/shipping/parcel";
 import { checkDeliveryArea } from "@/lib/pincode/place";
 import { getProfile, listAddresses } from "@/lib/repo/profile";
 import { KindIcon } from "@/components/cart/KindIcon";
@@ -35,17 +35,20 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/checkout
  * is accepted because the delivery charge is per address (`PayForm`). The figures come from the same `hydrateCart` read
  * `startCheckout` will charge from.
  *
- * Only addresses inside the delivery area are offered, and the action checks
- * the PIN again anyway (SPEC §7) — this list is convenience, the action is
- * the gate. A customer with none types one here rather than being sent to
+ * **The delivery area limits fresh greens only** (the owner, 24 Sep 2026).
+ * With greens in the cart, only addresses the own run reaches are offered,
+ * and the action checks the PIN again anyway (SPEC §7) — this list is
+ * convenience, the action is the gate. Without greens everything goes by
+ * courier, so every saved address is offered and the couriers decide. A customer with none types one here rather than being sent to
  * the account page. With no gateway configured the delivery step still works
  * and only the pay button is replaced by the "not open yet" notice.
  *
- * Delivery is the fixed own-run fee for a cart with greens in it, and
- * otherwise the courier's live price for this parcel to each saved address,
- * rounded up to the rupee (SPEC §7, set 23 Sep 2026). With no price — no
- * delivery settings saved, no courier, or a courier that does not answer —
- * the pay button stays shut rather than place an order at no delivery charge.
+ * Delivery is priced after the address is accepted, not here: `PayForm`
+ * runs `scanDelivery`, which asks every connected courier at once and lets
+ * the customer pick (SPEC §7, 24 Sep 2026). So the page never waits on three
+ * couriers, and a visitor who never picks an address costs no quote. With no
+ * price the pay button stays shut rather than place an order at no delivery
+ * charge.
  */
 export default async function CheckoutPage({ params }: PageProps<"/[locale]/checkout">) {
   const { locale } = await params;
@@ -54,54 +57,26 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
   const actor = await requireRole("customer");
   const t = await getTranslations("checkout");
   const tc = await getTranslations("cart");
-  const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
 
   const [cart, addresses, profile] = await Promise.all([
     hydrateCart(locale),
     listAddresses(actor.userId),
     getProfile(actor.userId),
   ]);
-  /* One area check per distinct PIN; each is a cache read after the first
-     time anyone asked about that PIN. */
+  const greens = travelsOnOwnRun(cart.items);
+  /* One area check per distinct PIN, and only when greens make the area
+     matter; each is a cache read after the first time anyone asked. */
   const served = new Map(
-    await Promise.all(
-      [...new Set(addresses.map((a) => a.pincode))].map(
-        async (pin) => [pin, (await checkDeliveryArea(pin)).served] as const,
-      ),
-    ),
+    greens
+      ? await Promise.all(
+          [...new Set(addresses.map((a) => a.pincode))].map(
+            async (pin) => [pin, (await checkDeliveryArea(pin)).served] as const,
+          ),
+        )
+      : [],
   );
-  const deliverable = addresses.filter((a) => served.get(a.pincode));
+  const deliverable = greens ? addresses.filter((a) => served.get(a.pincode)) : addresses;
   const open = paymentProvider() !== null;
-
-  /* One quote per distinct PIN, not per address: two saved addresses in one
-     PIN are one courier call. `startCheckout` quotes again for the address
-     actually chosen, so these figures are only what the customer is shown. */
-  const parcel = linesFromCart(cart);
-  const pins = [...new Set(deliverable.map((a) => a.pincode))];
-  const quotes = new Map(
-    cart.items.length === 0
-      ? []
-      : await Promise.all(pins.map(async (pin) => [pin, await deliveryCharge(parcel, pin)] as const)),
-  );
-  const chargeFor = (pin: string): number | null => {
-    const q = quotes.get(pin);
-    return q?.ok ? q.amount : null;
-  };
-  /* No price because something is not set up (no fee saved, an item never
-     measured, no courier) — the owner's to fix, not the customer's to wait
-     out. Operator wording, resolved only for an admin, so a customer's HTML
-     never carries it (CLAUDE.md, "Empty states are role-aware"). */
-  /* Named, not listed: a note that offers every possible cause is one the
-     owner cannot act on. Most basic first — without a fee nothing prices. */
-  const gaps = new Set([...quotes.values()].flatMap((q) => (q.ok ? [] : [q.reason])));
-  const gap = (["notConfigured", "noCourier", "notMeasured"] as const).find((r) => gaps.has(r));
-  const operatorNote =
-    gap && actor.role === "admin"
-      ? await getTranslations("admin.checkoutDelivery").then((ta) => ({
-          body: ta(gap),
-          cta: ta("cta"),
-        }))
-      : null;
 
   if (cart.items.length === 0) {
     return (
@@ -167,17 +142,6 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
           {tc("subtotalValue", { amount: cart.subtotal })}
         </span>
       </div>
-      {cart.readyDate && (
-        <p className="mt-4 flex items-center gap-2.5 rounded-xl bg-cream/10 px-3.5 py-2.5 font-body text-[13px] text-cream/85">
-          <CalendarCheck size={16} strokeWidth={1.75} className="shrink-0 text-cream" />
-          <span>
-            {t.rich("arrives", {
-              date: formatDeliveryDate(cart.readyDate, dateLocale),
-              b: (chunks) => <strong className="font-semibold text-cream">{chunks}</strong>,
-            })}
-          </span>
-        </p>
-      )}
     </section>
   );
 
@@ -211,16 +175,18 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
               summary={summary}
               payable={open}
               subtotal={cart.subtotal}
+              partners={shippingProviders().map((p) => p.name)}
+              greensOnly={greens}
+              readyDate={cart.readyDate ? istDateISO(cart.readyDate) : null}
+              pickupDate={cart.readyDate ? istDateISO(courierPickup(cart.readyDate)) : null}
               addresses={deliverable.map((a) => ({
                 addrId: a.addrId,
-                delivery: chargeFor(a.pincode),
                 recipient: a.recipient,
                 street: [a.line1, a.line2, a.landmark].filter(Boolean).join(", "),
                 place: formatPlace(a),
                 phone: formatPhone(a.phone),
                 isDefault: a.isDefault,
               }))}
-              operatorNote={operatorNote}
               savedCount={addresses.length}
               emptyBody={addresses.length === 0 ? t("noAddressBody") : t("noDeliverableBody")}
               /* A first address is almost always the account holder's. */

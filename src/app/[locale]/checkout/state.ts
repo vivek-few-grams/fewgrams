@@ -11,3 +11,29 @@ export type CheckoutState =
   | { status: "error"; code: string; values?: Record<string, string> };
 
 export const CHECKOUT_IDLE: CheckoutState = { status: "idle" };
+
+/**
+ * What the delivery-partner step gets back from `scanDelivery`: the fixed
+ * own-run fee, every courier option cheapest first, or no price at all.
+ * Rupees are already rounded up, and each option's `id` is what the pay form
+ * posts back. `operatorNote` is resolved only for an admin (CLAUDE.md,
+ * "Empty states are role-aware").
+ */
+export type DeliveryScan =
+  | { status: "ownRun"; amount: number }
+  | {
+      status: "options";
+      /** `YYYY-MM-DD` IST: the day the courier collects — ready date plus a
+       *  day to pack. Null only for a cart with no date at all. */
+      pickup: string | null;
+      options: {
+        id: string;
+        courier: "delhivery" | "ekart" | "shiprocket";
+        carrier: string | null;
+        amount: number;
+        /** `YYYY-MM-DD` IST: the pickup day plus this courier's days on
+         *  the road, or null when it gave none. */
+        arrives: string | null;
+      }[];
+    }
+  | { status: "none"; operatorNote: { body: string; cta: string } | null };

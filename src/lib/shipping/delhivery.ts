@@ -1,4 +1,5 @@
 import type {
+  CourierOption,
   DeliveryEstimate,
   Quote,
   QuoteInput,
@@ -143,6 +144,30 @@ export class DelhiveryProvider implements ShippingProvider {
       chargedGrams: q.charged_weight ?? input.grams,
       zone: q.zone ?? "",
     };
+  }
+
+  /** Delhivery carries its own parcels, so one option: the quote itself,
+   *  with its transit time. A price with no transit time still stands — the
+   *  date is the one thing checkout can do without — so a failed TAT call
+   *  leaves `days` null rather than dropping Delhivery from the comparison. */
+  async options(input: QuoteInput): Promise<CourierOption[]> {
+    const [q, tat] = await Promise.all([
+      this.quote(input),
+      this.expectedDelivery({ ...input, pickupAt: new Date() }).catch(() => null),
+    ]);
+    return [
+      {
+        id: "delhivery",
+        courier: "delhivery",
+        carrier: null,
+        serviceId: null,
+        total: q.total,
+        beforeTax: q.beforeTax,
+        chargedGrams: q.chargedGrams,
+        zone: q.zone,
+        days: tat && tat.days > 0 ? tat.days : null,
+      },
+    ];
   }
 
   async expectedDelivery(input: {

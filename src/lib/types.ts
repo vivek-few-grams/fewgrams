@@ -517,6 +517,11 @@ export type ShelfPlate = {
   /** Packed weight per shelf, legs and fixings shared in — SPEC §7. Absent
    *  until weighed; a courier order for a rack on it is then refused. */
   gramsPerShelf?: number;
+  /** Height one plate adds when the plates are stacked flat in the box, cm —
+   *  a plate's folded edge, not its steel gauge (`thicknessMm`). Sets the
+   *  rack box's height. Absent until measured; refused at courier checkout
+   *  like `gramsPerShelf` (the owner, 24 Sep 2026). */
+  packedCm?: number;
 };
 
 /** Slotted angle, sold by the foot and used for the four legs.
@@ -561,6 +566,13 @@ export type RackSettings = {
   /** Applied to material cost to reach the retail price. Starts at 0 so the
    *  screen never shows a margin nobody chose. */
   markupPercent: number;
+  /** How an open-frame rack packs for the courier — SPEC §7 (the owner,
+   *  24 Sep 2026). It ships as a bundle of slotted angle, not a box of
+   *  shelves: each L-shaped piece is this wide (2 in ≈ 5 cm), and each one
+   *  nested on the last adds `angleStackCm` (about 1 cm). Absent until
+   *  measured; a courier order for an angle rack is then refused. */
+  angleWidthCm?: number;
+  angleStackCm?: number;
   /** Retail prices are rounded **up** to this multiple, never down — rounding
    *  down would quietly eat the margin the markup just added. 1 disables it. */
   roundUpToNearest: number;
@@ -764,6 +776,10 @@ export type PipeSettings = {
    *  shelf count (`RackSettings.bushesPerRack`); a pipe rack takes one per
    *  leg, so a 4 ft rack with its middle support takes six. */
   bushPrice: number;
+  /** The pipe's outer diameter, cm, for how a pipe rack packs — a bundle of
+   *  pipe, each piece taking a diameter square (SPEC §7). Absent until
+   *  measured; a courier order for a pipe rack is then refused. */
+  pipeDiameterCm?: number;
 };
 
 /**

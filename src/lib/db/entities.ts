@@ -598,6 +598,8 @@ export const RackSettingsEntity = new Entity(
       heightsFt: { type: "list", required: true, items: { type: "number" } },
       markupPercent: { type: "number", required: true },
       roundUpToNearest: { type: "number", required: true },
+      angleWidthCm: { type: "number" },
+      angleStackCm: { type: "number" },
     },
     indexes: {
       single: {
@@ -623,6 +625,7 @@ export const ShelfPlateEntity = new Entity(
       price: { type: "number", required: true },
       active: { type: "boolean", required: true },
       gramsPerShelf: { type: "number" },
+      packedCm: { type: "number" },
     },
     indexes: {
       byId: {
@@ -816,6 +819,7 @@ export const PipeSettingsEntity = new Entity(
       /** Per **leg**, unlike `RackSettings.bushPrice` which is per rack at a
        *  fixed four. A 4 ft pipe rack carries a middle support, so six. */
       bushPrice: { type: "number", required: true },
+      pipeDiameterCm: { type: "number" },
     },
     indexes: {
       single: {
@@ -954,7 +958,10 @@ export const ShippingSettingsEntity = new Entity(
       seedPackingGrams: { type: "number", required: true },
       /** Height one flat-packed shelf adds to a rack's box. Per-item packing
        *  lives on the tray row and the shelf-size rows, not here. */
-      shelfStackCm: { type: "number", required: true },
+      /** Retired 24 Sep 2026: shelf racks take their plate's `packedCm`, and
+       *  angle and pipe racks pack as a bundle. Still on the stored row, so
+       *  kept as an optional attribute; nothing reads or writes it. */
+      shelfStackCm: { type: "number" },
       updatedAt: { type: "string", required: true },
     },
     indexes: {
@@ -1064,7 +1071,9 @@ export const OrderEntity = new Entity(
       shippingQuote: {
         type: "map",
         properties: {
-          courier: { type: ["delhivery"] as const, required: true },
+          courier: { type: ["delhivery", "ekart", "shiprocket"] as const, required: true },
+          carrier: { type: "string" },
+          serviceId: { type: "string" },
           quotedTotal: { type: "number", required: true },
           chargedGrams: { type: "number", required: true },
           zone: { type: "string", required: true },

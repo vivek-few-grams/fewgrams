@@ -78,6 +78,15 @@ export function PipeRates({
             defaultValue={pipeSettings?.bushPrice ?? ""}
             error={errorFor("bushPrice")}
           />
+          <NumberField
+            label={t("pipeDiameterCm")}
+            hint={t("pipeDiameterCmHint")}
+            name="pipeDiameterCm"
+            min={0}
+            step="any"
+            defaultValue={pipeSettings?.pipeDiameterCm ?? ""}
+            error={errorFor("pipeDiameterCm") ?? (pipeSettings && pipeSettings.pipeDiameterCm === undefined ? t("packMissing") : undefined)}
+          />
         </div>
 
         <div className="flex items-center gap-3">
