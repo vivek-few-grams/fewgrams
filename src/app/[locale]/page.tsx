@@ -14,6 +14,9 @@ import { listSeeds } from "@/lib/repo/seeds";
 import { seedNameMap } from "@/lib/content/seeds";
 import { listTrays } from "@/lib/repo/trays";
 import { trayNameMap } from "@/lib/content/trays";
+import { listGrowMedia } from "@/lib/repo/grow-media";
+import { growMediumNameMap } from "@/lib/content/grow-media";
+import { GROW_MEDIA_TILE_WORDS } from "@/lib/shop";
 import { RACK_RANGES } from "@/lib/racks/cart-key";
 import { attachPlanContent } from "@/lib/content/plans";
 import { currentActor } from "@/lib/auth/guard";
@@ -45,7 +48,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [rows, counts, varieties, categories, microgreensOn, seeds, trays] =
+  const [rows, counts, varieties, categories, microgreensOn, seeds, trays, media] =
     await Promise.all([
       listPlansWithWeeks({ activeOnly: true }),
       categoryCounts(),
@@ -54,6 +57,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       isProductTypeEnabled("microgreens"),
       listSeeds({ activeOnly: true }),
       listTrays({ activeOnly: true }),
+      listGrowMedia({ activeOnly: true }),
     ]);
 
   /* Rotation weeks reference varieties by contentKey, and the name lives in
@@ -64,9 +68,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   /* Same "the real names, not the category label twice" word clouds as
      `/shop` (CLAUDE.md's marquee rules) — the two surfaces show the same
      shelf, so they read the same. */
-  const [seedNameById, trayNameById] = await Promise.all([
+  const [seedNameById, trayNameById, mediumNameById] = await Promise.all([
     seedNameMap(locale),
     trayNameMap(locale),
+    growMediumNameMap(locale),
   ]);
   const rackRanges = await getTranslations({ locale, namespace: "shop.racks.ranges" });
   const microgreenNames = varieties
@@ -79,6 +84,16 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const trayItemNames = trays
     .map((tr) => trayNameById[tr.contentKey])
     .filter((name): name is string => Boolean(name));
+  /* Not the product names, unlike the other tiles: two long names
+     ("Horti-Coir cocopeat — 10 kg block") make a sparse cloud, and the
+     category is about the medium rather than a brand. Properties of coir
+     instead — labels, never a claim or a tuned figure (CLAUDE.md, marquee
+     rules). Still empty when nothing is on sale, like every other tile. */
+  const growMediaWords = await getTranslations({ locale, namespace: "shop.growMedia.tileWords" });
+  const mediumNames =
+    media.some((m) => mediumNameById[m.contentKey])
+      ? GROW_MEDIA_TILE_WORDS.map((w) => growMediaWords(w))
+      : [];
 
   /* Plan copy comes from content/plans/<key>.json for the same reason. A plan
      whose file does not exist yet is **skipped**, not rendered nameless — the
@@ -126,6 +141,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         rackRangeNames={rackRangeNames}
         seedNames={seedNames}
         trayItemNames={trayItemNames}
+        mediumNames={mediumNames}
       />
       <TrustTags />
     </>

@@ -1,0 +1,82 @@
+{
+  "images": {
+    "hero": "hero.webp",
+    "gallery": [
+      "on-bench.webp"
+    ]
+  },
+  "en": {
+    "name": "Horti-Coir cocopeat — 5 kg block",
+    "shortDescription": "The size to start with: one block, soaked in a bucket, fills a good run of trays and pots. Take the 10 kg block if you sow every week.",
+    "specs": [
+      {
+        "label": "In the pack",
+        "value": "One compressed 5 kg block"
+      },
+      {
+        "label": "Made from",
+        "value": "Coconut husk fibre"
+      },
+      {
+        "label": "Grade",
+        "value": "Pre-washed, low EC — the maker's rating"
+      },
+      {
+        "label": "Once soaked",
+        "value": "Expands to about 15 times its size"
+      },
+      {
+        "label": "Made by",
+        "value": "IFFCO Urban Gardens"
+      }
+    ],
+    "howToUse": [
+      "Break off what you need and put it in a large bucket or tub.",
+      "Add about 4–5 litres of water for every kilo of block.",
+      "Leave it for 10–15 minutes, until it loosens and soaks the water up. Add a little more water if it still feels dry.",
+      "Turn it over by hand until it is evenly damp all the way through.",
+      "Use it as it is in trays, or blend it with compost or other media for a potting mix."
+    ],
+    "whyTitle": "Why low EC matters",
+    "why": "EC — electrical conductivity — measures how much salt is dissolved in a growing medium. Coir comes from coconut husks, which take up salt as they are processed, often near the coast. Left unwashed, coir can hold enough of it to harm young plants.\n\nSalt pulls water out of roots instead of letting them draw it in. A seedling in salty coir struggles to drink even when the tray is wet: roots stay short, leaf tips yellow or burn, and the tray comes up patchy instead of even.\n\nWashing the coir before the block is pressed rinses most of that salt away. Seeds start in a clean medium, roots grow freely, and whatever you feed the crop is what it gets — nothing already in the coir is working against you.\n\nIt matters most for microgreens. They grow fast, in a thin layer of medium, often on water alone, so there is no depth of soil to dilute a problem — salt in the coir shows across the whole tray. Low-EC coir is one less thing that can go wrong between sowing and harvest.",
+    "ourNote": "We use this cocopeat every day to grow our own microgreens, and it has given us good, consistent results crop after crop. That is why we decided to offer it here — so you can grow in the same medium we rely on.",
+    "imageAlt": "A shrink-wrapped block of IFFCO Horti-Coir cocopeat among potted plants, with a trowel and loose coir beside it"
+  },
+  "kn": {
+    "name": "ಹಾರ್ಟಿ-ಕಾಯರ್ ಕೋಕೋಪೀಟ್ — 5 ಕೆಜಿ ಬ್ಲಾಕ್",
+    "shortDescription": "ಶುರು ಮಾಡಲು ಈ ಗಾತ್ರ ಸಾಕು: ಒಂದು ಬ್ಲಾಕ್ ಅನ್ನು ಬಕೆಟ್‌ನಲ್ಲಿ ನೆನೆಸಿದರೆ ಹಲವಾರು ಟ್ರೇ ಮತ್ತು ಕುಂಡಗಳು ತುಂಬುತ್ತವೆ. ಪ್ರತಿ ವಾರ ಬಿತ್ತುವುದಾದರೆ 10 ಕೆಜಿ ಬ್ಲಾಕ್ ತೆಗೆದುಕೊಳ್ಳಿ.",
+    "specs": [
+      {
+        "label": "ಪ್ಯಾಕ್‌ನಲ್ಲಿ",
+        "value": "ಒತ್ತಿ ಗಟ್ಟಿಮಾಡಿದ ಒಂದು 5 ಕೆಜಿ ಬ್ಲಾಕ್"
+      },
+      {
+        "label": "ತಯಾರಿಕೆ",
+        "value": "ತೆಂಗಿನ ಸಿಪ್ಪೆಯ ನಾರು"
+      },
+      {
+        "label": "ದರ್ಜೆ",
+        "value": "ಮೊದಲೇ ತೊಳೆದದ್ದು, ಕಡಿಮೆ EC — ತಯಾರಕರ ದರ್ಜೆ"
+      },
+      {
+        "label": "ನೆನೆಸಿದ ಮೇಲೆ",
+        "value": "ಸುಮಾರು 15 ಪಟ್ಟು ಹಿಗ್ಗುತ್ತದೆ"
+      },
+      {
+        "label": "ತಯಾರಕರು",
+        "value": "IFFCO ಅರ್ಬನ್ ಗಾರ್ಡನ್ಸ್"
+      }
+    ],
+    "howToUse": [
+      "ಬೇಕಾದಷ್ಟನ್ನು ಮುರಿದು ದೊಡ್ಡ ಬಕೆಟ್ ಅಥವಾ ತೊಟ್ಟಿಯಲ್ಲಿ ಹಾಕಿ.",
+      "ಪ್ರತಿ ಕೆಜಿ ಬ್ಲಾಕ್‌ಗೆ ಸುಮಾರು 4–5 ಲೀಟರ್ ನೀರು ಹಾಕಿ.",
+      "10–15 ನಿಮಿಷ ಹಾಗೇ ಬಿಡಿ — ಸಡಿಲವಾಗಿ ನೀರನ್ನು ಹೀರಿಕೊಳ್ಳುವವರೆಗೆ. ಇನ್ನೂ ಒಣಗಿದಂತಿದ್ದರೆ ಸ್ವಲ್ಪ ನೀರು ಸೇರಿಸಿ.",
+      "ಎಲ್ಲ ಕಡೆ ಸಮವಾಗಿ ತೇವವಾಗುವವರೆಗೆ ಕೈಯಿಂದ ಮಗುಚಿ.",
+      "ಟ್ರೇಗಳಲ್ಲಿ ಹಾಗೆಯೇ ಬಳಸಿ, ಅಥವಾ ಕಾಂಪೋಸ್ಟ್ ಮತ್ತಿತರ ಮಾಧ್ಯಮಗಳ ಜೊತೆ ಬೆರೆಸಿ ಕುಂಡದ ಮಿಶ್ರಣ ಮಾಡಿ."
+    ],
+    "whyTitle": "ಕಡಿಮೆ EC ಏಕೆ ಮುಖ್ಯ",
+    "why": "EC — ವಿದ್ಯುತ್ ವಾಹಕತೆ — ಬೆಳೆಸುವ ಮಾಧ್ಯಮದಲ್ಲಿ ಎಷ್ಟು ಉಪ್ಪು ಕರಗಿದೆ ಎಂಬುದರ ಅಳತೆ. ಕೋಕೋಪೀಟ್ ತೆಂಗಿನ ಸಿಪ್ಪೆಯಿಂದ ಬರುತ್ತದೆ; ಸಿಪ್ಪೆಯನ್ನು ಸಂಸ್ಕರಿಸುವಾಗ, ಹೆಚ್ಚಾಗಿ ಕರಾವಳಿಯ ಬಳಿ, ಅದು ಉಪ್ಪನ್ನು ಹೀರಿಕೊಳ್ಳುತ್ತದೆ. ತೊಳೆಯದೇ ಇದ್ದರೆ ಎಳೆಯ ಗಿಡಗಳಿಗೆ ಹಾನಿಯಾಗುವಷ್ಟು ಉಪ್ಪು ಅದರಲ್ಲಿ ಉಳಿಯಬಹುದು.\n\nಉಪ್ಪು ಬೇರುಗಳಿಗೆ ನೀರು ಹೀರಲು ಬಿಡುವುದಿಲ್ಲ — ಬದಲಿಗೆ ಬೇರುಗಳಿಂದಲೇ ನೀರನ್ನು ಹೊರಗೆಳೆಯುತ್ತದೆ. ಉಪ್ಪಿನ ಕೋಕೋಪೀಟ್‌ನಲ್ಲಿ ಟ್ರೇ ಒದ್ದೆಯಾಗಿದ್ದರೂ ಸಸಿ ನೀರು ಕುಡಿಯಲು ಕಷ್ಟಪಡುತ್ತದೆ: ಬೇರುಗಳು ಚಿಕ್ಕದಾಗಿಯೇ ಉಳಿಯುತ್ತವೆ, ಎಲೆಯ ತುದಿ ಹಳದಿಯಾಗುತ್ತದೆ ಅಥವಾ ಸುಟ್ಟಂತಾಗುತ್ತದೆ, ಮತ್ತು ಟ್ರೇ ಸಮವಾಗಿ ಬೆಳೆಯದೆ ಅಲ್ಲಲ್ಲಿ ಖಾಲಿಯಾಗುತ್ತದೆ.\n\nಬ್ಲಾಕ್ ಒತ್ತುವ ಮೊದಲೇ ಕೋಕೋಪೀಟ್ ತೊಳೆಯುವುದರಿಂದ ಆ ಉಪ್ಪಿನ ಬಹುಪಾಲು ಹೋಗುತ್ತದೆ. ಬೀಜಗಳು ಸ್ವಚ್ಛ ಮಾಧ್ಯಮದಲ್ಲಿ ಶುರುವಾಗುತ್ತವೆ, ಬೇರುಗಳು ಮುಕ್ತವಾಗಿ ಬೆಳೆಯುತ್ತವೆ, ಮತ್ತು ನೀವು ಕೊಡುವ ಪೋಷಣೆಯೇ ಬೆಳೆಗೆ ಸಿಗುತ್ತದೆ — ಕೋಕೋಪೀಟ್‌ನಲ್ಲಿ ಮೊದಲೇ ಇರುವ ಯಾವುದೂ ನಿಮ್ಮ ವಿರುದ್ಧ ಕೆಲಸ ಮಾಡುವುದಿಲ್ಲ.\n\nಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ಗೆ ಇದು ಇನ್ನೂ ಮುಖ್ಯ. ಅವು ಬೇಗ ಬೆಳೆಯುತ್ತವೆ, ತೆಳುವಾದ ಮಾಧ್ಯಮದ ಪದರದಲ್ಲಿ, ಹೆಚ್ಚಾಗಿ ಬರೀ ನೀರಿನಲ್ಲೇ — ಸಮಸ್ಯೆಯನ್ನು ತಗ್ಗಿಸಲು ಆಳವಾದ ಮಣ್ಣಿಲ್ಲ, ಹಾಗಾಗಿ ಕೋಕೋಪೀಟ್‌ನಲ್ಲಿನ ಉಪ್ಪು ಇಡೀ ಟ್ರೇನಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ. ಕಡಿಮೆ EC ಕೋಕೋಪೀಟ್ ಎಂದರೆ ಬಿತ್ತನೆಯಿಂದ ಕಟಾವಿನವರೆಗೆ ತಪ್ಪಾಗಬಹುದಾದ ಒಂದು ವಿಷಯ ಕಡಿಮೆ.",
+    "ourNote": "ನಮ್ಮ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಬೆಳೆಸಲು ನಾವು ನಿತ್ಯವೂ ಇದೇ ಕೋಕೋಪೀಟ್ ಬಳಸುತ್ತೇವೆ, ಮತ್ತು ಪ್ರತಿ ಬೆಳೆಯಲ್ಲೂ ಇದು ನಮಗೆ ಉತ್ತಮ, ಸ್ಥಿರವಾದ ಫಲಿತಾಂಶ ಕೊಟ್ಟಿದೆ. ಅದಕ್ಕಾಗಿಯೇ ಇದನ್ನು ಇಲ್ಲಿ ನಿಮಗೂ ನೀಡಲು ನಿರ್ಧರಿಸಿದೆವು — ನಾವು ನಂಬಿರುವ ಅದೇ ಮಾಧ್ಯಮದಲ್ಲಿ ನೀವೂ ಬೆಳೆಸಬಹುದು.",
+    "imageAlt": "ಕುಂಡದ ಗಿಡಗಳ ನಡುವೆ ಪ್ಲಾಸ್ಟಿಕ್ ಸುತ್ತಿದ IFFCO ಹಾರ್ಟಿ-ಕಾಯರ್ ಕೋಕೋಪೀಟ್ ಬ್ಲಾಕ್, ಪಕ್ಕದಲ್ಲಿ ಸಣ್ಣ ಗುದ್ದಲಿ ಮತ್ತು ಸಡಿಲ ನಾರು"
+  }
+}

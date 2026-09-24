@@ -40,6 +40,7 @@
     "pipeRacks": "Pipe racks",
     "seeds": "Seeds",
     "trays": "Trays & drainage",
+    "growMedia": "Grow media",
     "settings": "Settings",
     "productVisibility": "Product visibility",
     "operations": "Operations",
@@ -435,7 +436,9 @@
     "seeds": "Seeds",
     "seedsHint": "Price per 100 g and the grams on the shelf — the shelf sets how fast an order ships, not whether it can be placed",
     "trays": "Trays & drainage",
-    "traysHint": "What a pack costs and how long the supplier takes — nothing here is held in stock"
+    "traysHint": "What a pack costs and how long the supplier takes — nothing here is held in stock",
+    "growMedia": "Grow media",
+    "growMediaHint": "Cocopeat blocks — what a block costs and how long the maker takes. Nothing here is held in stock"
   },
   "seeds": {
     "title": "Seeds",
@@ -541,6 +544,65 @@
     },
     "packingNote": "Packing, for courier prices: pieces per pack, one piece's length × width × height, the height each further stacked piece adds, and one piece's weight. Fill all six or leave all blank."
   },
+  "growMedia": {
+    "title": "Grow media",
+    "intro": "Cocopeat and other grow media, bought in from the maker and resold — Horti-Coir from IFFCO Urban Gardens first. This screen owns the numbers only: what one block costs, how many days it takes to reach a customer, and how it packs for the courier. Every word a customer reads lives in content/grow-media/[key].json.",
+    "introOps": "Nothing here is held in stock, so every order is a purchase order placed with the maker. Each pack size is its own row — the 5 kg and the 10 kg block have their own price and their own box. Seven days is the shortest this category will promise until a figure is set for it.",
+    "addTitle": "Add a grow medium",
+    "pick": "Key",
+    "pickHint": "Lowercase letters and hyphens only — horti-coir, horti-coir-bulk. No numbers or spaces, so a size goes in words. This names the content file, so it is an identifier, not a label.",
+    "pickPlaceholder": "horti-coir",
+    "pickExisting": "Existing content files appear as suggestions as you type.",
+    "howTo": "Save it here first, then create content/grow-media/[key].json for the name, the one-line description, the spec table and the steps to prepare it. Photographs are optional — until they exist the card shows the brand mark. Until the content file exists the item is flagged below and stays off the site.",
+    "price": "Price per block (₹)",
+    "priceHint": "What a customer pays for one block, not per kilo",
+    "leadDays": "Days to deliver",
+    "leadDaysHint": "{min, number} to {max, number} days — what you promise from order to doorstep",
+    "activeLabel": "Active — visible on the site",
+    "saveNew": "Add item",
+    "savedCount": "{count, plural, =0 {Nothing saved yet} one {# item saved} other {# items saved}}",
+    "emptyList": "Nothing yet. Add an item above and it appears on the site straight away.",
+    "colItem": "Item",
+    "colPrice": "₹/block",
+    "colLead": "Days",
+    "promise": "Ordered in, within {days, number} days",
+    "colActive": "Active",
+    "hidden": "Hidden",
+    "missingContentHint": "No copy yet — create content/grow-media/{key}.json. Hidden from the site until you do.",
+    "save": "Save row",
+    "savedRow": "Saved",
+    "deleteTitle": "Delete this item?",
+    "deleteConfirm": "This removes its price and its lead time. The content file stays on disk, so you can add it back at any time.",
+    "errors": {
+      "keyRequired": "Give this item a key, like horti-coir.",
+      "keyInvalid": "Lowercase letters and hyphens only — no numbers or spaces. For example horti-coir-bulk.",
+      "keyTaken": "“{key}” is already added.",
+      "priceInvalid": "Price per block must be a positive number.",
+      "leadDaysInvalid": "Days to deliver must be a whole number from {min, number} to {max, number}.",
+      "notFound": "That item no longer exists.",
+      "packingInvalid": "Packing figures must be more than zero.",
+      "packingIncomplete": "Fill in all six packing figures, or leave them all blank.",
+      "packPiecesInvalid": "Blocks per pack must be a whole number."
+    },
+    "packing": {
+      "packPieces": "Blocks per pack",
+      "pieceLengthCm": "Length (cm)",
+      "pieceWidthCm": "Width (cm)",
+      "pieceHeightCm": "Height of one (cm)",
+      "pieceStackCm": "Each extra adds (cm)",
+      "pieceGrams": "Weight of one (g)"
+    },
+    "packingMissing": "No packing size yet — courier orders with this item can't be priced until all six packing figures are filled in. A block is one piece; weigh it in its wrapping.",
+    "packingShort": {
+      "packPieces": "Blocks",
+      "pieceLengthCm": "L cm",
+      "pieceWidthCm": "W cm",
+      "pieceHeightCm": "H cm",
+      "pieceStackCm": "+ cm each",
+      "pieceGrams": "g each"
+    },
+    "packingNote": "Packing, for courier prices: blocks per pack (1), one block's length × width × height, the height each further block adds when stacked, and one block's weight in its wrapping. Fill all six or leave all blank."
+  },
   "settings": {
     "title": "Product visibility",
     "intro": "Turn a product type off to pull it from every menu on the site — the header, the footer and the shop's own category strip — and take its pages down. A visitor with an old link or a bookmark is sent back to /shop instead of an error. Nothing is deleted: prices, stock and content files are untouched, and turning it back on restores it exactly as it was.",
@@ -592,6 +654,7 @@
       "variety": "Microgreens",
       "seed": "Seed",
       "tray": "Trays & drainage",
+      "media": "Grow media",
       "rack": "Rack"
     },
     "sourcing": {
@@ -656,6 +719,7 @@
     "unmeasuredHint": "A courier order containing any of these can't be priced, so checkout won't take payment for it. Add the missing size or weight on its screen.",
     "unmeasuredScreen": {
       "trays": "Trays & drainage",
+      "growMedia": "Grow media",
       "plates": "Shelf racks",
       "frames": "Angle racks",
       "pipes": "Pipe racks"

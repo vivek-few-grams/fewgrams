@@ -16,6 +16,9 @@ export const CATEGORY_PANELS: Record<
      than a photograph competing with a dark panel. */
   seeds: { panelClass: "bg-sage/30", marqueeClass: "text-forest/25" },
   trays: { panelClass: "bg-sage", marqueeClass: "text-forest/25" },
+  /* Tan, 24 Sep 2026 — the colour of the coir itself, and the one ground no
+     other category uses, so the tile reads as a different thing to buy. */
+  media: { panelClass: "bg-tan/45", marqueeClass: "text-bark/20" },
   snacks: { panelClass: "bg-mint", marqueeClass: "text-forest/20" },
 };
 
@@ -36,6 +39,8 @@ export const CATEGORY_HREF: Record<Category, string> = {
   racks: "/shop/racks",
   seeds: "/seeds",
   trays: "/shop/trays",
+  /* `media` is the key; the page says what it holds (SPEC §24.5). */
+  media: "/shop/grow-media",
   snacks: "/shop/snacks",
 };
 
@@ -46,5 +51,19 @@ export const CATEGORY_COUNT: Record<Category, "products" | "seeds"> = {
   racks: "products",
   seeds: "seeds",
   trays: "products",
+  media: "products",
   snacks: "products",
 };
+
+/** The words behind the grow-media tile, as keys of `shop.growMedia.tileWords`
+ *  — properties of coir, because two long product names make a sparse cloud.
+ *  Flat keys rather than a message array: nothing in the codebase calls
+ *  `t.raw()`. */
+export const GROW_MEDIA_TILE_WORDS = [
+  "cocopeat",
+  "lowEc",
+  "preWashed",
+  "coconutHusk",
+  "holdsWater",
+  "airyRoots",
+] as const;

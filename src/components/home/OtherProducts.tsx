@@ -29,6 +29,7 @@ export async function OtherProducts({
   rackRangeNames,
   seedNames,
   trayItemNames,
+  mediumNames,
 }: {
   counts: Record<Category, number>;
   /** Already filtered to what admin has switched on — see
@@ -47,6 +48,7 @@ export async function OtherProducts({
   rackRangeNames: string[];
   seedNames: string[];
   trayItemNames: string[];
+  mediumNames: string[];
 }) {
   /* All four switched off is not a state anyone is expected to leave the site
      in, but the section heading and body still shouldn't sit above an empty
@@ -101,6 +103,7 @@ export async function OtherProducts({
             racks: rackRangeNames,
             seeds: seedNames,
             trays: trayItemNames,
+            media: mediumNames,
             snacks: [label(c), label(c)],
           };
           return (

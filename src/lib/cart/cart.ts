@@ -74,8 +74,13 @@ import { isValidRackCartKey } from "@/lib/racks/cart-key";
  *  each. **A rack has none of those** — it is one combination out of a rate
  *  card, so it has no content file, its key is a SKU rather than a name, and
  *  its price comes from a model row joined to that card (`findSellableRack`).
- *  That is why `keyRuleFor` exists. */
-export const CART_KINDS = ["variety", "seed", "tray", "rack"] as const;
+ *  That is why `keyRuleFor` exists.
+ *
+ *  `media` — a grow medium, cocopeat first (SPEC §24) — joined on 24 Sep 2026
+ *  as a fourth content kind. It is sold like a tray (one pack, a supplier
+ *  lead time) but is its own kind, so `horti-coir` in `content/grow-media/`
+ *  can never merge with a tray or a seed of that name. */
+export const CART_KINDS = ["variety", "seed", "tray", "rack", "media"] as const;
 export type CartKind = (typeof CART_KINDS)[number];
 
 /** A quantity of one item. **What one unit means depends on the kind** — see
@@ -89,12 +94,14 @@ const KIND_CODE: Record<CartKind, string> = {
   seed: "s",
   tray: "t",
   rack: "r",
+  media: "m",
 };
 const KIND_BY_CODE: Record<string, CartKind> = {
   v: "variety",
   s: "seed",
   t: "tray",
   r: "rack",
+  m: "media",
 };
 
 /**
@@ -134,6 +141,10 @@ export function isValidKeyFor(kind: CartKind, key: string): boolean {
  * Declared as a set rather than `kind !== "tray"` so that adding a kind forces
  * a decision here instead of inheriting the wrong default — which is exactly
  * what happened when racks arrived and this list did not have to change.
+ *
+ * **A block of cocopeat is not weighed either**, though it is sold by its
+ * weight's name: a 5 kg block is one unit at one price, and "1 block · 5,000 g"
+ * would invite reading the price as per kilo. The kilos are in its name.
  */
 const WEIGHED: ReadonlySet<CartKind> = new Set<CartKind>(["seed"]);
 

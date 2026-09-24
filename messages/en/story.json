@@ -2,6 +2,7 @@
   "title": "How we grow",
   "description": "The story of why two software engineers started growing microgreens for their own daughter, and the discipline behind every tray we hand to your kitchen.",
   "bookLabel": "Our story, page by page",
+  "coverTitle": "Our chapter starts here",
   "hint": "Scroll to turn the page",
   "pageOf": "Page {current} of {total}",
   "folio": "{current} / {total}",

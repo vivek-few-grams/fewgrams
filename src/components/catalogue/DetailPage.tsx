@@ -53,6 +53,7 @@ export type DetailProse = { heading: string; body: string };
 
 export function DetailPage({
   back,
+  eyebrow,
   name,
   shortDescription,
   gallery,
@@ -68,6 +69,9 @@ export function DetailPage({
   footer,
 }: {
   back: { href: string; label: string };
+  /** A line above the title — the grow-media "Recommended by Fewgrams"
+   *  badge. Optional; no other kind passes one. */
+  eyebrow?: React.ReactNode;
   name: string;
   shortDescription?: string;
   gallery: {
@@ -155,6 +159,7 @@ export function DetailPage({
         </div>
 
         <div className="lg:col-start-2 lg:row-start-1 lg:row-span-2">
+          {eyebrow && <div className="mb-4">{eyebrow}</div>}
           <h1 className="font-display text-[clamp(2rem,4.6vw,3.4rem)] font-bold leading-[1.05] tracking-tight text-forest">
             {name}
           </h1>

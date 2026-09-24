@@ -5,9 +5,13 @@
   },
   "nav": {
     "microgreens": "Microgreens",
-    "plans": "Plans",
+    "microgreensHover": "Pick yours",
+    "plans": "Weekly plans",
+    "plansHover": "Subscribe",
     "shop": "Shop",
+    "shopHover": "Now",
     "howWeGrow": "How we grow",
+    "howWeGrowHover": "Who are we?",
     "ariaLabel": "Main"
   },
   "header": {
@@ -29,6 +33,7 @@
     "racks": "Racks",
     "seeds": "Seeds",
     "trays": "Trays & drainage",
+    "media": "Grow media",
     "snacks": "Snacks"
   },
   "categoryStrip": {
@@ -60,5 +65,15 @@
     "fssaiLicence": "FSSAI Lic. {number}",
     "b2bPrompt": "Like our website?",
     "b2bHover": "We can build one for you →"
+  },
+  "quickAdd": {
+    "add": "Add",
+    "addAria": "Add {name} to cart",
+    "errors": {
+      "notSellable": "This is not on sale at the moment.",
+      "cartFull": "Your cart is full. Remove something to add this.",
+      "unitsInvalid": "That quantity is not available.",
+      "generic": "That did not save. Please try again."
+    }
   }
 }

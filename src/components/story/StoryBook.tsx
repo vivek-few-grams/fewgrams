@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sprout } from "lucide-react";
 import type { StoryPage } from "@/lib/content/story";
 import { StoryFace } from "./StoryFace";
 
@@ -58,6 +58,23 @@ import { StoryFace } from "./StoryFace";
  * *is* state is `index`, the spread currently facing the reader, and that
  * changes thirteen times in the life of the page rather than thousands.
  *
+ * ## The opening: a closed book, picked up
+ *
+ * The book arrives **closed**: a small hardcover, tilted on the page, with
+ * "Our chapter starts here" on a forest cover and a block of page edges
+ * under it (the owner, 24 Sep 2026). It then plays one short sequence,
+ * `INTRO_MS` below: it lifts and turns to face the reader, the cover swings
+ * open, and the camera flies in until the spread fills the screen. The
+ * cover lands on the left as the inside of the cover, carrying page 0's
+ * illustration, so the first spread is complete when the zoom finishes.
+ *
+ * The whole book is the stage, and the move is **one continuous motion with
+ * no breaks** (the owner, 24 Sep 2026). `data-phase="intro"` on `.book` runs
+ * overlapping CSS animations, one per property, and React touches it only
+ * twice: to start the cover and to drop the animations. The cover is sheet −1, the one
+ * turn that is timed rather than scrolled. A visitor who scrolls before the
+ * sequence ends (or reloads halfway down) skips straight to the open book.
+ *
  * ## The rail
  *
  * The book is `sticky` inside a tall empty rail: one viewport of scrolling
@@ -66,10 +83,20 @@ import { StoryFace } from "./StoryFace";
  * scrollbar stays honest, `Home` / `End` / `Page Down` all work, and a
  * visitor who wants out simply keeps scrolling.
  */
+/**
+ * The opening, in ms from mount. One continuous move whose curves live in
+ * globals.css (`.book[data-phase="intro"]`). These two numbers are the only
+ * moments React has to act: the cover starts to turn, and the animations
+ * are dropped once they have all landed. Keep them in step with the CSS.
+ */
+const INTRO_MS = { coverOpens: 1500, done: 3800 } as const;
+
 export function StoryBook({ pages }: { pages: StoryPage[] }) {
   const t = useTranslations("story");
   const [book, setBook] = useState(false);
   const [index, setIndex] = useState(0);
+  const [settled, setSettled] = useState(false);
+  const [opened, setOpened] = useState(false);
   const railRef = useRef<HTMLDivElement>(null);
   const leavesRef = useRef<HTMLDivElement>(null);
 
@@ -103,6 +130,15 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
 
   useEffect(() => {
     if (!book) return;
+    const timers = [
+      window.setTimeout(() => setOpened(true), INTRO_MS.coverOpens),
+      window.setTimeout(() => setSettled(true), INTRO_MS.done),
+    ];
+    return () => timers.forEach((id) => window.clearTimeout(id));
+  }, [book]);
+
+  useEffect(() => {
+    if (!book) return;
     const rail = railRef.current;
     const leaves = leavesRef.current;
     if (!rail || !leaves) return;
@@ -118,6 +154,12 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
       const p = Math.min(Math.max(travelled, 0), turns);
 
       leaves.style.setProperty("--p", p.toFixed(4));
+      /* A visitor who scrolls before the cover has opened — or who reloads
+         halfway down — is past the cover already. */
+      if (p > 0) {
+        setOpened(true);
+        setSettled(true);
+      }
       /* Rounds, so the swap lands at the half-turn where the sheet is edge-on
          and the z-index inversion has nothing visible to invert. */
       setIndex((current) => (Math.round(p) === current ? current : Math.round(p)));
@@ -193,26 +235,41 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
           sticky pinned at `top-0` therefore begins 80px down and hangs 80px
           off the bottom of the screen, which cost the last line of every
           left-hand page. */}
-      <div className="sticky top-20 h-[calc(100svh-5rem)]">
+      <div className="book-scene sticky top-20 h-[calc(100svh-5rem)]">
         <div
           role="group"
           aria-label={t("bookLabel")}
+          data-phase={settled ? "done" : "intro"}
           className="book grid h-full w-full grid-cols-2"
         >
-          <div className="book__base">
-            <StoryFace
-              page={pages[0]}
-              folio={folioFor(0)}
-              part="plate"
-              priority
-            />
-          </div>
+          {/* Plain paper now: the opening illustration rides in on the back
+              of the cover, like the inside of a real one. */}
+          <div aria-hidden="true" className="book__base" />
 
           <div
             ref={leavesRef}
             className="book__leaves"
             style={{ "--p": 0 } as CSSProperties}
           >
+            {/* First in DOM order, so a turned page 0 — which shares its
+                z-index of 0 on the left — is drawn over it. */}
+            <div className="book__leaf book__cover" data-open={opened || undefined}>
+              <div className="book__face">
+                {/* A foil-stamped frame inset from the edge, as a hardcover has.
+                    Sized for the full-screen leaf; the intro shows it scaled. */}
+                <div className="h-full w-full bg-forest p-10 text-cream">
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-7 rounded-sm border border-cream/25 px-12 text-center">
+                    <Sprout aria-hidden="true" size={72} strokeWidth={1.25} />
+                    <p className="max-w-[11ch] font-display text-[clamp(3rem,6.5vw,6rem)] font-bold leading-[1.05] tracking-tight">
+                      {t("coverTitle")}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="book__face book__face--back">
+                <StoryFace page={pages[0]} folio={folioFor(0)} part="plate" priority />
+              </div>
+            </div>
             {pages.map((page, k) => {
               const overleaf = pages[k + 1];
               return (
@@ -272,7 +329,7 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
         <button
           type="button"
           onClick={() => goTo(index - 1)}
-          disabled={index === 0}
+          disabled={!settled || index === 0}
           aria-label={t("previous")}
           className="absolute left-5 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-forest/15 bg-cream/85 text-forest shadow-md backdrop-blur-sm transition-colors hover:bg-forest hover:text-cream disabled:pointer-events-none disabled:opacity-0"
         >
@@ -281,7 +338,7 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
         <button
           type="button"
           onClick={() => goTo(index + 1)}
-          disabled={index === turns}
+          disabled={!settled || index === turns}
           aria-label={t("next")}
           className="absolute right-5 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full border border-forest/15 bg-cream/85 text-forest shadow-md backdrop-blur-sm transition-colors hover:bg-forest hover:text-cream disabled:pointer-events-none disabled:opacity-0"
         >
@@ -295,7 +352,7 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
             the paper underneath it. */}
         <p
           className={`pointer-events-none absolute inset-x-0 bottom-6 text-center font-body text-[11px] uppercase tracking-widest text-stone/70 transition-opacity duration-300 ${
-            index === 0 ? "opacity-100" : "opacity-0"
+            settled && index === 0 ? "opacity-100" : "opacity-0"
           }`}
         >
           {t("hint")}

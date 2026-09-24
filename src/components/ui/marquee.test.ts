@@ -65,6 +65,17 @@ const CALLERS: Caller[] = [
     durationSeconds: 8,
   },
   {
+    /* The tray card's sizing, copied — the only card-level difference is the
+       ground colour. Four spec labels, as on a tray. */
+    what: "grow-media card — shop/grow-media/page.tsx, aspect-[3/2], text-[7cqw]",
+    panelAspect: 2 / 3,
+    fontFraction: 0.07,
+    words: 4,
+    minLines: DEFAULT_MIN_LINES,
+    panelWidthPx: 419,
+    durationSeconds: 8,
+  },
+  {
     what: "rack card — shop/racks/page.tsx, aspect-[4/5], text-[6cqw]",
     panelAspect: 5 / 4,
     fontFraction: 0.06,

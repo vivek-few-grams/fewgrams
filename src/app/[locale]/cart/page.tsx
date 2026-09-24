@@ -7,7 +7,7 @@ import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { hydrateCart } from "@/lib/cart/server";
 import { lineId } from "@/lib/cart/cart";
 import { formatDeliveryDate } from "@/lib/delivery-date";
-import { lineHref, lineUnits } from "@/lib/cart/line-display";
+import { lineHref, lineUnits, stepKey } from "@/lib/cart/line-display";
 import { clearCart } from "./actions";
 import { CartLineControls } from "./CartLineControls";
 
@@ -213,7 +213,7 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                   ? t("readySplit")
                   : cart.hasVarieties
                     ? t("readySingle")
-                    : cart.hasTrays
+                    : cart.hasTrays || cart.hasMedia
                       ? t("readyTray")
                       : cart.hasRacks
                         ? t("readyRack")
@@ -245,13 +245,25 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                   {t("readyTrayNote")}
                 </p>
               )}
+              {/* Why a block of coir is taking a week — the tray note's rule,
+                  for the other bought-in category (SPEC §24.1). */}
+              {cart.hasMedia &&
+                (cart.splitDates || cart.hasVarieties || cart.hasSeeds || cart.hasTrays) && (
+                  <p className="mt-2 font-body text-xs leading-relaxed text-stone">
+                    {t("readyMediaNote")}
+                  </p>
+                )}
               {/* Why a rack is taking three days, and only when the sentence
                   above was about something else. A rack is the *fastest* thing
                   in the shop after a shelf seed, so in a mixed cart the note
                   is doing the opposite job to the tray one: it explains a line
                   that is waiting for the others, not one the others wait for. */}
               {cart.hasRacks &&
-                (cart.splitDates || cart.hasVarieties || cart.hasSeeds || cart.hasTrays) && (
+                (cart.splitDates ||
+                  cart.hasVarieties ||
+                  cart.hasSeeds ||
+                  cart.hasTrays ||
+                  cart.hasMedia) && (
                   <p className="mt-2 font-body text-xs leading-relaxed text-stone">
                     {t("readyRackNote")}
                   </p>
@@ -303,20 +315,6 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
 }
 
 /**
- * Which stepper label names this kind's unit.
- *
- * A screen reader hearing "one less 100 g" beside a rack is the only person
- * this affects, which is precisely why it is worth a function: it is invisible
- * to everyone reviewing the page.
- */
-function stepKey(kind: string, dir: "decrease" | "increase"): string {
-  if (kind === "rack") return dir === "decrease" ? "decreaseRack" : "increaseRack";
-  if (kind === "tray") return dir === "decrease" ? "decreasePack" : "increasePack";
-  if (kind === "variety") return dir === "decrease" ? "decreaseTray" : "increaseTray";
-  return dir;
-}
-
-/**
  * The one-line reason a cart line arrives when it does.
  *
  * Extracted from the JSX because it is now a three-way on the kind with a
@@ -333,7 +331,7 @@ function lineTiming(
   /* A rack is built rather than ordered in or grown — its own wording, because
      "ordered in for you" would credit a supplier that does not exist. */
   if (item.kind === "rack") return t("lineBuild", { date });
-  if (item.kind === "tray") return t("lineSupplier", { date });
+  if (item.kind === "tray" || item.kind === "media") return t("lineSupplier", { date });
   if (item.kind === "seed") {
     return item.sourcing === "shelf"
       ? t("lineShelf", { date })

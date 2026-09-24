@@ -3,14 +3,17 @@ import { getTranslations } from "next-intl/server";
 import { listVarieties } from "@/lib/repo/varieties";
 import { listSeeds } from "@/lib/repo/seeds";
 import { listTrays } from "@/lib/repo/trays";
+import { listGrowMedia } from "@/lib/repo/grow-media";
 import { attachContent, varietyHero } from "@/lib/content/varieties";
 import { attachSeedContent, seedHero } from "@/lib/content/seeds";
 import { attachTrayContent, trayHero } from "@/lib/content/trays";
+import { attachGrowMediumContent, growMediumHero } from "@/lib/content/grow-media";
 import { findSellableRack } from "@/lib/racks/catalogue";
 import { rackLineName } from "@/lib/racks/describe";
 import { rackReadyDate } from "@/lib/racks/lead-time";
 import { seedReadyDate, seedSourcing, type SeedSourcing } from "@/lib/seeds/stock";
 import { trayReadyDate } from "@/lib/trays/lead-time";
+import { mediumReadyDate } from "@/lib/grow-media/lead-time";
 import { adhocReadyDate, latestDate } from "@/lib/delivery-date";
 import {
   CART_COOKIE,
@@ -140,6 +143,10 @@ export type HydratedCart = {
    *  unexplained. Nothing in that category is ever in stock (SPEC §23.1), so
    *  unlike `hasVendorSeeds` this needs no quantity to be true. */
   hasTrays: boolean;
+  /** True when at least one line is a grow medium — ordered in from the
+   *  supplier exactly as a tray is (SPEC §24.1), so the page explains the
+   *  week the same way. */
+  hasMedia: boolean;
   /** True when at least one line is a rack, so the page can say that racks are
    *  built to order and delivered inside Bengaluru — a three-day line sitting
    *  under a ten-day one needs a reason, not just a date. */
@@ -198,6 +205,7 @@ const EMPTY: HydratedCart = {
   hasSeeds: false,
   hasVarieties: false,
   hasTrays: false,
+  hasMedia: false,
   hasRacks: false,
   hasVendorSeeds: false,
   unavailable: [],
@@ -223,16 +231,19 @@ export async function hydrateCart(
      greens-only cart should not pay for a seed query, and now not for a tray
      query either. */
   const wants = (kind: CartKind) => lines.some((l) => l.kind === kind);
-  const [varieties, seeds, trays] = await Promise.all([
+  const [varieties, seeds, trays, media] = await Promise.all([
     wants("variety") ? listVarieties({ activeOnly: true }) : [],
     wants("seed") ? listSeeds({ activeOnly: true }) : [],
     wants("tray") ? listTrays({ activeOnly: true }) : [],
+    wants("media") ? listGrowMedia({ activeOnly: true }) : [],
   ]);
-  const [withVarietyContent, withSeedContent, withTrayContent] = await Promise.all([
-    attachContent(varieties, locale),
-    attachSeedContent(seeds, locale),
-    attachTrayContent(trays, locale),
-  ]);
+  const [withVarietyContent, withSeedContent, withTrayContent, withMediumContent] =
+    await Promise.all([
+      attachContent(varieties, locale),
+      attachSeedContent(seeds, locale),
+      attachTrayContent(trays, locale),
+      attachGrowMediumContent(media, locale),
+    ]);
 
   /**
    * How a kind's delivery date is worked out. **Internal — never reaches a
@@ -256,7 +267,11 @@ export async function hydrateCart(
        dispatch time and varies per row, a rack's is our own build time and is
        one constant for every range (`RACK_LEAD_DAYS`). Collapsing them would
        make the next change to either one touch both. */
-    | { by: "build" };
+    | { by: "build" }
+    /* A grow medium's supplier lead time. Its own arm rather than sharing
+       `supplier`, because its bounds live in their own module
+       (`grow-media/lead-time.ts`) and may part from the tray's. */
+    | { by: "medium"; leadDays: number };
 
   /**
    * A catalogue row, minus everything that depends on how much was ordered.
@@ -316,6 +331,21 @@ export async function hydrateCart(
       maxUnits: MAX_UNITS_PER_LINE,
       growDays: null,
       timing: { by: "supplier", leadDays: tr.leadDays },
+    });
+  }
+
+  for (const m of withMediumContent) {
+    if (!m.content) continue;
+    /* No stock test, as for a tray: nothing in this category is held. */
+    byId.set(lineId({ kind: "media", key: m.contentKey }), {
+      kind: "media",
+      key: m.contentKey,
+      name: m.content.text.name,
+      unitPrice: m.price,
+      image: growMediumHero(m.content),
+      maxUnits: MAX_UNITS_PER_LINE,
+      growDays: null,
+      timing: { by: "medium", leadDays: m.leadDays },
     });
   }
 
@@ -391,7 +421,9 @@ export async function hydrateCart(
           ? seedReadyDate(sourcing ?? "vendor", now)
           : timing.by === "supplier"
             ? trayReadyDate(timing.leadDays, now)
-            : rackReadyDate(now);
+            : timing.by === "medium"
+              ? mediumReadyDate(timing.leadDays, now)
+              : rackReadyDate(now);
 
     items.push({
       ...rest,
@@ -419,6 +451,7 @@ export async function hydrateCart(
     hasSeeds: items.some((i) => i.kind === "seed"),
     hasVarieties: items.some((i) => i.kind === "variety"),
     hasTrays: items.some((i) => i.kind === "tray"),
+    hasMedia: items.some((i) => i.kind === "media"),
     hasRacks: items.some((i) => i.kind === "rack"),
     hasVendorSeeds: items.some((i) => i.sourcing === "vendor"),
     unavailable,

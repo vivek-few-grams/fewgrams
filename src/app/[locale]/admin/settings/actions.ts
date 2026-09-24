@@ -15,6 +15,7 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
   revalidatePath("/[locale]/shop/racks", "page");
   revalidatePath("/[locale]/shop/trays", "page");
+  revalidatePath("/[locale]/shop/grow-media", "page");
   revalidatePath("/[locale]/seeds", "page");
   revalidatePath("/[locale]/microgreens", "page");
 }

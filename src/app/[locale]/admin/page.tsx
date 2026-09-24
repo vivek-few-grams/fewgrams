@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { listPlans } from "@/lib/repo/plans";
 import { listSeeds } from "@/lib/repo/seeds";
 import { listTrays } from "@/lib/repo/trays";
+import { listGrowMedia } from "@/lib/repo/grow-media";
 import { listVarieties } from "@/lib/repo/varieties";
 
 export const dynamic = "force-dynamic";
@@ -20,11 +21,12 @@ export const dynamic = "force-dynamic";
 export default async function AdminHome() {
   const t = await getTranslations("admin.overview");
 
-  const [varieties, plans, seeds, trays] = await Promise.all([
+  const [varieties, plans, seeds, trays, media] = await Promise.all([
     listVarieties(),
     listPlans(),
     listSeeds(),
     listTrays(),
+    listGrowMedia(),
   ]);
 
   const cards = [
@@ -37,6 +39,12 @@ export default async function AdminHome() {
     { label: t("plans"), count: plans.length, href: "/admin/plans", hint: t("plansHint") },
     { label: t("seeds"), count: seeds.length, href: "/admin/seeds", hint: t("seedsHint") },
     { label: t("trays"), count: trays.length, href: "/admin/trays", hint: t("traysHint") },
+    {
+      label: t("growMedia"),
+      count: media.length,
+      href: "/admin/grow-media",
+      hint: t("growMediaHint"),
+    },
   ];
 
   return (

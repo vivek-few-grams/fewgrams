@@ -1,9 +1,10 @@
-import { Bean, Grid2x2, Leaf, ShelvingUnit, type LucideIcon } from "lucide-react";
+import { Bean, Grid2x2, Leaf, ShelvingUnit, Shovel, type LucideIcon } from "lucide-react";
 import type { CartKind } from "@/lib/cart/cart";
 
 /**
  * One icon per kind of thing in the cart — a leaf for microgreens, a bean for
- * seeds, a grid for trays and drainage mats, a shelving unit for racks.
+ * seeds, a grid for trays and drainage mats, a shelving unit for racks, a
+ * trowel for grow media.
  *
  * A `Record` over `CartKind` rather than a switch with a default, so a new
  * kind is a type error here until it is given its own icon (CLAUDE.md, "A
@@ -15,6 +16,7 @@ export const KIND_ICON: Record<CartKind, LucideIcon> = {
   seed: Bean,
   tray: Grid2x2,
   rack: ShelvingUnit,
+  media: Shovel,
 };
 
 /** `className` sets the size and colours; the circle and centring are fixed. */

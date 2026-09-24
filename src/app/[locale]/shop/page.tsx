@@ -15,6 +15,9 @@ import { listSeeds } from "@/lib/repo/seeds";
 import { seedNameMap } from "@/lib/content/seeds";
 import { listTrays } from "@/lib/repo/trays";
 import { trayNameMap } from "@/lib/content/trays";
+import { listGrowMedia } from "@/lib/repo/grow-media";
+import { growMediumNameMap } from "@/lib/content/grow-media";
+import { GROW_MEDIA_TILE_WORDS } from "@/lib/shop";
 import { RACK_RANGES } from "@/lib/racks/cart-key";
 import { CATEGORY_COUNT, CATEGORY_HREF, CATEGORY_PANELS } from "@/lib/shop";
 import { CategoryStrip } from "@/components/chrome/CategoryStrip";
@@ -43,8 +46,19 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
   const label = await getTranslations("common.categories");
   const counted = await getTranslations("common.counts");
   const rackRanges = await getTranslations("shop.racks.ranges");
-  const [counts, varieties, varietyNames, seeds, seedNameById, trays, trayNameById, categories, microgreensOn] =
-    await Promise.all([
+  const [
+    counts,
+    varieties,
+    varietyNames,
+    seeds,
+    seedNameById,
+    trays,
+    trayNameById,
+    media,
+    mediumNameById,
+    categories,
+    microgreensOn,
+  ] = await Promise.all([
       categoryCounts(),
       listVarieties({ activeOnly: true }),
       varietyNameMap(locale),
@@ -52,6 +66,8 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
       seedNameMap(locale),
       listTrays({ activeOnly: true }),
       trayNameMap(locale),
+      listGrowMedia({ activeOnly: true }),
+      growMediumNameMap(locale),
       enabledCategories(),
       isProductTypeEnabled("microgreens"),
     ]);
@@ -77,6 +93,16 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
   const trayItemNames = trays
     .map((tr) => trayNameById[tr.contentKey])
     .filter((name): name is string => Boolean(name));
+  /* Not the product names, unlike the other tiles: two long names
+     ("Horti-Coir cocopeat — 10 kg block") make a sparse cloud, and the
+     category is about the medium rather than a brand. Properties of coir
+     instead — labels, never a claim or a tuned figure (CLAUDE.md, marquee
+     rules). Still empty when nothing is on sale, like every other tile. */
+  const growMediaWords = await getTranslations({ locale, namespace: "shop.growMedia.tileWords" });
+  const mediumNames =
+    media.some((m) => mediumNameById[m.contentKey])
+      ? GROW_MEDIA_TILE_WORDS.map((w) => growMediaWords(w))
+      : [];
 
   return (
     <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
@@ -116,6 +142,7 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
             racks: rackRangeNames,
             seeds: seedNames,
             trays: trayItemNames,
+            media: mediumNames,
             snacks: [label(c), label(c)],
           };
           return (

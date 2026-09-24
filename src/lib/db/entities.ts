@@ -288,6 +288,57 @@ export const TrayEntity = new Entity(
 );
 
 /**
+ * Grow medium (cocopeat) — SPEC §24.
+ *   PK = MEDIUM#<id>  SK = META  GSI1PK = MEDIUM  GSI1SK = <contentKey>
+ *
+ * `TrayEntity`'s layout exactly, attribute for attribute: a block of coir is
+ * sold the way a tray is — bought in per order, one price per pack, a lead
+ * time per row, six packing figures for the courier. Its own entity because it
+ * is its own category and its own content folder (see `GrowMedium`), and
+ * `MEDIUM` is an exact-match GSI1 partition like `TRAY`, so a `radish` here
+ * could never be read back as the tray, seed or green of that name.
+ */
+export const GrowMediumEntity = new Entity(
+  {
+    model: { ...model, entity: "growMedium" },
+    attributes: {
+      id: { type: "string", required: true },
+      contentKey: { type: "string", required: true },
+      /** ₹ for one pack as sold, whole — see `GrowMedium.price`. */
+      price: { type: "number", required: true },
+      /** Days from order to delivery. Never zero: nothing here is held. */
+      leadDays: { type: "number", required: true },
+      active: { type: "boolean", required: true },
+      /** Packing for the courier — see `GrowMedium`. Optional because it is
+       *  measured after the row is priced. */
+      packPieces: { type: "number" },
+      pieceLengthCm: { type: "number" },
+      pieceWidthCm: { type: "number" },
+      pieceHeightCm: { type: "number" },
+      pieceStackCm: { type: "number" },
+      pieceGrams: { type: "number" },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "MEDIUM#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      byCatalogue: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: [], template: "MEDIUM", casing: "none" },
+        sk: {
+          field: "GSI1SK",
+          composite: ["contentKey"],
+          template: "${contentKey}",
+          casing: "none",
+        },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
  * Plan definition — SPEC §5.1.
  *   PK = PLAN#<id>  SK = META  GSI1PK = PLAN  GSI1SK = <sortOrder>#<contentKey>
  *

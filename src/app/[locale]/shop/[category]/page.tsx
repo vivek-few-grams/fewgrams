@@ -56,7 +56,11 @@ export default async function CategoryPage({
      the URL a visitor might guess — or an old link — still works. */
   if (category === "microgreens") redirect({ href: "/microgreens", locale });
   if (category === "seeds") redirect({ href: "/seeds", locale });
-  if (!isCategory(category)) notFound();
+  /* Grow media's category key is `media` but its page is `/shop/grow-media`
+     (SPEC §24.5), so the guessable URL is sent there rather than served an
+     empty `Product` grid. */
+  if (category === "media") redirect({ href: "/shop/grow-media", locale });
+  if (!isCategory(category) || category === "media") notFound();
   await guardProductTypeEnabled(category, locale);
 
   const t = await getTranslations("shop.category");

@@ -3,6 +3,8 @@ import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Tile } from "@/components/catalogue/Tile";
+import { QuickAdd } from "@/components/catalogue/QuickAdd";
+import { quickAddFor } from "@/lib/cart/quick-add";
 import { listSeeds } from "@/lib/repo/seeds";
 import { attachSeedContent, seedCutout, seedHero } from "@/lib/content/seeds";
 import { currentActor } from "@/lib/auth/guard";
@@ -74,6 +76,8 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
   const collator = new Intl.Collator(locale, { sensitivity: "base" });
   seeds.sort((a, b) => collator.compare(a.content.text.name, b.content.text.name));
 
+  const quickAdd = await quickAddFor();
+
   return (
     <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
       <CategoryStrip current="seeds" />
@@ -128,6 +132,7 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
                    see the prop's note for why the figures stay on the detail
                    page. */
                 words={(s.content.text.specs ?? []).map((row) => row.label)}
+                action={<QuickAdd {...quickAdd("seed", s.contentKey, s.content.text.name)} />}
               />
             </li>
           ))}

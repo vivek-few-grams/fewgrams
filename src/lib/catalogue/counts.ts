@@ -1,6 +1,7 @@
 import { countsByCategory } from "@/lib/repo/products";
 import { listSeeds } from "@/lib/repo/seeds";
 import { listTrays } from "@/lib/repo/trays";
+import { listGrowMedia } from "@/lib/repo/grow-media";
 import { listSellableRacks } from "@/lib/racks/catalogue";
 import type { Category } from "@/lib/types";
 
@@ -33,16 +34,19 @@ import type { Category } from "@/lib/types";
  * costs nothing beyond what that page already pays.
  */
 export async function categoryCounts(): Promise<Record<Category, number>> {
-  const [products, seeds, trays, racks] = await Promise.all([
+  const [products, seeds, trays, media, racks] = await Promise.all([
     countsByCategory(),
     listSeeds({ activeOnly: true }),
     listTrays({ activeOnly: true }),
+    listGrowMedia({ activeOnly: true }),
     listSellableRacks(),
   ]);
   return {
     ...products,
     seeds: seeds.length,
     trays: trays.length,
+    /* Grow media, 24 Sep 2026 — its own table, like trays (SPEC §24). */
+    media: media.length,
     racks: racks.length,
   };
 }

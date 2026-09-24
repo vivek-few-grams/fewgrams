@@ -1,0 +1,64 @@
+{
+  "en": {
+    "name": "",
+    "shortDescription": "",
+    "specs": [
+      {
+        "label": "In the pack",
+        "value": ""
+      },
+      {
+        "label": "Made from",
+        "value": ""
+      },
+      {
+        "label": "Grade",
+        "value": ""
+      },
+      {
+        "label": "Once soaked",
+        "value": ""
+      }
+    ],
+    "howToUse": [
+      "",
+      "",
+      ""
+    ],
+    "whyTitle": "",
+    "why": "",
+    "ourNote": "",
+    "imageAlt": ""
+  },
+  "kn": {
+    "name": "",
+    "shortDescription": "",
+    "specs": [
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      },
+      {
+        "label": "",
+        "value": ""
+      }
+    ],
+    "howToUse": [
+      "",
+      "",
+      ""
+    ],
+    "whyTitle": "",
+    "why": "",
+    "ourNote": "",
+    "imageAlt": ""
+  }
+}

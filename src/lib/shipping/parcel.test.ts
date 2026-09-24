@@ -89,7 +89,24 @@ describe("parcelGrams", () => {
     expect(parcelGrams([{ kind: "rack", units: 1, packing: rack }], rules)).toBe(13936);
   });
 
+  /* A compressed coir block is dense — the opposite case to a tray. Figures
+     are illustrative, not the supplier's: 30 × 30 × 15 cm at 5.1 kg. */
+  it("bills a grow-media block by its weight, stacking several", () => {
+    const block: TrayPacking = {
+      packPieces: 1,
+      pieceLengthCm: 30,
+      pieceWidthCm: 30,
+      pieceHeightCm: 15,
+      pieceStackCm: 15,
+      pieceGrams: 5100,
+    };
+    // 30 × 30 × 15 ÷ 5000 = 2.7 kg by size, against 5.1 kg of coir.
+    expect(parcelGrams([{ kind: "media", units: 1, packing: block }], rules)).toBe(5100);
+    expect(parcelGrams([{ kind: "media", units: 2, packing: block }], rules)).toBe(10200);
+  });
+
   it("refuses an order with an item nobody has measured", () => {
+    expect(parcelGrams([{ kind: "media", units: 1, packing: null }], rules)).toBeNull();
     expect(parcelGrams([{ kind: "tray", units: 1, packing: null }], rules)).toBeNull();
     expect(parcelGrams([{ kind: "rack", units: 1, packing: null }], rules)).toBeNull();
   });

@@ -2,10 +2,10 @@
   "title": "Microgreens",
   "description": "Every variety we grow, sown to order and cut the morning it reaches you.",
   "heading": "Every variety we grow.",
-  "body": "Nothing is picked before you order it. The number under each variety is the days from sowing to your door — the honest answer to \"when can I have it?\", and the reason this is not next-day delivery.",
+  "body": "Nothing is picked before you order it. Each variety is sown for your order, so its page shows the date it reaches you — the honest answer to \"when can I have it?\", and the reason this is not next-day delivery.",
   "empty": "Nothing is listed right now — check back shortly.",
   "emptyLink": "See the rest of the shop",
-  "meta": "{days, number} days · ₹{price, number}/tray",
+  "meta": "₹{price, number}/tray",
   "plansPrompt": "Want them every week without ordering?",
   "plansLink": "See the plans",
   "detail": {

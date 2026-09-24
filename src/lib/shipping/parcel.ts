@@ -14,6 +14,8 @@ import { chargeableGrams, type BoxCm } from "./weight";
  * - **Trays and drainage** — per product row: a piece's footprint, its
  *   height, the height each further stacked piece adds, and its grams. Every
  *   piece of one product in the order goes in one stack.
+ * - **Grow media** — per product row, exactly as trays: a compressed block is
+ *   one piece, and several blocks in one order go in one stack (SPEC §24).
  * - **Racks** — from the model: the legs set the box length (the longer of
  *   the rack's height and its shelf length), the shelf depth its width, and
  *   the shelves times a stacking thickness its height. Weight is the shelves
@@ -60,6 +62,9 @@ export type ParcelLine =
   | { kind: "variety"; units: number }
   | { kind: "seed"; units: number; grams: number | null }
   | { kind: "tray"; units: number; packing: TrayPacking | null }
+  /* The same six figures as a tray — a block of coir stacks the way a tray
+     does, so it is measured and boxed by the same rule. */
+  | { kind: "media"; units: number; packing: TrayPacking | null }
   | { kind: "rack"; units: number; packing: RackPacking | null };
 
 /** True when the order goes on the owner's own run rather than the courier. */
@@ -115,6 +120,12 @@ export function parcelGrams(lines: readonly ParcelLine[], rules: PackingRules): 
         seedPackets += l.units;
         break;
       case "tray": {
+        if (!l.packing) return null;
+        const s = trayStack(l.packing, l.units);
+        grams += chargeableGrams(s.grams, s.box);
+        break;
+      }
+      case "media": {
         if (!l.packing) return null;
         const s = trayStack(l.packing, l.units);
         grams += chargeableGrams(s.grams, s.box);

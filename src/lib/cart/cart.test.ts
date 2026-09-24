@@ -18,6 +18,7 @@ import {
 const green = (key: string, units: number): CartLine => ({ kind: "variety", key, units });
 const seed = (key: string, units: number): CartLine => ({ kind: "seed", key, units });
 const tray = (key: string, units: number): CartLine => ({ kind: "tray", key, units });
+const medium = (key: string, units: number): CartLine => ({ kind: "media", key, units });
 
 describe("parseCart — the cookie is untrusted input", () => {
   it("reads a well-formed cookie", () => {
@@ -275,7 +276,7 @@ describe("removeFromCart", () => {
 });
 
 describe("asCartKind — the only way a string becomes a kind", () => {
-  it("accepts the four kinds", () => {
+  it("accepts the five kinds", () => {
     expect(asCartKind("variety")).toBe("variety");
     expect(asCartKind("seed")).toBe("seed");
     expect(asCartKind("tray")).toBe("tray");
@@ -283,6 +284,8 @@ describe("asCartKind — the only way a string becomes a kind", () => {
        the list doing its job: `rack` was a plausible-looking kind that the cart
        genuinely could not carry. */
     expect(asCartKind("rack")).toBe("rack");
+    /* Grow media, 24 Sep 2026 (SPEC §24). */
+    expect(asCartKind("media")).toBe("media");
   });
 
   /* A form field is not a security boundary (SPEC §8), so a missing or
@@ -333,6 +336,37 @@ describe("isWeighed — which kinds have a gram figure at all", () => {
     expect(isWeighed("variety")).toBe(false);
     expect(isWeighed("seed")).toBe(true);
     expect(isWeighed("tray")).toBe(false);
+    /* A 5 kg block is one unit at one price; its kilos are in its name. */
+    expect(isWeighed("media")).toBe(false);
+  });
+});
+
+describe("the grow-media kind on the wire", () => {
+  it("reads and writes an `m:` chunk", () => {
+    expect(parseCart("m:horti-coir:2")).toEqual([medium("horti-coir", 2)]);
+    expect(serialiseCart([medium("horti-coir-bulk", 1)])).toBe("m:horti-coir-bulk:1");
+  });
+
+  it("adds a block to the unit count and nothing to the weight", () => {
+    const lines = [seed("radish", 2), medium("horti-coir", 3)];
+    expect(cartUnitCount(lines)).toBe(5);
+    expect(cartGrams(lines)).toBe(200);
+  });
+
+  /** Four content folders, one key: four lines, not one. */
+  it("keeps one key apart from the tray, seed and green of that name", () => {
+    const lines = parseCart("v:radish:1|s:radish:2|t:radish:3|m:radish:4");
+    expect(new Set(lines.map(lineId)).size).toBe(4);
+    expect(unitsFor(lines, "media", "radish")).toBe(4);
+    expect(removeFromCart(lines, "media", "radish").map(lineId)).toEqual([
+      "variety:radish",
+      "seed:radish",
+      "tray:radish",
+    ]);
+  });
+
+  it("holds a content key to the content-key rule", () => {
+    expect(parseCart("m:horti-coir-5kg:1")).toEqual([]);
   });
 });
 

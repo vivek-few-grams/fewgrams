@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Sprout } from "@/components/ui/Sprout";
@@ -65,6 +66,7 @@ export function Tile({
   cutout,
   hero,
   words,
+  action,
 }: {
   href: string;
   name: string;
@@ -75,93 +77,118 @@ export function Tile({
   hero: { src: string; alt: string } | null;
   /** Scrolls behind the cut-out — see `Marquee`. */
   words: string[];
+  /** Under the card, outside the link — `QuickAdd` on a grid that sells
+   *  straight from the card. A button inside an anchor is invalid HTML and
+   *  its click would also navigate. */
+  action?: ReactNode;
 }) {
   const panel = PANELS[index % PANELS.length];
 
   return (
-    <Link href={href} className="group block">
-      <div
-        className={`mcard flex aspect-square items-center justify-center ${
-          cutout ? panel : "bg-forest"
-        }`}
-      >
-        {cutout ? (
-          <>
-            <ScatterMarquee words={words} toneClass="text-forest/45" />
-            {/* 96%, against the 70% `.mcard` uses elsewhere. The cut-out is
-                itself padded to 86% of its own frame by the build step, so the
-                punnet lands at ~83% of the tile at rest.
+    <div>
+      {/* The picture and the caption are two links to one page, so the quick
+          add can sit beside the caption without being inside an anchor. The
+          picture is taken out of the tab order and the accessibility tree:
+          one stop per card, on the name. */}
+      <Link href={href} tabIndex={-1} aria-hidden="true" className="group block">
+        <div
+          className={`mcard flex aspect-square items-center justify-center ${
+            cutout ? panel : "bg-forest"
+          }`}
+        >
+          {cutout ? (
+            <>
+              <ScatterMarquee words={words} toneClass="text-forest/45" />
+              {/* 96%, against the 70% `.mcard` uses elsewhere. The cut-out is
+                  itself padded to 86% of its own frame by the build step, so the
+                  punnet lands at ~83% of the tile at rest.
 
-                Wider than the reference because the subject is different: Don
-                Molinico's jar is a tall portrait object in a portrait card, so
-                70% of the width still reads as substantial. A punnet shot at a
-                three-quarter angle is a 1.34:1 landscape silhouette inside a
-                square box, which means its own height only reaches two thirds
-                of the box before its width runs out — at 70% it looked like a
-                thumbnail floating in colour. The marquee keeps the top and
-                bottom bands, which is where it is legible anyway; the lines
-                that pass behind the punnet were never readable.
+                  Wider than the reference because the subject is different: Don
+                  Molinico's jar is a tall portrait object in a portrait card, so
+                  70% of the width still reads as substantial. A punnet shot at a
+                  three-quarter angle is a 1.34:1 landscape silhouette inside a
+                  square box, which means its own height only reaches two thirds
+                  of the box before its width runs out — at 70% it looked like a
+                  thumbnail floating in colour. The marquee keeps the top and
+                  bottom bands, which is where it is legible anyway; the lines
+                  that pass behind the punnet were never readable.
 
-                **96% is close to the ceiling, and the ceiling is the hover.**
-                The subject is 86% of the box wide and 64% tall, and hover
-                scales it 1.1 and rotates it 4°, which takes the rotated
-                bounding width to 0.993 × the box. So a box at 100% of the tile
-                would put the punnet's corners inside the tile's own 20px
-                border radius and `overflow: hidden` would shave them. At 96%
-                the hovered subject is ~294px in a 308px tile — 7px of
-                clearance each side, verified in the browser. Anything larger
-                needs the cut-out re-padded tighter than 86%, not a wider box. */}
-            <div className="mcard__media relative aspect-square w-[96%]">
-              <Image
-                src={cutout.src}
-                alt={cutout.alt}
-                fill
-                priority={index < 4}
-                sizes="(min-width: 768px) 18vw, 35vw"
-                className="object-contain"
-              />
-            </div>
-          </>
-        ) : hero ? (
-          /* `sizes` matches the 2-up / 4-up grid so no phone downloads a
-             desktop image. `priority` on the first row only: the top-left tile
-             is this page's Largest Contentful Paint element, and lazy-loading
-             it delays the metric by a round trip — but marking everything
-             priority defeats the point and floods the connection. */
-          <Image
-            src={hero.src}
-            alt={hero.alt}
-            fill
-            priority={index < 4}
-            sizes="(min-width: 768px) 25vw, 50vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <>
-            <div className="mcard__marquee text-mint/20" aria-hidden="true">
-              <div className="mcard__marquee-inner">
-                {[0, 1].map((copy) => (
-                  <div key={copy} className="px-2">
-                    <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">
-                      {name}
-                    </span>
-                    <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">
-                      {name}
-                    </span>
-                  </div>
-                ))}
+                  **96% is close to the ceiling, and the ceiling is the hover.**
+                  The subject is 86% of the box wide and 64% tall, and hover
+                  scales it 1.1 and rotates it 4°, which takes the rotated
+                  bounding width to 0.993 × the box. So a box at 100% of the tile
+                  would put the punnet's corners inside the tile's own 20px
+                  border radius and `overflow: hidden` would shave them. At 96%
+                  the hovered subject is ~294px in a 308px tile — 7px of
+                  clearance each side, verified in the browser. Anything larger
+                  needs the cut-out re-padded tighter than 86%, not a wider box. */}
+              <div className="mcard__media relative aspect-square w-[96%]">
+                <Image
+                  src={cutout.src}
+                  alt={cutout.alt}
+                  fill
+                  priority={index < 4}
+                  sizes="(min-width: 768px) 18vw, 35vw"
+                  className="object-contain"
+                />
               </div>
-            </div>
-            <div className="mcard__media w-[62%]">
-              <Sprout className="h-full w-full" stroke="#A8CF8E" seed={index} />
-            </div>
-          </>
-        )}
+            </>
+          ) : hero ? (
+            /* `sizes` matches the 2-up / 4-up grid so no phone downloads a
+               desktop image. `priority` on the first row only: the top-left tile
+               is this page's Largest Contentful Paint element, and lazy-loading
+               it delays the metric by a round trip — but marking everything
+               priority defeats the point and floods the connection. */
+            <Image
+              src={hero.src}
+              alt={hero.alt}
+              fill
+              priority={index < 4}
+              sizes="(min-width: 768px) 25vw, 50vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          ) : (
+            <>
+              <div className="mcard__marquee text-mint/20" aria-hidden="true">
+                <div className="mcard__marquee-inner">
+                  {[0, 1].map((copy) => (
+                    <div key={copy} className="px-2">
+                      <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">
+                        {name}
+                      </span>
+                      <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">
+                        {name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="mcard__media w-[62%]">
+                <Sprout className="h-full w-full" stroke="#A8CF8E" seed={index} />
+              </div>
+            </>
+          )}
+        </div>
+      </Link>
+      {/* Name and price on the left, quick add on the right, on one line.
+          The price is forest and semibold — it is the figure being decided
+          on, and in stone at 12px it read as a caption.
+
+          `flex-wrap` with a 5rem floor on the caption: a phone tile is ~160px,
+          which fits the small "Add" beside the name but not the wider − n +
+          stepper, so once an item is in the cart the stepper drops to its own
+          line instead of crushing the name to nothing. */}
+      <div className="mt-3 flex flex-wrap items-start justify-between gap-x-2 gap-y-2">
+        <Link href={href} className="group min-w-20 flex-1">
+          <p className="font-display text-sm font-semibold uppercase tracking-wide text-forest transition-colors group-hover:text-stone">
+            {name}
+          </p>
+          <p className="mt-0.5 font-body text-sm font-semibold tabular-nums text-forest">
+            {meta}
+          </p>
+        </Link>
+        {action && <div className="shrink-0">{action}</div>}
       </div>
-      <p className="mt-3 font-display text-sm font-semibold uppercase tracking-wide text-forest transition-colors group-hover:text-stone">
-        {name}
-      </p>
-      <p className="font-body text-xs text-stone">{meta}</p>
-    </Link>
+    </div>
   );
 }

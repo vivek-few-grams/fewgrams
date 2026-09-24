@@ -51,6 +51,9 @@ export const ADMIN_NAV_GROUPS: {
          supplier lead time (SPEC §23). Sits after seeds because that is the
          order the owner asked for them in. */
       { label: "trays", href: "/admin/trays" },
+      /* Grow media, 24 Sep 2026 — cocopeat, bought in and sold like a tray
+         but its own category to a customer (SPEC §24). */
+      { label: "growMedia", href: "/admin/grow-media" },
       /* Three rack ranges, three price formulas, three screens (SPEC §19–§21).
          All three are named for their material — "Shelf racks", "Angle racks",
          "Pipe racks" — rather than leaving one as plain "Racks", which would be

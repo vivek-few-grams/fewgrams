@@ -4,9 +4,11 @@ import { revalidatePath } from "next/cache";
 import { listVarieties } from "@/lib/repo/varieties";
 import { listSeeds } from "@/lib/repo/seeds";
 import { listTrays } from "@/lib/repo/trays";
+import { listGrowMedia } from "@/lib/repo/grow-media";
 import { getVarietyContent } from "@/lib/content/varieties";
 import { getSeedContent } from "@/lib/content/seeds";
 import { getTrayContent } from "@/lib/content/trays";
+import { getGrowMediumContent } from "@/lib/content/grow-media";
 import { findSellableRack } from "@/lib/racks/catalogue";
 import {
   MAX_UNITS_PER_LINE,
@@ -37,6 +39,7 @@ import { err, type FormState } from "@/lib/forms";
  * | variety | active, and have a content file |
  * | seed | active, and have a content file |
  * | tray | active, and have a content file |
+ * | media | active, and have a content file |
  * | rack | resolve to a published, active model in a colour its grade offers |
  *
  * **A seed's stock is no longer one of them** (17 Sep 2026). It used to be
@@ -110,6 +113,14 @@ async function sellable(
     /* Nothing else to check. `leadDays` is read only by `hydrateCart`, and
        only to pick a delivery date — a slow supplier is not a reason to refuse
        an order, it is the reason the date is what it is. */
+    return { ok: true };
+  }
+
+  if (kind === "media") {
+    /* The tray test exactly — a grow medium is sold the same way (SPEC §24.1). */
+    const rows = await listGrowMedia({ activeOnly: true });
+    if (!rows.some((m) => m.contentKey === key)) return { ok: false, code: "notSellable" };
+    if (!(await getGrowMediumContent(key, "en"))) return { ok: false, code: "notSellable" };
     return { ok: true };
   }
 

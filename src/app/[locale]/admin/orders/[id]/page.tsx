@@ -72,7 +72,7 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                   <span className="block text-xs text-stone">
                     {t(`kind.${l.kind}`)} · {l.key}
                     {l.kind === "seed" && l.sourcing && ` · ${t(`sourcing.${l.sourcing}`)}`}
-                    {l.kind === "tray" && ` · ${t("supplierOrder")}`}
+                    {(l.kind === "tray" || l.kind === "media") && ` · ${t("supplierOrder")}`}
                   </span>
                 </td>
                 <td className="py-2.5 font-body text-sm tabular-nums text-forest">

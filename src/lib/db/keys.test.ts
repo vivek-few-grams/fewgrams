@@ -14,6 +14,7 @@ import {
   ProductEntity,
   ProfileEntity,
   FrameSizeEntity,
+  GrowMediumEntity,
   PipeRackModelEntity,
   PipeSettingsEntity,
   PipeSizeEntity,
@@ -258,6 +259,52 @@ describe("tray keys", () => {
   it("stores the lead time as a number", () => {
     const { Item } = TrayEntity.put(tray).params();
     expect(Item.leadDays).toBe(7);
+  });
+});
+
+describe("grow medium keys", () => {
+  const medium = {
+    id: "c0c0-uuid",
+    contentKey: "horti-coir",
+    price: 399,
+    leadDays: 7,
+    active: true,
+  };
+
+  it("writes PK=MEDIUM#<id> SK=META GSI1PK=MEDIUM GSI1SK=<contentKey>", () => {
+    const { Item } = GrowMediumEntity.put(medium).params();
+    expect(Item.PK).toBe("MEDIUM#c0c0-uuid");
+    expect(Item.SK).toBe("META");
+    expect(Item.GSI1PK).toBe("MEDIUM");
+    expect(Item.GSI1SK).toBe("horti-coir");
+  });
+
+  it("goes to the catalogue table", () => {
+    expect(GrowMediumEntity.put(medium).params().TableName).toBe(TABLES.catalogue);
+  });
+
+  it("lists grow media with a GSI1 Query, not a Scan", () => {
+    const params = GrowMediumEntity.query.byCatalogue({}).params();
+    expect(params.IndexName).toBe("GSI1");
+    expect(params.KeyConditionExpression).not.toContain("begins_with");
+    expect(Object.values(params.ExpressionAttributeValues)).toContain("MEDIUM");
+  });
+
+  /** Its own namespace, like trays and seeds: the same content key in two
+   *  folders is two products, so it must land on two different keys. */
+  it("keeps a grow medium and a tray with the same content key apart", () => {
+    const mediumItem = GrowMediumEntity.put({ ...medium, contentKey: "radish" }).params().Item;
+    const trayItem = TrayEntity.put({
+      id: "8b41-uuid",
+      contentKey: "radish",
+      price: 300,
+      leadDays: 7,
+      active: true,
+    }).params().Item;
+
+    expect(mediumItem.GSI1SK).toBe(trayItem.GSI1SK);
+    expect(mediumItem.PK).not.toBe(trayItem.PK);
+    expect(mediumItem.GSI1PK).not.toBe(trayItem.GSI1PK);
   });
 });
 

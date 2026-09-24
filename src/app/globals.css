@@ -786,6 +786,132 @@ html[data-loader="out"] .loader__mark {
   transform: rotateY(calc(-180deg * clamp(0, var(--p, 0) - var(--k, 0), 1)));
 }
 
+/* The opening — a closed book, picked up (`StoryBook`, `INTRO_MS`).
+
+   ONE continuous move, no breaks (the owner, 24 Sep 2026). A first cut ran
+   four transitions back to back, each easing to a stop before the next
+   began, and it read as four separate steps. So the move is split by
+   PROPERTY rather than by step. `rotate`, `scale`, `translate` and
+   `transform` are four independent properties, so each gets its own
+   animation with one smooth curve over its whole span, and they overlap.
+   Nothing ever reaches zero velocity until the book is the screen:
+
+     rotate + lift  0 → 1.9s   the tilt straightens as it rises and grows
+                               from 0.42 to 0.6, easing out
+     cover          1.5 → 2.9s swings open while it is still rising
+     scale          1.5 → 3.8s the zoom, 0.6 to 1, easing in as the lift
+                               eases out, so the two hand over at speed
+     translate      1.5 → 3.8s on the zoom's curve, from centring the cover
+                               to centring the spread
+
+   The zoom must not start earlier. At full size a cover mid-turn swings off
+   the top of the screen, which is how the first single-curve cut looked.
+
+   `.book`'s origin is the centre of the RIGHT half, where the closed cover
+   sits, so scaling keeps the cover in place and `translate: -25%` alone puts
+   it in the middle of the screen. Every animation ends on the identity, so
+   dropping them at `done` changes nothing on screen. */
+.book-scene {
+  perspective: 2400px;
+}
+
+.book {
+  transform-origin: 75% 50%;
+}
+
+.book[data-phase="intro"] {
+  animation:
+    book-fade 0.7s ease-out both,
+    book-tilt 1.9s cubic-bezier(0.3, 0.1, 0.25, 1) both,
+    book-lift 1.9s cubic-bezier(0.3, 0.1, 0.25, 1) both,
+    book-zoom 2.3s cubic-bezier(0.5, 0, 0.2, 1) 1.5s both,
+    book-centre 2.3s cubic-bezier(0.5, 0, 0.2, 1) 1.5s both,
+    book-shadow 3.8s ease-in both;
+}
+
+@keyframes book-fade {
+  from { opacity: 0; }
+}
+
+@keyframes book-tilt {
+  from { rotate: 1 0 -0.3 38deg; }
+  to { rotate: 1 0 -0.3 0deg; }
+}
+
+/* 0.7 × the zoom's starting 0.6 = the closed book's 0.42. */
+@keyframes book-lift {
+  from { transform: translateY(14%) scale(0.7); }
+  to { transform: translateY(0) scale(1); }
+}
+
+@keyframes book-zoom {
+  from { scale: 0.6; }
+  to { scale: 1; }
+}
+
+@keyframes book-centre {
+  from { translate: -25% 0; }
+  to { translate: 0 0; }
+}
+
+/* An object on a table has a shadow; the screen does not. Held, then gone
+   as the book reaches full size. */
+@keyframes book-shadow {
+  0%, 55% { filter: drop-shadow(0 40px 50px rgb(3 57 35 / 0.35)); }
+  100% { filter: drop-shadow(0 0 0 rgb(3 57 35 / 0)); }
+}
+
+/* The page block under the cover: paper and a hairline, repeated, off the
+   fore-edge and the foot. Offsets are large because the book starts at
+   ~0.4 scale. They fold away over the same span as the shadow. */
+.book[data-phase="intro"] .book__leaves {
+  animation: book-edges 3.8s ease-in both;
+}
+
+@keyframes book-edges {
+  0%, 55% {
+    box-shadow:
+      5px 5px 0 var(--color-cream),
+      7px 7px 0 rgb(3 57 35 / 0.16),
+      12px 12px 0 var(--color-cream),
+      14px 14px 0 rgb(3 57 35 / 0.16),
+      19px 19px 0 var(--color-cream),
+      21px 21px 0 rgb(3 57 35 / 0.16),
+      26px 26px 0 var(--color-cream),
+      29px 29px 0 rgb(3 57 35 / 0.28);
+  }
+  100% {
+    box-shadow:
+      0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent,
+      0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent, 0 0 0 transparent;
+  }
+}
+
+/* A closed book has no left half. The cover lands over this anyway. */
+.book[data-phase="intro"] .book__base {
+  visibility: hidden;
+}
+
+/* The cover — sheet −1. Timed, not scrolled (see `StoryBook`), so it is the
+   one leaf with a transition, and it ignores `--p` entirely.
+
+   Its z-index has to flip at the half-turn, as every leaf's does: on top of
+   the right-hand pile while closed, under everything on the left once open.
+   A `0s` transition delayed by half the turn does exactly that — the
+   ease-in-out curve is symmetric, so half the time is the edge-on 90°. */
+.book__cover {
+  z-index: 100;
+  transform: rotateY(0deg);
+  transition:
+    transform 1.4s cubic-bezier(0.645, 0.045, 0.355, 1),
+    z-index 0s linear 0.7s;
+}
+
+.book__cover[data-open] {
+  z-index: 0;
+  transform: rotateY(-180deg);
+}
+
 .book__face {
   position: absolute;
   inset: 0;
@@ -837,9 +963,9 @@ html[data-loader="out"] .loader__mark {
 
 /* The left half before anything has been turned, and the surface every
    turned leaf lands on. It is not decoration: a spread is
-   illustration-left / words-right, and the left leaf of the FIRST spread has
-   no sheet in front of it to be the back of — so the opening illustration
-   lives here. Same paper, same gutter, mirrored like a back face because
+   illustration-left / words-right, and while the cover is closed the left
+   half is the only thing there — plain paper, until the cover lands on it
+   with the opening illustration on its back. Same paper, same gutter, mirrored like a back face because
    that is the side of the binding it is on. */
 .book__base {
   position: relative;
@@ -998,4 +1124,57 @@ html[data-loader="out"] .loader__mark {
     color-mix(in oklab, var(--color-tan) 26%, var(--color-cream)) 0%,
     var(--color-sand) 100%
   );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Nav word sprout — the owner, 24 Sep 2026
+
+   Every header link swaps to a second phrase under the pointer —
+   MICROGREENS → PICK YOURS, WEEKLY PLANS → SUBSCRIBE, SHOP → NOW,
+   HOW WE GROW → WHO ARE WE?. The label sinks into the soil line and
+   the new word grows up out of it from the baseline, with a small
+   overshoot like a shoot straightening. One motion for all four:
+   four different ones were built first and read as four ideas.
+
+   Both words share one grid cell, so the link is as wide as the
+   longer and nothing beside it shifts; each word is centred in that
+   cell so a shorter one leaves even space either side. Not masked —
+   the overshoot is the point, and the faces fade so nothing shows
+   outside the line. The second word is `aria-hidden` in the markup,
+   so a screen reader hears the label only.
+   ───────────────────────────────────────────────────────────── */
+.nav-sprout__inner {
+  display: inline-grid;
+  vertical-align: bottom;
+}
+.nav-sprout__face {
+  grid-area: 1 / 1;
+  text-align: center;
+  transform-origin: 50% 100%;
+  transition:
+    transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.25s ease;
+}
+.nav-sprout__face--back {
+  transform: translateY(35%) scaleY(0);
+  opacity: 0;
+}
+@media (pointer: fine) {
+  .nav-sprout:hover .nav-sprout__face,
+  .nav-sprout:focus-visible .nav-sprout__face {
+    transform: translateY(35%) scaleY(0);
+    opacity: 0;
+  }
+  .nav-sprout:hover .nav-sprout__face--back,
+  .nav-sprout:focus-visible .nav-sprout__face--back {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-sprout__face { transition: none; }
+  .nav-sprout:hover .nav-sprout__face,
+  .nav-sprout:focus-visible .nav-sprout__face { transform: none; opacity: 1; }
+  .nav-sprout:hover .nav-sprout__face--back,
+  .nav-sprout:focus-visible .nav-sprout__face--back { transform: translateY(35%) scaleY(0); opacity: 0; }
 }

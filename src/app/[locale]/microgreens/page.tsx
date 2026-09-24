@@ -3,6 +3,8 @@ import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Tile } from "@/components/catalogue/Tile";
+import { QuickAdd } from "@/components/catalogue/QuickAdd";
+import { quickAddFor } from "@/lib/cart/quick-add";
 import { listVarieties } from "@/lib/repo/varieties";
 import { attachContent, varietyCutout, varietyHero } from "@/lib/content/varieties";
 import { currentActor } from "@/lib/auth/guard";
@@ -51,6 +53,8 @@ export default async function MicrogreensPage({
       v.content !== null,
   );
 
+  const quickAdd = await quickAddFor();
+
   return (
     <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
       <p className="font-body text-[11px] uppercase tracking-widest text-stone">
@@ -95,7 +99,9 @@ export default async function MicrogreensPage({
               <Tile
                 href={`/microgreens/${v.contentKey}`}
                 name={v.content.text.name}
-                meta={t("meta", { days: v.growDays, price: v.pricePerTray })}
+                /* Price only (the owner, 24 Sep 2026) — the grow days are on the
+                   detail page, where the delivery date is. */
+                meta={t("meta", { price: v.pricePerTray })}
                 index={i}
                 cutout={varietyCutout(v.content)}
                 hero={varietyHero(v.content)}
@@ -103,6 +109,7 @@ export default async function MicrogreensPage({
                    grid scrolls Kannada nutrients — see the prop's note for why
                    the values stay on the detail page. */
                 words={(v.content.text.nutrition ?? []).map((n) => n.label)}
+                action={<QuickAdd {...quickAdd("variety", v.contentKey, v.content.text.name)} />}
               />
             </li>
           ))}

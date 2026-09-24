@@ -3,7 +3,8 @@ import type { ShippingQuote } from "@/lib/orders/order";
 import { findSellableRack } from "@/lib/racks/catalogue";
 import { getShippingSettings } from "@/lib/repo/shipping";
 import { listTrays } from "@/lib/repo/trays";
-import type { Tray } from "@/lib/types";
+import { listGrowMedia } from "@/lib/repo/grow-media";
+import type { GrowMedium, Tray } from "@/lib/types";
 import { shippingProvider } from "./index";
 import { parcelGrams, travelsOnOwnRun, type ParcelLine, type TrayPacking } from "./parcel";
 
@@ -36,7 +37,9 @@ export type DeliveryCharge =
 /** What checkout and the order hold for a line — enough to find its packing. */
 export type ChargeLine = { kind: CartKind; key: string; units: number; grams: number | null };
 
-function trayPacking(t: Tray | undefined): TrayPacking | null {
+/** A tray's or a grow medium's six packing figures, or null until all six
+ *  are measured. Both rows carry the same fields (SPEC §24). */
+function trayPacking(t: Tray | GrowMedium | undefined): TrayPacking | null {
   if (
     !t ||
     t.packPieces === undefined ||
@@ -64,6 +67,9 @@ async function toParcelLines(lines: readonly ChargeLine[]): Promise<ParcelLine[]
   const trays = lines.some((l) => l.kind === "tray")
     ? new Map((await listTrays()).map((t) => [t.contentKey, t]))
     : new Map<string, Tray>();
+  const media = lines.some((l) => l.kind === "media")
+    ? new Map((await listGrowMedia()).map((m) => [m.contentKey, m]))
+    : new Map<string, GrowMedium>();
 
   return Promise.all(
     lines.map(async (l): Promise<ParcelLine> => {
@@ -74,6 +80,8 @@ async function toParcelLines(lines: readonly ChargeLine[]): Promise<ParcelLine[]
           return { kind: "seed", units: l.units, grams: l.grams };
         case "tray":
           return { kind: "tray", units: l.units, packing: trayPacking(trays.get(l.key)) };
+        case "media":
+          return { kind: "media", units: l.units, packing: trayPacking(media.get(l.key)) };
         case "rack": {
           const found = await findSellableRack(l.key);
           const r = found?.rack;

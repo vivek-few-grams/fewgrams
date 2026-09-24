@@ -13,7 +13,7 @@ export function t(s: LocalisedString | undefined, locale = "en"): string {
 
 /** Order is the display order everywhere — the shop overlay, the home page
  *  tiles and the /shop index all iterate this. */
-export const CATEGORIES = ["racks", "seeds", "trays", "snacks"] as const;
+export const CATEGORIES = ["racks", "seeds", "trays", "media", "snacks"] as const;
 export type Category = (typeof CATEGORIES)[number];
 
 /** Every kind of thing the site sells, for the admin on/off switch
@@ -77,7 +77,8 @@ export type ProductVariant = {
 export type Product = {
   id: string;
   slug: string;
-  category: Category;
+  /** Never `media` — grow media have their own entity (`GrowMedium`). */
+  category: Exclude<Category, "media">;
   name: LocalisedString;
   basePrice: number;
   variants: ProductVariant[];
@@ -227,6 +228,51 @@ export type Tray = {
   pieceGrams?: number;
 };
 
+/* ─────────────────── Grow media (bought in) ─────────────────────────── */
+
+/**
+ * A grow medium — cocopeat first — **bought in from a supplier and resold**,
+ * SPEC §24. Added 24 Sep 2026 with IFFCO Urban Gardens' Horti-Coir, in a 5 kg
+ * and a 10 kg block.
+ *
+ * Sold exactly the way a tray is (§23.1): nothing held, every order a purchase
+ * order, one price per pack, a lead time per row and six packing figures for
+ * the courier. **Its own record and its own kind anyway**, for the reason that
+ * split seeds from trays in the first place: a category is what a customer
+ * browses, and "Trays & drainage" is not where anyone looks for a sack of
+ * coir. Sharing `Tray` would have meant relabelling that category or hiding a
+ * second one inside it, and the words about each belong in their own folder.
+ *
+ * Two pack sizes are **two rows, not one row with variants** — the same call
+ * §23.1 made for the two tray kits: two cards side by side are what a buyer
+ * compares, and each size has its own price and its own box.
+ *
+ * Carries no text: `content/grow-media/<contentKey>.json` holds every word.
+ */
+export type GrowMedium = {
+  id: string;
+  /** Kebab-case, e.g. `horti-coir-bulk`. Names the content file. Its own
+   *  namespace, like seeds and trays — `keys.test.ts` pins that. */
+  contentKey: string;
+  /** ₹ for one pack (one block) as sold, whole. Never per kilo: a buyer
+   *  cannot order 3 kg of a 5 kg block. */
+  price: number;
+  /** Days from order to delivery. Bounded by `src/lib/grow-media/lead-time.ts`. */
+  leadDays: number;
+  active: boolean;
+  /**
+   * Packing for the courier (SPEC §7) — the same six figures as a tray, all
+   * or none. A compressed block is one piece per pack; `pieceStackCm` is what
+   * each further block adds when several travel together.
+   */
+  packPieces?: number;
+  pieceLengthCm?: number;
+  pieceWidthCm?: number;
+  pieceHeightCm?: number;
+  pieceStackCm?: number;
+  pieceGrams?: number;
+};
+
 /**
  * SPEC §5.1 / §4.3. `monthlyPrice: null` means Build Your Own, priced by
  * weight.
@@ -331,6 +377,7 @@ export const NAV_CATEGORIES = [
   { slug: "racks", label: "Racks" },
   { slug: "seeds", label: "Seeds" },
   { slug: "trays", label: "Trays" },
+  { slug: "media", label: "Grow media" },
   { slug: "snacks", label: "Snacks" },
 ] as const;
 

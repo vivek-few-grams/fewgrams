@@ -3,6 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { loadRateCard } from "@/lib/repo/racks";
 import { getShippingSettings } from "@/lib/repo/shipping";
 import { listTrays } from "@/lib/repo/trays";
+import { listGrowMedia } from "@/lib/repo/grow-media";
 import { shippingProvider } from "@/lib/shipping";
 import { DeliveryForm } from "./DeliveryForm";
 
@@ -19,7 +20,12 @@ export const dynamic = "force-dynamic";
  */
 export default async function DeliveryAdmin() {
   const t = await getTranslations("admin.delivery");
-  const [settings, trays, card] = await Promise.all([getShippingSettings(), listTrays(), loadRateCard()]);
+  const [settings, trays, media, card] = await Promise.all([
+    getShippingSettings(),
+    listTrays(),
+    listGrowMedia(),
+    loadRateCard(),
+  ]);
   const provider = shippingProvider();
 
   /* Every active item a courier order could not be priced for, in one list,
@@ -29,6 +35,9 @@ export default async function DeliveryAdmin() {
     ...trays
       .filter((x) => x.active && x.packPieces === undefined)
       .map((x) => ({ screen: "trays", label: x.contentKey, href: "/admin/trays" })),
+    ...media
+      .filter((x) => x.active && x.packPieces === undefined)
+      .map((x) => ({ screen: "growMedia", label: x.contentKey, href: "/admin/grow-media" })),
     ...card.plates
       .filter((x) => x.active && x.gramsPerShelf === undefined)
       .map((x) => ({ screen: "plates", label: t("sizePlate", { depth: x.depthFt, length: x.lengthFt, thickness: x.thicknessMm }), href: "/admin/racks" })),

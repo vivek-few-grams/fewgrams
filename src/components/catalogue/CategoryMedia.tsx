@@ -43,6 +43,13 @@ const CUTOUTS: Partial<Record<Category, string>> = {
      three groups arranged side by side; this one stacks them vertically,
      which is why the box below is portrait rather than 3:2. */
   trays: "/shop/trays-cutout.webp",
+  /* A bare compressed coir block with a heap of loose coir, a coconut shell
+     and a wooden scoop — the owner's image, 24 Sep 2026 (it replaced a first
+     version the same afternoon, under a new filename so the image optimiser
+     cannot serve the old one). A category picture rather than the IFFCO
+     pack, so the tile reads as "what we grow in" and a second medium can
+     join without it lying. `scripts/cutout.py` at the square defaults. */
+  media: "/shop/grow-media-block-cutout.webp",
 };
 
 /**
@@ -69,6 +76,10 @@ const MEDIA_CLASS: Partial<Record<Category, string>> = {
      width is what lets a tall subject read as the subject rather than a
      narrow column floating in the panel. */
   trays: "aspect-[2/3] h-[88%]",
+  /* Square, matching the cut-out's frame, at 82% of the tile's width. Scaled
+     1.1 and turned 4° on hover its box reaches ~0.96 of the width, and the
+     subject is padded to 86% of that box's width, so it clears the clip. */
+  media: "aspect-square w-[82%]",
 };
 
 export function categoryMediaClass(category: Category): string | undefined {

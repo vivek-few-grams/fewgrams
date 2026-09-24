@@ -10,6 +10,8 @@ import { Sprout } from "@/components/ui/Sprout";
 import { Marquee } from "@/components/ui/Marquee";
 import { CategoryStrip } from "@/components/chrome/CategoryStrip";
 import { Link } from "@/i18n/navigation";
+import { QuickAdd } from "@/components/catalogue/QuickAdd";
+import { quickAddFor } from "@/lib/cart/quick-add";
 import Image from "next/image";
 
 /**
@@ -83,6 +85,8 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
 
   const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
   const panel = CATEGORY_PANELS.trays;
+
+  const quickAdd = await quickAddFor();
 
   return (
     <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">
@@ -271,12 +275,17 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                       invisible to anyone scanning for something to click, and
                       `mt-auto` lines this row up across three cards whose text
                       runs to different lengths. */}
-                  <Link
-                    href={`/shop/trays/${item.contentKey}`}
-                    className="mt-auto pt-4 font-body text-xs font-semibold text-forest underline underline-offset-4 transition-colors hover:text-stone"
-                  >
-                    {t("cardLink")}
-                  </Link>
+                  <div className="mt-auto flex items-center justify-between gap-4 pt-4">
+                    <Link
+                      href={`/shop/trays/${item.contentKey}`}
+                      className="font-body text-xs font-semibold text-forest underline underline-offset-4 transition-colors hover:text-stone"
+                    >
+                      {t("cardLink")}
+                    </Link>
+                    <QuickAdd
+                      {...quickAdd("tray", item.contentKey, content.text.name)}
+                    />
+                  </div>
                 </li>
               );
             })}

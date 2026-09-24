@@ -174,6 +174,7 @@ Five categories with genuinely different commerce rules — this is the heart of
 | **Seeds** | One-off, buy anytime, by the 100 g — see §22 | **Real stock in grams**, but it is a *speed*, not a limit: any quantity sells, and the shelf sets the delivery date (§22.2) |
 | **Racks** | One-off, buy anytime | **None** — outsourced, assumed always available |
 | **Trays & drainage** | One-off. Bought in per order, min **7 days** — see §23 | **None, by design.** The supplier holds it; every order is a purchase order |
+| **Grow media** | One-off. Bought in per order from IFFCO Urban Gardens, min **7 days** — see §24 | **None, by design.** Sold exactly as a tray is |
 | **Value-added** (sandwiches, burgers, salads) | One-off **add-on** to the weekly delivery, ordered before cutoff | **None** — made to order |
 
 ### 3.0 Two things called "tray" — keep them separate
@@ -1412,6 +1413,7 @@ real blocker is Meta Business verification and per-template approval, not the mo
 | `/shop/racks` | The three rack ranges — built, §19.6. A photograph, a name, six scrolling properties and a from-price per range |
 | `/shop/racks/[range]` | Pick a rack and buy it — built, §19.7. Height, shelf size and colour as options **in the URL**, then the price and add-to-cart |
 | `/shop/trays` | Trays & drainage — built, §23.5. Its own static route, because trays left `Product` for their own entity and content files. A grid with a spec table and a dated promise per card, each linking to its detail page |
+| `/shop/grow-media` | Grow media — built 24 Sep 2026, §24.5. The tray grid for its own entity; each card links to `/shop/grow-media/[key]` (§24.3). `/shop/media` redirects here |
 | `/shop/trays/[key]` | Tray detail — built, §23.3. **Deliberately minimal**: gallery, the four spec rows as facts, and the buy box. No description, no FAQ, no spec table repeated below |
 | `/shop/[category]` | What is left of the generic category page — racks and snacks. `/shop/microgreens` and `/shop/seeds` redirect to `/microgreens` and `/seeds`; `/shop/trays` is a static route that wins over this one |
 | `/shop/[category]/[slug]` | Product detail for what is left on `Product` — snacks. **Not built.** Trays got their own detail route instead (`/shop/trays/[key]`, §23.3) rather than a generic one |
@@ -2592,6 +2594,17 @@ labels (seed names, "Cocopeat", "Used Cocopeat (Dispose)"), which a Kannada read
 Accepted for now as depicted props rather than interface copy, and recorded in
 `public/story/README.md` as an exception that must not grow.
 
+**The book opens itself (24 Sep 2026).** In book mode the page begins with a small closed
+hardcover, tilted, with a page block and a shadow, and "Our chapter starts here" on a forest cover
+(`story.coverTitle`). In one continuous move of about 4 s, with no pauses between steps (the owner's rule),
+it straightens and rises. The cover swings open onto the left with page 1's illustration on its
+back, and the book flies in until the spread fills the screen. Each property animates on its own
+curve and the curves overlap (`globals.css`, `.book[data-phase="intro"]`); `INTRO_MS` in
+`StoryBook.tsx` holds the two moments React acts. From
+there, scrolling turns the pages as before. A visitor who scrolls first skips straight to the open
+book. The cover is the one timed turn. The phone stack and reduced-motion visitors have no cover,
+because they have no book.
+
 ### 18.6 Model change: microgreens are individually buyable
 
 **This supersedes §3 and §12, which state that microgreens are subscription-only.**
@@ -2974,6 +2987,29 @@ Next 16 rather than `loading="eager"` on the `<img>`. Both are correct; the
 preload is the newer form. Do not "fix" the absent `loading` attribute.
 
 ---
+
+### 18.6.2 Quick add from the grid — 24 Sep 2026
+
+The owner: add to cart should not need the detail page. Every grid whose item
+is **one product at one price** — `/microgreens`, `/seeds`, `/shop/trays`,
+`/shop/grow-media` — carries `QuickAdd` (`src/components/catalogue/QuickAdd.tsx`)
+on each card: a small **Add** button on the caption's line, to the right of
+the name and price, which becomes a **− n +** stepper once the line is in the
+cart. On a phone tile the stepper wraps under the caption rather than crushing
+the name. The tile caption is **name and price only** — the grow days left
+the microgreens card the same day; they are on the detail page with the date.
+
+- **Every press commits.** Unlike the detail page's buy box there is no second
+  button: each press sends an absolute quantity (`setCartQuantity`, or
+  `removeCartLine` at zero), so a double-click cannot double a line. The
+  readout moves optimistically; the server re-validates as it always does.
+- **The readout is the line in the kind's own unit** — "300 g", "2 trays",
+  "1 pack", "1 block" — the same `cart.json` words the basket uses
+  (`lineQuantity`, `stepKey` in `line-display.ts`).
+- **Racks have no quick add.** Model, bay count and colour are chosen on the
+  range page, so a press on the grid would not be a complete decision.
+- It sits **outside** the card's link: a button inside an anchor is invalid
+  and would navigate as well.
 
 ## 19. Racks — computed pricing
 
@@ -4594,3 +4630,154 @@ changing with the viewport. The variety and bundle cards are untouched.
   table. Revisit if a detail page is ever built (§3.0.1).
 - **Machine-written Kannada**, like the rest of the content layer. The spec rows are short and
   factual, which is the easiest kind to get right and the easiest kind to get subtly wrong.
+
+---
+
+## 24. Grow media — cocopeat, bought in
+
+Built 24 Sep 2026, on the owner's instruction:
+
+> *"I would like to add one more product type to the entire thing that we sell … a cocopeat
+> [IFFCO Urban Gardens' Horti-Coir] … we are going to sell their products on our website. Could
+> you add new product category and get details from website for our use?"*
+
+Fifth purpose-built catalogue kind. Launched with **cocopeat only**, in a category named for what
+it could grow into — **"Grow media"** — so perlite or vermiculite is a content file and an admin
+row later, not a rename (the owner's pick of the two options offered).
+
+### 24.1 Sold like a tray, kept apart from one
+
+Every commerce rule is a tray's (§23.1): nothing held, every order a purchase order placed with the
+maker, one price per pack, a lead time per row bounded by `src/lib/grow-media/lead-time.ts`, and
+the same six courier packing figures. The floor is the tray's seven days, **imported until the
+owner gives coir a figure of its own** — IFFCO's store does not state a dispatch time.
+
+It is its own entity (`GrowMediumEntity`, `MEDIUM#<id>`, GSI1 `MEDIUM`), its own content folder
+and its own cart kind (`media`, cookie code `m`) anyway. A category is what a customer browses, and
+nobody looks under "Trays & drainage" for a block of coir; sharing the tray record would have meant
+relabelling that category or hiding a second one inside it.
+
+**Two pack sizes are two rows** — `horti-coir` (5 kg) and `horti-coir-bulk` (10 kg) — the same
+call §23.1 made for the two tray kits. Content keys ban digits, so the size is in the name and in
+the word *bulk*, never in the key.
+
+A block is **not weighed** in the cart (`isWeighed("media")` is false): a 5 kg block is one unit at
+one price, and the cart counts it in blocks (`linePriceBlock`, `lineBlocks`). For the courier it is
+anything but light — a compressed block is dense, so its dead weight, not its size, is what the
+courier bills (`parcel.test.ts` pins that case).
+
+### 24.2 The content template — the tray's, plus the steps
+
+`content/grow-media/<key>.json`, contract `grow-media-contract.ts`: `name`, `shortDescription`,
+`specs` (≥ 4 rows), **`howToUse` (≥ 3 steps)**, `imageAlt`. The one field a tray does not have is the
+point: a block has to be soaked and broken up before it is usable, and the water it takes tells a
+buyer how big a bucket they need before they order.
+
+What was **not** carried over from IFFCO's page: "100% organic" and "anti-fungal". Both are claims
+we cannot substantiate on their behalf; the spec table states what the block is made of and the
+maker's own low-EC rating, attributed as theirs. No price and no day count in the copy — the same
+scan the tray contract runs.
+
+### 24.3 `/shop/grow-media/[key]`
+
+The tray detail page plus one band — the preparation steps, in `DetailPage`'s `list` slot. The
+spec rows are the headline facts and are not repeated.
+
+### 24.4 `/admin/grow-media`
+
+The tray screen: key, price per block, lead days, six packing figures, active, delete. No text
+input. Rows with no content file are flagged red; rows with no packing are flagged and also listed
+on `/admin/delivery`.
+
+### 24.5 `/shop/grow-media` — the grid
+
+The tray grid on a tan ground (`CATEGORY_PANELS.media`), the colour of the coir. The category's key
+is `media`; its URL says what it holds. The launch cards use the maker's photograph flat
+(`object-cover`), because there is no transparent cut-out yet — see §24.8.
+
+### 24.6 The two items, at the maker's listed prices
+
+Loaded by `scripts/grow-media-fill.mjs` from IFFCO Urban Gardens' store on 24 Sep 2026:
+
+| Key | Listed | Price | MRP shown |
+|---|---|---|---|
+| `horti-coir` | Horti Coir – Coco Peat Grow Media (Low EC), 5 kg, SKU COIR05 | ₹399 | ₹750 |
+| `horti-coir-bulk` | same, 10 kg, SKU COIR010 | ₹699 | ₹1,500 |
+
+The ₹399 / ₹699 figures are a "limited period offer" on the maker's own shop. **Whether that is our
+sell price or our cost is not settled** — the same open question as §23.6. `--markup=<percent>`
+re-prices both in one command. Unlike `trays-fill.mjs`, a re-run keeps a row's packing figures.
+
+### 24.7 Where the new kind had to be taught
+
+The CLAUDE.md table of per-kind branches, each now handling `media`: `CART_KINDS` / `KIND_CODE`,
+`isWeighed`, `Timing` (`{ by: "medium" }`), `lineUnits` / `stepKey` / `lineTiming` / `lineHref`,
+`sellable()`, `KIND_ICON` (a trowel), `ParcelLine` / `parcelGrams`, `toParcelLines`, and the admin
+order page's supplier-order flag. `Category` gained `media`, which `ProductEntity.category` does
+**not** accept — `repo/products.ts` reads only `ProductCategory`.
+
+### 24.8 The photography
+
+Two of the maker's own shots, cropped to the 3:2 gallery frame: the block among potted plants
+(`hero.webp`) and the block on a potting bench (`on-bench.webp`). The same two files serve both
+sizes; the pack is identical apart from its weight. The maker's three text-on-image infographics
+were left out — English-only text baked into a picture cannot be translated.
+
+### 24.9 Open
+
+- **Permission to use IFFCO's photographs and product name** should be in writing as part of the
+  reseller arrangement. They are the maker's marketing images, used as supplied.
+- **Packing is unmeasured**, so a courier order with coir in it cannot be priced until the six
+  figures are filled in on `/admin/grow-media`. IFFCO lists the shipping weight as exactly 5 kg and
+  10 kg; the block's dimensions are not published.
+- **No transparent cut-out of the pack**, so the grid card shows the photograph flat rather than
+  the §17.4 tilt. (The /shop *category tile* has one since §24.11 — a generic coir picture, not the
+  IFFCO pack.)
+  `scripts/cutout.py --aspect 3:2 --fill 0.88 --width 900` once a cut-out master exists.
+- **The seven-day floor is borrowed from trays**, not stated for coir.
+- **Machine-written Kannada**, like the rest of the content layer.
+
+### 24.10 Recommended, not resold
+
+Added the same day, on the owner's instruction:
+
+> *"I don't want to say that I'm selling someone else's product instead I want to show it like we
+> use this for our business and we recommend it our customers also … add a tag saying that
+> fewgrams recommended … and also add a small note that we use this product for our day-to-day
+> microgreen and seen significant amount of result"*
+
+- A **"Recommended by Fewgrams"** badge (`RecommendedBadge`, `shop.growMedia.badge`) on every
+  grow-media card — outside `.mcard`, so the hover tilt moves the picture and not the label — and
+  above the detail page title (`DetailPage`'s new optional `eyebrow`).
+- A required **`ourNote`** content field, rendered under the gallery as "Why we recommend it". It is
+  required because the badge stands on it: this category holds only what we grow in ourselves, and
+  a file without the note fails its contract. Worded as our experience ("good, consistent results
+  crop after crop"), never as a measured figure we have not measured.
+- The category intro and buy note no longer say "bought in from the maker"; they say we order it
+  fresh for each order, which is still true and still explains the wait. The **"Made by: IFFCO
+  Urban Gardens"** spec row is kept — the brand is printed on the pack in every photograph, and
+  leaving it out would read as concealment rather than recommendation.
+
+### 24.11 The category tile, and why low EC matters
+
+Also 24 Sep 2026, on the owner's instruction: use their image on the shop page with the marquee
+behind it, and explain on the detail page why low-EC cocopeat matters to a plant.
+
+- **The tile.** The owner's image — a bare compressed coir block with a heap of loose coir, a
+  coconut shell and a wooden scoop (replacing a first version the same afternoon, under a new
+  filename so the optimiser cannot serve the old one) — built by `scripts/cutout.py` at the
+  square defaults into `public/shop/grow-media-block-cutout.webp` and used by `CategoryMedia` on `/shop` and the home page,
+  `aspect-square w-[82%]`. A category picture rather than the pack, which suits §24.10: the tile
+  says "what we grow in", and a second medium can join without the picture being wrong.
+- **The marquee** reveals on hover and scrolls, like every tile. Its words are properties of coir
+  (`GROW_MEDIA_TILE_WORDS`: Cocopeat, Low EC, Pre-washed, Coconut husk, Holds water, Airy roots)
+  rather than the product names the other tiles use — two names of forty characters each made a
+  sparse cloud. Empty when nothing is on sale, the same as the other tiles.
+- **"Why low EC matters"** — two new required content fields, `whyTitle` and `why`, rendered in
+  `DetailPage`'s `prose` slot under the preparation steps. Four paragraphs: what EC measures, why
+  unwashed coir carries salt, what salt does to a seedling's roots (osmotic stress — short roots,
+  burnt tips, a patchy tray), and why it shows most in microgreens, which grow in a thin layer
+  often on water alone. A mechanism, not a promise: no yield figure, no day count, and nothing
+  about the food. A heading field rather than a fixed label, so a future medium explains its own
+  grade.
+

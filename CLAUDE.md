@@ -27,7 +27,7 @@ checkout and a translator can be handed a single file:
 | `common.json` | Header, nav, footer, categories, shared counts |
 | `home.json` | Hero, PIN check, process strip, trust band |
 | `plans.json` | Bundle cards and the rotation panel |
-| `shop.json` | `/shop`, `/shop/[category]`, `/shop/trays` and tray detail pages (SPEC §23) |
+| `shop.json` | `/shop`, `/shop/[category]`, `/shop/trays`, `/shop/grow-media` and their detail pages (SPEC §23, §24) |
 | `microgreens.json` | `/microgreens` and variety pages |
 | `seeds.json` | `/seeds` and seed pages (SPEC §22) |
 | `story.json` | `/how-we-grow` — **chrome only**; the book's thirteen pages are editorial copy and live in `content/story/book.json` (SPEC §18.5) |
@@ -122,6 +122,40 @@ arrive. Admin → trays has no text input at all.
 - **Never write the price or the lead time into copy.** Both are printed on the
   card from DynamoDB and both get tuned; the contract test scans for a rupee
   figure or a day count in either language.
+
+## Grow media text does not either — tray rules, own folder
+
+`content/grow-media/<contentKey>.json`, loaded by `src/lib/content/grow-media.ts`
+(SPEC §24). Cocopeat — IFFCO Urban Gardens' Horti-Coir — is sold exactly as a
+tray is: bought in per order, one price per block, a lead time and six packing
+figures per row, all on `/admin/grow-media`. Everything in the tray section
+above applies, with these differences:
+
+- **Its own entity, folder and cart kind** (`GrowMediumEntity`, `media`, cookie
+  code `m`), not a tray row. The category key is `media`; the URL is
+  `/shop/grow-media`.
+- **Eight fields**: the tray's four plus `howToUse` (≥3 steps), because a
+  block has to be soaked before it is usable; `whyTitle` and `why`, what the
+  grade does for a plant ("Why low EC matters" — mechanism, never a yield
+  figure or a day count); and **`ourNote`** — how we use it ourselves.
+  Contract: `grow-media-contract.ts`.
+- **The /shop tile is a category picture, not the IFFCO pack**
+  (`public/shop/grow-media-block-cutout.webp`), and its marquee scrolls properties
+  of coir (`GROW_MEDIA_TILE_WORDS`, `shop.growMedia.tileWords`) rather than
+  the two long product names. Labels only — no claim, no tuned figure.
+- **Presented as what we grow in, not as resale** (the owner, 24 Sep 2026).
+  Every card and detail page carries a "Recommended by Fewgrams" badge
+  (`RecommendedBadge`), and `ourNote` is required so the badge is always
+  backed by our own words. Only list a medium here that we actually use.
+  Customer copy says "we order it fresh for each order", not "bought in from
+  the maker". The "Made by" spec row stays — the brand is on the pack.
+- **One row per pack size** — `horti-coir` (5 kg), `horti-coir-bulk` (10 kg).
+  Content keys ban digits, so a size never goes in the key.
+- **The lead-time bounds live in `src/lib/grow-media/lead-time.ts`**, which
+  imports the tray floor until the owner sets one for coir. Do not compare
+  against `7` at a call site.
+- **Do not copy the maker's claims** ("100% organic", "anti-fungal") into
+  copy; state what the block is and attribute the maker's own rating.
 
 ## Plan text does not come from DynamoDB either
 
@@ -278,7 +312,7 @@ business:
 
 ## A cart line's key is not always a content key
 
-`CART_KINDS` is `variety | seed | tray | rack`. The first three are keyed by a
+`CART_KINDS` is `variety | seed | tray | rack | media`. All but `rack` are keyed by a
 **content key** — the filename of a content file, lowercase letters and hyphens,
 **no digits**. A rack has no content file and is keyed by its **SKU** plus its
 colour: `rk-6f-5s-1.25x3-1.4-orange`.
@@ -309,6 +343,7 @@ of them fails loudly if you miss it:
 | `lineUnits` / `stepKey` / `lineTiming` / `lineHref` in `cart/page.tsx` | the unit, the stepper's aria-label, the reason for the date, and where the line links |
 | `sellable()` in `cart/actions.ts` | what makes it orderable |
 | `KIND_ICON` in `components/cart/KindIcon.tsx` | the line's icon — a `Record`, so a missed kind is a type error |
+| `ParcelLine` / `parcelGrams` in `shipping/parcel.ts`, `toParcelLines` in `shipping/charge.ts` | how it is boxed and weighed for the courier — exhaustive switches |
 
 **`item.grams === null` means "not sold by weight", not "a pack".** It was the
 pack test while trays were the only unweighed kind, and a rack priced "per pack"

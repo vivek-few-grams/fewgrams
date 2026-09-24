@@ -11,8 +11,18 @@ import { CATEGORIES, type Category, type Product } from "@/lib/types";
  * for why every read passes options.
  */
 
+/**
+ * The categories a `Product` row can carry — every `Category` except grow
+ * media, which arrived on 24 Sep 2026 with its own entity (see `GrowMedium`)
+ * and was never a value of `ProductEntity.category`. Excluded here rather than
+ * added to that enum, because widening the enum would invite a grow-media row
+ * nothing reads.
+ */
+export type ProductCategory = Exclude<Category, "media">;
+const PRODUCT_CATEGORIES = CATEGORIES.filter((c): c is ProductCategory => c !== "media");
+
 export async function listByCategory(
-  category: Category,
+  category: ProductCategory,
   opts: { activeOnly?: boolean } = {},
 ): Promise<Product[]> {
   const { data } = await ProductEntity.query
@@ -25,7 +35,7 @@ export async function listProducts(
   opts: { activeOnly?: boolean } = {},
 ): Promise<Product[]> {
   const groups = await Promise.all(
-    CATEGORIES.map((c) => listByCategory(c, opts)),
+    PRODUCT_CATEGORIES.map((c) => listByCategory(c, opts)),
   );
   return groups.flat();
 }
@@ -36,14 +46,14 @@ export async function getProduct(id: string): Promise<Product | null> {
 }
 
 /** Active product count per category, for the home page tiles. */
-export async function countsByCategory(): Promise<Record<Category, number>> {
+export async function countsByCategory(): Promise<Record<ProductCategory, number>> {
   const groups = await Promise.all(
-    CATEGORIES.map(
+    PRODUCT_CATEGORIES.map(
       async (c) =>
         [c, (await listByCategory(c, { activeOnly: true })).length] as const,
     ),
   );
-  return Object.fromEntries(groups) as Record<Category, number>;
+  return Object.fromEntries(groups) as Record<ProductCategory, number>;
 }
 
 export async function putProduct(p: Product): Promise<void> {

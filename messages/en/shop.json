@@ -132,5 +132,47 @@
         "generic": "That did not save. Please try again."
       }
     }
+  },
+  "growMedia": {
+    "body": "The cocopeat we grow our own microgreens in, now available to you. We order it fresh for each order rather than keep it on a shelf, and the price is for the whole block.",
+    "badge": "Recommended by Fewgrams",
+    "tileWords": {
+      "cocopeat": "Cocopeat",
+      "lowEc": "Low EC",
+      "preWashed": "Pre-washed",
+      "coconutHusk": "Coconut husk",
+      "holdsWater": "Holds water",
+      "airyRoots": "Airy roots"
+    },
+    "dispatch": "Ordered in for you — with you by {date}",
+    "note": "Grow media travel on the same delivery as your greens, seed and trays — one trip, on the date of the slowest thing in the order.",
+    "cardLink": "See the detail",
+    "detail": {
+      "back": "All grow media",
+      "galleryAlt": "{name}",
+      "thumb": "Show photo {n} of {total}",
+      "prevPhotos": "Previous photos",
+      "nextPhotos": "More photos",
+      "noteHeading": "Why we recommend it",
+      "howToHeading": "How to use it",
+      "howToColumn": "Step",
+      "quantity": "How many",
+      "decrease": "One less block",
+      "increase": "One more block",
+      "addToCart": "Add to cart",
+      "updateCart": "Update cart",
+      "added": "Added to your cart.",
+      "updated": "Cart updated.",
+      "viewCart": "View cart",
+      "lineTotal": "₹{total, number}",
+      "lineBreakdown": "{count, plural, one {# block} other {# blocks}} · ₹{price, number} each",
+      "buyNote": "Sold by the block. We order it fresh for each order rather than keep it in stock, and it travels on the same delivery as anything else you order.",
+      "errors": {
+        "unitsInvalid": "Choose between 1 and 20 blocks.",
+        "notSellable": "That item is not on sale at the moment.",
+        "cartFull": "Your cart is full at 12 items. Remove one to add another.",
+        "generic": "That did not save. Please try again."
+      }
+    }
   }
 }
