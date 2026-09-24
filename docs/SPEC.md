@@ -283,6 +283,7 @@ Indexes: **GSI1** only.
 | Coupon | `COUPON#<code>` | `META` | — | — |
 | Coupon redemption | `COUPON#<code>` | `REDEEM#<userId>` | — | — |
 | PIN code | `PIN#<pincode>` | `META` | — | — |
+| PIN place (India Post cache, district + state) | `PIN#<pincode>` | `PLACE` | — | — |
 | Settings | `CONFIG` | `SETTINGS` | — | — |
 
 `Seed` and `Tray` are separate entities rather than `PRODUCT#` with a
@@ -304,18 +305,31 @@ because the usage cap is enforced with a conditional write on `COUPON#<code> / R
 
 ### `fewgrams-orders` — real money
 
-Indexes: **GSI1** (`DELIVERY#<date>`) and **GSI2** (`STATUS#<status>` / `<createdAt>`, for admin
-lists filtered by status).
+Indexes: **GSI1** (`DELIVERY#<date>`), **GSI2** (`STATUS#<status>` / `<createdAt>`, for admin
+lists filtered by status) and **GSI3** (`USER#<userId>` / `ORDER#<createdAt>`, a customer's order
+history — added 23 Sep 2026 with the first order entity).
 
 | Entity | PK | SK | GSI1PK | GSI1SK |
 |---|---|---|---|---|
 | Subscription | `SUB#<subId>` | `META` | `USER#<userId>` | `SUB#<createdAt>` |
 | Subscription week | `SUB#<subId>` | `WEEK#<deliveryDate>` | `DELIVERY#<date>` | `SUB#<subId>` |
 | Order (one-off) | `ORDER#<orderId>` | `META` | `DELIVERY#<date>` | `ORDER#<orderId>` |
-| Order item | `ORDER#<orderId>` | `ITEM#<n>` | — | — |
+| ~~Order item~~ | ~~`ORDER#<orderId>`~~ | ~~`ITEM#<n>`~~ | — | — |
 | Weekly cycle | `CYCLE#<deliveryDate>` | `META` | — | — |
 | Sow plan line | `SOWPLAN#<sowDate>` | `VARIETY#<id>` | — | — |
 | Payment | `PAYMENT#<id>` | `META` | `ORDER#<orderId>` | `PAYMENT#<id>` |
+| Counter | `COUNTER#<name>` | `META` | — | — |
+
+**Built 23 Sep 2026 (§9.2), with three deviations from the table above:**
+
+- **Order lines are a list on the order row, not `ITEM#<n>` rows.** A line is never read or
+  written on its own and the cart caps an order at twelve, so one row makes placing an order one
+  write and reading it one `GetItem`.
+- **GSI1 and GSI3 are sparse by status.** An order in `pending_payment` writes neither key, so
+  the `DELIVERY#` query never returns a checkout nobody paid for, and a customer's history holds
+  only what they bought. Leaving `pending_payment` writes both (ElectroDB index `condition`).
+- **A payment row's id is the gateway's attempt id plus its status** (`cf_<id>_<status>`),
+  written with `create`, so the same event delivered twice stores one row.
 
 **This is the only table where single-table design still earns its keep**, and §4.1 is why. PITR
 on, and the only table that will need a DynamoDB Stream.
@@ -912,7 +926,7 @@ Cycle states: `open → locked → sown → delivered`.
 
 Allowed:
 - **Skip a week** — before the cutoff only. No refund; the plan end date extends by one week.
-- **Change delivery address** — re-validated against the PIN allowlist, blocked if outside.
+- **Change delivery address** — re-validated against the delivery area (§7), blocked if outside.
 
 Not in v1: pausing a subscription, swapping varieties mid-cycle. Variety changes happen at renewal.
 
@@ -944,8 +958,14 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
 
 ## 7. Delivery & serviceability
 
-- **PIN allowlist**, admin-managed. A non-serviceable PIN blocks checkout with a clear message and
-  an optional "notify me when you reach my area" capture.
+- **The delivery area is a district, not a PIN list** (set 23 Sep 2026, replacing eighteen PINs
+  hard-coded in `brand.ts`, which refused Bengaluru PINs nobody had typed in). A PIN is served
+  when India Post's directory (data.gov.in, `src/lib/pincode/`) places it in **Bengaluru Urban** —
+  the owner's line; Bengaluru Rural reaches 40+ km, past the same-day run. The same lookup fills
+  the address form's district and state, and is cached per PIN (`PIN#<pincode>` / `PLACE`). When
+  the directory cannot answer (no key, down, unknown PIN) the rule falls back to "starts with 560"
+  so an outage never closes the shop. Rule and fallback: `src/lib/pincode/area.ts`. A
+  non-serviceable PIN blocks checkout with a clear message; the "notify me" capture is not built.
 - **The PIN check lives in checkout, not on the home page** (decided 16 Sep 2026, closing the
   §18.3 open decision). The gate that matters is the one before payment, and it is enforced
   server-side there; a second copy in the hero was a marketing surface competing with the
@@ -956,6 +976,41 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
     itemised at payment; racks a flat **₹500**; seeds calculated at payment; ⟨trays — rate rule
     still to be set; they are bulky like racks but lighter⟩.
   - **v2, dynamic:** adapter for a courier partner quoting from the full address.
+  - **The courier seam exists, set 23 Sep 2026.** `ShippingProvider` (`src/lib/shipping/`)
+    with one adapter, Delhivery: serviceability, a quote by origin PIN, destination PIN and
+    chargeable grams, and an expected delivery date. Read-only — nothing books a shipment yet.
+  - **Checkout charges it, set the same day** (`src/lib/shipping/charge.ts`). Two rules:
+    - **Any order with greens in it** goes on the owner's own same-day run at a **fixed fee**,
+      ₹200 to start, set on **admin → delivery**. Seeds, trays or racks in the same order ride
+      along at no extra charge. Fixed rather than quoted because a bike price a week ahead is
+      not holdable: it moves with the day's surge and with how many drops share the route.
+    - **Everything else** pays the live Delhivery surface price, rounded up to the rupee. A
+      courier prices from a rate card, not demand, so today's quote holds for next week's
+      shipment.
+    - A subscription pays none. No free-delivery threshold.
+    - **Parcel size and weight are measured per item** (the owner's rules, 23 Sep 2026;
+      `src/lib/shipping/parcel.ts`):
+      - *Seeds* by the grams ordered, as 5 × 5 × 5 cm packets per 100 g (25 g by size, so the
+        real weight decides), plus the order's padding from admin → delivery, once.
+      - *Trays and drainage* per product row on admin → trays: pieces per pack, one piece's
+        length, width and height, the height each further stacked piece adds, and its grams. All
+        pieces of one product go in one stack (a 60 × 30 × 3 cm tray, +3 cm each). A drainage set
+        of five is recorded as one piece.
+      - *Racks* from the model: length = the longer of rack height and shelf length (the legs),
+        width = shelf depth, height = shelves × the stacking height from admin → delivery; weight
+        = shelves × **grams per shelf**, set on each plate, frame and pipe size.
+      - An item with any figure missing is flagged on its row and listed on admin → delivery, and
+        a courier order containing it is refused rather than guessed.
+    - Order-wide figures (pickup, own-run fee, seed padding, shelf stacking) live on admin →
+      delivery (`SHIPPING / SETTINGS`).
+      With settings unsaved, or for a courier order no token or no answer, checkout shows no
+      price and takes no payment — never a silent ₹0. The order stores `deliveryCharge` (inside
+      `total`), `deliveryMethod` (`own_run` | `courier`) and, for the courier, the quote. Live
+      quotes that day: **₹42** for 500 g within
+    Bengaluru, next day, every Bengaluru PIN the same zone; ₹332 for a 10 kg rack from Chennai.
+    A courier bills the larger of dead and volumetric weight (`L×W×H ÷ 5000`), so
+    `chargeableGrams` is what is quoted, never the dead weight alone. Microgreens stay on the
+    Saturday run: a courier's hub-and-spoke overnight has no cold chain.
 - Everything consolidates onto the **same Saturday run**.
 - **Seed has its own dispatch rule, set 17 Sep 2026** (§22.2): up to what is on the shelf goes out
   **next day**, and anything beyond it is bought in from the supplier and promised **within 10
@@ -1192,8 +1247,10 @@ Decisive factor: **Cashfree is offering ₹0 fees on the first ₹20 lakh GMV fo
 31 March 2027** (excludes EMI and pay-later). At ₹1,200/month × 100 subscribers that is roughly 16
 months of free processing. Most Indian D2C traffic pays by UPI at 0% thereafter.
 
-**Confirm before wiring up:** whether 1.95% is a temporary festive rate, and whether 18% GST is
-added on top as it is with Razorpay. The page does not say.
+**Re-checked 23 Sep 2026** against Cashfree's pricing page: the ₹20 lakh zero-fee offer applies to
+merchants signing up on or after 21 Jul 2026 and runs to 31 Mar 2027; beyond it the standard
+domestic rate is 1.95%. Whether 18% GST is added on top is still not stated — confirm with
+Cashfree during activation.
 
 Implementation requirements:
 - Server-side order creation; never trust a client-reported amount.
@@ -1209,6 +1266,94 @@ total. No GSTIN or tax breakdown.
 
 Reserve `hsnCode` and `taxRate` fields on every product now, and keep receipt numbering sequential,
 so GST can be switched on later without a data migration.
+
+### 9.2 Checkout — built 23 Sep 2026
+
+Cart → order → payment for the ad-hoc cart. Subscriptions are not part of it.
+
+**Two decisions by the owner, the same day:** checkout is **signed-in only** (guest
+auto-provisioning from §8 is the follow-up), and **no delivery charge** is added — the total is
+the subtotal, and the checkout page says "No charge" rather than leave the line out.
+
+**The flow.**
+
+1. `/checkout` (signed in; the proxy sends a guest to `/login` and back) is two columns.
+   **Left, delivery:** if nothing is saved, a PIN card first, then — only for a PIN we deliver
+   to — the address card, with district and state filled from India Post (no city field; district
+   replaced it); otherwise the default address with *Deliver here* / *Change*. **Right, sticky:** the order (item count, the lines, the
+   delivery date) and below it **payment**, shown only once an address is accepted: items +
+   delivery = total and the pay button. Below `lg` they stack, delivery first. Figures come from
+   the same `hydrateCart` read the cart uses, and only addresses inside the delivery area (§7) are
+   offered. With no gateway configured the delivery step still works and the pay button is
+   replaced by the "not open yet" notice (the owner's layout, 23 Sep 2026).
+2. `startCheckout` recomputes everything, checks the PIN again (§7), and **refuses if the total
+   differs from the one the page showed** (`priceChanged`), so nobody is charged a price they did
+   not see. It writes the order as `pending_payment` *first*, then opens a Cashfree order for the
+   server's amount with a 30-minute payment window. A gateway failure leaves an unpaid order that
+   expires, never a gateway order with no record of ours.
+3. The browser hands the returned session to Cashfree.js (`@cashfreepayments/cashfree-js`,
+   imported on submit so the script is not loaded on every visit).
+4. Cashfree redirects to `/api/payments/return/<locale>?order_id=…`, and separately posts the
+   signed webhook to `/api/payments/cashfree/webhook`.
+
+**Neither the redirect nor the webhook is believed.** Each only names an order.
+`settleOrder` (`src/lib/orders/settle.ts`) then fetches the order and its attempts from Cashfree
+server to server, stores every attempt, and pays the order only when **both** hold: Cashfree
+calls it `PAID`, and an attempt succeeded for exactly our total in INR. This is Cashfree's own
+guidance (fulfil on `order_status == "PAID"` from a backend fetch, not on a webhook payload), and
+it means a forged redirect or a replayed webhook can at most trigger a fetch. A success for the
+wrong amount is logged and left unpaid for a person to look at.
+
+**Once per order, however many callers.** The move to `paid` is a conditional write on the
+status still being `pending_payment`; only the winner draws the **receipt number** (an atomic
+counter, so receipts are sequential with no gaps from abandoned checkouts — §9.1) and **takes
+seed off the shelf** (`takeFromShelf`, conditional on the figure read, never below zero, and never
+a refusal: a short shelf means part of the seed comes from the vendor, §22.2). If payment lands on
+a later IST day than the order was opened, the delivery date moves by the same number of days.
+Verified against DynamoDB Local with five concurrent settles: one receipt, one drawdown, two
+payment rows for two distinct events.
+
+**Webhook.** The signature is `base64(HMAC-SHA256(x-webhook-timestamp + rawBody, secret))`,
+checked over the raw body. 401 on a bad signature, 200 for events not acted on, 500 when settling
+fails so Cashfree's retries (2, 10, 30 minutes) try again. Cashfree accepts only an HTTPS
+`notify_url`, so on localhost the return route is what settles.
+
+**The cart is cleared only once paid**, by the return route. A customer whose payment failed
+comes back to the same cart.
+
+**Pages.** `/account/orders` lists paid orders (GSI3); `/account/orders/[id]` is the receipt and
+the confirmation page, and shows "Confirming your payment" with a *Check again* that re-runs the
+return route. Someone else's order is a 404. `/admin/orders` opens on **Needs attention**: three
+lanes — New (`paid`), Picked, Ready for delivery — sorted by delivery date, with an Overdue / Due
+today badge and the next step as a one-press button on each card (Mark as picked → Ready for
+delivery → Handed to delivery agent). Only "Delivery failed" asks for confirmation. Those three
+statuses have no tab of their own, since the board shows them. A **Done** group lists Out for delivery,
+Delivered, Delivery failed and Refunded one status at a time (GSI2), and **Unpaid checkouts**
+(`pending_payment`) sits apart at the end — not orders to prepare, only where a missing receipt is
+looked up. `/admin/orders/[id]` shows the
+lines as sold, the address as captured, every payment event, and the same buttons
+(`paid → picked → ready_for_delivery → out_for_delivery → delivered | failed`). A tray
+line is flagged "place the supplier order", which is the first place §16's purchase-order gap is
+surfaced — it is still a person reading a screen, not a generated PO.
+
+**Cashfree agent skills.** Cashfree's `@cashfreepayments/agent-skills` package was installed as
+the project skill `app-check-config` for its vendor reference docs. Its installer also appended
+instructions to `CLAUDE.md` telling a coding assistant to ask for the App ID and run
+`start-integration` / `report-progress-feedback` — telemetry calls to be run silently and never
+mentioned. Those instructions, the `progress-and-skill-feedback` skill and the telemetry section of
+`getting-started` were removed, and the skills folder is git-ignored.
+
+**Not built yet:** refunds from admin (§9 — `refunded` is deliberately not an offered status move
+until a gateway refund stands behind it), order confirmation email (§11), guest checkout (§8),
+coupons (§10), delivery charges (§7), and an expiry sweep for abandoned `pending_payment` orders
+(they are harmless — off the delivery run and out of customer history — but accumulate in the
+admin list).
+
+**Before going live** (Cashfree's go-live checklist, as it applies here): complete KYC and
+generate production keys; whitelist the domain in the dashboard, which needs the Contact, Terms
+and Refund policy pages (§12, §16); configure the production webhook over HTTPS, version
+`2025-01-01`; set `CASHFREE_ENV=production` with the production keys and `AUTH_URL` to the live
+origin; and run one real low-value payment end to end.
 
 ---
 
@@ -1272,7 +1417,7 @@ real blocker is Meta Business verification and per-template approval, not the mo
 | `/shop/[category]/[slug]` | Product detail for what is left on `Product` — snacks. **Not built.** Trays got their own detail route instead (`/shop/trays/[key]`, §23.3) rather than a generic one |
 | `/cart` | Line items, delivery estimate, coupon field |
 | `/checkout` | PIN gate → address → **delivery date shown** → coupon → payment |
-| `/order/[id]/confirmation` | Receipt, first-delivery date, claim-account prompt for guests |
+| `/order/[id]/confirmation` | Receipt, first-delivery date, claim-account prompt for guests. **For signed-in checkout this is `/account/orders/[id]` (§9.2)**; this route waits for guest checkout |
 | `/story` | Story-led about page — the main brand surface |
 | `/how-it-works` | Cutoff, sowing Sunday, Saturday delivery, the 4-week rotation, explained visually |
 | `/recipes`, `/recipes/[slug]` | Usage ideas, cross-linked from variety pages |
@@ -1308,7 +1453,10 @@ sow sheet) · `/admin/deliveries/[date]` (pick-pack, route, status) · `/admin/o
 
 **Subscription week:** `scheduled → skipped | packed → out_for_delivery → delivered | failed`
 
-**One-off order:** `pending_payment → paid → packed → out_for_delivery → delivered | failed → refunded`
+**One-off order:** `pending_payment → paid → picked → ready_for_delivery → out_for_delivery → delivered | failed → refunded`
+
+`paid` is a new order nobody has started; `picked` means someone has taken it on; `ready_for_delivery`
+means it is complete and waiting for the delivery agent. The customer sees `picked` as "Being prepared".
 
 ---
 
@@ -1392,7 +1540,8 @@ Then:
 - **FSSAI registration** is legally required to sell food in India, and the value-added sandwiches
   and salads make this unavoidable. Needed before launch, not after. Display the licence number in
   the footer.
-- **Cashfree terms to confirm:** is 1.95% the standard or festive rate, and is 18% GST added on top?
+- **Cashfree terms to confirm:** 1.95% is the standard rate after the ₹20 lakh offer (re-checked
+  23 Sep 2026); whether 18% GST is added on top is still unconfirmed.
 - **Seed stock is ambiguous** — the gram stock you sell to customers versus seed you consume growing
   your own trays. Assumption taken: **retail seed stock is tracked separately from grow stock**, and
   the sow plan's seed column is advisory only and does not decrement retail stock. Confirm this.
@@ -2529,8 +2678,7 @@ Caps: 20 units (2 kg) per line, 12 lines. Past that it is a wholesale enquiry, n
 Which is exactly why each action re-validates its key against the active catalogue instead of
 trusting the form.
 
-**No pay button.** Cashfree is not wired up (§9), so the page says so in a sentence rather than
-offering a CTA that could only fail.
+**No pay button** — *superseded 23 Sep 2026.* The cart now ends in "Continue to checkout" (§9.2).
 
 **Money and weight placeholders must be typed `{x, number}` in the message files.** A bare `{price}`
 is interpolated as a raw string, so Intl never sees it: the cart rendered `₹1700` while the detail
@@ -2576,7 +2724,7 @@ DynamoDB Local, not only in unit tests.
 
 #### PIN gating happens on save, not only at checkout
 
-`validateAddress` applies §7's allowlist when an address is stored. Catching an unserviceable PIN
+`validateAddress` applies §7's delivery area when an address is stored. Catching an unserviceable PIN
 here is the difference between "we don't deliver to 110001 yet" while the customer is browsing and
 the same sentence appearing on the payment screen. The browser attributes on the form
 (`required`, `pattern`, `inputMode`) exist to fail fast on a phone keyboard and are not the gate.

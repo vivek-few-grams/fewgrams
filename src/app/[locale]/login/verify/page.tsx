@@ -17,7 +17,7 @@ export default async function VerifyPage({
 
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
-      <span className="grid size-12 place-items-center rounded-full bg-sage text-forest">
+      <span className="grid size-12 place-items-center rounded-full bg-forest text-cream">
         <Mail size={22} strokeWidth={1.5} />
       </span>
       <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-forest">

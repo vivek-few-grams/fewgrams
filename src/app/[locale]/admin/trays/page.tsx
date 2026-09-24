@@ -77,15 +77,13 @@ export default async function TraysAdmin() {
       </section>
 
       <TrayTable
-        trays={withContent.map((row) => ({
-          tray: {
-            id: row.id,
-            contentKey: row.contentKey,
-            price: row.price,
-            leadDays: row.leadDays,
-            active: row.active,
-          },
-          name: row.content?.text.name ?? null,
+        /* The whole stored row goes to the table, not a hand-picked subset:
+           the row's save form posts every field it shows, so a field left off
+           here renders blank and the next save would clear it — which is how
+           the packing figures looked unsaved (23 Sep 2026). */
+        trays={withContent.map(({ content, ...tray }) => ({
+          tray,
+          name: content?.text.name ?? null,
         }))}
       />
     </div>

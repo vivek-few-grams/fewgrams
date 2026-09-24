@@ -1,5 +1,7 @@
 import { CustomAttributeType, Entity } from "electrodb";
-import { catalogueConfig, usersConfig } from "@/lib/db/client";
+import { catalogueConfig, ordersConfig, usersConfig } from "@/lib/db/client";
+import { CART_KINDS } from "@/lib/cart/cart";
+import { ORDER_STATUSES } from "@/lib/types";
 
 /**
  * ElectroDB entity definitions — the single place the table's key layout is
@@ -256,6 +258,14 @@ export const TrayEntity = new Entity(
        *  path to represent (SPEC §23.1). */
       leadDays: { type: "number", required: true },
       active: { type: "boolean", required: true },
+      /** Packing for the courier — see `Tray`. Optional because it is
+       *  measured after the row is priced. */
+      packPieces: { type: "number" },
+      pieceLengthCm: { type: "number" },
+      pieceWidthCm: { type: "number" },
+      pieceHeightCm: { type: "number" },
+      pieceStackCm: { type: "number" },
+      pieceGrams: { type: "number" },
     },
     indexes: {
       byId: {
@@ -443,7 +453,12 @@ export const AddressEntity = new Entity(
       line1: { type: "string", required: true },
       line2: { type: "string" },
       landmark: { type: "string" },
-      city: { type: "string", required: true },
+      /** Legacy — no longer asked for; district replaced it (23 Sep 2026). */
+      city: { type: "string" },
+      /** Filled from the PIN (`placeForPin`), editable by the customer.
+       *  Absent on addresses saved before 23 Sep 2026. */
+      district: { type: "string" },
+      state: { type: "string" },
       /** String, not number: a PIN code is an identifier. SPEC §7's
        *  allowlist compares it as text. */
       pincode: { type: "string", required: true },
@@ -556,6 +571,7 @@ export const ShelfPlateEntity = new Entity(
       capacityKg: { type: "number", required: true },
       price: { type: "number", required: true },
       active: { type: "boolean", required: true },
+      gramsPerShelf: { type: "number" },
     },
     indexes: {
       byId: {
@@ -665,6 +681,7 @@ export const FrameSizeEntity = new Entity(
       depthFt: { type: "number", required: true },
       lengthFt: { type: "number", required: true },
       active: { type: "boolean", required: true },
+      gramsPerShelf: { type: "number" },
     },
     indexes: {
       byId: {
@@ -779,6 +796,7 @@ export const PipeSizeEntity = new Entity(
       depthFt: { type: "number", required: true },
       lengthFt: { type: "number", required: true },
       active: { type: "boolean", required: true },
+      gramsPerShelf: { type: "number" },
     },
     indexes: {
       byId: {
@@ -860,4 +878,287 @@ export const CatalogueVisibilityEntity = new Entity(
     },
   },
   catalogueConfig,
+);
+
+/**
+ * Singleton. Where the courier collects from, and how the owner packs —
+ * SPEC §7. Absent until admin → delivery is first saved, and checkout then
+ * refuses to quote rather than invent a pickup PIN or a parcel weight.
+ *
+ * Flat numbers rather than nested box maps, so the admin form maps one input
+ * to one attribute and a partial box cannot be stored.
+ */
+export const ShippingSettingsEntity = new Entity(
+  {
+    model: { ...model, entity: "shippingSettings" },
+    attributes: {
+      pickupName: { type: "string", required: true },
+      pickupPhone: { type: "string", required: true },
+      pickupAddress: { type: "string", required: true },
+      pickupCity: { type: "string", required: true },
+      pickupPincode: { type: "string", required: true },
+      /** Rupees, the fixed delivery fee for any order with greens in it —
+       *  the owner's own same-day run, not a courier (set 23 Sep 2026). */
+      greenRunFee: { type: "number", required: true },
+      seedPackingGrams: { type: "number", required: true },
+      /** Height one flat-packed shelf adds to a rack's box. Per-item packing
+       *  lives on the tray row and the shelf-size rows, not here. */
+      shelfStackCm: { type: "number", required: true },
+      updatedAt: { type: "string", required: true },
+    },
+    indexes: {
+      single: {
+        pk: { field: "PK", composite: [], template: "SHIPPING", casing: "none" },
+        sk: { field: "SK", composite: [], template: "SETTINGS", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * What India Post says a PIN is — `src/lib/pincode/place.ts`.
+ *   PK = PIN#<pincode>   SK = PLACE
+ *
+ * A cache of the Department of Posts directory, so each PIN is asked about
+ * once, ever: a district does not move, and the directory's free key is
+ * rate-limited. Only a found answer is stored — "unknown" or "did not
+ * answer" may be wrong tomorrow.
+ *
+ * Shares its partition with SPEC §4's `PIN#<pincode> / META`, the delivery
+ * allowlist row it will sit beside when that moves out of `brand.ts`. A
+ * different SK, so neither can overwrite the other, and one partition holds
+ * everything known about one PIN.
+ */
+export const PinPlaceEntity = new Entity(
+  {
+    model: { ...model, entity: "pinPlace" },
+    attributes: {
+      pincode: { type: "string", required: true },
+      district: { type: "string", required: true },
+      state: { type: "string", required: true },
+      fetchedAt: { type: "string", required: true },
+    },
+    indexes: {
+      byPin: {
+        pk: { field: "PK", composite: ["pincode"], template: "PIN#${pincode}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "PLACE", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/* ─────────────────────────────── Orders ─────────────────────────────── */
+
+/** An unpaid order is a checkout somebody may never finish. It belongs in the
+ *  admin's status list and nowhere else — not on the delivery run, and not in
+ *  the customer's history. */
+const placed = (attr: Record<string, unknown>) => attr.status !== "pending_payment";
+
+/**
+ * One-off order — SPEC §4, §9, §13.
+ *   PK = ORDER#<id>   SK = META
+ *   GSI1PK = DELIVERY#<date>   GSI1SK = ORDER#<id>        (paid onwards)
+ *   GSI2PK = STATUS#<status>   GSI2SK = <createdAt>
+ *   GSI3PK = USER#<userId>     GSI3SK = ORDER#<createdAt> (paid onwards)
+ *
+ * **Lines are a list on this row, not `ITEM#<n>` rows** — a documented
+ * deviation from SPEC §4. A line is never read, written or updated on its
+ * own, the cart caps an order at twelve, and one row makes placing an order
+ * one write and reading it one `GetItem`.
+ *
+ * GSI1 and GSI3 are **sparse on purpose** (`placed`): the `DELIVERY#` query
+ * that builds the pick-pack list (§4.1) must not return a checkout nobody
+ * paid for. So any update that moves an order out of `pending_payment` has
+ * to supply `deliveryDate`, `userId` and `createdAt`, or ElectroDB cannot
+ * write the keys it now owes those indexes.
+ */
+export const OrderEntity = new Entity(
+  {
+    model: { ...model, entity: "order" },
+    attributes: {
+      id: { type: "string", required: true },
+      userId: { type: "string", required: true },
+      email: { type: "string" },
+      status: { type: ORDER_STATUSES, required: true },
+      lines: {
+        type: "list",
+        required: true,
+        items: {
+          type: "map",
+          properties: {
+            kind: { type: CART_KINDS, required: true },
+            key: { type: "string", required: true },
+            name: { type: "string", required: true },
+            units: { type: "number", required: true },
+            unitPrice: { type: "number", required: true },
+            lineTotal: { type: "number", required: true },
+            /** Absent for a kind not sold by weight; the repo reads it back
+             *  as null, never 0. */
+            grams: { type: "number" },
+            readyDate: { type: "string", required: true },
+            sourcing: { type: ["shelf", "vendor"] as const },
+          },
+        },
+      },
+      total: { type: "number", required: true },
+      /** Rupees, included in `total`. Absent on orders placed before
+       *  23 Sep 2026, when delivery was free; the repo reads that as 0. */
+      deliveryCharge: { type: "number" },
+      /** How it travels: the owner's own run (any order with greens) or the
+       *  courier. Absent on orders placed while delivery was free. */
+      deliveryMethod: { type: ["own_run", "courier"] as const },
+      /** The courier quote the charge came from, for the admin screen. */
+      shippingQuote: {
+        type: "map",
+        properties: {
+          courier: { type: ["delhivery"] as const, required: true },
+          quotedTotal: { type: "number", required: true },
+          chargedGrams: { type: "number", required: true },
+          zone: { type: "string", required: true },
+        },
+      },
+      deliveryDate: { type: "string", required: true },
+      address: {
+        type: "map",
+        required: true,
+        properties: {
+          label: { type: "string", required: true },
+          recipient: { type: "string", required: true },
+          phone: { type: "string", required: true },
+          line1: { type: "string", required: true },
+          line2: { type: "string" },
+          landmark: { type: "string" },
+          /** Only on orders placed before 23 Sep 2026; district replaced it. */
+          city: { type: "string" },
+          /** Absent on orders placed before 23 Sep 2026. */
+          district: { type: "string" },
+          state: { type: "string" },
+          pincode: { type: "string", required: true },
+          notes: { type: "string" },
+          geo: {
+            type: "map",
+            properties: {
+              lat: { type: "number", required: true },
+              lng: { type: "number", required: true },
+              accuracyM: { type: "number" },
+            },
+          },
+        },
+      },
+      locale: { type: "string", required: true },
+      provider: { type: ["cashfree"] as const, required: true },
+      providerOrderId: { type: "string" },
+      receiptNo: { type: "number" },
+      paidAt: { type: "string" },
+      createdAt: { type: "string", required: true },
+      updatedAt: { type: "string", required: true },
+      expiresAt: { type: "string", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "ORDER#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      byDelivery: {
+        index: "GSI1",
+        condition: placed,
+        pk: {
+          field: "GSI1PK",
+          composite: ["deliveryDate"],
+          template: "DELIVERY#${deliveryDate}",
+          casing: "none",
+        },
+        sk: { field: "GSI1SK", composite: ["id"], template: "ORDER#${id}", casing: "none" },
+      },
+      byStatus: {
+        index: "GSI2",
+        pk: { field: "GSI2PK", composite: ["status"], template: "STATUS#${status}", casing: "none" },
+        sk: { field: "GSI2SK", composite: ["createdAt"], template: "${createdAt}", casing: "none" },
+      },
+      byUser: {
+        index: "GSI3",
+        condition: placed,
+        pk: { field: "GSI3PK", composite: ["userId"], template: "USER#${userId}", casing: "none" },
+        sk: {
+          field: "GSI3SK",
+          composite: ["createdAt"],
+          template: "ORDER#${createdAt}",
+          casing: "none",
+        },
+      },
+    },
+  },
+  ordersConfig,
+);
+
+/**
+ * One payment event from the gateway — SPEC §4, §9 ("store every payment
+ * event").
+ *   PK = PAYMENT#<id>   SK = META   GSI1PK = ORDER#<orderId>   GSI1SK = PAYMENT#<id>
+ *
+ * `id` is the gateway's attempt id **plus its status**, because one attempt
+ * is reported more than once — pending, then success. Written with `create`,
+ * which refuses an existing row, so a webhook delivered twice (Cashfree's
+ * delivery is at-least-once) stores one row, not two.
+ *
+ * Shares GSI1 with the delivery run, on a different partition prefix:
+ * `ORDER#` and `DELIVERY#` cannot reach each other.
+ */
+export const PaymentEntity = new Entity(
+  {
+    model: { ...model, entity: "payment" },
+    attributes: {
+      id: { type: "string", required: true },
+      orderId: { type: "string", required: true },
+      provider: { type: ["cashfree"] as const, required: true },
+      providerPaymentId: { type: "string", required: true },
+      status: { type: ["success", "failed", "dropped", "pending"] as const, required: true },
+      amount: { type: "number", required: true },
+      currency: { type: "string", required: true },
+      method: { type: "string" },
+      at: { type: "string" },
+      /** `webhook` or `return` — which path told us, for reconciliation. */
+      source: { type: ["webhook", "return"] as const, required: true },
+      receivedAt: { type: "string", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "PAYMENT#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      byOrder: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: ["orderId"], template: "ORDER#${orderId}", casing: "none" },
+        sk: { field: "GSI1SK", composite: ["id"], template: "PAYMENT#${id}", casing: "none" },
+      },
+    },
+  },
+  ordersConfig,
+);
+
+/**
+ * A named sequence — SPEC §9.1 ("keep receipt numbering sequential").
+ *   PK = COUNTER#<name>   SK = META
+ *
+ * Incremented with an atomic `ADD`, so two orders paid in the same second get
+ * two numbers. Drawn only when an order is paid: an abandoned checkout takes
+ * nothing from the sequence, so the receipts have no gaps to explain.
+ */
+export const CounterEntity = new Entity(
+  {
+    model: { ...model, entity: "counter" },
+    attributes: {
+      name: { type: "string", required: true },
+      value: { type: "number", required: true },
+    },
+    indexes: {
+      byName: {
+        pk: { field: "PK", composite: ["name"], template: "COUNTER#${name}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+    },
+  },
+  ordersConfig,
 );

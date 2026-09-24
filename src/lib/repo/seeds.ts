@@ -1,4 +1,4 @@
-import { LIST_OPTS, READ_OPTS } from "@/lib/db/client";
+import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import { SeedEntity } from "@/lib/db/entities";
 import type { Seed } from "@/lib/types";
 
@@ -16,9 +16,8 @@ import type { Seed } from "@/lib/types";
  *
  * `stockGrams` is the one field here that changes daily rather than monthly,
  * and it is written by the admin screen as an absolute figure — what the owner
- * counted — never as a delta. Decrementing it against a paid order belongs to
- * checkout (SPEC §9), and will need a conditional write rather than a `put`;
- * see `putSeed`.
+ * counted — never as a delta. A paid order draws it down through
+ * `takeFromShelf`, which is conditional; never through `putSeed`.
  */
 
 /** Every seed, ordered by content key — GSI1's sort key, so the order comes
@@ -51,12 +50,37 @@ export async function getSeed(id: string): Promise<Seed | null> {
  * Fine for the admin screen, which is one operator setting a figure they have
  * just counted. **Not fine for checkout**, where two concurrent orders must
  * not both pass a stock check and then both write — SPEC §15 calls that out as
- * a thing to verify. That path needs an `update` with a
- * `ConditionExpression` on `stockGrams`, and it belongs here as its own
- * function when checkout is built rather than as a flag on this one.
+ * a thing to verify. Checkout uses `takeFromShelf` instead.
  */
 export async function putSeed(s: Seed): Promise<void> {
   await SeedEntity.put(s).go();
+}
+
+/**
+ * Take up to `grams` off the shelf for a paid order, and return how much was
+ * actually there to take.
+ *
+ * Never below zero, and never a refusal: an order bigger than the shelf is
+ * still sold, and the rest comes from the vendor (SPEC §22.2). Conditional on
+ * the figure read, so two orders paid at once cannot both take the same
+ * grams; the loser re-reads and takes from what is left.
+ */
+export async function takeFromShelf(contentKey: string, grams: number): Promise<number> {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const seed = await getSeedByKey(contentKey);
+    if (!seed || seed.stockGrams <= 0) return 0;
+    const take = Math.min(grams, seed.stockGrams);
+    try {
+      await SeedEntity.patch({ id: seed.id })
+        .set({ stockGrams: seed.stockGrams - take })
+        .where(({ stockGrams }, { eq }) => eq(stockGrams, seed.stockGrams))
+        .go();
+      return take;
+    } catch (e) {
+      if (!isConditionFailure(e)) throw e;
+    }
+  }
+  throw new Error(`Seed stock for ${contentKey} kept changing; gave up after 5 attempts`);
 }
 
 export async function deleteSeed(id: string): Promise<void> {

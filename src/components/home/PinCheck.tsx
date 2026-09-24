@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, MapPin, X } from "lucide-react";
-import { brand, isServiceable } from "@/lib/brand";
+import { isDeliverablePinAction } from "@/lib/pincode/actions";
 import { firstDeliveryDate, formatDeliveryDate } from "@/lib/delivery-date";
 
 type Result = { pin: string; served: boolean } | null;
@@ -20,9 +20,11 @@ type Result = { pin: string; served: boolean } | null;
  * It still lives under `components/home/` for now; move it when checkout
  * mounts it, so the folder does not lie about where it is used.
  *
- * TODO: validate server-side against `PIN#<pincode>` in DynamoDB. SPEC §8 is
- * explicit that these rules must be enforced in server actions and not only in
- * the UI — this client check is convenience, never the gate.
+ * Asks the server (`isDeliverablePinAction`), because the delivery area is a
+ * district from India Post's directory, not a list the browser could hold.
+ * Still convenience, never the gate — SPEC §8: the address save and checkout
+ * check again. Checkout's own PIN step (`PinStep`) is what shipped in its
+ * place; this remains for a pre-sign-in check if one is wanted.
  */
 export function PinCheck() {
   const t = useTranslations("home.pinCheck");
@@ -30,10 +32,12 @@ export function PinCheck() {
   const [pin, setPin] = useState("");
   const [result, setResult] = useState<Result>(null);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!/^\d{6}$/.test(pin)) return;
-    setResult({ pin, served: isServiceable(pin) });
+    const asked = pin;
+    const served = await isDeliverablePinAction(asked).catch(() => false);
+    setResult({ pin: asked, served });
   };
 
   if (result?.served) {
@@ -91,7 +95,7 @@ export function PinCheck() {
         className="group flex items-center gap-2 font-body text-sm text-stone transition-colors hover:text-forest"
       >
         <MapPin size={16} strokeWidth={1.5} className="text-forest" />
-        {t("prompt", { city: brand.city })} ·{" "}
+        {t("prompt")} ·{" "}
         <span className="text-forest underline underline-offset-4 group-hover:decoration-2">
           {t("checkYourPin")}
         </span>

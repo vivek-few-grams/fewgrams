@@ -103,12 +103,16 @@ and `PAY_PER_REQUEST`:
 |---|---|---|
 | `fewgrams-users` | GSI1 | Auth.js user / account / session / VT, plus profile and addresses |
 | `fewgrams-catalogue` | GSI1 | Varieties, products, plans + weeks, PINs, coupons, settings |
-| `fewgrams-orders` | GSI1, GSI2 | Subscriptions, orders, payments, cycles, sow plans |
+| `fewgrams-orders` | GSI1, GSI2, GSI3 | Subscriptions, orders, payments, receipt counter, cycles, sow plans |
 
 ```bash
-npm run db:create    # idempotent — creates any that are missing
+npm run db:create    # idempotent — creates any that are missing, and adds a missing GSI
 npm run db:tables    # list what exists
 ```
+
+GSI3 (`USER#<userId>`, a customer's order history) arrived on 23 Sep 2026. An orders table
+created before then gains it on the next `npm run db:create`; DynamoDB adds one GSI per call,
+so a table missing several needs one run per index.
 
 Index counts differ on purpose: adding a GSI to a populated table triggers a backfill, so each
 table gets only the indexes its access patterns need, and gets them now.
@@ -174,6 +178,72 @@ curl -s -b jar.txt -o /dev/null -w "%{http_code} %{redirect_url}\n" localhost:30
 ```
 
 ---
+
+## PIN lookup — India Post (added 23 Sep 2026)
+
+The address form fills district and state from the PIN, using the Department of Posts
+directory on data.gov.in. Register (free) at data.gov.in, then add to `.env.local`:
+
+```
+DATA_GOV_IN_API_KEY=...
+```
+
+With no key the PIN check still works — the delivery area is our own list — and district and
+state are simply left for the customer to type. Each PIN's answer is cached in the catalogue
+table (`PIN#<pincode>` / `PLACE`), so a PIN is looked up once, ever. Do not use the public sample
+key from data.gov.in's docs: it returns ten rows per call and is rate-limited across everyone
+using it.
+
+---
+
+## Payments — Cashfree sandbox (added 23 Sep 2026)
+
+Add to `.env.local`, from Cashfree's **Test Environment → Developers → API Keys**:
+
+```
+CASHFREE_ENV=sandbox
+CASHFREE_CLIENT_ID=...
+CASHFREE_CLIENT_SECRET=...
+```
+
+With no keys, `/checkout` renders and says payment is not open yet — nothing breaks.
+`CASHFREE_ENV` must be spelled out; the app refuses to guess between sandbox and production.
+
+**No webhook reaches localhost.** Cashfree only calls an HTTPS `notify_url`, so locally the
+return route (`/api/payments/return/<locale>`) is what settles an order, by asking Cashfree
+server to server. Both paths run the same `settleOrder`. To exercise the webhook itself, expose
+the dev server over HTTPS (for example `cloudflared tunnel --url http://localhost:3005`), set
+`AUTH_URL` to the tunnel's origin, and point the dashboard webhook at
+`<tunnel>/api/payments/cashfree/webhook`, version `2025-01-01`.
+
+Sandbox payment details:
+
+| Method | Succeeds | Fails |
+|---|---|---|
+| UPI | `testsuccess@gocash` | `testfailure@gocash` |
+| Card | `4111 1111 1111 1111`, `03/2028`, CVV `123`, OTP `111000` | — |
+
+## Courier — Delhivery (added 23 Sep 2026)
+
+Add to `.env.local`:
+
+```
+DELHIVERY_ENV=staging
+DELHIVERY_API_TOKEN=...
+```
+
+**Staging and production take different tokens.** The token on the Delhivery One dashboard
+is a production token; staging refuses it with `401 Login or API Key Required`. Ask Delhivery
+for a staging token, or set `DELHIVERY_ENV=production` locally — every call the app makes so
+far (serviceability, quote, expected delivery) is read-only and spends nothing. With no token,
+`shippingProvider()` returns null.
+
+`DELHIVERY_ENV` must be spelled out, as with Cashfree. In Amplify, set both variables per
+branch; production uses `production`.
+
+Vendor reference docs are installed as the project skill `.claude/skills/app-check-config`
+(git-ignored; re-install with `npx @cashfreepayments/agent-skills add skills --frameworks
+claude-code`, then remove the telemetry steps the installer adds — see SPEC §9.2).
 
 ## Browsing the data
 

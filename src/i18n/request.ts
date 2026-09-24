@@ -24,6 +24,7 @@ export const NAMESPACES = [
   "seeds",
   "story",
   "cart",
+  "checkout",
   "plans",
   "auth",
   "account",

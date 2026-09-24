@@ -31,6 +31,9 @@ export const ADMIN_NAV_GROUPS: {
   /* Overview is ungrouped and first: it is the screen an operator lands on,
      and putting it under a heading would imply a sibling it does not have. */
   { heading: null, items: [{ label: "overview", href: "/admin" }] },
+  /* Above the catalogue: orders are what an operator opens every day, the
+     catalogue screens only when a price or a product changes. */
+  { heading: "operations", items: [{ label: "orders", href: "/admin/orders" }] },
   {
     heading: "catalogue",
     items: [
@@ -63,7 +66,12 @@ export const ADMIN_NAV_GROUPS: {
        for a whole product type, on or off, rather than a per-item field on
        one of the catalogue screens above (SPEC §12, added 20 Sep 2026). */
     heading: "settings",
-    items: [{ label: "productVisibility", href: "/admin/settings" }],
+    items: [
+      { label: "productVisibility", href: "/admin/settings" },
+      /* Pickup address and packing figures, 23 Sep 2026 — what checkout needs
+         to ask the courier for a price (SPEC §7). */
+      { label: "delivery", href: "/admin/delivery" },
+    ],
   },
 ];
 

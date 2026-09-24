@@ -1,13 +1,13 @@
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { CalendarCheck, Info, ShoppingBag } from "lucide-react";
+import { CalendarCheck, Lock, ShoppingBag } from "lucide-react";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { hydrateCart } from "@/lib/cart/server";
 import { lineId } from "@/lib/cart/cart";
 import { formatDeliveryDate } from "@/lib/delivery-date";
-import { rackLineHref } from "@/lib/racks/cart-key";
+import { lineHref, lineUnits } from "@/lib/cart/line-display";
 import { clearCart } from "./actions";
 import { CartLineControls } from "./CartLineControls";
 
@@ -19,9 +19,8 @@ import { CartLineControls } from "./CartLineControls";
  * cookie, so a customer cannot edit their own total and a price change reaches
  * an abandoned cart (SPEC §9).
  *
- * **There is deliberately no pay button.** Cashfree is not wired up (SPEC §9),
- * so a checkout CTA could only fail. The page says so in a sentence instead,
- * which is the honest version of the same information.
+ * The button leads to `/checkout`, which re-reads the cart itself: nothing on
+ * this page is passed forward.
  */
 export const dynamic = "force-dynamic";
 
@@ -268,15 +267,16 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
             </div>
           )}
 
-          <div className="mt-5 rounded-2xl border border-dashed border-forest/25 p-6">
-            <h2 className="flex items-start gap-2.5 font-display text-base font-semibold text-forest">
-              <Info size={18} strokeWidth={1.75} className="mt-0.5 shrink-0" />
-              {t("checkoutHeading")}
-            </h2>
-            <p className="mt-2 font-body text-xs leading-relaxed text-stone">
-              {t("checkoutBody")}
-            </p>
-          </div>
+          {/* Checkout is signed-in only for now, so a guest goes through
+              login and comes back to /checkout (src/proxy.ts). Nothing is
+              charged until the payment screen. */}
+          <Link
+            href="/checkout"
+            className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-full bg-forest px-7 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
+          >
+            <Lock size={16} strokeWidth={1.75} />
+            {t("checkoutCta")}
+          </Link>
 
           <div className="mt-6 flex flex-wrap items-center gap-5">
             <Link
@@ -300,52 +300,6 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
       </div>
     </section>
   );
-}
-
-/**
- * Back to the page this line was added from.
- *
- * A rack is the only kind whose link carries a query string: the other three
- * are one key to one page, while a rack key is a SKU that has to be unpacked
- * into the height, size and colour the detail page reads (`rackLineHref`).
- *
- * `/shop/racks` is the fallback for a rack key that will not parse — a cart can
- * hold a line written by an older format, and the range index is a true answer
- * where a 404 would not be.
- */
-function lineHref(item: { kind: string; key: string }): string {
-  if (item.kind === "seed") return `/seeds/${item.key}`;
-  if (item.kind === "tray") return `/shop/trays/${item.key}`;
-  if (item.kind === "rack") return rackLineHref(item.key) ?? "/shop/racks";
-  return `/microgreens/${item.key}`;
-}
-
-/**
- * The price-and-quantity line, whose **unit** is the kind's.
- *
- * Extracted when racks arrived and made `item.grams === null` ambiguous: it
- * had meant "a pack" while trays were the only unweighed kind, and a rack
- * priced "per pack" and counted in "packs" is the exact class of wrong number
- * that survives review because the code reads fine.
- */
-function lineUnits(
-  item: { kind: string; unitPrice: number; units: number; grams: number | null },
-  t: (key: string, values?: Record<string, number>) => string,
-): string {
-  if (item.kind === "rack") {
-    return `${t("linePriceRack", { price: item.unitPrice })} · ${t("lineRacks", { count: item.units })}`;
-  }
-  /* A green moved from the 100 g to the tray on 19 Sep 2026 — its own wording
-     rather than falling into the pack branch below, because "pack" is a
-     tray-product's unit (a moulded plastic pack), not a grown tray of
-     greens. Checked first, since it is also `grams === null` now. */
-  if (item.kind === "variety") {
-    return `${t("linePriceTray", { price: item.unitPrice })} · ${t("lineTrays", { count: item.units })}`;
-  }
-  if (item.grams === null) {
-    return `${t("linePricePack", { price: item.unitPrice })} · ${t("linePacks", { count: item.units })}`;
-  }
-  return `${t("linePrice", { price: item.unitPrice })} · ${t("lineGrams", { grams: item.grams })}`;
 }
 
 /**

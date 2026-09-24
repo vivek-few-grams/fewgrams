@@ -128,7 +128,7 @@ export async function Process() {
                 className={`reveal-draw absolute left-[5.25rem] -right-10 top-[22px] hidden h-px bg-sage xl:-right-14 ${connectorClass(i)}`}
               />
               <div className="relative flex items-center gap-3">
-                <span className="reveal-pop grid size-11 shrink-0 place-items-center rounded-full bg-sage text-forest">
+                <span className="reveal-pop grid size-11 shrink-0 place-items-center rounded-full bg-forest text-cream">
                   <s.icon size={20} strokeWidth={1.5} />
                 </span>
                 {/* No number on the loop marker: it is not a fifth thing we

@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { servicePins } from "@/lib/brand";
 import {
   formatPhone,
   normalisePhone,
+  formatPlace,
   validateAddress,
   validateProfile,
 } from "./validation";
 
-const served = servicePins[0];
+const served = "560034";
+
+/* `checkDeliveryArea`'s two answers, without the directory: the area rule
+   itself is `area.ts`'s and is tested there. */
+const IN = { served: true, place: null };
+const OUT = { served: false, place: null };
 
 function form(fields: Record<string, string>): FormData {
   const fd = new FormData();
@@ -19,7 +24,8 @@ const goodAddress = {
   recipient: "Vivek",
   phone: "9845012345",
   line1: "12, Green Court",
-  city: "Bengaluru",
+  district: "Bengaluru Urban",
+  state: "Karnataka",
   pincode: served,
 };
 
@@ -68,9 +74,22 @@ describe("validateProfile", () => {
   });
 });
 
+describe("formatPlace", () => {
+  it("shows district, state and PIN", () => {
+    expect(
+      formatPlace({ district: "Bengaluru Urban", state: "Karnataka", pincode: "560034" }),
+    ).toBe("Bengaluru Urban, Karnataka 560034");
+  });
+
+  /* Addresses saved before 23 Sep 2026 have a city and neither of the others. */
+  it("falls back to the city an older address has", () => {
+    expect(formatPlace({ city: "Bengaluru", pincode: "560034" })).toBe("Bengaluru 560034");
+  });
+});
+
 describe("validateAddress", () => {
   it("accepts a complete address and defaults the label", () => {
-    const r = validateAddress(form(goodAddress));
+    const r = validateAddress(form(goodAddress), IN);
     expect(r.ok).toBe(true);
     if (r.ok) {
       expect(r.value.label).toBe("Home");
@@ -86,7 +105,7 @@ describe("validateAddress", () => {
    * saved address.
    */
   it("refuses a PIN code outside the service area", () => {
-    const r = validateAddress(form({ ...goodAddress, pincode: "110001" }));
+    const r = validateAddress(form({ ...goodAddress, pincode: "110001" }), OUT);
     expect(r.ok).toBe(false);
     if (!r.ok) {
       expect(r.error.code).toBe("pincodeNotServed");
@@ -95,7 +114,7 @@ describe("validateAddress", () => {
   });
 
   it("refuses a PIN that is not six digits", () => {
-    const r = validateAddress(form({ ...goodAddress, pincode: "5600" }));
+    const r = validateAddress(form({ ...goodAddress, pincode: "5600" }), IN);
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error.code).toBe("pincodeInvalid");
   });
@@ -103,23 +122,54 @@ describe("validateAddress", () => {
   it.each([
     ["recipient", "recipientRequired"],
     ["line1", "line1Required"],
-    ["city", "cityRequired"],
+    ["district", "districtRequired"],
+    ["state", "stateRequired"],
   ])("requires %s", (field, code) => {
-    const r = validateAddress(form({ ...goodAddress, [field]: "  " }));
+    const r = validateAddress(form({ ...goodAddress, [field]: "  " }), IN);
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error).toMatchObject({ field, code });
+  });
+
+  /* The action passes India Post's answer only when the form sent a blank —
+     no JavaScript, or a lookup that had not answered. */
+  it("fills a blank district and state from the PIN's place", () => {
+    const place = { district: "Bengaluru Urban", state: "Karnataka" };
+    const r = validateAddress(
+      form({ ...goodAddress, district: "", state: " " }),
+      { served: true, place },
+    );
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value).toMatchObject(place);
+  });
+
+  /* On a PIN split between two districts the customer knows which side they
+     are on and the directory does not, so what they typed wins. */
+  it("keeps what the customer typed over the looked-up place", () => {
+    const r = validateAddress(
+      form({ ...goodAddress, district: "Bengaluru Rural" }),
+      { served: true, place: { district: "Bengaluru Urban", state: "Karnataka" } },
+    );
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.value.district).toBe("Bengaluru Rural");
+  });
+
+  it("refuses a district longer than any real one", () => {
+    const r = validateAddress(form({ ...goodAddress, district: "x".repeat(61) }), IN);
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.error).toMatchObject({ field: "district", code: "placeTooLong" });
   });
 
   it("keeps a pinned location and rounds its accuracy", () => {
     const r = validateAddress(
       form({ ...goodAddress, lat: "12.9716", lng: "77.5946", accuracyM: "18.4" }),
+      IN,
     );
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value.geo).toEqual({ lat: 12.9716, lng: 77.5946, accuracyM: 18 });
   });
 
   it("rejects coordinates off the globe instead of storing them", () => {
-    const r = validateAddress(form({ ...goodAddress, lat: "999", lng: "77.5946" }));
+    const r = validateAddress(form({ ...goodAddress, lat: "999", lng: "77.5946" }), IN);
     expect(r.ok).toBe(false);
     if (!r.ok) expect(r.error.code).toBe("locationInvalid");
   });

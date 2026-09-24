@@ -19,7 +19,7 @@
   "subtotal": "Subtotal",
   "subtotalValue": "₹{amount, number}",
   "totalGrams": "{grams, number} g in total",
-  "deliveryNote": "Delivery is worked out at checkout — there is no charge set for one-off orders yet.",
+  "deliveryNote": "There is no delivery charge on one-off orders.",
   "readyHeading": "Everything arrives {date}",
   "readySingle": "Sown tomorrow morning, cut the day it reaches you.",
   "readySplit": "The things in your cart are not all ready on the same day. Rather than make two trips, the whole order comes on one day — the date the slowest one is ready.",
@@ -30,8 +30,6 @@
   "clearConfirm": "This removes everything in it. Nothing has been ordered or charged.",
   "clearYes": "Yes, clear it",
   "cancel": "Keep it",
-  "checkoutHeading": "Checkout is not open yet",
-  "checkoutBody": "Payment is not wired up, so this cart cannot be paid for yet. Nothing here has been ordered and nothing has been charged. Your cart is saved on this device for 30 days.",
   "keepBrowsing": "Keep browsing",
   "readyWithSeeds": "Seed comes off our shelf and travels with this same delivery.",
   "lineShelf": "From our shelf · {date}",
@@ -56,6 +54,7 @@
   "decreaseRack": "One rack fewer of {name}",
   "increaseRack": "One rack more of {name}",
   "lineBuild": "Built for you · by {date}",
-  "readyRack": "We build your rack and bring it to you across Bengaluru.",
-  "readyRackNote": "A rack is built for your order rather than taken off a shelf, which takes three days — it travels with the rest of your order on the date above."
+  "readyRack": "We build your rack and bring it to you.",
+  "readyRackNote": "A rack is built for your order rather than taken off a shelf, which takes three days — it travels with the rest of your order on the date above.",
+  "checkoutCta": "Continue to checkout"
 }

@@ -42,8 +42,8 @@ export default async function LoginPage({
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-6 py-16">
       <div className="mb-8 flex items-center gap-3">
-        <span className="grid size-12 place-items-center rounded-full bg-sage">
-          <Sprout className="size-7" stroke="#033923" />
+        <span className="grid size-12 place-items-center rounded-full bg-forest text-cream">
+          <Sprout className="size-7" />
         </span>
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight text-forest">

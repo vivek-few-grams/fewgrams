@@ -20,7 +20,7 @@ import {
   putFrameSize,
 } from "@/lib/repo/racks";
 import { repriceAllRacks, revalidateRackScreens } from "@/lib/racks/reprice";
-import { err, money, type FormState } from "@/lib/forms";
+import { err, money, optionalPositive, type FormState } from "@/lib/forms";
 import type { AngleRackConfig, AngleRackModel, FrameSize } from "@/lib/types";
 
 /**
@@ -75,8 +75,19 @@ function readFrame(
 
   /* No price and no capacity to read — see `FrameSize`. A frame costs
      `3 × length + 2 × depth` feet of angle at the grade's rate, and it has no
-     deck to carry a load rating. */
-  return { ok: true, value: { depthFt, lengthFt, active: fd.get("active") === "on" } };
+     deck to carry a load rating. Grams per shelf is optional — see
+     `ShelfPlate.gramsPerShelf`. */
+  const gramsPerShelf = optionalPositive(fd, "gramsPerShelf");
+  if (gramsPerShelf === "invalid") return { ok: false, state: err("gramsInvalid", "gramsPerShelf") };
+  return {
+    ok: true,
+    value: {
+      depthFt,
+      lengthFt,
+      active: fd.get("active") === "on",
+      ...(gramsPerShelf !== undefined ? { gramsPerShelf } : {}),
+    },
+  };
 }
 
 /** Keyed by footprint — `f-1x4` — for the same reason a plate is `p-1x3`: an

@@ -1,7 +1,7 @@
 {
   "brand": {
     "tagline": "Sown for you. Cut this morning.",
-    "subline": "Microgreens grown to order in Bengaluru. Never frozen, never stored."
+    "subline": "Microgreens grown to order. Never frozen, never stored."
   },
   "nav": {
     "microgreens": "Microgreens",
@@ -41,7 +41,7 @@
     "seeds": "{count, plural, =0 {Coming soon} one {# seed} other {# seeds}}"
   },
   "footer": {
-    "deliveryNote": "Saturdays across {city}.",
+    "deliveryNote": "Delivered on Saturdays.",
     "shop": "Shop",
     "brand": "Fewgrams",
     "legal": "Legal",

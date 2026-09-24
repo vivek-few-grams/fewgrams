@@ -41,7 +41,10 @@
     "seeds": "Seeds",
     "trays": "Trays & drainage",
     "settings": "Settings",
-    "productVisibility": "Product visibility"
+    "productVisibility": "Product visibility",
+    "operations": "Operations",
+    "orders": "Orders",
+    "delivery": "Delivery"
   },
   "varieties": {
     "title": "Varieties",
@@ -256,8 +259,11 @@
       "duplicateRack": "That exact rack is already on sale.",
       "colourInvalid": "Pick colours from the list.",
       "heightTooShort": "Every height must be at least 2 ft — a rack has height minus one shelves, so a 1 ft rack would have none.",
-      "heightUnknown": "That height is not one you sell. Add it to Heights above."
-    }
+      "heightUnknown": "That height is not one you sell. Add it to Heights above.",
+      "gramsInvalid": "Grams per shelf must be more than zero, or blank."
+    },
+    "colGramsPerShelf": "g / shelf",
+    "gramsMissing": "Not weighed yet — courier orders for racks on this size can't be priced"
   },
   "angleRacks": {
     "title": "Angle racks",
@@ -331,8 +337,11 @@
       "frameUnknown": "That footprint is not in the list above.",
       "angleUnknown": "That angle grade is not in the rates.",
       "heightUnknown": "That height is not one you sell. Add it to Heights on Shelf racks.",
-      "duplicateRack": "That exact rack is already on sale."
-    }
+      "duplicateRack": "That exact rack is already on sale.",
+      "gramsInvalid": "Grams per shelf must be more than zero, or blank."
+    },
+    "colGramsPerShelf": "g / shelf",
+    "gramsMissing": "Not weighed yet — courier orders for racks on this size can't be priced"
   },
   "pipeRacks": {
     "title": "Pipe racks",
@@ -412,8 +421,11 @@
       "sizeUnknown": "That footprint is not in the list above.",
       "heightUnknown": "That height is not one you sell. Add it to Heights on Shelf racks.",
       "heightTooTall": "Pipe racks stop at {max} ft.",
-      "duplicateRack": "That exact rack is already on sale."
-    }
+      "duplicateRack": "That exact rack is already on sale.",
+      "gramsInvalid": "Grams per shelf must be more than zero, or blank."
+    },
+    "colGramsPerShelf": "g / shelf",
+    "gramsMissing": "Not weighed yet — courier orders for racks on this size can't be priced"
   },
   "overview": {
     "varieties": "Varieties",
@@ -491,7 +503,6 @@
     "colItem": "Item",
     "colPrice": "₹/pack",
     "colLead": "Days",
-    "colPromise": "What we promise",
     "promise": "Ordered in, within {days, number} days",
     "colActive": "Active",
     "hidden": "Hidden",
@@ -506,13 +517,181 @@
       "keyTaken": "“{key}” is already added.",
       "priceInvalid": "Price per pack must be a positive number.",
       "leadDaysInvalid": "Days to deliver must be a whole number from 7 to 14. Seven is the shortest this category can promise.",
-      "notFound": "That item no longer exists."
-    }
+      "notFound": "That item no longer exists.",
+      "packingInvalid": "Packing figures must be more than zero.",
+      "packingIncomplete": "Fill in all six packing figures, or leave them all blank.",
+      "packPiecesInvalid": "Pieces per pack must be a whole number."
+    },
+    "packing": {
+      "packPieces": "Pieces per pack",
+      "pieceLengthCm": "Length (cm)",
+      "pieceWidthCm": "Width (cm)",
+      "pieceHeightCm": "Height of one (cm)",
+      "pieceStackCm": "Each extra adds (cm)",
+      "pieceGrams": "Weight of one (g)"
+    },
+    "packingMissing": "No packing size yet — courier orders with this item can't be priced until all six packing figures are filled in. Record a drainage set of five as one piece.",
+    "packingShort": {
+      "packPieces": "Pcs / pack",
+      "pieceLengthCm": "L cm",
+      "pieceWidthCm": "W cm",
+      "pieceHeightCm": "H cm",
+      "pieceStackCm": "+ cm each",
+      "pieceGrams": "g each"
+    },
+    "packingNote": "Packing, for courier prices: pieces per pack, one piece's length × width × height, the height each further stacked piece adds, and one piece's weight. Fill all six or leave all blank."
   },
   "settings": {
     "title": "Product visibility",
     "intro": "Turn a product type off to pull it from every menu on the site — the header, the footer and the shop's own category strip — and take its pages down. A visitor with an old link or a bookmark is sent back to /shop instead of an error. Nothing is deleted: prices, stock and content files are untouched, and turning it back on restores it exactly as it was.",
     "visible": "Visible",
     "hidden": "Hidden"
+  },
+  "orders": {
+    "title": "Orders",
+    "intro": "Needs attention is every order still in your hands. Mark one picked when you start putting it together, ready for delivery when it is complete, and handed over when the delivery agent takes it. Unpaid checkouts are not orders — look there only when a customer says they paid and has no receipt.",
+    "filterLabel": "Filter by status",
+    "activeTab": "Needs attention",
+    "doneGroup": "Done",
+    "unpaidTab": "Unpaid checkouts",
+    "activeEmpty": "Nothing to act on. New orders appear here as soon as they are paid.",
+    "lane": {
+      "paid": {
+        "heading": "New",
+        "hint": "Paid, not started"
+      },
+      "picked": {
+        "heading": "Picked",
+        "hint": "Being put together"
+      },
+      "ready_for_delivery": {
+        "heading": "Ready for delivery",
+        "hint": "Waiting for the delivery agent"
+      }
+    },
+    "laneEmpty": "None",
+    "overdue": "Overdue",
+    "dueToday": "Due today",
+    "cardDeliver": "Deliver {date}",
+    "more": "{count, plural, one {+# more item} other {+# more items}}",
+    "empty": "No orders in “{status}”.",
+    "colOrder": "Order",
+    "colCustomer": "Customer",
+    "colItems": "Items",
+    "colDelivery": "Deliver on",
+    "colTotal": "Total",
+    "amount": "₹{amount, number}",
+    "back": "All orders",
+    "noReceipt": "No receipt number yet",
+    "deliverOn": "deliver on {date}",
+    "placed": "Placed {when}",
+    "paidAt": "paid {when}",
+    "cancel": "Cancel",
+    "itemsHeading": "Lines as sold",
+    "kind": {
+      "variety": "Microgreens",
+      "seed": "Seed",
+      "tray": "Trays & drainage",
+      "rack": "Rack"
+    },
+    "sourcing": {
+      "shelf": "from the shelf",
+      "vendor": "order from the vendor"
+    },
+    "supplierOrder": "place the supplier order",
+    "grams": "{grams, number} g",
+    "units": "× {count, number}",
+    "deliveryLine": "Delivery",
+    "deliveryQuote": "{courier} quote ₹{quoted, number}, zone {zone} — rounded up for the customer",
+    "courier": {
+      "delhivery": "Delhivery"
+    },
+    "total": "Total",
+    "deliverTo": "Deliver to",
+    "paymentsHeading": "Payment events",
+    "noPayments": "The gateway has reported nothing for this order yet.",
+    "attempt": {
+      "success": "Paid",
+      "failed": "Failed",
+      "dropped": "Abandoned",
+      "pending": "Pending"
+    },
+    "gatewayRef": "Cashfree payment {id}",
+    "source": {
+      "webhook": "webhook",
+      "return": "return page"
+    },
+    "status": {
+      "pending_payment": "Awaiting payment",
+      "paid": "New",
+      "picked": "Picked",
+      "ready_for_delivery": "Ready for delivery",
+      "out_for_delivery": "Out for delivery",
+      "delivered": "Delivered",
+      "failed": "Delivery failed",
+      "refunded": "Refunded"
+    },
+    "action": {
+      "picked": "Mark as picked",
+      "ready_for_delivery": "Ready for delivery",
+      "out_for_delivery": "Handed to delivery agent",
+      "delivered": "Mark delivered",
+      "failed": "Delivery failed"
+    },
+    "failedTitle": "Mark this delivery failed?",
+    "failedConfirm": "The customer sees “Delivery failed” on their order page. It cannot be moved back from here.",
+    "failedYes": "Yes, mark failed",
+    "deliveryOwnRun": "Own same-day run — fixed microgreens fee"
+  },
+  "delivery": {
+    "title": "Delivery",
+    "intro": "Orders with microgreens go on your own same-day run and pay the fixed fee below. Every other order pays the courier's live price, quoted at checkout from the pickup address to the customer's PIN for the parcel weight worked out from the packing figures. Subscriptions pay no delivery. Until this is saved (and, for courier orders, the courier is connected), checkout shows no price and does not take payment.",
+    "statusHeading": "Courier connection",
+    "statusNoToken": "Delhivery is not connected. Set DELHIVERY_ENV and DELHIVERY_API_TOKEN in the environment.",
+    "statusNoSettings": "Delhivery ({mode}) is connected. Save the pickup address and packing below to start quoting.",
+    "statusOk": "Delhivery ({mode}) is working: 500 g within {pincode} quotes ₹{price, number}.",
+    "statusNoPickup": "Delhivery does not collect from {pincode}. Check the pickup PIN.",
+    "statusError": "Delhivery ({mode}) did not answer: {detail}",
+    "unmeasuredHeading": "{count, plural, one {# item} other {# items}} not measured yet",
+    "unmeasuredHint": "A courier order containing any of these can't be priced, so checkout won't take payment for it. Add the missing size or weight on its screen.",
+    "unmeasuredScreen": {
+      "trays": "Trays & drainage",
+      "plates": "Shelf racks",
+      "frames": "Angle racks",
+      "pipes": "Pipe racks"
+    },
+    "pickupHeading": "Pickup address",
+    "pickupHint": "Where the courier collects parcels from. Never shown to customers.",
+    "greensHeading": "Microgreens delivery",
+    "greensHint": "A fixed fee for any order with microgreens in it, whatever else rides along — they go on your own same-day run, not by courier. Set it from your average cost per drop and review it monthly.",
+    "packingHeading": "Packing",
+    "packingHint": "Order-wide figures for courier orders. Each tray's size and weight is set on its row in Trays & drainage, and each rack's grams per shelf on its shelf size in Shelf racks, Angle racks and Pipe racks. Seeds are weighed by what's ordered, in 5 × 5 × 5 cm packets per 100 g.",
+    "field": {
+      "greenRunFee": "Fee per order (₹)",
+      "pickupName": "Business name",
+      "pickupPhone": "Pickup phone",
+      "pickupAddress": "Street address",
+      "pickupCity": "City",
+      "pickupPincode": "PIN code",
+      "seedPackingGrams": "Seed box and padding, per order (g)",
+      "shelfStackCm": "Height each flat-packed rack shelf adds (cm)"
+    },
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved. Checkout uses these figures from now on.",
+    "errors": {
+      "required": "Required.",
+      "phoneInvalid": "Enter a 10-digit mobile number.",
+      "pincodeInvalid": "Enter a 6-digit PIN code.",
+      "positive": "Must be more than zero."
+    },
+    "sizePlate": "{depth, number} × {length, number} ft, {thickness, number} mm",
+    "sizeFootprint": "{depth, number} × {length, number} ft"
+  },
+  "checkoutDelivery": {
+    "notConfigured": "Only you see this. No delivery fee is saved yet, so checkout can't price delivery. Customers see \"not available right now\" and can't pay.",
+    "noCourier": "Only you see this. Nothing in this cart is microgreens, so it goes by courier — and no courier is connected (DELHIVERY_API_TOKEN isn't set). Customers see \"not available right now\" and can't pay.",
+    "notMeasured": "Only you see this. An item in this cart has no packing measurements, so the courier can't price the parcel. Delivery settings lists which item and where to add them.",
+    "cta": "Open delivery settings"
   }
 }

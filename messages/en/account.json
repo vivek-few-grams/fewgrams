@@ -50,7 +50,7 @@
   "addresses": {
     "title": "Addresses",
     "heading": "Delivery addresses",
-    "body": "We deliver across Bengaluru on Saturdays. Save the address you want your box to arrive at.",
+    "body": "We deliver on Saturdays. Save the address you want your box to arrive at.",
     "addTitle": "Add an address",
     "editTitle": "Edit address",
     "yourAddresses": "Saved addresses",
@@ -67,7 +67,18 @@
     "line2Placeholder": "5th Main, Indiranagar",
     "landmark": "Landmark",
     "landmarkPlaceholder": "Opposite the park",
-    "city": "City",
+    "district": "District",
+    "state": "State",
+    "placeHint": "Filled in from your PIN code. Change it if it's not right.",
+    "pinHeading": "Your PIN code",
+    "pinBody": "We deliver to selected areas. Enter your PIN code first and we'll check it's one of them.",
+    "pinCheck": "Check",
+    "pinChecking": "Checking…",
+    "pinServed": "We deliver to {pincode}",
+    "pinChange": "Change",
+    "pinChangeLabel": "Change PIN code",
+    "pinCheckFailed": "We couldn't check that just now. Please try again.",
+    "addressLocked": "Check your PIN code above first. The address form opens once we know we deliver there.",
     "pincode": "PIN code",
     "pincodeHint": "Six digits. We check it against our delivery area.",
     "notes": "Delivery instructions",
@@ -93,9 +104,20 @@
     "locationError": "Couldn't get your location. The address saves fine without it.",
     "locationUnsupported": "This browser can't share a location.",
     "clearLocation": "Clear pin",
-    "serviceNote": "We deliver to {count} Bengaluru PIN codes today.",
+    "serviceNote": "Enter a PIN code and we'll tell you straight away whether we deliver there.",
     "confirmRemoveBody": "We will forget this address. Any order already placed keeps the address it was placed with.",
-    "confirmRemoveAction": "Yes, remove"
+    "confirmRemoveAction": "Yes, remove",
+    "limitReached": "You have {max, number} saved addresses, the most we keep. Remove one to add another.",
+    "outsideArea": {
+      "heading": "We'd love to deliver to {pincode}",
+      "body": "Thank you for thinking of us. For now we deliver to a limited area, and your PIN code is just outside it. If you'd still like to order, send us what you'd like on WhatsApp or by email. Our team will look at every request and deliver it if we can.",
+      "whatsapp": "Order on WhatsApp",
+      "email": "Order by email",
+      "thanks": "Thank you for choosing {brand}.",
+      "subject": "Order request for PIN {pincode}",
+      "prefill": "Hi {brand}! I'd like to place an order, but my PIN code {pincode} is outside your delivery area. Here's what I'd like:",
+      "close": "Close"
+    }
   },
   "orders": {
     "title": "Orders",
@@ -116,11 +138,30 @@
     "status": {
       "pending_payment": "Awaiting payment",
       "paid": "Paid",
-      "packed": "Packed",
+      "picked": "Being prepared",
+      "ready_for_delivery": "Ready for delivery",
       "out_for_delivery": "Out for delivery",
       "delivered": "Delivered",
       "failed": "Delivery failed",
       "refunded": "Refunded"
+    },
+    "detail": {
+      "title": "Order",
+      "back": "All orders",
+      "pendingHeading": "Confirming your payment",
+      "pendingBody": "If you finished paying, it can take a minute to reach us. Nothing is lost — check again shortly.",
+      "expiredHeading": "This payment wasn't completed",
+      "expiredBody": "The time to pay for this order ran out without a payment. Your cart is still saved, so you can place it again.",
+      "checkAgain": "Check again",
+      "backToCart": "Back to your cart",
+      "receipt": "Receipt {number}",
+      "orderRef": "Order {id}",
+      "paidHeading": "Thank you — your order is placed",
+      "arrives": "Arrives {date}",
+      "itemsHeading": "What you ordered",
+      "delivery": "Delivery",
+      "total": "Total",
+      "deliverTo": "Delivering to"
     }
   },
   "errors": {
@@ -129,11 +170,14 @@
     "phoneInvalid": "Enter a 10-digit Indian mobile number.",
     "recipientRequired": "Who should we hand the box to?",
     "line1Required": "Flat, house or building is required.",
-    "cityRequired": "City is required.",
     "pincodeInvalid": "A PIN code is six digits.",
     "pincodeNotServed": "We don't deliver to {pincode} yet.",
+    "districtRequired": "District is required.",
+    "stateRequired": "State is required.",
+    "placeTooLong": "That's longer than any district or state name.",
     "locationInvalid": "That location doesn't look right. Pin it again or save without it.",
     "notFound": "That address no longer exists.",
-    "unknown": "Something went wrong. Try again."
+    "unknown": "Something went wrong. Try again.",
+    "addressLimit": "You already have the most addresses we keep. Remove one to add another."
   }
 }

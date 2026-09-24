@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, MapPin, Pencil, Plus, X } from "lucide-react";
+import { MAX_ADDRESSES } from "@/lib/account/validation";
 import type { Address } from "@/lib/types";
 import { AddressLines, Card } from "../ui";
 import { deleteAddressAction, setDefaultAddressAction } from "../actions";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
-import { AddressForm } from "./AddressForm";
+import { AddressEntry } from "./AddressEntry";
 
 /**
  * The address list, and the one thing on it that needs client state: which
@@ -26,12 +27,10 @@ export function AddressBook({
   addresses,
   defaultRecipient,
   defaultPhone,
-  defaultCity,
 }: {
   addresses: Address[];
   defaultRecipient: string;
   defaultPhone: string;
-  defaultCity: string;
 }) {
   const t = useTranslations("account.addresses");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -48,9 +47,8 @@ export function AddressBook({
             editingId === address.addrId ? (
               <li key={address.addrId}>
                 <Card title={t("editTitle")}>
-                  <AddressForm
+                  <AddressEntry
                     address={address}
-                    defaultCity={defaultCity}
                     onDone={() => setEditingId(null)}
                     onCancel={() => setEditingId(null)}
                   />
@@ -136,14 +134,15 @@ export function AddressBook({
 
       {adding ? (
         <Card title={t("addTitle")}>
-          <AddressForm
+          <AddressEntry
             defaultRecipient={defaultRecipient}
             defaultPhone={defaultPhone}
-            defaultCity={defaultCity}
             onDone={() => setAdding(false)}
             onCancel={addresses.length > 0 ? () => setAdding(false) : undefined}
           />
         </Card>
+      ) : addresses.length >= MAX_ADDRESSES ? (
+        <p className="font-body text-sm text-stone">{t("limitReached", { max: MAX_ADDRESSES })}</p>
       ) : (
         <button
           type="button"

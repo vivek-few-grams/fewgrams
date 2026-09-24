@@ -22,7 +22,7 @@ import {
   putPipeSize,
 } from "@/lib/repo/racks";
 import { repriceAllRacks, revalidateRackScreens } from "@/lib/racks/reprice";
-import { err, money, type FormState } from "@/lib/forms";
+import { err, money, optionalPositive, type FormState } from "@/lib/forms";
 import type { PipeRackConfig, PipeRackModel, PipeSize } from "@/lib/types";
 
 /**
@@ -93,8 +93,19 @@ function readSize(
 
   /* No price and no capacity to read — see `PipeSize`. And no leg count: it is
      derived from the length, because whether a shelf needs a middle support is
-     a fact about its span and not a choice. */
-  return { ok: true, value: { depthFt, lengthFt, active: fd.get("active") === "on" } };
+     a fact about its span and not a choice. Grams per shelf is optional — see
+     `ShelfPlate.gramsPerShelf`. */
+  const gramsPerShelf = optionalPositive(fd, "gramsPerShelf");
+  if (gramsPerShelf === "invalid") return { ok: false, state: err("gramsInvalid", "gramsPerShelf") };
+  return {
+    ok: true,
+    value: {
+      depthFt,
+      lengthFt,
+      active: fd.get("active") === "on",
+      ...(gramsPerShelf !== undefined ? { gramsPerShelf } : {}),
+    },
+  };
 }
 
 /** Keyed by footprint — `pp-1.5x3` — so an operator reading a rack row or a

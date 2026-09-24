@@ -26,7 +26,7 @@ import {
   seedRateCard,
 } from "@/lib/repo/racks";
 import { repriceAllRacks, revalidateRackScreens } from "@/lib/racks/reprice";
-import { count, csv, err, money, zeroOrMore, type FormState } from "@/lib/forms";
+import { count, csv, err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
 import type { AngleGrade, RackConfig, RackModel, RackSettings, ShelfPlate } from "@/lib/types";
 
 /**
@@ -138,10 +138,22 @@ function readPlate(fd: FormData): { ok: true; value: Omit<ShelfPlate, "id"> } | 
   if (capacityKg === null) return { ok: false, state: err("dimensionInvalid", "capacityKg") };
   const price = money(fd, "price");
   if (price === null) return { ok: false, state: err("priceInvalid", "price") };
+  /* Optional: a plate can be priced before it has been weighed. A blank is
+     flagged on the row and refused at courier checkout (SPEC §7). */
+  const gramsPerShelf = optionalPositive(fd, "gramsPerShelf");
+  if (gramsPerShelf === "invalid") return { ok: false, state: err("gramsInvalid", "gramsPerShelf") };
 
   return {
     ok: true,
-    value: { depthFt, lengthFt, thicknessMm, capacityKg, price, active: fd.get("active") === "on" },
+    value: {
+      depthFt,
+      lengthFt,
+      thicknessMm,
+      capacityKg,
+      price,
+      active: fd.get("active") === "on",
+      ...(gramsPerShelf !== undefined ? { gramsPerShelf } : {}),
+    },
   };
 }
 

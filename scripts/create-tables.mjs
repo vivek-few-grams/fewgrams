@@ -15,6 +15,9 @@
  *   orders     GSI1  — DELIVERY#<date>, the one query that must return
  *                      subscription weeks and one-off orders together (§4.1)
  *              GSI2  — STATUS#<status> for admin lists
+ *              GSI3  — USER#<userId>, a customer's order history. Added
+ *                      23 Sep 2026 with the first order entity; an existing
+ *                      table gains it through UpdateTable below.
  *
  * The same key schema is what the CDK stack must provision for ap-south-1, so
  * keep this file and the CDK definition in step.
@@ -23,6 +26,7 @@ import {
   CreateTableCommand,
   DescribeTableCommand,
   DynamoDBClient,
+  UpdateTableCommand,
 } from "@aws-sdk/client-dynamodb";
 
 const PREFIX = process.env.DYNAMODB_TABLE_PREFIX ?? "fewgrams";
@@ -49,13 +53,33 @@ const gsi = (n) => ({
 const tables = [
   { name: `${PREFIX}-users`, indexes: 1 },
   { name: `${PREFIX}-catalogue`, indexes: 1 },
-  { name: `${PREFIX}-orders`, indexes: 2 },
+  { name: `${PREFIX}-orders`, indexes: 3 },
 ];
 
 for (const { name, indexes } of tables) {
   try {
-    await client.send(new DescribeTableCommand({ TableName: name }));
-    console.log(`= "${name}" already exists`);
+    const { Table } = await client.send(new DescribeTableCommand({ TableName: name }));
+    const have = new Set((Table.GlobalSecondaryIndexes ?? []).map((i) => i.IndexName));
+    /* DynamoDB adds one GSI per UpdateTable call, so a table missing several
+       gains them over several runs; each run adds the lowest missing one. */
+    const missing = Array.from({ length: indexes }, (_, i) => i + 1).find(
+      (n) => !have.has(`GSI${n}`),
+    );
+    if (missing) {
+      await client.send(
+        new UpdateTableCommand({
+          TableName: name,
+          AttributeDefinitions: [
+            { AttributeName: `GSI${missing}PK`, AttributeType: "S" },
+            { AttributeName: `GSI${missing}SK`, AttributeType: "S" },
+          ],
+          GlobalSecondaryIndexUpdates: [{ Create: gsi(missing) }],
+        }),
+      );
+      console.log(`+ added GSI${missing} to "${name}"`);
+    } else {
+      console.log(`= "${name}" already exists`);
+    }
     continue;
   } catch (err) {
     if (err.name !== "ResourceNotFoundException") throw err;
@@ -82,7 +106,7 @@ for (const { name, indexes } of tables) {
     }),
   );
   console.log(
-    `+ created "${name}" with ${indexes === 1 ? "GSI1" : "GSI1 + GSI2"}`,
+    `+ created "${name}" with ${Array.from({ length: indexes }, (_, i) => `GSI${i + 1}`).join(" + ")}`,
   );
 }
 

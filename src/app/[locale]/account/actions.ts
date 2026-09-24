@@ -3,10 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { signOut } from "@/auth";
 import { assertRole } from "@/lib/auth/guard";
-import { validateAddress, validateProfile } from "@/lib/account/validation";
+import { MAX_ADDRESSES, readPincode, validateAddress, validateProfile } from "@/lib/account/validation";
+import { checkDeliveryArea, type PinPlace } from "@/lib/pincode/place";
 import {
   deleteAddress,
   getAddress,
+  listAddresses,
   putAddress,
   saveProfile,
   setDefaultAddress,
@@ -28,9 +30,12 @@ import type { FormState } from "@/lib/forms";
  */
 
 /** Account pages are `force-dynamic`, so this is about the client Router
- *  Cache: without it a saved address does not appear until a hard reload. */
+ *  Cache: without it a saved address does not appear until a hard reload.
+ *  Checkout too, because it adds addresses and moves the default with these
+ *  same actions. */
 function refresh() {
   revalidatePath("/[locale]/account", "layout");
+  revalidatePath("/[locale]/checkout", "page");
 }
 
 export async function saveProfileAction(
@@ -53,7 +58,15 @@ export async function saveAddressAction(
 ): Promise<FormState> {
   const actor = await assertRole("customer");
 
-  const parsed = validateAddress(fd);
+  /* The area is checked again here whatever the PIN step said — the browser
+     is convenience, this is the gate. Cached, so it is a read, not a call;
+     its place also fills a district or state the form sent blank. */
+  const pincode = readPincode(fd);
+  const area = /^\d{6}$/.test(pincode)
+    ? await checkDeliveryArea(pincode)
+    : { served: false, place: null };
+
+  const parsed = validateAddress(fd, area);
   if (!parsed.ok) return { status: "error", ...parsed.error };
 
   const addrId = String(fd.get("addrId") ?? "").trim();
@@ -62,6 +75,11 @@ export async function saveAddressAction(
   // not found.
   const existing = addrId ? await getAddress(actor.userId, addrId) : null;
   if (addrId && !existing) return { status: "error", code: "notFound" };
+  /* Checked here, not only by hiding the button: two tabs, or a replayed
+     post, would otherwise add a sixth. An edit is never refused. */
+  if (!existing && (await listAddresses(actor.userId)).length >= MAX_ADDRESSES) {
+    return { status: "error", code: "addressLimit" };
+  }
 
   const nowISO = new Date().toISOString();
   const address: Address = {
@@ -75,6 +93,31 @@ export async function saveAddressAction(
   await putAddress(address);
   refresh();
   return { status: "saved" };
+}
+
+/** What the address form learns about a PIN the moment it is complete. */
+export type PinLookup =
+  | { status: "served"; place: PinPlace | null }
+  | { status: "notServed" }
+  | { status: "invalid" };
+
+/**
+ * Called by the address form on the sixth digit — SPEC §7.
+ *
+ * One India Post lookup answers both questions — is it in the area (a
+ * district, `area.ts`), and what are its district and state — so a customer
+ * outside the area hears so before typing the rest of an address. `place:
+ * null` is not an error: the form leaves the fields for the customer to type.
+ * This decides nothing — `saveAddressAction` checks the PIN again.
+ *
+ * Signed-in only, like every action here: it spends a rate-limited key.
+ */
+export async function lookupPinAction(raw: string): Promise<PinLookup> {
+  await assertRole("customer");
+  const pincode = String(raw ?? "").replace(/\D/g, "");
+  if (!/^\d{6}$/.test(pincode)) return { status: "invalid" };
+  const area = await checkDeliveryArea(pincode);
+  return area.served ? { status: "served", place: area.place } : { status: "notServed" };
 }
 
 export async function deleteAddressAction(fd: FormData): Promise<void> {

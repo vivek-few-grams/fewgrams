@@ -3,6 +3,7 @@ import { Package } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { listOrdersForUser } from "@/lib/repo/orders";
+import { formatReceiptNo } from "@/lib/orders/order";
 import { Card } from "../ui";
 
 export const dynamic = "force-dynamic";
@@ -16,13 +17,8 @@ export async function generateMetadata({
 }
 
 /**
- * `/account/orders` — SPEC §12.
- *
- * Empty today, and honestly so: nothing writes an order until checkout lands
- * (SPEC §14 phase 5), so `listOrdersForUser` returns `[]` by design rather
- * than by omission — see src/lib/repo/orders.ts. The table below is real and
- * renders from the real type, so turning orders on is a change to the
- * repository and to nothing here.
+ * `/account/orders` — SPEC §12. Paid orders only: an abandoned checkout never
+ * enters the index this reads (see `OrderEntity`).
  */
 export default async function OrdersPage({
   params,
@@ -102,7 +98,7 @@ export default async function OrdersPage({
                         href={`/account/orders/${order.id}`}
                         className="underline underline-offset-4"
                       >
-                        {order.id}
+                        {order.receiptNo !== null ? formatReceiptNo(order.receiptNo) : order.id}
                       </Link>
                       <span className="mt-0.5 block font-normal text-xs text-stone">
                         {t("items", { count: order.itemCount })}
@@ -113,7 +109,7 @@ export default async function OrdersPage({
                     </td>
                     <td className="py-3 font-body text-sm text-stone">
                       {order.deliveryDate
-                        ? format.dateTime(new Date(order.deliveryDate), {
+                        ? format.dateTime(new Date(`${order.deliveryDate}T00:00:00+05:30`), {
                             dateStyle: "medium",
                           })
                         : t("notScheduled")}

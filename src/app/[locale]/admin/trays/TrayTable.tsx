@@ -11,47 +11,51 @@ import { removeTray, toggleTrayActive, updateTray } from "./actions";
 import { NumberField } from "../fields";
 
 /**
- * Trays and drainage cells — the pack price and the lead time, editable in
- * place.
+ * Trays and drainage cells — price, lead time and courier packing, one flat
+ * row per item with one Save (the owner's layout, 23 Sep 2026).
  *
  * Built on the same bones as `SeedTable`: one shared `grid-template-columns`
  * between the header and every row, and three `<form>` elements per row with
  * `display: contents` so they can share the row's grid. The reasoning for each
- * of those is written out in `varieties/VarietyRow.tsx`; what follows is what
- * is different here.
+ * of those is written out in `varieties/VarietyRow.tsx`.
+ *
+ * ## The promise sits under the name, not in a column
+ *
+ * "Within 7 days" next to a field reading 7 is the sentence a customer will
+ * read, live as the operator types — the reason a typo in the days is visible
+ * before it is saved. It moved under the item name when the packing figures
+ * joined the row, so the row stays one line of inputs.
  *
  * ## No search box, and no stock column
  *
- * The seed table has a filter because there are eighteen seeds. There are
- * three items here and there will not be many more — this is a small range of
- * equipment, not a catalogue — so a search field would be furniture. It is one
- * `useMemo` and one input to add back if the range ever grows.
- *
- * There is no stock column because there is no stock (SPEC §23.1). The whole
- * question this screen answers is **what a pack costs and how long it takes**,
- * and the second of those is the one an item can be wrong about in a way a
- * customer notices.
- *
- * ## The derived cell restates the promise in words, not a figure
- *
- * "Within 7 days" next to a field reading 7 looks redundant, and it is not:
- * the field is a number an operator types and the cell is **the sentence a
- * customer will read**, live as they type. That is the same job the seed
- * table's packs cell does — grams is what you count, the promise is what you
- * sell — and it is the reason a typo in this field is visible before it is
- * saved rather than after it is quoted.
+ * Three items, and there will not be many more; and there is no stock
+ * (SPEC §23.1).
  */
+
+/** The six courier packing figures, in the order an owner measures them. */
+const PACKING_FIELDS = [
+  "packPieces",
+  "pieceLengthCm",
+  "pieceWidthCm",
+  "pieceHeightCm",
+  "pieceStackCm",
+  "pieceGrams",
+] as const;
+
+/** Item, price, days, six packing figures, then Save, Active and Delete.
+ *  Fixed widths for the figures: price and grams run to four digits, the
+ *  rest to two or three, and equal flexible tracks cut the long ones off. */
 const COLUMNS =
-  "minmax(10rem,1.6fr) minmax(5rem,0.8fr) minmax(5rem,0.8fr) minmax(7rem,1fr) 6rem 5.5rem 4rem";
+  "minmax(9rem,1fr) 4.75rem 3.5rem 3.5rem 4.25rem 4.25rem 3.75rem 4.25rem 4.75rem 6rem 5rem 3.5rem";
 
 /**
  * Below this the rows scroll sideways inside their own box rather than
- * widening the page — the same fix the seed and rack tables carry, for the
- * same reason: a row's tracks come from an inline `gridTemplateColumns`, so
- * they apply at *every* width, and at 414px the cells push the whole document
- * wide and take the admin nav rail with it.
+ * widening the page — the same fix the seed and rack tables carry: a row's
+ * tracks come from an inline `gridTemplateColumns`, so they apply at every
+ * width, and at 414px the cells would push the whole document wide and take
+ * the admin nav rail with it.
  */
-const MIN_WIDTH = "min-w-[46rem]";
+const MIN_WIDTH = "min-w-[64rem]";
 
 export function TrayTable({
   trays,
@@ -59,6 +63,16 @@ export function TrayTable({
   trays: Array<{ tray: Tray; name: string | null }>;
 }) {
   const t = useTranslations("admin.trays");
+
+  const headings = [
+    t("colItem"),
+    t("colPrice"),
+    t("colLead"),
+    ...PACKING_FIELDS.map((f) => t(`packingShort.${f}`)),
+    "",
+    t("colActive"),
+    "",
+  ];
 
   return (
     <div className="space-y-4">
@@ -75,23 +89,13 @@ export function TrayTable({
            together and stay aligned. */
         <div className="overflow-x-auto">
           <div className={`${MIN_WIDTH} space-y-2`}>
-            {/* Column headings, hidden below `lg` where the table is scrolled
-                rather than stacked and every input carries its own label as
-                its accessible name instead. */}
-            <div
-              style={{ gridTemplateColumns: COLUMNS }}
-              className="hidden gap-x-3 px-4 lg:grid"
-            >
-              {[t("colItem"), t("colPrice"), t("colLead"), t("colPromise"), "", t("colActive"), ""].map(
-                (heading, i) => (
-                  <span
-                    key={i}
-                    className="font-body text-[10px] uppercase tracking-wider text-stone"
-                  >
-                    {heading}
-                  </span>
-                ),
-              )}
+            <p className="px-4 font-body text-[11px] text-stone">{t("packingNote")}</p>
+            <div style={{ gridTemplateColumns: COLUMNS }} className="grid items-end gap-x-3 px-4">
+              {headings.map((heading, i) => (
+                <span key={i} className="font-body text-[10px] uppercase tracking-wider text-stone">
+                  {heading}
+                </span>
+              ))}
             </div>
 
             {trays.map(({ tray, name }) => (
@@ -120,15 +124,14 @@ function TrayRow({ tray, name }: { tray: Tray; name: string | null }) {
   return (
     <div
       style={{ gridTemplateColumns: COLUMNS }}
-      className={`grid items-center gap-x-3 gap-y-2 rounded-xl border px-4 py-3 lg:gap-y-0 ${
+      className={`grid items-center gap-x-3 gap-y-2 rounded-xl border px-4 py-3 ${
         name ? "border-forest/12 bg-cream" : "border-terracotta/40 bg-terracotta/5"
       }`}
     >
       <div className="min-w-0">
-        <p className="truncate font-body text-sm font-semibold text-forest">
-          {name ?? tray.contentKey}
-        </p>
+        <p className="font-body text-sm font-semibold leading-snug text-forest">{name ?? tray.contentKey}</p>
         <code className="font-body text-[11px] text-stone">{tray.contentKey}</code>
+        <PromiseLine days={leadDays} />
       </div>
 
       <form action={action} className="contents">
@@ -157,12 +160,23 @@ function TrayRow({ tray, name }: { tray: Tray; name: string | null }) {
           error={errorFor("leadDays")}
         />
 
-        <PromiseCell days={leadDays} />
+        {PACKING_FIELDS.map((field) => (
+          <NumberField
+            key={field}
+            compact
+            label={t(`packing.${field}`)}
+            name={field}
+            min={0}
+            step={field === "packPieces" ? 1 : "any"}
+            defaultValue={tray[field]}
+            error={errorFor(field)}
+          />
+        ))}
 
         <button
           type="submit"
           disabled={pending}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
+          className="flex items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-forest/25 px-3 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
         >
           {state.status === "saved" && !pending && (
             <Check size={13} strokeWidth={2.5} className="text-forest" />
@@ -205,13 +219,16 @@ function TrayRow({ tray, name }: { tray: Tray; name: string | null }) {
         </p>
       )}
 
-      {/* **Any** error, not just a form-level one. `NumberField`'s `compact`
-          variant returns a bare input so the row stays aligned with its
-          header, which means it drops the message and leaves only a red
-          border and `aria-invalid` — and on this screen the message *is* the
-          rule ("seven days is the shortest this category can promise"). The
-          border still points at the offending input, so the pairing is not
-          lost by saying it here. */}
+      {tray.packPieces === undefined && (
+        <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">
+          <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
+          {t("packingMissing")}
+        </p>
+      )}
+
+      {/* **Any** error, not just a form-level one: a `compact` field drops its
+          message and keeps only a red border, and here the message is the rule
+          ("fill in all six, or none"). */}
       {state.status === "error" && (
         <p className="col-span-full font-body text-[11px] text-terracotta">
           {t(`errors.${state.code}`, state.values ?? {})}
@@ -222,23 +239,17 @@ function TrayRow({ tray, name }: { tray: Tray; name: string | null }) {
 }
 
 /**
- * The promise the figure in the field makes to a customer.
- *
- * Out of range renders nothing rather than a wrong sentence — the field is
- * already flagged and the action will refuse the save, so inventing a promise
- * for a figure that cannot be saved would be the one misleading thing this
- * cell could do.
+ * The promise the days figure makes to a customer. Out of range renders
+ * nothing rather than a wrong sentence — the field is already flagged and the
+ * action will refuse the save.
  */
-function PromiseCell({ days }: { days: number }) {
+function PromiseLine({ days }: { days: number }) {
   const t = useTranslations("admin.trays");
-  const valid =
-    Number.isInteger(days) && days >= TRAY_MIN_LEAD_DAYS && days <= TRAY_MAX_LEAD_DAYS;
-
-  if (!valid) return <span aria-hidden="true" />;
-
+  const valid = Number.isInteger(days) && days >= TRAY_MIN_LEAD_DAYS && days <= TRAY_MAX_LEAD_DAYS;
+  if (!valid) return null;
   return (
-    <p className="flex items-center gap-1.5 font-body text-xs text-stone">
-      <Truck size={13} strokeWidth={2} className="shrink-0" />
+    <p className="mt-1 flex items-center gap-1.5 font-body text-[11px] text-stone">
+      <Truck size={12} strokeWidth={2} className="shrink-0" />
       {t("promise", { days })}
     </p>
   );

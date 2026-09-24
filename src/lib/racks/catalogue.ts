@@ -81,6 +81,9 @@ export type SellableRack = {
   colours: RackColour[];
   /** ₹, as published. See the note above on why it is not recomputed. */
   price: number;
+  /** Packed grams per shelf, from the plate, frame or pipe size — or null
+   *  until the owner has weighed one, when a courier cannot price it. */
+  gramsPerShelf: number | null;
 };
 
 /**
@@ -131,6 +134,7 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       capacityKg: rackCapacityKg(m.config, card),
       colours,
       price: m.price,
+      gramsPerShelf: plate.gramsPerShelf ?? null,
     });
   }
 
@@ -151,6 +155,7 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       capacityKg: null,
       colours,
       price: m.price,
+      gramsPerShelf: frame.gramsPerShelf ?? null,
     });
   }
 
@@ -168,6 +173,7 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       capacityKg: null,
       colours: [],
       price: m.price,
+      gramsPerShelf: size.gramsPerShelf ?? null,
     });
   }
 

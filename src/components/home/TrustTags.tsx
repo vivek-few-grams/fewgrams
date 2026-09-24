@@ -26,7 +26,7 @@ export async function TrustTags() {
         <ul className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-cream/15">
           {tags.map((t) => (
             <li key={t.key} className="lg:px-8 lg:first:pl-0 lg:last:pr-0">
-              <span className="grid size-12 place-items-center rounded-full bg-sage text-forest">
+              <span className="grid size-12 place-items-center rounded-full bg-forest text-cream">
                 <t.icon size={22} strokeWidth={1.5} />
               </span>
               <h3 className="mt-5 font-display text-base font-semibold text-cream">

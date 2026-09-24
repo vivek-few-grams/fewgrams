@@ -868,3 +868,134 @@ html[data-loader="out"] .loader__mark {
   container-type: inline-size;
 }
 
+
+/* ─────────────────────────────────────────────────────────────
+   Checkout delivery ride — `DeliveryRide.tsx`
+
+   The world moves, the vehicles do not: three layers slide one scene width
+   (640 user units — a CSS length on an SVG element is in user units) and
+   loop, far slowest and road fastest, so the depth reads as parallax. The
+   vehicles only bob and drift a few units, so they never leave the frame.
+   The edges fade out so a layer never visibly starts or ends. */
+.ride {
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+.ride-pan { animation: ride-pan linear infinite; }
+.ride-pan--far  { animation-duration: 40s; }
+.ride-pan--near { animation-duration: 11s; }
+.ride-pan--road { animation-duration: 3.2s; }
+
+@keyframes ride-pan {
+  to { transform: translateX(-640px); }
+}
+
+.ride-wheel {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ride-spin 0.45s linear infinite;
+}
+
+@keyframes ride-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ride-bob { animation: ride-bob ease-in-out infinite alternate; }
+.ride-bob--scooter { animation-duration: 0.35s; }
+.ride-bob--auto    { animation-duration: 0.5s; }
+
+@keyframes ride-bob {
+  to { transform: translateY(-1.5px); }
+}
+
+/* The scooter eases ahead of the auto and drops back, the auto the reverse,
+   on different periods so the pair never settles into one fixed picture. */
+.ride-drift { animation: ride-drift ease-in-out infinite alternate; }
+.ride-drift--scooter { animation-duration: 7s; --ride-drift: 22px; }
+.ride-drift--auto    { animation-duration: 9s; --ride-drift: -18px; }
+
+@keyframes ride-drift {
+  to { transform: translateX(var(--ride-drift)); }
+}
+
+/* A still road is still a delivery picture; nothing here carries meaning
+   that the motion alone conveys. */
+@media (prefers-reduced-motion: reduce) {
+  .ride-pan,
+  .ride-wheel,
+  .ride-bob,
+  .ride-drift { animation: none !important; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Checkout's right column — `PayForm.tsx`
+
+   Pinned at `--pin-top`, the column's own starting offset, which `PayForm`
+   measures; so it never moves when the page scrolls. The fallback is only
+   what the first paint uses before the measurement lands. Desktop only: below
+   `lg` the column stacks under the form and scrolls with it. */
+@media (width >= 64rem) {
+  .pay-pin {
+    position: sticky;
+    top: var(--pin-top, 13rem);
+  }
+  .pay-pin__scroll {
+    max-height: calc(100dvh - var(--pin-top, 13rem) - 1rem);
+    overflow-y: auto;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Checkout cards — one surface for every card on /checkout, so the delivery
+   step and the order panel read as one set rather than as boxes drawn at
+   different times. A shade lighter than the page, a hairline in forest, and
+   a shadow soft enough to lift the card without drawing a frame round it. */
+.co-card {
+  border-radius: 1.25rem;
+  border: 1px solid rgb(3 57 35 / 0.1);
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgb(3 57 35 / 0.04),
+    0 10px 28px -18px rgb(3 57 35 / 0.16);
+}
+
+/* The order card, set dark: forest ground, cream type. Its contents are
+   written for this ground (`summary` in checkout/page.tsx), so it is never
+   used for a card whose text is forest. */
+.co-card--dark {
+  border-color: transparent;
+  background: var(--color-forest);
+  color: var(--color-cream);
+  box-shadow:
+    0 1px 2px rgb(3 57 35 / 0.1),
+    0 16px 36px -18px rgb(3 57 35 / 0.55);
+}
+
+/* Checkout colour — the palette, not new colours. `.co-page` goes on a
+   full-width wrapper, not the 1400px content box, or the washes stop short
+   and leave a hard edge down each side of a wide screen. The page carries two soft
+   washes (sage top-left, tan right) so the cards sit on something; each card
+   takes the tone of its job: sage for where it goes, warm tan for paying,
+   forest for what is bought. Backgrounds only — no `overflow`, which would
+   stop the order panel sticking. */
+.co-page {
+  /* White, the owner's call (24 Sep 2026) — the washes read as haze. */
+  background: #fff;
+}
+
+/* Flat, not a gradient — the owner's call, 24 Sep 2026: a wash inside the
+   card read as a smear. Sage, never the `mint` token (#abe1cc), which reads
+   blue beside the greens. */
+.co-card--leaf {
+  border-color: rgb(3 57 35 / 0.09);
+  background: #fff;
+}
+
+.co-card--warm {
+  border-color: rgb(90 62 34 / 0.1);
+  background: linear-gradient(
+    155deg,
+    color-mix(in oklab, var(--color-tan) 26%, var(--color-cream)) 0%,
+    var(--color-sand) 100%
+  );
+}

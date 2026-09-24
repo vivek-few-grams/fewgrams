@@ -6,6 +6,9 @@ import {
   AngleGradeEntity,
   AngleRackModelEntity,
   CatalogueVisibilityEntity,
+  CounterEntity,
+  OrderEntity,
+  PaymentEntity,
   PlanEntity,
   PlanWeekEntity,
   ProductEntity,
@@ -17,6 +20,8 @@ import {
   RackModelEntity,
   RackSettingsEntity,
   SeedEntity,
+  PinPlaceEntity,
+  ShippingSettingsEntity,
   TrayEntity,
   ShelfPlateEntity,
   VarietyEntity,
@@ -623,5 +628,141 @@ describe("catalogue visibility — the product on/off switch", () => {
     expect(params.Item.SK).toBe("SETTINGS");
     expect(params.TableName).toBe(TABLES.catalogue);
     expect(params.Item.GSI1PK).toBeUndefined();
+  });
+});
+
+describe("shipping settings — pickup and packing", () => {
+  it("is its own singleton in the catalogue table", () => {
+    const params = ShippingSettingsEntity.put({
+      pickupName: "Fewgrams",
+      pickupPhone: "9876543210",
+      pickupAddress: "1 Road",
+      pickupCity: "Bengaluru",
+      pickupPincode: "560001",
+      greenRunFee: 200,
+      seedPackingGrams: 50,
+      shelfStackCm: 2,
+      updatedAt: "2026-09-23T00:00:00.000Z",
+    }).params();
+    expect(params.Item.PK).toBe("SHIPPING");
+    expect(params.Item.SK).toBe("SETTINGS");
+    expect(params.TableName).toBe(TABLES.catalogue);
+    expect(params.Item.GSI1PK).toBeUndefined();
+  });
+});
+
+describe("PIN place cache — India Post answers", () => {
+  /* Beside SPEC §4's `PIN#<pincode> / META` allowlist row, never on it. */
+  it("shares the PIN's partition under its own sort key", () => {
+    const params = PinPlaceEntity.put({
+      pincode: "560034",
+      district: "Bengaluru Urban",
+      state: "Karnataka",
+      fetchedAt: "2026-09-23T00:00:00.000Z",
+    }).params();
+    expect(params.Item.PK).toBe("PIN#560034");
+    expect(params.Item.SK).toBe("PLACE");
+    expect(params.TableName).toBe(TABLES.catalogue);
+  });
+});
+
+describe("order keys — SPEC §4, §13", () => {
+  const order = {
+    id: "FG0000000001",
+    userId: "u1",
+    status: "pending_payment" as const,
+    lines: [
+      {
+        kind: "seed" as const,
+        key: "radish",
+        name: "Radish",
+        units: 2,
+        unitPrice: 120,
+        lineTotal: 240,
+        grams: 200,
+        readyDate: "2026-09-24",
+        sourcing: "shelf" as const,
+      },
+    ],
+    total: 240,
+    deliveryDate: "2026-09-24",
+    address: {
+      label: "Home",
+      recipient: "A",
+      phone: "9876543210",
+      line1: "1 Road",
+      city: "Bengaluru",
+      pincode: "560001",
+    },
+    locale: "en",
+    provider: "cashfree" as const,
+    createdAt: "2026-09-23T07:00:00.000Z",
+    updatedAt: "2026-09-23T07:00:00.000Z",
+    expiresAt: "2026-09-23T07:30:00.000Z",
+  };
+
+  it("goes to the orders table", () => {
+    expect(OrderEntity.put(order).params().TableName).toBe(TABLES.orders);
+    expect(CounterEntity.put({ name: "receipt", value: 1 }).params().TableName).toBe(TABLES.orders);
+  });
+
+  it("writes PK=ORDER#<id> SK=META and STATUS#<status> for the admin list", () => {
+    const item = OrderEntity.put(order).params().Item;
+    expect(item.PK).toBe("ORDER#FG0000000001");
+    expect(item.SK).toBe("META");
+    expect(item.GSI2PK).toBe("STATUS#pending_payment");
+    expect(item.GSI2SK).toBe("2026-09-23T07:00:00.000Z");
+  });
+
+  it("keeps an unpaid order off the delivery run and out of the customer's history", () => {
+    const item = OrderEntity.put(order).params().Item;
+    expect(item.GSI1PK).toBeUndefined();
+    expect(item.GSI3PK).toBeUndefined();
+  });
+
+  it("puts a paid order on DELIVERY#<date> beside subscription weeks (SPEC §4.1)", () => {
+    const item = OrderEntity.put({ ...order, status: "paid" }).params().Item;
+    expect(item.GSI1PK).toBe("DELIVERY#2026-09-24");
+    expect(item.GSI1SK).toBe("ORDER#FG0000000001");
+    expect(item.GSI3PK).toBe("USER#u1");
+    expect(item.GSI3SK).toBe("ORDER#2026-09-23T07:00:00.000Z");
+  });
+
+  it("writes the delivery and history keys when payment moves the status", () => {
+    const params = OrderEntity.patch({ id: order.id })
+      .set({
+        status: "paid",
+        deliveryDate: order.deliveryDate,
+        userId: order.userId,
+        createdAt: order.createdAt,
+      })
+      .params();
+    const values = Object.values(params.ExpressionAttributeValues ?? {});
+    expect(values).toContain("DELIVERY#2026-09-24");
+    expect(values).toContain("USER#u1");
+    expect(values).toContain("STATUS#paid");
+  });
+
+  it("writes PK=PAYMENT#<id> and lists payments on GSI1 under ORDER#<orderId>", () => {
+    const item = PaymentEntity.put({
+      id: "cf_1453002795_success",
+      orderId: order.id,
+      provider: "cashfree",
+      providerPaymentId: "1453002795",
+      status: "success",
+      amount: 240,
+      currency: "INR",
+      source: "webhook",
+      receivedAt: "2026-09-23T07:05:00.000Z",
+    }).params().Item;
+    expect(item.PK).toBe("PAYMENT#cf_1453002795_success");
+    expect(item.GSI1PK).toBe("ORDER#FG0000000001");
+    expect(item.GSI1SK).toBe("PAYMENT#cf_1453002795_success");
+  });
+
+  it("writes PK=COUNTER#<name>", () => {
+    const item = CounterEntity.put({ name: "receipt", value: 1 }).params().Item;
+    expect(item.PK).toBe("COUNTER#receipt");
+    expect(item.SK).toBe("META");
   });
 });

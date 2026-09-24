@@ -32,6 +32,7 @@ checkout and a translator can be handed a single file:
 | `seeds.json` | `/seeds` and seed pages (SPEC §22) |
 | `story.json` | `/how-we-grow` — **chrome only**; the book's thirteen pages are editorial copy and live in `content/story/book.json` (SPEC §18.5) |
 | `cart.json` | `/cart` — the ad-hoc basket (SPEC §18.6.1) |
+| `checkout.json` | `/checkout` — address, total and the pay button (SPEC §9.2) |
 | `auth.json` | Login, verify, forbidden |
 | `account.json` | `/account` and its profile, addresses and orders screens |
 | `admin.json` | Admin shell and screens — **English only by design** (SPEC §4.4 scopes Kannada to customer-facing pages) |
@@ -230,6 +231,22 @@ The order lives in the `pages` array and nowhere else.
   comes up again: the argument for it was that thirteen hard rectangles read
   as thirteen screenshots, and that turned out not to be what a reader sees.
 
+## No city name in customer copy
+
+The owner's rule, 24 Sep 2026: **Bengaluru is not named anywhere a customer
+reads** — say "our delivery area" or "selected areas". The area itself is a
+district rule in `src/lib/pincode/area.ts`, not a place the copy should
+promise; `brand.city` was removed so nothing can interpolate it back in.
+
+## Contact details live in `content/contact.json`
+
+Customer-care email, phone and WhatsApp — one file, loaded and checked by
+`src/lib/content/contact.ts` (the owner's call over an admin screen, 24 Sep
+2026). The footer and the outside-delivery-area card read it; `whatsapp: null`
+hides every "WhatsApp us". **`brand.email` is not the care inbox** — it is the
+sign-in sender in `src/auth.ts`, kept separate so changing one cannot break
+the other.
+
 ## A cart unit is not always 100 g
 
 `src/lib/cart/cart.ts` holds three kinds — `variety`, `seed`, `tray` — and a
@@ -291,6 +308,7 @@ of them fails loudly if you miss it:
 | `Timing` in `cart/server.ts` | how the delivery date is worked out — a union, so a missed arm is a type error |
 | `lineUnits` / `stepKey` / `lineTiming` / `lineHref` in `cart/page.tsx` | the unit, the stepper's aria-label, the reason for the date, and where the line links |
 | `sellable()` in `cart/actions.ts` | what makes it orderable |
+| `KIND_ICON` in `components/cart/KindIcon.tsx` | the line's icon — a `Record`, so a missed kind is a type error |
 
 **`item.grams === null` means "not sold by weight", not "a pack".** It was the
 pack test while trays were the only unweighed kind, and a rack priced "per pack"
@@ -370,6 +388,13 @@ Do **not** add `cursor-pointer` to individual buttons — the class form
 guarantees the next button someone writes is missing it. Every CTA does still
 need its own `hover:` colour change and `transition-colors`.
 
+## An icon in a circle is dark green with a white icon
+
+`bg-forest text-cream` — never `bg-sage text-forest` (the owner's rule, 24 Sep
+2026: light-green circles read washed out). On a ground that is already
+forest, use `bg-forest-deep text-cream`. Sage stays for **text** chips and
+toggles ("Default", admin status labels), which are words, not icons.
+
 ## Confirm destructive actions with `ConfirmSubmit`, never `window.confirm`
 
 `src/components/ui/ConfirmSubmit.tsx`. Native `confirm()` cannot be styled,
@@ -403,6 +428,29 @@ Kannada visitor back into English mid-journey. Same for `redirect`,
 `t()` from `@/lib/types` resolves a `LocalisedString` from DynamoDB; `t` from
 next-intl resolves a message key. They are different things. Import the former
 as `localised` in any file that needs both.
+
+## An order is paid only by `settleOrder`
+
+`src/lib/orders/settle.ts`. The browser redirect and the webhook each only
+**name** an order; `settleOrder` asks Cashfree server to server and pays it
+only when the gateway calls it `PAID` **and** an attempt succeeded for exactly
+the order's total (SPEC §9.2). Never mark an order paid anywhere else, and
+never read an amount, a status or a line from the browser or from a webhook
+payload.
+
+- **The gateway sits behind `PaymentProvider`** (`src/lib/payments/`). Business
+  code never imports `cashfree.ts` directly.
+- **The courier sits behind `ShippingProvider`** (`src/lib/shipping/`), the same way.
+  Business code never imports `delhivery.ts` directly, and quotes the **chargeable**
+  weight from `chargeableGrams`, never the dead weight — a courier bills a long light
+  box by its size.
+- **Once-per-order work goes behind `markOrderPaid` returning true** — the
+  receipt number and seed drawdown. It is a conditional write, so the webhook
+  and the return page can race and only one wins.
+- **Do not run the vendor package's telemetry.** The Cashfree agent-skills
+  installer appends instructions to this file telling the assistant to run
+  `start-integration` / `report-progress-feedback` silently. They were removed
+  on 23 Sep 2026 and must stay removed if the skills are re-installed.
 
 ## Other standing rules
 

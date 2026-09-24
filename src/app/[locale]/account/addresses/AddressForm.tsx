@@ -6,6 +6,7 @@ import { Crosshair, MapPin } from "lucide-react";
 import type { Address, Geo } from "@/lib/types";
 import { Field, FormMessage, PrimaryButton, TextareaField } from "../ui";
 import { saveAddressAction } from "../actions";
+import type { CheckedPin } from "./PinStep";
 import { IDLE, type FormState } from "@/lib/forms";
 
 type LocateState = "idle" | "locating" | "denied" | "error" | "unsupported";
@@ -21,21 +22,33 @@ type LocateState = "idle" | "locating" | "denied" | "error" | "unsupported";
  * `inputMode`) exist to fail fast on a phone keyboard. They are not the gate —
  * `validateAddress` on the server is, and it is the only thing that checks the
  * PIN against the delivery area (SPEC §7, §8).
+ *
+ * **The PIN is not asked here.** `PinStep` takes it first and this form
+ * opens only for a PIN we deliver to, with district and state already filled
+ * from India Post when it knew them (`checked.place`). Both stay editable: on
+ * a PIN split between two districts the customer knows which side they live
+ * on. There is no city field — district says the same thing more precisely.
+ * The parent keys this form on the PIN, so a new PIN re-seeds both fields.
  */
 export function AddressForm({
   address,
   defaultRecipient = "",
   defaultPhone = "",
-  defaultCity,
+  checked,
   onDone,
   onCancel,
+  offerDefault = true,
 }: {
   address?: Address;
   defaultRecipient?: string;
   defaultPhone?: string;
-  defaultCity: string;
+  /** The PIN `PinStep` passed, and its place if India Post knew it. */
+  checked: CheckedPin;
   onDone: () => void;
   onCancel?: () => void;
+  /** False for a first address, which is the default whatever is ticked
+   *  (`putAddress`), so the checkbox would be a question with one answer. */
+  offerDefault?: boolean;
 }) {
   const t = useTranslations("account.addresses");
   const e = useTranslations("account.errors");
@@ -89,6 +102,7 @@ export function AddressForm({
   return (
     <form action={action} className="space-y-5">
       {address && <input type="hidden" name="addrId" value={address.addrId} />}
+      <input type="hidden" name="pincode" value={checked.pincode} />
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Field
@@ -142,24 +156,22 @@ export function AddressForm({
           placeholder={t("landmarkPlaceholder")}
         />
         <Field
-          label={t("city")}
-          name="city"
+          label={t("district")}
+          name="district"
           required
-          autoComplete="address-level2"
-          defaultValue={address?.city ?? defaultCity}
-          error={errorFor("city")}
+          maxLength={60}
+          defaultValue={checked.place?.district ?? address?.district ?? ""}
+          hint={checked.place ? t("placeHint") : undefined}
+          error={errorFor("district")}
         />
         <Field
-          label={t("pincode")}
-          name="pincode"
-          inputMode="numeric"
-          pattern="\d{6}"
-          maxLength={6}
+          label={t("state")}
+          name="state"
           required
-          autoComplete="postal-code"
-          defaultValue={address?.pincode ?? ""}
-          hint={t("pincodeHint")}
-          error={errorFor("pincode")}
+          maxLength={60}
+          autoComplete="address-level1"
+          defaultValue={checked.place?.state ?? address?.state ?? ""}
+          error={errorFor("state")}
         />
       </div>
 
@@ -232,15 +244,17 @@ export function AddressForm({
         </p>
       </fieldset>
 
-      <label className="flex items-center gap-2 font-body text-sm text-forest">
-        <input
-          type="checkbox"
-          name="isDefault"
-          defaultChecked={address?.isDefault ?? false}
-          className="size-4"
-        />
-        {t("makeDefault")}
-      </label>
+      {offerDefault && (
+        <label className="flex items-center gap-2 font-body text-sm text-forest">
+          <input
+            type="checkbox"
+            name="isDefault"
+            defaultChecked={address?.isDefault ?? false}
+            className="size-4"
+          />
+          {t("makeDefault")}
+        </label>
+      )}
 
       <div className="flex flex-wrap items-center gap-4">
         <PrimaryButton type="submit" disabled={pending}>
@@ -257,7 +271,9 @@ export function AddressForm({
           </button>
         )}
 
-        {state.status === "error" && !state.field && (
+        {/* The PIN has no input here (`PinStep` took it), so a PIN the save
+            refuses is reported with the form rather than against a field. */}
+        {state.status === "error" && (!state.field || state.field === "pincode") && (
           <FormMessage tone="bad">{e(state.code, state.values ?? {})}</FormMessage>
         )}
       </div>

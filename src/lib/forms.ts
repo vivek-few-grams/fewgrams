@@ -68,6 +68,19 @@ export function zeroOrMore(fd: FormData, key: string): number | null {
   return Number.isFinite(n) && n >= 0 ? n : null;
 }
 
+/**
+ * A figure the owner may not have measured yet — packing weights and sizes.
+ * Blank is `undefined` (not yet known, and flagged where it matters); present
+ * must be above zero; anything else is `"invalid"`. Three answers because
+ * "not measured" and "typed nonsense" need different responses.
+ */
+export function optionalPositive(fd: FormData, key: string): number | undefined | "invalid" {
+  const raw = String(fd.get(key) ?? "").trim();
+  if (raw === "") return undefined;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : "invalid";
+}
+
 /** Comma-separated free text → a clean list. Used for heights, which have no
  *  fixed set to pick from and so stay typed. */
 export function csv(fd: FormData, key: string): string[] {

@@ -31,7 +31,7 @@ const SESSION_COOKIES = [
 ];
 
 /** Paths that require a session, written without a locale prefix. */
-const PROTECTED = ["/admin", "/staff", "/account"];
+const PROTECTED = ["/admin", "/staff", "/account", "/checkout"];
 
 /** Split `/kn/admin/varieties` into its locale and the rest. */
 function splitLocale(pathname: string) {

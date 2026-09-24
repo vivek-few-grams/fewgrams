@@ -10,7 +10,7 @@
  * already translated by the caller (CLAUDE.md).
  */
 
-import { formatPhone } from "@/lib/account/validation";
+import { formatPhone, formatPlace } from "@/lib/account/validation";
 import type { Address } from "@/lib/types";
 
 export function Card({
@@ -177,7 +177,7 @@ export function AddressLines({ address }: { address: Address }) {
     address.line1,
     address.line2,
     address.landmark,
-    `${address.city} ${address.pincode}`,
+    formatPlace(address),
     formatPhone(address.phone),
   ].filter(Boolean);
 

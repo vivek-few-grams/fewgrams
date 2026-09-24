@@ -1,7 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { requireRole } from "@/lib/auth/guard";
 import { getProfile, listAddresses } from "@/lib/repo/profile";
-import { brand, servicePins } from "@/lib/brand";
 import { AddressBook } from "./AddressBook";
 
 export const dynamic = "force-dynamic";
@@ -42,7 +41,7 @@ export default async function AddressesPage({
         <h2 className="font-display text-xl font-semibold text-forest">{t("heading")}</h2>
         <p className="mt-2 font-body text-sm text-stone">{t("body")}</p>
         <p className="mt-1 font-body text-xs text-stone/80">
-          {t("serviceNote", { count: servicePins.length })}
+          {t("serviceNote")}
         </p>
       </div>
 
@@ -52,7 +51,6 @@ export default async function AddressesPage({
            almost always the account holder. */
         defaultRecipient={profile?.name ?? actor.name ?? ""}
         defaultPhone={profile?.phone ?? ""}
-        defaultCity={brand.city}
       />
     </div>
   );

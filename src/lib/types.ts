@@ -210,6 +210,21 @@ export type Tray = {
    */
   leadDays: number;
   active: boolean;
+  /**
+   * Packing, for the courier (SPEC §7). All six or none — absent until the
+   * owner has measured the item, and a courier order for it is then refused
+   * rather than guessed. A "piece" is what stacks: one tray, or one
+   * drainage-mat set of five, recorded as one piece so every row has the same
+   * fields (the owner's call, 23 Sep 2026).
+   */
+  packPieces?: number;
+  pieceLengthCm?: number;
+  pieceWidthCm?: number;
+  /** Height of the first piece. */
+  pieceHeightCm?: number;
+  /** Height each further stacked piece adds. */
+  pieceStackCm?: number;
+  pieceGrams?: number;
 };
 
 /**
@@ -343,7 +358,13 @@ export type Address = {
   line1: string;
   line2?: string;
   landmark?: string;
-  city: string;
+  /** Only on addresses saved before 23 Sep 2026, when the form asked for a
+   *  city. District replaced it; `formatPlace` shows whichever is there. */
+  city?: string;
+  /** From the PIN via India Post, correctable by the customer. Absent on
+   *  addresses saved before 23 Sep 2026. */
+  district?: string;
+  state?: string;
   pincode: string;
   /** Gate code, which floor, where to leave it. Read by the rider. */
   notes?: string;
@@ -368,11 +389,18 @@ export type UserProfile = {
   updatedAt: string;
 };
 
-/** SPEC §13 — the one-off order lifecycle. */
+/**
+ * SPEC §13 — the one-off order lifecycle. `paid` is a new order nobody has
+ * started; `picked` means someone has taken it on and is putting it
+ * together; `ready_for_delivery` means it is complete and waiting for the
+ * delivery agent. `packed` was here before picking was split out, and no row
+ * ever held it.
+ */
 export const ORDER_STATUSES = [
   "pending_payment",
   "paid",
-  "packed",
+  "picked",
+  "ready_for_delivery",
   "out_for_delivery",
   "delivered",
   "failed",
@@ -380,10 +408,12 @@ export const ORDER_STATUSES = [
 ] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
-/** What `/account/orders` renders per row. Not the stored order — that lands
- *  with checkout (SPEC §14 phase 5) — but the shape the list needs. */
+/** What `/account/orders` renders per row — a projection of the stored
+ *  `Order` (src/lib/orders/order.ts). */
 export type OrderSummary = {
   id: string;
+  /** Null only if payment landed but the receipt number was not yet drawn. */
+  receiptNo: number | null;
   placedAt: string;
   deliveryDate: string | null;
   status: OrderStatus;
@@ -437,6 +467,9 @@ export type ShelfPlate = {
   /** Cost of one plate, in rupees. */
   price: number;
   active: boolean;
+  /** Packed weight per shelf, legs and fixings shared in — SPEC §7. Absent
+   *  until weighed; a courier order for a rack on it is then refused. */
+  gramsPerShelf?: number;
 };
 
 /** Slotted angle, sold by the foot and used for the four legs.
@@ -612,6 +645,8 @@ export type FrameSize = {
   depthFt: number;
   lengthFt: number;
   active: boolean;
+  /** Packed weight per shelf — see `ShelfPlate.gramsPerShelf`. */
+  gramsPerShelf?: number;
 };
 
 /** Same shape as `RackConfig` with a frame footprint in place of a plate.
@@ -697,6 +732,8 @@ export type PipeSize = {
   depthFt: number;
   lengthFt: number;
   active: boolean;
+  /** Packed weight per shelf — see `ShelfPlate.gramsPerShelf`. */
+  gramsPerShelf?: number;
 };
 
 /** A height and a footprint, and that is all there is to choose. No grade and

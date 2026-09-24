@@ -1,4 +1,4 @@
-import { isServiceable } from "@/lib/brand";
+import type { AreaCheck } from "@/lib/pincode/place";
 
 /**
  * Account form validation — pure, so it can be tested without a browser, a
@@ -72,6 +72,22 @@ export function formatPhone(phone: string): string {
   return /^\d{10}$/.test(phone) ? `${phone.slice(0, 5)} ${phone.slice(5)}` : phone;
 }
 
+/**
+ * The place line of an address: `Bengaluru Urban, Karnataka 560034`.
+ *
+ * District and state since 23 Sep 2026, when the form stopped asking for a
+ * city. An address saved before then has only a city, and shows that.
+ */
+export function formatPlace(a: {
+  city?: string;
+  district?: string;
+  state?: string;
+  pincode: string;
+}): string {
+  const place = [a.district ?? a.city, a.state].filter(Boolean).join(", ");
+  return place ? `${place} ${a.pincode}` : a.pincode;
+}
+
 export type ProfileInput = { name: string; phone?: string };
 
 export function validateProfile(fd: FormData): Validated<ProfileInput> {
@@ -89,6 +105,13 @@ export function validateProfile(fd: FormData): Validated<ProfileInput> {
   return { ok: true, value: { name, phone } };
 }
 
+/**
+ * The most addresses one customer keeps (the owner's figure, 23 Sep 2026).
+ * Home, work, a parent's flat — a sixth is almost always a duplicate, and the
+ * checkout picker is a list someone has to read.
+ */
+export const MAX_ADDRESSES = 5;
+
 export type AddressInput = {
   label: string;
   recipient: string;
@@ -96,12 +119,20 @@ export type AddressInput = {
   line1: string;
   line2?: string;
   landmark?: string;
-  city: string;
+  district: string;
+  state: string;
   pincode: string;
   notes?: string;
   geo?: { lat: number; lng: number; accuracyM?: number };
   isDefault: boolean;
 };
+
+/** Longest real one is "Dadra and Nagar Haveli and Daman and Diu" (40). */
+const PLACE_MAX = 60;
+
+/** The PIN as typed, reduced to its digits — shared with the action, which
+ *  needs it before validation to decide whether to look the place up. */
+export const readPincode = (fd: FormData): string => clean(fd.get("pincode")).replace(/\D/g, "");
 
 /** Parses the three geolocation inputs, which arrive together or not at all. */
 function readGeo(fd: FormData): Validated<AddressInput["geo"]> {
@@ -131,7 +162,14 @@ function readGeo(fd: FormData): Validated<AddressInput["geo"]> {
   };
 }
 
-export function validateAddress(fd: FormData): Validated<AddressInput> {
+/**
+ * `area` is `checkDeliveryArea`'s answer for the PIN — required, so no caller
+ * can validate an address without asking whether we deliver there. Its
+ * `place` only fills a district or state the form sent blank: the browser
+ * normally fills both first, and what the customer typed wins, because on a
+ * PIN split between two districts they know which side they live on.
+ */
+export function validateAddress(fd: FormData, area: AreaCheck): Validated<AddressInput> {
   const recipient = clean(fd.get("recipient"));
   if (!recipient) return fail("recipient", "recipientRequired");
 
@@ -141,16 +179,21 @@ export function validateAddress(fd: FormData): Validated<AddressInput> {
   const line1 = clean(fd.get("line1"));
   if (!line1) return fail("line1", "line1Required");
 
-  const city = clean(fd.get("city"));
-  if (!city) return fail("city", "cityRequired");
-
-  const pincode = clean(fd.get("pincode")).replace(/\D/g, "");
+  const pincode = readPincode(fd);
   if (!/^\d{6}$/.test(pincode)) return fail("pincode", "pincodeInvalid");
-  // SPEC §7: the PIN allowlist is a hard gate, and it has to be applied here
-  // and not only by the PIN checker on the home page.
-  if (!isServiceable(pincode)) {
+  // SPEC §7: the delivery area is a hard gate, applied here on save and not
+  // only by the PIN step in the browser.
+  if (!area.served) {
     return fail("pincode", "pincodeNotServed", { pincode });
   }
+
+  const { place } = area;
+  const district = clean(fd.get("district")) || place?.district || "";
+  if (!district) return fail("district", "districtRequired");
+  if (district.length > PLACE_MAX) return fail("district", "placeTooLong");
+  const state = clean(fd.get("state")) || place?.state || "";
+  if (!state) return fail("state", "stateRequired");
+  if (state.length > PLACE_MAX) return fail("state", "placeTooLong");
 
   const geo = readGeo(fd);
   if (!geo.ok) return geo;
@@ -170,7 +213,8 @@ export function validateAddress(fd: FormData): Validated<AddressInput> {
       line1,
       ...(line2 ? { line2 } : {}),
       ...(landmark ? { landmark } : {}),
-      city,
+      district,
+      state,
       pincode,
       ...(notes ? { notes } : {}),
       ...(geo.value ? { geo: geo.value } : {}),

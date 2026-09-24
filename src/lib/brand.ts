@@ -44,21 +44,14 @@ export const brand = {
      `messages/<locale>/common.json` under `brand.*` — a plain string here
      rendered the English headline on /kn. What stays is identity: names,
      files, addresses, none of which translate. */
-  city: "Bengaluru",
+  /** The "from" on sign-in emails (`src/auth.ts`). Customer-care email,
+   *  phone and WhatsApp live in `content/contact.json` instead, so the care
+   *  inbox can change without touching who login links come from. */
   email: "info.fewgrams@gmail.com",
   instagram: "@fewgrams",
   /** TODO: FSSAI registration is a legal prerequisite to launch — SPEC §16. */
   fssai: null as string | null,
 } as const;
 
-/** Deliverable PIN codes. TODO: moves to DynamoDB `PIN#<pincode>` (SPEC §4)
- *  and becomes admin-managed via /admin/pincodes. */
-export const servicePins = [
-  "560001", "560002", "560003", "560004", "560008", "560011",
-  "560025", "560034", "560038", "560042", "560066", "560068",
-  "560071", "560076", "560078", "560095", "560102", "560103",
-] as const;
-
-export function isServiceable(pin: string): boolean {
-  return (servicePins as readonly string[]).includes(pin.trim());
-}
+/* The delivery area is not a PIN list any more — it is a district, decided
+   from India Post's directory: `src/lib/pincode/area.ts`. */

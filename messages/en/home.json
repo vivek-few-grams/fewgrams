@@ -31,7 +31,7 @@
     "goToSlide": "Show hero image {number}"
   },
   "pinCheck": {
-    "prompt": "Delivering across {city}",
+    "prompt": "We deliver to selected areas",
     "checkYourPin": "check your PIN",
     "inputLabel": "Your PIN code",
     "inputPlaceholder": "560001",

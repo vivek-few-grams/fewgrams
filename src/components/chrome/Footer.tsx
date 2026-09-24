@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { brand } from "@/lib/brand";
+import { contact, contactPhoneDisplay, contactTel } from "@/lib/content/contact";
 import { NAV_CATEGORIES } from "@/lib/types";
 import { CATEGORY_HREF } from "@/lib/shop";
 import { enabledProductTypes } from "@/lib/catalogue/visibility";
@@ -20,7 +21,7 @@ export async function Footer() {
             <p className="font-display text-2xl font-bold tracking-tight">{brand.name}</p>
             <p className="mt-3 max-w-xs font-body text-sm text-mint">{b("subline")}</p>
             <p className="mt-6 font-body text-sm text-mint/70">
-              {t("deliveryNote", { city: brand.city })}
+              {t("deliveryNote")}
             </p>
           </div>
 
@@ -62,7 +63,13 @@ export async function Footer() {
         <div className="mt-14 flex flex-col gap-3 border-t border-cream/15 pt-7 font-body text-xs text-mint/60 md:flex-row md:items-center md:justify-between">
           <p>
             {t("copyright", { year: new Date().getFullYear(), brand: brand.name })} ·{" "}
-            {brand.email}
+            <a href={`mailto:${contact.email}`} className="transition-colors hover:text-cream">
+              {contact.email}
+            </a>{" "}
+            ·{" "}
+            <a href={contactTel} className="tabular-nums transition-colors hover:text-cream">
+              {contactPhoneDisplay}
+            </a>
           </p>
           {/* B2B lead capture — SPEC §18.1. Moved out of the header on
               15 Sep 2026: it was competing with revenue navigation on a

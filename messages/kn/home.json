@@ -31,7 +31,7 @@
     "goToSlide": "ಮುಖಪುಟ ಚಿತ್ರ {number} ತೋರಿಸು"
   },
   "pinCheck": {
-    "prompt": "{city} ನಗರದಾದ್ಯಂತ ವಿತರಣೆ",
+    "prompt": "ಆಯ್ದ ಪ್ರದೇಶಗಳಿಗೆ ವಿತರಣೆ",
     "checkYourPin": "ನಿಮ್ಮ ಪಿನ್ ಪರಿಶೀಲಿಸಿ",
     "inputLabel": "ನಿಮ್ಮ ಪಿನ್ ಕೋಡ್",
     "inputPlaceholder": "560001",

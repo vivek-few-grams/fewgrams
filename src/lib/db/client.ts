@@ -86,3 +86,13 @@ export const LIST_OPTS = { pages: "all", ignoreOwnership: true } as const;
 
 /** As above, for single-item reads, which do not paginate. */
 export const READ_OPTS = { ignoreOwnership: true } as const;
+
+/** True when a write's `where` condition did not hold. ElectroDB wraps the
+ *  AWS error, so it sits on `cause`. */
+export function isConditionFailure(e: unknown): boolean {
+  const err = e as { cause?: { name?: string }; name?: string };
+  return (
+    err?.cause?.name === "ConditionalCheckFailedException" ||
+    err?.name === "ConditionalCheckFailedException"
+  );
+}
