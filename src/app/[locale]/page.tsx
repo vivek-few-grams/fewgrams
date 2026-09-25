@@ -5,13 +5,16 @@ import { Process } from "@/components/home/Process";
 import { Bundles } from "@/components/home/Bundles";
 import { OtherProducts } from "@/components/home/OtherProducts";
 import { TrustTags } from "@/components/home/TrustTags";
+import { TopSeeds } from "@/components/home/TopSeeds";
 import { listPlansWithWeeks } from "@/lib/repo/plans";
 import { categoryCounts } from "@/lib/catalogue/counts";
 import { enabledCategories, isProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { listVarieties } from "@/lib/repo/varieties";
 import { varietyNameMap } from "@/lib/content/varieties";
 import { listSeeds } from "@/lib/repo/seeds";
-import { seedNameMap } from "@/lib/content/seeds";
+import { attachSeedContent, seedNameMap } from "@/lib/content/seeds";
+import { seedGramsSold } from "@/lib/repo/orders";
+import { rankBySales } from "@/lib/seeds/best-sellers";
 import { listTrays } from "@/lib/repo/trays";
 import { trayNameMap } from "@/lib/content/trays";
 import { listGrowMedia } from "@/lib/repo/grow-media";
@@ -30,8 +33,9 @@ import { currentActor } from "@/lib/auth/guard";
  *   3  Our process   the differentiator, deliberately above any pricing
  *   4  Bundles       #plans — the conversion surface, read from DynamoDB
  *   5  Other products racks · trays · seeds · snacks, with live counts
- *   6  Trust tags
- *   7  Footer        (in layout.tsx)
+ *   6  Top seeds     five best sellers, arrow to /seeds
+ *   7  Trust tags    the closing note, just above the footer
+ *   8  Footer        (in layout.tsx)
  *
  * `force-dynamic` while the catalogue is being built, so anything added in
  * admin shows up on refresh. Switch to ISR with a revalidate tag once the
@@ -48,7 +52,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [rows, counts, varieties, categories, microgreensOn, seeds, trays, media] =
+  const [rows, counts, varieties, categories, microgreensOn, seeds, trays, media, seedsOn, gramsSold] =
     await Promise.all([
       listPlansWithWeeks({ activeOnly: true }),
       categoryCounts(),
@@ -58,6 +62,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       listSeeds({ activeOnly: true }),
       listTrays({ activeOnly: true }),
       listGrowMedia({ activeOnly: true }),
+      isProductTypeEnabled("seeds"),
+      seedGramsSold(),
     ]);
 
   /* Rotation weeks reference varieties by contentKey, and the name lives in
@@ -94,6 +100,19 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
     media.some((m) => mediumNameById[m.contentKey])
       ? GROW_MEDIA_TILE_WORDS.map((w) => growMediaWords(w))
       : [];
+
+  /* The seed strip above the footer (the owner, 25 Sep 2026): the five that
+     sell the most grams, filled out from the /seeds grid order — by name, in
+     this locale — while nothing has sold. A seed with no content file is
+     skipped, as on /seeds. */
+  const seedCollator = new Intl.Collator(locale, { sensitivity: "base" });
+  const shelf = seedsOn
+    ? (await attachSeedContent(seeds, locale))
+        .filter((s): s is (typeof seeds)[number] & { content: NonNullable<typeof s.content> } => s.content !== null)
+        .sort((a, b) => seedCollator.compare(a.content.text.name, b.content.text.name))
+    : [];
+  const topSeeds = rankBySales(shelf, gramsSold, 5);
+  const seedsRanked = topSeeds.some((s) => (gramsSold[s.contentKey] ?? 0) > 0);
 
   /* Plan copy comes from content/plans/<key>.json for the same reason. A plan
      whose file does not exist yet is **skipped**, not rendered nameless — the
@@ -143,6 +162,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         trayItemNames={trayItemNames}
         mediumNames={mediumNames}
       />
+      <TopSeeds seeds={topSeeds} ranked={seedsRanked} />
       <TrustTags />
     </>
   );

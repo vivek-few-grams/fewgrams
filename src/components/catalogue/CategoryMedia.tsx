@@ -65,21 +65,26 @@ const CUTOUTS: Partial<Record<Category, string>> = {
  * takes its bounding box to 284 x 223 — inside the tile on both axes.
  */
 const MEDIA_CLASS: Partial<Record<Category, string>> = {
-  racks: "aspect-[4/5] h-[80%]",
+  /* 90% since 25 Sep 2026 ("bit bigger"): measured with the hover transform
+     applied, the rack still has ~30px spare across and ~2px top and bottom. */
+  racks: "aspect-[4/5] h-[90%]",
   /* Landscape, matching the 3:2 frame the cut-out was built to. Wider than
-     the microgreens tile's own 86% — the owner's "bit bigger" — and still
-     clears the hover: at 1.1x the box reaches 99% of the tile's width, 1%
-     of clearance either side combined. */
-  seeds: "aspect-[3/2] w-[90%]",
+     90% before; 93% since 25 Sep 2026 (the owner's second "bit bigger").
+     That is the ceiling: measured with the hover transform applied it is as
+     close to the clip as trays at 88%, which is the tightest tile that has
+     shipped without clipping. 96% measurably clipped. */
+  seeds: "aspect-[3/2] w-[93%]",
   /* Portrait, matching the 2:3 frame the vertically-stacked cut-out was
      built to — the same reasoning as `racks`: sizing by height rather than
      width is what lets a tall subject read as the subject rather than a
-     narrow column floating in the panel. */
+     narrow column floating in the panel. Already at the ceiling: 94% was
+     tried on 25 Sep 2026 and overran the clip top and bottom on hover. */
   trays: "aspect-[2/3] h-[88%]",
-  /* Square, matching the cut-out's frame, at 82% of the tile's width. Scaled
-     1.1 and turned 4° on hover its box reaches ~0.96 of the width, and the
-     subject is padded to 86% of that box's width, so it clears the clip. */
-  media: "aspect-square w-[82%]",
+  /* Square, matching the cut-out's frame, at 92% of the tile's width (82%
+     until 25 Sep 2026). The subject is padded to 86% of its box, so scaled
+     1.1 and turned 4° on hover it still meets the clip with a pixel to spare,
+     measured. */
+  media: "aspect-square w-[92%]",
 };
 
 export function categoryMediaClass(category: Category): string | undefined {

@@ -6,6 +6,7 @@ import { Montserrat, Noto_Sans_Kannada, Quicksand } from "next/font/google";
 import { brand } from "@/lib/brand";
 import { Header } from "@/components/chrome/Header";
 import { Footer } from "@/components/chrome/Footer";
+import { LeafBackdrop } from "@/components/chrome/LeafBackdrop";
 import { PageLoader } from "@/components/chrome/PageLoader";
 import { TitleTicker } from "@/components/chrome/TitleTicker";
 import { loaderInitScript } from "@/components/chrome/loader-init";
@@ -111,7 +112,12 @@ export default async function LocaleLayout({
           <PageLoader />
           <TitleTicker brand={brand.name} words={tickerWords} />
           <Header actor={actor && { email: actor.email, role: actor.role }} />
-          <main className="flex-1">{children}</main>
+          {/* `relative isolate` gives the leaves a layer of their own under the
+              page content — see LeafBackdrop. */}
+          <main className="relative isolate flex-1">
+            <LeafBackdrop />
+            {children}
+          </main>
           <Footer />
         </NextIntlClientProvider>
       </body>

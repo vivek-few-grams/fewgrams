@@ -74,6 +74,14 @@
     "heading": "Grow your own, or eat them ready-made.",
     "body": "Ordered any time and delivered on the same Saturday run as the greens."
   },
+  "topSeeds": {
+    "eyebrow": "Seeds",
+    "heading": "Seeds to start with",
+    "headingRanked": "Our best-selling seeds",
+    "seeAll": "See all seeds",
+    "scrollPrev": "Previous seeds",
+    "scrollNext": "More seeds"
+  },
   "trust": {
     "organic": {
       "title": "Organically grown",

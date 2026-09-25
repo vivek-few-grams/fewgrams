@@ -4,6 +4,7 @@ import { CounterEntity, OrderEntity, PaymentEntity } from "@/lib/db/entities";
 import type { Order, OrderLine } from "@/lib/orders/order";
 import type { PaymentAttempt } from "@/lib/payments";
 import type { OrderStatus, OrderSummary } from "@/lib/types";
+import { SOLD_STATUSES, seedGramsByKey } from "@/lib/seeds/best-sellers";
 
 /**
  * Orders and payment events — SPEC §4, §9. The key layout is in
@@ -270,4 +271,26 @@ export async function listOrdersByStatus(status: OrderStatus): Promise<Order[]> 
     .byStatus({ status })
     .go({ ...LIST_OPTS, order: "desc" });
   return data.map(toOrder);
+}
+
+/*
+ * Grams of each seed sold, for the home page's seed strip. Every sold status
+ * is read, so this walks every order the shop has taken; kept for ten minutes
+ * per process so the home page does not repeat that walk for each visitor. A
+ * ranking that is ten minutes stale is not wrong in any way a customer sees.
+ */
+const SEED_SALES_TTL_MS = 10 * 60_000;
+let seedSales: { until: number; grams: Promise<Record<string, number>> } | null = null;
+
+export function seedGramsSold(): Promise<Record<string, number>> {
+  if (seedSales && seedSales.until > Date.now()) return seedSales.grams;
+  const grams = Promise.all(SOLD_STATUSES.map((s) => listOrdersByStatus(s))).then((lists) =>
+    seedGramsByKey(lists.flat()),
+  );
+  seedSales = { until: Date.now() + SEED_SALES_TTL_MS, grams };
+  /* A failed read is not kept: the next visitor asks again. */
+  grams.catch(() => {
+    seedSales = null;
+  });
+  return grams;
 }

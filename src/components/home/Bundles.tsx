@@ -11,6 +11,7 @@ import {
   firstDeliveryDate,
   formatDeliveryDate,
 } from "@/lib/delivery-date";
+import Image from "next/image";
 import { Sprout } from "@/components/ui/Sprout";
 
 /**
@@ -289,8 +290,6 @@ export function Bundles({
         {openRotation && (
           <RotationModal
             entry={plans.find((p) => p.plan.id === openRotation)!}
-            panel={grounds[plans.findIndex((p) => p.plan.id === openRotation)]}
-            stems={markStems(plans.findIndex((p) => p.plan.id === openRotation))}
             schedule={schedule}
             nameOf={nameOf}
             varieties={varieties}
@@ -523,20 +522,12 @@ function BundleCard({
  */
 function RotationModal({
   entry,
-  panel,
-  stems,
   schedule,
   nameOf,
   varieties,
   onClose,
 }: {
   entry: PlanWithWeeks;
-  /** Which ground this plan's card uses — the band at the top of the modal is
-   *  what visually ties the two together now that the card has no image. */
-  panel: PlanPanel;
-  /** The same stem count the card's watermark draws, so the mark a visitor
-   *  half-noticed behind the price is the one that greets them here. */
-  stems: number;
   schedule: Date[];
   nameOf: (key: string) => string;
   varieties: Variety[];
@@ -544,7 +535,6 @@ function RotationModal({
 }) {
   const tp = useTranslations("plans");
   const dialog = useRef<HTMLDialogElement>(null);
-  const p = panels[panel];
   const growDaysOf = (key: string) =>
     varieties.find((v) => v.contentKey === key)?.growDays;
 
@@ -591,11 +581,7 @@ function RotationModal({
       <button
         onClick={() => dialog.current?.close()}
         aria-label={tp("close")}
-        className={`absolute right-4 top-4 z-10 grid size-9 place-items-center rounded-full shadow-sm transition-colors ${
-          panel === "forest"
-            ? "bg-cream/90 text-forest hover:bg-cream"
-            : "bg-forest/90 text-cream hover:bg-forest"
-        }`}
+        className="absolute right-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-cream/90 text-forest shadow-sm transition-colors hover:bg-cream"
       >
         <X size={17} strokeWidth={2} aria-hidden="true" />
       </button>
@@ -611,14 +597,19 @@ function RotationModal({
             half on cream, half on the band, legible against neither. A header
             image that reaches the edges gives the corner one colour, which is
             what the button needs. */}
-        <div
-          className={`flex aspect-[16/5] items-center justify-center ${p.ground}`}
-        >
-          <Sprout
-            className="h-[70%]"
-            stroke={panel === "forest" ? "#ABE1CC" : "#033923"}
-            seed={stems}
-            stems={stems}
+        {/* A photograph of the plan's own greens on the rack since 25 Sep
+            2026 (the owner's picks), replacing the card's `Sprout` mark on
+            its ground: all green for Essentials, the red and purple crops for
+            Exotic. Pick Your Own has no rotation, so it never opens this.
+            Decorative — the heading below names the plan — so `alt` is
+            empty. */}
+        <div className="relative aspect-[16/5] bg-sage">
+          <Image
+            src={`/plans/${entry.plan.contentKey}.webp`}
+            alt=""
+            fill
+            sizes="(min-width: 57rem) 52rem, 92vw"
+            className="object-cover"
           />
         </div>
 

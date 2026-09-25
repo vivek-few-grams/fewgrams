@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { MarqueeCard } from "@/components/ui/MarqueeCard";
+import { ScrollRow } from "@/components/ui/ScrollRow";
 import {
   CategoryMedia,
   categoryMediaClass,
@@ -9,7 +10,7 @@ import type { Category } from "@/lib/types";
 import { CATEGORY_COUNT, CATEGORY_HREF, CATEGORY_PANELS } from "@/lib/shop";
 
 /**
- * Other products — SPEC §18.3 section 5. Four tiles, full Don Molinico
+ * Other products — SPEC §18.3 section 5. One scrolling row of tiles, full Don Molinico
  * treatment (§17.4), clearly secondary to the plans above.
  *
  * The categories themselves are the site's information architecture (SPEC §3),
@@ -58,6 +59,7 @@ export async function OtherProducts({
   const t = await getTranslations("home.otherProducts");
   const label = await getTranslations("common.categories");
   const counted = await getTranslations("common.counts");
+  const row = await getTranslations("common.categoryRow");
 
   /* `md:py-20`, matching `Process` and `TrustTags` — see the note there. */
   return (
@@ -74,7 +76,15 @@ export async function OtherProducts({
         </p>
       </div>
 
-      <div className="mt-12 grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-6">
+      {/* One sideways-scrolling row (the owner, 25 Sep 2026; /shop keeps its grid).
+          The basis subtracts the gaps so four tiles fill the width from md. */}
+      <div className="mt-12">
+      <ScrollRow
+        itemClass="basis-[calc((100%-1.25rem)/2)] md:basis-[calc((100%-4.5rem)/4)]"
+        gapClass="gap-5 md:gap-6"
+        prevLabel={row("prev")}
+        nextLabel={row("next")}
+      >
         {microgreensOn && (
           <MarqueeCard
             href="/microgreens"
@@ -93,7 +103,7 @@ export async function OtherProducts({
                 className="object-contain"
               />
             }
-            mediaClass="aspect-[3/2] w-[86%]"
+            mediaClass="aspect-[3/2] w-[93%]"
           />
         )}
 
@@ -121,6 +131,7 @@ export async function OtherProducts({
             />
           );
         })}
+      </ScrollRow>
       </div>
     </section>
   );

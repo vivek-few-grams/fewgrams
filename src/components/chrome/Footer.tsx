@@ -14,7 +14,10 @@ export async function Footer() {
   const navCategories = NAV_CATEGORIES.filter((cat) => enabled.includes(cat.slug));
 
   return (
-    <footer className="mt-24 bg-forest text-cream">
+    /* `mt-24` except after a page whose last section is a full-width band of
+       its own (the home page's trust band, marked `data-footer-flush`): a
+       cream strip between that band and the footer reads as a gap. */
+    <footer className="mt-24 bg-forest text-cream [main:has([data-footer-flush])+&]:mt-0">
       <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12">
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
