@@ -39,14 +39,12 @@ export const PRICE_LIST = [
     key: "horti-coir",
     listed: "Horti Coir - Coco Peat Grow Media (Low EC) — 5 kg (SKU COIR05)",
     price: 399,
-    leadDays: 7,
     source: "iffcourbangardens.com/products/horti-coir?variant=46830464074016",
   },
   {
     key: "horti-coir-bulk",
     listed: "Horti Coir - Coco Peat Grow Media (Low EC) — 10 kg (SKU COIR010)",
     price: 699,
-    leadDays: 7,
     source: "iffcourbangardens.com/products/horti-coir?variant=46922775757088",
   },
 ];
@@ -105,15 +103,14 @@ async function main() {
   let added = 0;
   let updated = 0;
 
-  for (const { key, listed, price, leadDays, source } of PRICE_LIST) {
+  for (const { key, listed, price, source } of PRICE_LIST) {
     const prior = existing.get(key);
     const row = {
       id: prior?.id ?? randomUUID(),
       contentKey: key,
       price: shelfPrice(price, markup),
-      /* Kept, not reset: a lead time the owner has corrected on the admin
-         screen is better information than the figure this file launched with. */
-      leadDays: prior?.leadDays ?? leadDays,
+      /* Kept, not reset: the count is what the owner last typed on admin. */
+      stockPacks: prior?.stockPacks ?? 0,
       active: prior?.active ?? true,
       ...Object.fromEntries(
         PACKING.filter((f) => prior?.[f] !== undefined).map((f) => [f, prior[f]]),
@@ -121,8 +118,8 @@ async function main() {
     };
 
     const change = prior
-      ? `update  ₹${prior.price} → ₹${row.price}, ${row.leadDays} days`
-      : `add     ₹${row.price}, ${row.leadDays} days`;
+      ? `update  ₹${prior.price} → ₹${row.price}, ${row.stockPacks} held`
+      : `add     ₹${row.price}, ${row.stockPacks} held`;
     console.log(`${key.padEnd(22)} ${change}   (list: ${listed} @ ₹${price})`);
     console.log(`${" ".repeat(22)}         ${source}`);
 

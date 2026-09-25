@@ -5,9 +5,9 @@
  * |---|---|---|
  * | Subscription (§5.3) | the Sunday after the Friday cutoff | the Saturday after that |
  * | One-off greens (§18.6) | **the next day** | `growDays` after the sow |
- * | Seed (§22.2) | not sown at all | next day off the shelf, else the vendor lead time |
+ * | Seed (§22.2) | not sown at all | next day off the shelf (the only source since 25 Sep 2026) |
  *
- * A seed is stock rather than a crop, so its date comes from `seedSourcing`
+ * A seed is stock rather than a crop, so its date comes from `seedReadyDate`
  * in `src/lib/seeds/stock.ts` and only the day arithmetic lives here. What all
  * three share is `latestDate`: one order is one trip, on the slowest line's
  * date.

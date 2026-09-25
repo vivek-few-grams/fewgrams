@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
-import { formatReceiptNo, isOrderId } from "@/lib/orders/order";
+import { formatReceiptNo, isOrderId, type ShippingQuote } from "@/lib/orders/order";
 import { getOrder, listPayments } from "@/lib/repo/orders";
 import { OrderSteps } from "../OrderSteps";
 
@@ -14,8 +14,9 @@ export const dynamic = "force-dynamic";
  * was at checkout, every payment event the gateway reported, and the next
  * status move.
  *
- * A tray line is a supplier order waiting to be placed (SPEC §23.1); it is
- * flagged here because nothing else in the app raises a purchase order yet.
+ * A tray or grow-media line bigger than the stock when it was placed says
+ * "order from the vendor" (SPEC §23.1) — nothing else in the app raises a
+ * purchase order yet.
  */
 export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/orders/[id]">) {
   const { id } = await params;
@@ -25,7 +26,16 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
 
   const t = await getTranslations("admin.orders");
   const format = await getFormatter();
+  /* Shiprocket's quote names the carrier chosen, which is what booking the
+     shipment has to match. */
+  const quoteText = (q: ShippingQuote) =>
+    t("deliveryQuote", {
+      courier: q.carrier ? t("courierVia", { carrier: q.carrier, courier: t(`courier.${q.courier}`) }) : t(`courier.${q.courier}`),
+      zone: q.zone,
+      quoted: q.quotedTotal,
+    });
   const payments = await listPayments(id);
+
   const when = (iso: string) =>
     format.dateTime(new Date(iso), { dateStyle: "medium", timeStyle: "short" });
 
@@ -71,8 +81,9 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                   {l.name}
                   <span className="block text-xs text-stone">
                     {t(`kind.${l.kind}`)} · {l.key}
-                    {l.kind === "seed" && l.sourcing && ` · ${t(`sourcing.${l.sourcing}`)}`}
-                    {(l.kind === "tray" || l.kind === "media") && ` · ${t("supplierOrder")}`}
+                    {/* Off the shelf, or to order from the vendor — for a tray or
+                        cocopeat line bigger than the stock when it was placed. */}
+                    {l.sourcing && ` · ${t(`sourcing.${l.sourcing}`)}`}
                   </span>
                 </td>
                 <td className="py-2.5 font-body text-sm tabular-nums text-forest">
@@ -83,35 +94,48 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                 </td>
               </tr>
             ))}
-            {order.deliveryMethod && (
-              <tr className="border-b border-forest/10 align-top">
-                <td className="py-2.5 font-body text-sm text-forest">
-                  {t("deliveryLine")}
-                  <span className="block text-xs text-stone">
-                    {order.shippingQuote
-                      ? t("deliveryQuote", {
-                          /* Shiprocket's quote names the carrier chosen, which is
-                             what booking the shipment has to match. */
-                          courier: order.shippingQuote.carrier
-                            ? t("courierVia", {
-                                carrier: order.shippingQuote.carrier,
-                                courier: t(`courier.${order.shippingQuote.courier}`),
-                              })
-                            : t(`courier.${order.shippingQuote.courier}`),
-                          zone: order.shippingQuote.zone,
-                          quoted: order.shippingQuote.quotedTotal,
-                        })
-                      : t("deliveryOwnRun")}
-                  </span>
-                </td>
-                <td className="py-2.5 font-body text-sm tabular-nums text-forest">
-                  {order.shippingQuote && t("grams", { grams: order.shippingQuote.chargedGrams })}
-                </td>
-                <td className="py-2.5 text-right font-body text-sm tabular-nums text-forest">
-                  {t("amount", { amount: order.deliveryCharge })}
-                </td>
-              </tr>
-            )}
+            {/* One row per parcel, each with where it is collected and the
+                courier it was quoted on — what booking it needs. Orders
+                placed before parcels existed keep their single row. */}
+            {order.shipments.length > 0
+              ? order.shipments.map((x) => (
+                  <tr key={x.origin.id} className="border-b border-forest/10 align-top">
+                    <td className="py-2.5 font-body text-sm text-forest">
+                      {t("shipmentLine", { name: x.origin.name, city: x.origin.city, pincode: x.origin.pincode })}
+                      <span className="block text-xs text-stone">
+                        {x.quote ? quoteText(x.quote) : t("deliveryOwnRun")}
+                        {" · "}
+                        {x.lines.map((id) => order.lines.find((l) => `${l.kind}:${l.key}` === id)?.name ?? id).join(", ")}
+                        {" · "}
+                        {t("shipmentArrives", {
+                          date: format.dateTime(new Date(`${x.deliveryDate}T00:00:00+05:30`), { dateStyle: "medium" }),
+                        })}
+                      </span>
+                    </td>
+                    <td className="py-2.5 font-body text-sm tabular-nums text-forest">
+                      {x.quote && t("grams", { grams: x.quote.chargedGrams })}
+                    </td>
+                    <td className="py-2.5 text-right font-body text-sm tabular-nums text-forest">
+                      {t("amount", { amount: x.charge })}
+                    </td>
+                  </tr>
+                ))
+              : order.deliveryMethod && (
+                  <tr className="border-b border-forest/10 align-top">
+                    <td className="py-2.5 font-body text-sm text-forest">
+                      {t("deliveryLine")}
+                      <span className="block text-xs text-stone">
+                        {order.shippingQuote ? quoteText(order.shippingQuote) : t("deliveryOwnRun")}
+                      </span>
+                    </td>
+                    <td className="py-2.5 font-body text-sm tabular-nums text-forest">
+                      {order.shippingQuote && t("grams", { grams: order.shippingQuote.chargedGrams })}
+                    </td>
+                    <td className="py-2.5 text-right font-body text-sm tabular-nums text-forest">
+                      {t("amount", { amount: order.deliveryCharge })}
+                    </td>
+                  </tr>
+                )}
             <tr>
               <td className="pt-3 font-body text-sm font-semibold text-forest" colSpan={2}>
                 {t("total")}

@@ -71,6 +71,19 @@ export default async function DeliveryAdmin() {
     }
   }
 
+  /* Whether Delhivery collects from each supplier pickup — the same check as
+     ours, so a wrong supplier PIN shows here rather than as a parcel no
+     courier will price. */
+  const originChecks =
+    provider && settings
+      ? await Promise.all(
+          settings.origins.map(async (o) => ({
+            o,
+            collects: await provider.serviceability(o.pincode).then((x) => x?.pickup ?? false, () => false),
+          })),
+        )
+      : [];
+
   /* Ekart and Shiprocket, asked the same 500 g question. Delhivery keeps its
      own line above because it also answers whether it collects from the
      pickup PIN; these two are only asked for a price. */
@@ -115,6 +128,15 @@ export default async function DeliveryAdmin() {
                   : t("statusNoPickup", { pincode: settings.pickup.pincode })
                 : t("statusError", { mode: provider.mode, detail: check?.ok === false ? check.detail : "" })}
         </p>
+        {originChecks.length > 0 && (
+          <ul className="mt-1 space-y-1 font-body text-sm text-forest">
+            {originChecks.map(({ o, collects }) => (
+              <li key={o.id}>
+                {t(collects ? "statusOrigin" : "statusOriginNo", { name: o.name, pincode: o.pincode })}
+              </li>
+            ))}
+          </ul>
+        )}
         <ul className="mt-2 space-y-1 font-body text-sm text-forest">
           {others.map((o) => {
             const courier = t(`courierName.${o.name}`);

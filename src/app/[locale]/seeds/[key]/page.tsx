@@ -11,12 +11,7 @@ import type { Shot } from "@/components/catalogue/Gallery";
 import { MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
 import { readCartUnitsFor } from "@/lib/cart/server";
 import { formatDeliveryDate } from "@/lib/delivery-date";
-import {
-  SEED_MIN_ORDER_GRAMS,
-  SEED_VENDOR_LEAD_DAYS,
-  seedReadyDate,
-  seedSourcing,
-} from "@/lib/seeds/stock";
+import { SEED_MIN_ORDER_GRAMS, seedMaxUnits, seedReadyDate } from "@/lib/seeds/stock";
 
 /**
  * /seeds/[key] — SPEC §22.5. The seed detail page.
@@ -109,24 +104,11 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
 
   const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
 
-  /**
-   * The delivery promise, one line per quantity the stepper can reach.
-   *
-   * **Pre-formatted for every reachable quantity**, like the totals below it: a
-   * client component cannot call `getTranslations`, and the date has to be
-   * formatted by Intl in the resolved locale rather than concatenated on the
-   * client. Twenty strings is a rounding error next to the page's copy.
-   *
-   * This is the only place the shelf figure has any effect on what a customer
-   * sees, and it is expressed as a date rather than a quantity — so the reader
-   * learns when their order arrives, not how much seed is in the building.
-   */
-  const dispatch = Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) => {
-    const grams = (i + 1) * SEED_MIN_ORDER_GRAMS;
-    const sourcing = seedSourcing(grams, row.stockGrams);
-    const date = formatDeliveryDate(seedReadyDate(sourcing), dateLocale);
-    return sourcing === "shelf" ? d("dispatchShelf", { date }) : d("dispatchVendor", { date });
-  });
+  /* The shelf is the limit (the owner, 25 Sep 2026): the stepper stops at
+     what is held, in 50 g units, and 0 is sold out. The figure itself is
+     never printed. Every seed goes out next day, off our shelf. */
+  const max = seedMaxUnits(row.stockGrams);
+  const nextDispatch = formatDeliveryDate(seedReadyDate(), dateLocale);
 
   return (
     <DetailPage
@@ -154,17 +136,15 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
         },
         {
           label: d("dispatchLabel"),
-          value: d("dispatchFact"),
-          note: d("dispatchNote", { days: SEED_VENDOR_LEAD_DAYS }),
+          value: max > 0 ? d("dispatchFact") : d("soldOutFact"),
+          note: max > 0 ? d("dispatchNote", { date: nextDispatch }) : undefined,
         },
       ]}
       buy={
         <AddToCart
           kind="seed"
           contentKey={row.contentKey}
-          /* No stock ceiling. The only cap left is the per-line wholesale one,
-             which greens carry identically (SPEC §22.2). */
-          max={MAX_UNITS_PER_LINE}
+          max={max}
           inCart={inCart}
           labels={{
             quantity: d("quantity"),
@@ -175,19 +155,19 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
             added: d("added"),
             updated: d("updated"),
             viewCart: d("viewCart"),
-            dispatch,
+            soldOut: { title: d("soldOutTitle"), body: d("soldOutBody") },
             /* Pre-formatted for every reachable quantity: a client component
                cannot call `getTranslations`, and currency formatting belongs
                to Intl via the message file rather than to concatenation on the
                client. The full line is generated rather than only `packs` of
                it, so the array's indices do not shift when stock changes. */
             totals: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
-              d("lineTotal", { total: (i + 1) * row.pricePer100g }),
+              d("lineTotal", { total: (i + 1) * row.pricePer50g }),
             ),
             breakdowns: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
               d("lineBreakdown", {
                 grams: (i + 1) * SEED_MIN_ORDER_GRAMS,
-                price: row.pricePer100g,
+                price: row.pricePer50g,
               }),
             ),
             note: d("buyNote"),
@@ -195,6 +175,8 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
               unitsInvalid: e("unitsInvalid"),
               notSellable: e("notSellable"),
               cartFull: e("cartFull"),
+              soldOut: e("soldOut"),
+              overStock: e("overStock"),
               generic: e("generic"),
             },
           }}

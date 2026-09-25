@@ -272,7 +272,8 @@
     "anglePackHint": "An open-frame angle rack ships as a bundle of slotted angle — its four legs and five pieces per shelf — not as a box of shelves. The bundle is as long as the longest piece; across it, each L-shaped angle is this wide, and each one nested on the next adds this much. Leave blank until measured: angle racks can't be sent by courier until both are set.",
     "angleWidthCm": "Angle width (cm)",
     "angleStackCm": "Each angle adds (cm)",
-    "packMissing": "Not measured yet — courier orders for these racks can't be priced"
+    "packMissing": "Not measured yet — courier orders for these racks can't be priced",
+    "vendorItem": "Shelf racks"
   },
   "angleRacks": {
     "title": "Angle racks",
@@ -448,7 +449,7 @@
     "plans": "Plans",
     "plansHint": "The bundles on the home page, and their 4-week rotation",
     "seeds": "Seeds",
-    "seedsHint": "Price per 100 g and the grams on the shelf — the shelf sets how fast an order ships, not whether it can be placed",
+    "seedsHint": "Price per 50 g and the grams on the shelf — the shelf is the most a customer can order",
     "trays": "Trays & drainage",
     "traysHint": "What a pack costs and how long the supplier takes — nothing here is held in stock",
     "growMedia": "Grow media",
@@ -456,15 +457,15 @@
   },
   "seeds": {
     "title": "Seeds",
-    "intro": "Seed you hold and sell by the 100 g. This screen owns two numbers only — what 100 g costs, and how many grams are on the shelf. Neither is shown to a customer as a stock figure. Every word a customer reads about a seed lives in content/seeds/[key].json.",
-    "introOps": "Stock is a count, not a running total: type what you have just weighed. It is no longer a limit — a customer can order any amount, and this figure decides the promise: up to what you hold goes out next day, beyond it is bought in and promised within 10 days. So a seed at 0 g is still on sale, it just always ships on the vendor run. One order line still caps at 20 packs (2 kg) — more than that is a wholesale conversation. Nothing decrements this figure yet; that arrives with checkout.",
+    "intro": "Seed you hold and sell by the 50 g. This screen owns two numbers only — what 50 g costs, and how many grams are on the shelf. The grams are never shown to a customer. Every word a customer reads about a seed lives in content/seeds/[key].json.",
+    "introOps": "Stock is a count, not a running total: type what you have just weighed. It is the limit — a customer can order up to what you hold, in 50 g packs, and under 50 g the seed shows as sold out. Everything ships next day off the shelf. A paid order takes its grams off this figure. One order line still caps at 20 packs (1 kg).",
     "addTitle": "Add a seed",
     "pick": "Key",
     "pickHint": "Lowercase letters and hyphens only — sunflower, radish, china-rose. No numbers or spaces. This names the content file and the page address, so it is an identifier, not a label.",
     "pickPlaceholder": "sunflower",
     "pickExisting": "Existing content files appear as suggestions as you type.",
     "howTo": "Save it here first, then create content/seeds/[key].json for the name, the description and how to sow it. Photographs are optional — until they exist the page shows the brand mark. Until the content file exists the seed is flagged below and stays off the site.",
-    "price": "Price per 100 g (₹)",
+    "price": "Price per 50 g (₹)",
     "priceHint": "What a customer pays for one pack",
     "stock": "Grams held",
     "stockHint": "What you have on the shelf today — it sets the delivery date, not the order limit",
@@ -473,11 +474,11 @@
     "savedCount": "{count, plural, =0 {Nothing saved yet} one {# seed saved} other {# seeds saved}}",
     "emptyList": "Nothing yet. Add a seed above and it appears on the site straight away.",
     "colSeed": "Seed",
-    "colPrice": "₹/100 g",
+    "colPrice": "₹/50 g",
     "colStock": "Grams held",
     "colPacks": "Next day",
     "colActive": "Active",
-    "packs": "{count, plural, one {# pack} other {# packs}} of 100 g",
+    "packs": "{count, plural, one {# pack} other {# packs}} of 50 g",
     "hidden": "Hidden",
     "missingContentHint": "No copy yet — create content/seeds/{key}.json. Hidden from the site until you do.",
     "save": "Save row",
@@ -493,16 +494,17 @@
       "keyRequired": "Give this seed a key, like sunflower or china-rose.",
       "keyInvalid": "Lowercase letters and hyphens only — no numbers or spaces. For example china-rose.",
       "keyTaken": "“{key}” is already added.",
-      "priceInvalid": "Price per 100 g must be a positive number.",
+      "priceInvalid": "Price per 50 g must be a positive number.",
       "stockInvalid": "Grams held must be zero or more — type 0 if you have none.",
       "notFound": "That seed no longer exists."
     },
-    "vendorOnly": "All bought in"
+    "soldOut": "Sold out",
+    "priceConvertedHint": "Still priced per 100 g from before 25 Sep — showing half (₹{price, number}) as the 50 g price. Check it and save."
   },
   "trays": {
     "title": "Trays & drainage",
-    "intro": "Trays and drainage cells, bought in from a supplier and resold. This screen owns two numbers only — what the pack costs, and how many days it takes to reach a customer. Every word a customer reads about an item lives in content/trays/[key].json.",
-    "introOps": "Nothing in this category is held in stock, so there is no count to keep and no out-of-stock state: every order is a purchase order placed with the supplier. That is why the lead time matters more here than the price — it is the promise on the card, and it is set per item because these come from more than one supplier. Seven days is the shortest this category will promise. Trays cannot be added to a cart yet; the page lists them and states the wait.",
+    "intro": "Trays and drainage cells, held in stock in Bengaluru. This screen owns the numbers only — what the pack costs, how many packs you hold, and how it packs for the courier. Every word a customer reads about an item lives in content/trays/[key].json.",
+    "introOps": "Stock is a count, not a running total: type what you have just counted. It is not a limit — up to it ships next day off the shelf, and more still sells with one extra day while you bring it in from the supplier. A paid order takes its packs off this figure.",
     "addTitle": "Add a tray or a mat",
     "pick": "Key",
     "pickHint": "Lowercase letters and hyphens only — tray-pair, drain-cell-mat. No numbers or spaces. This names the content file, so it is an identifier, not a label.",
@@ -511,16 +513,12 @@
     "howTo": "Save it here first, then create content/trays/[key].json for the name, the one-line description and the spec table. Photographs are optional — until they exist the card shows the brand mark. Until the content file exists the item is flagged below and stays off the site.",
     "price": "Price per pack (₹)",
     "priceHint": "What a customer pays for the whole pack, not per piece",
-    "leadDays": "Days to deliver",
-    "leadDaysHint": "{min, number} to {max, number} days — what you promise from order to doorstep",
     "activeLabel": "Active — visible on the site",
     "saveNew": "Add item",
     "savedCount": "{count, plural, =0 {Nothing saved yet} one {# item saved} other {# items saved}}",
     "emptyList": "Nothing yet. Add an item above and it appears on the site straight away.",
     "colItem": "Item",
     "colPrice": "₹/pack",
-    "colLead": "Days",
-    "promise": "Ordered in, within {days, number} days",
     "colActive": "Active",
     "hidden": "Hidden",
     "missingContentHint": "No copy yet — create content/trays/{key}.json. Hidden from the site until you do.",
@@ -533,11 +531,11 @@
       "keyInvalid": "Lowercase letters and hyphens only — no numbers or spaces. For example drain-cell-mat.",
       "keyTaken": "“{key}” is already added.",
       "priceInvalid": "Price per pack must be a positive number.",
-      "leadDaysInvalid": "Days to deliver must be a whole number from 7 to 14. Seven is the shortest this category can promise.",
       "notFound": "That item no longer exists.",
       "packingInvalid": "Packing figures must be more than zero.",
       "packingIncomplete": "Fill in all six packing figures, or leave them all blank.",
-      "packPiecesInvalid": "Pieces per pack must be a whole number."
+      "packPiecesInvalid": "Pieces per pack must be a whole number.",
+      "stockInvalid": "Packs held must be a whole number, zero or more."
     },
     "packing": {
       "packPieces": "Pieces per pack",
@@ -556,12 +554,18 @@
       "pieceStackCm": "+ cm each",
       "pieceGrams": "g each"
     },
-    "packingNote": "Packing, for courier prices: pieces per pack, one piece's length × width × height, the height each further stacked piece adds, and one piece's weight. Fill all six or leave all blank."
+    "packingNote": "Packing, for courier prices: pieces per pack, one piece's length × width × height, the height each further stacked piece adds, and one piece's weight. Fill all six or leave all blank.",
+    "colStock": "Held",
+    "stockPacks": "Packs held",
+    "stockPacksHint": "Whole packs in stock in Bengaluru. Up to this ships next day; more still sells, a day later.",
+    "stockLine": "{count, plural, one {# pack} other {# packs}} held — ships next day up to that, a day later beyond",
+    "stockNone": "None held — every order ships a day later",
+    "colActions": "Actions"
   },
   "growMedia": {
     "title": "Grow media",
-    "intro": "Cocopeat and other grow media, bought in from the maker and resold — Horti-Coir from IFFCO Urban Gardens first. This screen owns the numbers only: what one block costs, how many days it takes to reach a customer, and how it packs for the courier. Every word a customer reads lives in content/grow-media/[key].json.",
-    "introOps": "Nothing here is held in stock, so every order is a purchase order placed with the maker. Each pack size is its own row — the 5 kg and the 10 kg block have their own price and their own box. Seven days is the shortest this category will promise until a figure is set for it.",
+    "intro": "Cocopeat and other grow media, held in stock in Bengaluru — Horti-Coir from IFFCO Urban Gardens first. This screen owns the numbers only: what one block costs, how many you hold, and how it packs for the courier. Every word a customer reads lives in content/grow-media/[key].json.",
+    "introOps": "Stock is a count of blocks, the tray rule exactly: up to it ships next day, more still sells a day later. Each pack size is its own row — the 5 kg and the 10 kg block have their own price, stock and box. A paid order takes its blocks off this figure.",
     "addTitle": "Add a grow medium",
     "pick": "Key",
     "pickHint": "Lowercase letters and hyphens only — horti-coir, horti-coir-bulk. No numbers or spaces, so a size goes in words. This names the content file, so it is an identifier, not a label.",
@@ -570,16 +574,12 @@
     "howTo": "Save it here first, then create content/grow-media/[key].json for the name, the one-line description, the spec table and the steps to prepare it. Photographs are optional — until they exist the card shows the brand mark. Until the content file exists the item is flagged below and stays off the site.",
     "price": "Price per block (₹)",
     "priceHint": "What a customer pays for one block, not per kilo",
-    "leadDays": "Days to deliver",
-    "leadDaysHint": "{min, number} to {max, number} days — what you promise from order to doorstep",
     "activeLabel": "Active — visible on the site",
     "saveNew": "Add item",
     "savedCount": "{count, plural, =0 {Nothing saved yet} one {# item saved} other {# items saved}}",
     "emptyList": "Nothing yet. Add an item above and it appears on the site straight away.",
     "colItem": "Item",
     "colPrice": "₹/block",
-    "colLead": "Days",
-    "promise": "Ordered in, within {days, number} days",
     "colActive": "Active",
     "hidden": "Hidden",
     "missingContentHint": "No copy yet — create content/grow-media/{key}.json. Hidden from the site until you do.",
@@ -592,11 +592,11 @@
       "keyInvalid": "Lowercase letters and hyphens only — no numbers or spaces. For example horti-coir-bulk.",
       "keyTaken": "“{key}” is already added.",
       "priceInvalid": "Price per block must be a positive number.",
-      "leadDaysInvalid": "Days to deliver must be a whole number from {min, number} to {max, number}.",
       "notFound": "That item no longer exists.",
       "packingInvalid": "Packing figures must be more than zero.",
       "packingIncomplete": "Fill in all six packing figures, or leave them all blank.",
-      "packPiecesInvalid": "Blocks per pack must be a whole number."
+      "packPiecesInvalid": "Blocks per pack must be a whole number.",
+      "stockInvalid": "Blocks held must be a whole number, zero or more."
     },
     "packing": {
       "packPieces": "Blocks per pack",
@@ -615,7 +615,13 @@
       "pieceStackCm": "+ cm each",
       "pieceGrams": "g each"
     },
-    "packingNote": "Packing, for courier prices: blocks per pack (1), one block's length × width × height, the height each further block adds when stacked, and one block's weight in its wrapping. Fill all six or leave all blank."
+    "packingNote": "Packing, for courier prices: blocks per pack (1), one block's length × width × height, the height each further block adds when stacked, and one block's weight in its wrapping. Fill all six or leave all blank.",
+    "colStock": "Held",
+    "stockPacks": "Blocks held",
+    "stockPacksHint": "Whole blocks in stock in Bengaluru. Up to this ships next day; more still sells, a day later.",
+    "stockLine": "{count, plural, one {# block} other {# blocks}} held — ships next day up to that, a day later beyond",
+    "stockNone": "None held — every order ships a day later",
+    "colActions": "Actions"
   },
   "settings": {
     "title": "Product visibility",
@@ -675,7 +681,6 @@
       "shelf": "from the shelf",
       "vendor": "order from the vendor"
     },
-    "supplierOrder": "place the supplier order",
     "grams": "{grams, number} g",
     "units": "× {count, number}",
     "deliveryLine": "Delivery",
@@ -721,11 +726,13 @@
     "failedConfirm": "The customer sees “Delivery failed” on their order page. It cannot be moved back from here.",
     "failedYes": "Yes, mark failed",
     "deliveryOwnRun": "Own same-day run — fixed microgreens fee",
-    "courierVia": "{carrier} via {courier}"
+    "courierVia": "{carrier} via {courier}",
+    "shipmentLine": "Parcel from {name}, {city} {pincode}",
+    "shipmentArrives": "arrives {date}"
   },
   "delivery": {
     "title": "Delivery",
-    "intro": "Orders with microgreens go on your own same-day run and pay the fixed fee below. Every other order pays the courier's live price, quoted at checkout from the pickup address to the customer's PIN for the parcel weight worked out from the packing figures. Subscriptions pay no delivery. Until this is saved (and, for courier orders, the courier is connected), checkout shows no price and does not take payment.",
+    "intro": "Checkout prices every order from our pickup below, except shelf racks, which ship from their maker (set on admin → racks). Microgreens, and everything else from our pickup in the same order, go on your own same-day run for the fixed fee. Every courier parcel pays the courier's live price for the weight worked out from the packing figures. Subscriptions pay no delivery. Until this is saved (and, for courier orders, a courier is connected), checkout shows no price and does not take payment.",
     "statusHeading": "Courier connections",
     "statusNoToken": "Delhivery is not connected. Set DELHIVERY_ENV and DELHIVERY_API_TOKEN in the environment.",
     "statusNoSettings": "Delhivery ({mode}) is connected. Save the pickup address and packing below to start quoting.",
@@ -741,12 +748,12 @@
       "frames": "Angle racks",
       "pipes": "Pipe racks"
     },
-    "pickupHeading": "Pickup address",
+    "pickupHeading": "Our pickup",
     "pickupHint": "Where the courier collects parcels from. Never shown to customers.",
     "greensHeading": "Microgreens delivery",
     "greensHint": "A fixed fee for any order with microgreens in it, whatever else rides along — they go on your own same-day run, not by courier. Set it from your average cost per drop and review it monthly.",
     "packingHeading": "Packing",
-    "packingHint": "Order-wide figures for courier orders. Each tray's size and weight is set on its row in Trays & drainage. Racks pack two ways: a shelf rack is a stack of plates, each adding its plate's packed thickness (Shelf racks → plates); an angle or pipe rack is a bundle of legs and rails, measured by the angle's width and stacking (Shelf racks → angle rates) or the pipe's diameter (Pipe racks → rates). Grams per shelf is on each plate, frame and pipe size. Seeds are weighed by what's ordered, in 5 × 5 × 5 cm packets per 100 g.",
+    "packingHint": "Order-wide figures for courier orders. Each tray's size and weight is set on its row in Trays & drainage. Racks pack two ways: a shelf rack is a stack of plates, each adding its plate's packed thickness (Shelf racks → plates); an angle or pipe rack is a bundle of legs and rails, measured by the angle's width and stacking (Shelf racks → angle rates) or the pipe's diameter (Pipe racks → rates). Grams per shelf is on each plate, frame and pipe size. Seeds are weighed by what's ordered, in 5 × 5 × 5 cm packets per 50 g.",
     "field": {
       "greenRunFee": "Fee per order (₹)",
       "pickupName": "Business name",
@@ -754,7 +761,8 @@
       "pickupAddress": "Street address",
       "pickupCity": "City",
       "pickupPincode": "PIN code",
-      "seedPackingGrams": "Seed box and padding, per order (g)"
+      "seedPackingGrams": "Seed box and padding, per order (g)",
+      "originName": "Vendor name"
     },
     "save": "Save",
     "saving": "Saving…",
@@ -763,7 +771,10 @@
       "required": "Required.",
       "phoneInvalid": "Enter a 10-digit mobile number.",
       "pincodeInvalid": "Enter a 6-digit PIN code.",
-      "positive": "Must be more than zero."
+      "positive": "Must be more than zero.",
+      "originId": "A pickup row is damaged. Reload the page and try again.",
+      "originMissing": "That pickup was removed. Choose where this ships from now.",
+      "originInUse": "A vendor you removed is still the shelf-rack pickup. Choose another on admin → racks first."
     },
     "sizePlate": "{depth, number} × {length, number} ft, {thickness, number} mm",
     "sizeFootprint": "{depth, number} × {length, number} ft",
@@ -779,12 +790,45 @@
     "statusOtherOk": "{courier} is working: 500 g within {pincode} quotes from ₹{price, number} ({count, plural, one {# option} other {# options}}).",
     "statusOtherError": "{courier} did not answer: {detail}",
     "anglePacking": "slotted angle width and stacking, in the angle rates on Shelf racks",
-    "pipePacking": "pipe outer diameter, in the pipe rates"
+    "pipePacking": "pipe outer diameter, in the pipe rates",
+    "originsHeading": "Vendor pickup addresses",
+    "originsHint": "Vendors who hand our customer's parcel straight to the courier — today only the shelf-rack maker, chosen on admin → racks. Never shown to customers. Register each address as a pickup location in your Delhivery, Ekart and Shiprocket accounts before booking from it.",
+    "addOrigin": "Add a vendor",
+    "removeOrigin": "Remove this vendor",
+    "statusOrigin": "Delhivery collects from {name} ({pincode}).",
+    "statusOriginNo": "Delhivery does not collect from {name} ({pincode}). Check its PIN."
   },
   "checkoutDelivery": {
     "notConfigured": "Only you see this. No delivery fee is saved yet, so checkout can't price delivery. Customers see \"not available right now\" and can't pay.",
     "noCourier": "Only you see this. Nothing in this cart is microgreens, so it goes by courier — and no courier is connected (set DELHIVERY_API_TOKEN, the EKART_ variables or the SHIPROCKET_ variables). Customers see \"not available right now\" and can't pay.",
     "notMeasured": "Only you see this. An item in this cart has no packing measurements, so the courier can't price the parcel. Delivery settings lists which item and where to add them.",
     "cta": "Open delivery settings"
+  },
+  "vendorPickup": {
+    "heading": "Shelf rack vendor pickup",
+    "hint": "Shelf racks always ship straight from their maker, so checkout prices them from this address. Everything else ships from our pickup. Until a vendor is chosen, shelf racks are priced from our pickup too.",
+    "none": "None — ships from our pickup",
+    "vendorOption": "{name} · {city} {pincode}",
+    "vendorFor": "Vendor pickup for {item}",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved. Checkout prices shelf racks from here from now on.",
+    "addVendor": "Add a vendor address",
+    "addVendorSave": "Add vendor",
+    "vendorAdded": "Vendor added. Pick it above and save.",
+    "field": {
+      "name": "Vendor name",
+      "phone": "Pickup phone",
+      "address": "Street address",
+      "city": "City",
+      "pincode": "PIN code"
+    },
+    "errors": {
+      "noSettings": "Save admin → delivery first — our pickup address is needed before vendors.",
+      "vendorMissing": "That vendor was removed. Choose another.",
+      "required": "Required.",
+      "phoneInvalid": "Enter a 10-digit mobile number.",
+      "pincodeInvalid": "Enter a 6-digit PIN code."
+    }
   }
 }

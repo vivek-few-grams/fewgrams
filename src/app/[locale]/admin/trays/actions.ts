@@ -5,7 +5,7 @@ import { assertRole } from "@/lib/auth/guard";
 import { deleteTray, getTray, listTrays, putTray } from "@/lib/repo/trays";
 import { isValidContentKey } from "@/lib/content/content-key";
 import { err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
-import { isValidLeadDays } from "@/lib/trays/lead-time";
+import { isValidStockPacks } from "@/lib/trays/lead-time";
 import type { Tray } from "@/lib/types";
 
 /**
@@ -38,29 +38,22 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
 }
 
-/** The price and the lead time — the only two things this screen sets, plus
- *  active. */
-type Ops = Pick<Tray, "price" | "leadDays" | "active">;
+/** The price and the packs held — the only two things this screen sets,
+ *  plus active. */
+type Ops = Pick<Tray, "price" | "stockPacks" | "active">;
 
 function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
   const price = money(fd, "price");
   if (price === null) return { ok: false, state: err("priceInvalid", "price") };
 
-  /* `zeroOrMore` and then a range check, rather than `count`: the message has
-     to name the bounds, and it is the *bounds* that are the business rule here
-     (SPEC §23.1). `count` would reject 3 with the same wording it rejects 0,
-     when the useful thing to say is that seven days is the floor.
-
-     Refused rather than clamped. `daysFromToday` clamps as a last defence
-     against a bad constant printing a nonsense date; doing it silently here
-     would mean an operator typing 30 saw 30 on their screen and a customer
-     saw a date 14 days out. */
-  const leadDays = zeroOrMore(fd, "leadDays");
-  if (leadDays === null || !isValidLeadDays(leadDays)) {
-    return { ok: false, state: err("leadDaysInvalid", "leadDays") };
+  /* Zero is a real count — nothing held, every order a day later (the
+     owner, 25 Sep 2026). An empty field is refused, not read as zero. */
+  const stockPacks = zeroOrMore(fd, "stockPacks");
+  if (stockPacks === null || !isValidStockPacks(stockPacks)) {
+    return { ok: false, state: err("stockInvalid", "stockPacks") };
   }
 
-  return { ok: true, value: { price, leadDays, active: fd.get("active") === "on" } };
+  return { ok: true, value: { price, stockPacks, active: fd.get("active") === "on" } };
 }
 
 /**

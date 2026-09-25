@@ -60,6 +60,12 @@ export function rackRangeOf(range: string): RackRange | null {
   return (RACK_RANGES as readonly string[]).includes(range) ? (range as RackRange) : null;
 }
 
+/** Which range a rack cart key belongs to, from its SKU prefix — or null for
+ *  a key that is not a rack's. */
+export function rackRangeOfKey(key: string): RackRange | null {
+  return RANGE_BY_PREFIX[key.slice(0, 2)] ?? null;
+}
+
 /**
  * The cart key for one buyable rack.
  *

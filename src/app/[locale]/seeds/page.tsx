@@ -5,6 +5,7 @@ import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Tile } from "@/components/catalogue/Tile";
 import { QuickAdd } from "@/components/catalogue/QuickAdd";
 import { quickAddFor } from "@/lib/cart/quick-add";
+import { seedMaxUnits } from "@/lib/seeds/stock";
 import { listSeeds } from "@/lib/repo/seeds";
 import { attachSeedContent, seedCutout, seedHero } from "@/lib/content/seeds";
 import { currentActor } from "@/lib/auth/guard";
@@ -123,7 +124,7 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
                 name={s.content.text.name}
                 /* Price only — see the note at the top of this file for why
                    the grams we hold are not on the card. */
-                meta={t("meta", { price: s.pricePer100g })}
+                meta={t("meta", { price: s.pricePer50g })}
                 index={i}
                 cutout={seedCutout(s.content)}
                 hero={seedHero(s.content)}
@@ -132,7 +133,7 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
                    see the prop's note for why the figures stay on the detail
                    page. */
                 words={(s.content.text.specs ?? []).map((row) => row.label)}
-                action={<QuickAdd {...quickAdd("seed", s.contentKey, s.content.text.name)} />}
+                action={<QuickAdd {...quickAdd("seed", s.contentKey, s.content.text.name, seedMaxUnits(s.stockGrams))} />}
               />
             </li>
           ))}

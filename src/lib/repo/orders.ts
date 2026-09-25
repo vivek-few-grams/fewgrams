@@ -35,6 +35,7 @@ function toOrder(row: OrderRow): Order {
     deliveryCharge: row.deliveryCharge ?? 0,
     deliveryMethod: row.deliveryMethod ?? null,
     shippingQuote: row.shippingQuote ?? null,
+    shipments: (row.shipments ?? []).map((x) => ({ ...x, quote: x.quote ?? null })),
     deliveryDate: row.deliveryDate,
     address: row.address,
     locale: row.locale,
@@ -71,6 +72,9 @@ function toRow(o: Order) {
     deliveryCharge: o.deliveryCharge,
     ...(o.deliveryMethod ? { deliveryMethod: o.deliveryMethod } : {}),
     ...(o.shippingQuote ? { shippingQuote: o.shippingQuote } : {}),
+    ...(o.shipments.length > 0
+      ? { shipments: o.shipments.map(({ quote, ...x }) => ({ ...x, ...(quote ? { quote } : {}) })) }
+      : {}),
     deliveryDate: o.deliveryDate,
     address: o.address,
     locale: o.locale,

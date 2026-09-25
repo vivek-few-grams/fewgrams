@@ -131,19 +131,16 @@ export type Seed = {
    *  therefore cannot key a line on the content key alone; see
    *  `src/lib/cart/cart.ts`. */
   contentKey: string;
-  /** ₹ per 100 g, the same unit the cart counts in and the same unit the
-   *  minimum order is expressed in, so a customer never has to convert
-   *  anything. */
-  pricePer100g: number;
-  /** Grams on the shelf, as the owner last counted them. **Not a cap** — it
-   *  decides how fast an order ships, not whether it can be placed: up to
-   *  this figure goes out next day, beyond it is bought in on the vendor's
-   *  lead time (SPEC §22.2). Zero is a legitimate value and still sells.
-   *
-   *  **Set, not decremented.** Nothing in the app reduces this yet, because
-   *  nothing in the app takes payment yet (SPEC §9); checkout is where a paid
-   *  order has to decrement it under a conditional write. Until then it is
-   *  what the owner counted, and a promise rather than a reservation. */
+  /** ₹ per 50 g — the smallest order and the cart's unit for a seed (the
+   *  owner, 25 Sep 2026; it was per 100 g until then). */
+  pricePer50g: number;
+  /** True while the row still holds only the old per-100 g price, halved
+   *  here to read as per 50 g — flagged on admin → seeds until saved. */
+  priceFromOld100g?: boolean;
+  /** Grams on the shelf, as the owner last counted them — **the limit**
+   *  (the owner, 25 Sep 2026): no more than this can be ordered, and under
+   *  50 g the seed is sold out. A paid order draws it down (`takeFromShelf`).
+   *  Never shown to a customer. */
   stockGrams: number;
   active: boolean;
 };
@@ -197,19 +194,10 @@ export type Tray = {
    *  five mats has one price, and dividing it by five would invite an order
    *  for one mat that the supplier will not break a pack for. */
   price: number;
-  /**
-   * Working days from order to delivery, as the owner promises them.
-   *
-   * **Per row, not one constant.** Seven days is the owner's stated minimum
-   * and it is what all three items launched with, but the three come from two
-   * different suppliers already, so one global figure would be an average
-   * pretending to be a promise. This is the same mistake §22.8 flags as still
-   * open for seeds, avoided here because the divergence is visible on day one.
-   *
-   * Bounded at both ends by `src/lib/trays/lead-time.ts` — never below the
-   * owner's seven, never past what the delivery-date arithmetic will print.
-   */
-  leadDays: number;
+  /** Packs held in Bengaluru (the owner, 25 Sep 2026). Up to this ships
+   *  next day; more still sells, a day later (`heldReadyDate`). Never shown
+   *  to a customer. */
+  stockPacks: number;
   active: boolean;
   /**
    * Packing, for the courier (SPEC §7). All six or none — absent until the
@@ -257,8 +245,8 @@ export type GrowMedium = {
   /** ₹ for one pack (one block) as sold, whole. Never per kilo: a buyer
    *  cannot order 3 kg of a 5 kg block. */
   price: number;
-  /** Days from order to delivery. Bounded by `src/lib/grow-media/lead-time.ts`. */
-  leadDays: number;
+  /** Blocks held — the tray rule exactly (`heldReadyDate`). */
+  stockPacks: number;
   active: boolean;
   /**
    * Packing for the courier (SPEC §7) — the same six figures as a tray, all

@@ -7,6 +7,7 @@ import { listTrays } from "@/lib/repo/trays";
 import { listGrowMedia } from "@/lib/repo/grow-media";
 import { getVarietyContent } from "@/lib/content/varieties";
 import { getSeedContent } from "@/lib/content/seeds";
+import { seedMaxUnits } from "@/lib/seeds/stock";
 import { getTrayContent } from "@/lib/content/trays";
 import { getGrowMediumContent } from "@/lib/content/grow-media";
 import { findSellableRack } from "@/lib/racks/catalogue";
@@ -37,19 +38,16 @@ import { err, type FormState } from "@/lib/forms";
  * | | Must be |
  * |---|---|
  * | variety | active, and have a content file |
- * | seed | active, and have a content file |
+ * | seed | active, have a content file, and **no more than the shelf holds** |
  * | tray | active, and have a content file |
  * | media | active, and have a content file |
  * | rack | resolve to a published, active model in a colour its grade offers |
  *
- * **A seed's stock is no longer one of them** (17 Sep 2026). It used to be
- * checked here as well as in the form, so that a stale tab or a hand-made POST
- * could not order 2 kg of a seed the owner had 300 g of. The owner replaced
- * that rule with a delivery one: any quantity may be ordered, and ordering
- * beyond the shelf moves the promise from tomorrow to the vendor lead time
- * (SPEC §22.2). There is nothing left to refuse, so a quantity that would once
- * have been rejected is now simply a slower line — decided in `hydrateCart`,
- * because it is a fact about the cart rather than a permission to write it.
+ * **A seed's stock is back to being a limit** (the owner, 25 Sep 2026). From
+ * 17 Sep any quantity could be ordered and the shelf only set the date; now
+ * an add or an increase past what is held is refused here as well as in the
+ * stepper, so a stale tab or a hand-made POST cannot order seed that is not
+ * there. Decreasing is always allowed.
  *
  * A tray never had a stock test to drop: nothing in that category is held at
  * all (SPEC §23.1), so the only thing its quantity changes is how many packs
@@ -73,16 +71,18 @@ function refresh() {
 }
 
 /**
- * Is this item on sale right now?
+ * Can this much of this item be ordered right now?
  *
- * **Not "this much of it"** — the quantity stopped mattering here when the
- * seed stock cap was dropped. Returns the reason it cannot be ordered, as a
- * message key, so the caller can report it without this function choosing any
- * wording (CLAUDE.md).
+ * The quantity matters for one kind: a seed cannot be ordered past what is on
+ * the shelf, and with under 50 g held it is sold out (the owner, 25 Sep
+ * 2026). Returns the reason it cannot be ordered, as a message key, so the
+ * caller can report it without this function choosing any wording
+ * (CLAUDE.md).
  */
 async function sellable(
   kind: CartKind,
   key: string,
+  units: number,
 ): Promise<{ ok: true } | { ok: false; code: string; values?: Record<string, string> }> {
   /* Kind-aware, because a rack's key is a SKU and a content key bans the digits
      a SKU is made of — see `isValidKeyFor`. This used to be a bare
@@ -127,8 +127,10 @@ async function sellable(
   const seed = (await listSeeds({ activeOnly: true })).find((s) => s.contentKey === key);
   if (!seed) return { ok: false, code: "notSellable" };
   if (!(await getSeedContent(key, "en"))) return { ok: false, code: "notSellable" };
-  /* No stock test — see the note at the top of this file. `seed.stockGrams` is
-     read only by `hydrateCart`, and only to pick a delivery date. */
+  /* The shelf is the limit. Never says how much is held. */
+  const max = seedMaxUnits(seed.stockGrams);
+  if (max === 0) return { ok: false, code: "soldOut" };
+  if (units > max) return { ok: false, code: "overStock" };
   return { ok: true };
 }
 
@@ -171,13 +173,13 @@ export async function setCartQuantity(
   const units = readUnits(fd);
 
   /* The lower bound is one unit, which is the minimum order for every kind:
-     100 g of a green or a seed (SPEC §22.2), one pack of trays (§23.1). There
-     is nothing extra to check per kind. */
+     one tray of greens, 50 g of seed (SPEC §22.2), one pack of trays
+     (§23.1). A seed's upper bound is its shelf, checked in `sellable`. */
   if (!Number.isFinite(units) || units < 1 || units > MAX_UNITS_PER_LINE) {
     return err("unitsInvalid", "units");
   }
 
-  const check = await sellable(kind, key);
+  const check = await sellable(kind, key, units);
   if (!check.ok) return err(check.code, undefined, check.values);
 
   const before = await readCartLines();
@@ -215,7 +217,7 @@ export async function updateCartLine(fd: FormData): Promise<void> {
      withdrawn can always reduce or remove it. */
   const lines = await readCartLines();
   if (units > unitsFor(lines, kind, key)) {
-    const check = await sellable(kind, key);
+    const check = await sellable(kind, key, units);
     if (!check.ok) return;
   }
 

@@ -7,6 +7,8 @@ import { ModelTable, type RackModelView } from "./ModelTable";
 import { PlateTable } from "./PlateTable";
 import { RatesForm } from "./RatesForm";
 import { SeedButton } from "./SeedButton";
+import { VendorPickupSection } from "../vendor-pickup/VendorPickupSection";
+import { SHELF_RACK_ITEM } from "@/lib/shipping/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +115,7 @@ export default async function RacksAdmin() {
           settings={stored.settings}
         />
       </section>
+      <VendorPickupSection items={[{ item: SHELF_RACK_ITEM, label: t("vendorItem") }]} />
     </div>
   );
 }

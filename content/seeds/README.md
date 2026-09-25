@@ -1,13 +1,14 @@
 # Seed content
 
 One file per seed. **Every word a buyer reads about a seed lives here**, not in
-DynamoDB and not in a component. The admin UI owns two numbers: what 100 g
+DynamoDB and not in a component. The admin UI owns two numbers: what 50 g
 costs, and how many grams are on the shelf.
 
-**Only the first of those two is ever shown.** Since 17 Sep 2026 the grams held
-are internal: a customer can order any quantity, and the shelf decides whether
-they are promised the next day or the ten-day vendor run (SPEC §22.2). Nothing
-in this folder should state a quantity we hold, or that a seed can sell out.
+**Only the first of those two is ever shown.** The grams held are internal,
+but since 25 Sep 2026 they are the limit: a customer can order up to what is
+held, in 50 g packs, and under 50 g the seed shows as sold out (SPEC §22.2).
+Everything ships next day. Nothing in this folder should state a quantity we
+hold, the price, or a dispatch promise — the page prints those.
 
 Loader: `src/lib/content/seeds.ts`. Contract: `src/lib/content/seed-contract.ts`.
 SPEC §22.4, and the same split as `content/varieties/` for the same reasons
@@ -55,7 +56,7 @@ priced key has no content file or a written file has no price.
 
 Either order works.
 
-1. In **admin → seeds**, type the key, the price per 100 g and the grams you
+1. In **admin → seeds**, type the key, the price per 50 g and the grams you
    hold.
 2. Copy `_template.json` to `<key>.json` and fill in every field, in **both**
    `en` and `kn`.

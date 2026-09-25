@@ -75,7 +75,7 @@ public pages skip it. Shape and reasoning: `content/varieties/README.md`.
 ## Seed text does not either — same rule, own folder
 
 `content/seeds/<contentKey>.json`, loaded by `src/lib/content/seeds.ts`.
-DynamoDB holds **two numbers**: price per 100 g and grams held. Admin →
+DynamoDB holds **two numbers**: price per 50 g and grams held. Admin →
 seeds has no text input at all.
 
 - The fields differ from a variety's, because a seed is bought to be sown:
@@ -88,21 +88,20 @@ seeds has no text input at all.
   cart, order or stock logic on the content key alone.
 - Photographs are optional here (the packet photography does not exist yet);
   for a variety they are required.
-- **Stock lives in one module, and it is a *speed*, not a limit.**
-  `src/lib/seeds/stock.ts` owns the 100 g minimum, `seedSourcing` (shelf or
-  vendor) and `seedReadyDate`. Any quantity can be ordered; what the shelf
-  decides is whether the customer is promised **next day** or the **10-day**
-  vendor run (SPEC §22.2). **No seed is ever sold out** — a seed at 0 g still
-  sells. Do not re-derive `Math.floor(grams / 100)` or compare grams to stock
-  at a call site.
+- **Stock lives in one module, and it is the limit** (the owner, 25 Sep 2026 — it was a speed
+  from 17 Sep). `src/lib/seeds/stock.ts` owns the **50 g** minimum (= the cart unit,
+  `GRAMS_PER_UNIT`), `seedMaxUnits` and `seedReadyDate`. A seed can be ordered up to what is held,
+  in 50 g packs; **under 50 g it is sold out**. Every seed ships next day — there is no vendor
+  route. The price is **per 50 g** (`pricePer50g`). Do not re-derive
+  `Math.floor(grams / 50)` or compare grams to stock at a call site.
 - **The grams held are never shown to a customer.** They are on
   `/admin/seeds` and nowhere else.
 
 ## Tray and drainage text does not either — same rule, own folder
 
 `content/trays/<contentKey>.json`, loaded by `src/lib/content/trays.ts`.
-DynamoDB holds **two numbers**: the price of the pack and the days it takes to
-arrive. Admin → trays has no text input at all.
+DynamoDB holds **two numbers**: the price of the pack and the packs held
+(`stockPacks`). Admin → trays has no text input at all.
 
 - **Four fields only**: `name`, `shortDescription`, `specs` (≥4 rows),
   `imageAlt`. No `description`, no `faq`, no `specsNote` — a tray is decided by
@@ -111,23 +110,26 @@ arrive. Admin → trays has no text input at all.
   gallery and a buy box; it does **not** repeat them as a table underneath.
   Contract: `tray-contract.ts`; full notes in `content/trays/README.md`.
 - **The category is "Trays & drainage"** and it holds both. A drain cell mat is
-  not a tray; it is the same *kind of thing to sell* — bought in per order, no
-  stock, one price per pack — and one row shape serves both (SPEC §23.1).
-- **Nothing here is ever in stock**, so there is no out-of-stock state and no
-  count to keep. Every order is a purchase order.
-- **The lead time lives in one module.** `src/lib/trays/lead-time.ts` owns the
-  7-day floor, the 14-day ceiling (which is `MAX_LEAD_DAYS` from
-  `delivery-date.ts`, imported not restated) and `trayReadyDate`. Do not
-  compare against `7` at a call site.
-- **Never write the price or the lead time into copy.** Both are printed on the
-  card from DynamoDB and both get tuned; the contract test scans for a rupee
-  figure or a day count in either language.
+  not a tray; it is the same *kind of thing to sell* — held in stock, one price
+  per pack — and one row shape serves both (SPEC §23.1).
+- **Held in Bengaluru, and stock is a speed, not a limit** (the owner, 25 Sep
+  2026 — until then nothing was held and every order waited on a 7-day
+  supplier lead time, now retired). Up to the packs held ships next day; more
+  still sells, **one day later** while it is brought in (`RESTOCK_EXTRA_DAYS`).
+  Nothing sells out. A paid order takes its packs off the count
+  (`takeFromStock`). The count is never shown to a customer.
+- **The rule lives in one module.** `src/lib/trays/lead-time.ts` owns
+  `fromShelf`, `heldReadyDate` and `RESTOCK_EXTRA_DAYS`. Do not compare units
+  to stock at a call site.
+- **Never write the price or a dispatch day into copy.** The price is printed
+  from DynamoDB and the date from the rule; the contract test scans for a
+  rupee figure or a day count in either language.
 
 ## Grow media text does not either — tray rules, own folder
 
 `content/grow-media/<contentKey>.json`, loaded by `src/lib/content/grow-media.ts`
 (SPEC §24). Cocopeat — IFFCO Urban Gardens' Horti-Coir — is sold exactly as a
-tray is: bought in per order, one price per block, a lead time and six packing
+tray is: held in stock, one price per block, a stock count and six packing
 figures per row, all on `/admin/grow-media`. Everything in the tray section
 above applies, with these differences:
 
@@ -147,13 +149,12 @@ above applies, with these differences:
   Every card and detail page carries a "Recommended by Fewgrams" badge
   (`RecommendedBadge`), and `ourNote` is required so the badge is always
   backed by our own words. Only list a medium here that we actually use.
-  Customer copy says "we order it fresh for each order", not "bought in from
-  the maker". The "Made by" spec row stays — the brand is on the pack.
+  Customer copy says it is kept in stock here, never "bought in from the
+  maker". The "Made by" spec row stays — the brand is on the pack.
 - **One row per pack size** — `horti-coir` (5 kg), `horti-coir-bulk` (10 kg).
   Content keys ban digits, so a size never goes in the key.
-- **The lead-time bounds live in `src/lib/grow-media/lead-time.ts`**, which
-  imports the tray floor until the owner sets one for coir. Do not compare
-  against `7` at a call site.
+- **Stock is dated by the tray rule** — `src/lib/grow-media/lead-time.ts`
+  re-exports it. Do not compare units to stock at a call site.
 - **Do not copy the maker's claims** ("100% organic", "anti-fungal") into
   copy; state what the block is and attribute the maker's own rating.
 
@@ -289,7 +290,8 @@ business:
 
 | Kind | One unit | Priced |
 |---|---|---|
-| `variety`, `seed` | 100 g | per 100 g |
+| `variety` | one tray | per tray |
+| `seed` | 50 g | per 50 g |
 | `tray` | one pack (2 trays, or 5 mats) | per pack |
 
 - **`isWeighed(kind)` is the only place that distinction lives.** Never write
@@ -479,8 +481,13 @@ payload.
   Delhivery, Ekart and Shiprocket, all asked at once by `deliveryOptions` in `charge.ts`,
   and the customer picks. Business code never imports a courier file directly, and quotes
   the **chargeable** weight from `chargeableGrams`, never the dead weight — a courier bills
-  a long light box by its size. Charge only the option the customer chose
-  (`deliveryCharge(…, optionId)`); never substitute the cheapest.
+  a long light box by its size. Charge only the options the customer chose
+  (`deliveryCharge(…, choices)`, one per parcel); never substitute the cheapest.
+- **Everything ships from our Bengaluru pickup, except shelf racks, which always ship from
+  their vendor** (the owner, 25 Sep 2026; `lineOrigin` in `src/lib/shipping/origin.ts`). The
+  vendor's address is set on admin → racks. An order is then at most two parcels, each
+  measured, quoted from its own pickup PIN and dated on its own (`splitShipments`). No pickup
+  town is shown to customers.
 - **The delivery area is for fresh greens only** (the owner, 24 Sep 2026). Addresses save
   anywhere in India; the area is checked at checkout, and only for a cart with greens
   (`travelsOnOwnRun`). Do not put the area check back into `validateAddress`.

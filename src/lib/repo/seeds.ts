@@ -1,6 +1,24 @@
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
+import type { EntityItem } from "electrodb";
 import { SeedEntity } from "@/lib/db/entities";
 import type { Seed } from "@/lib/types";
+
+type Row = EntityItem<typeof SeedEntity>;
+
+/** A stored row as a `Seed`. A row saved before 25 Sep 2026 has only its
+ *  per-100 g price, read as half — rounded up, so it never undersells — and
+ *  flagged so admin → seeds asks for the real per-50 g figure. */
+function fromRow(r: Row): Seed {
+  const old = r.pricePer50g === undefined;
+  return {
+    id: r.id,
+    contentKey: r.contentKey,
+    pricePer50g: r.pricePer50g ?? Math.ceil((r.pricePer100g ?? 0) / 2),
+    ...(old ? { priceFromOld100g: true } : {}),
+    stockGrams: r.stockGrams,
+    active: r.active,
+  };
+}
 
 /**
  * Seed repository — the operational record only (SPEC §22).
@@ -26,7 +44,8 @@ export async function listSeeds(
   opts: { activeOnly?: boolean } = {},
 ): Promise<Seed[]> {
   const { data } = await SeedEntity.query.byCatalogue({}).go(LIST_OPTS);
-  return opts.activeOnly ? data.filter((s) => s.active) : data;
+  const seeds = data.map(fromRow);
+  return opts.activeOnly ? seeds.filter((s) => s.active) : seeds;
 }
 
 /**
@@ -36,12 +55,12 @@ export async function listSeeds(
  */
 export async function getSeedByKey(contentKey: string): Promise<Seed | null> {
   const { data } = await SeedEntity.query.byCatalogue({ contentKey }).go(LIST_OPTS);
-  return data[0] ?? null;
+  return data[0] ? fromRow(data[0]) : null;
 }
 
 export async function getSeed(id: string): Promise<Seed | null> {
   const { data } = await SeedEntity.get({ id }).go(READ_OPTS);
-  return data;
+  return data ? fromRow(data) : null;
 }
 
 /**
@@ -53,15 +72,23 @@ export async function getSeed(id: string): Promise<Seed | null> {
  * a thing to verify. Checkout uses `takeFromShelf` instead.
  */
 export async function putSeed(s: Seed): Promise<void> {
-  await SeedEntity.put(s).go();
+  /* A put replaces the row, so the retired per-100 g price goes with it. */
+  await SeedEntity.put({
+    id: s.id,
+    contentKey: s.contentKey,
+    pricePer50g: s.pricePer50g,
+    stockGrams: s.stockGrams,
+    active: s.active,
+  }).go();
 }
 
 /**
  * Take up to `grams` off the shelf for a paid order, and return how much was
  * actually there to take.
  *
- * Never below zero, and never a refusal: an order bigger than the shelf is
- * still sold, and the rest comes from the vendor (SPEC §22.2). Conditional on
+ * Never below zero. Checkout refuses more than the shelf holds (SPEC §22.2),
+ * so a shortfall here means two orders for the last of a seed were paid at
+ * once; the caller logs it. Conditional on
  * the figure read, so two orders paid at once cannot both take the same
  * grams; the loser re-reads and takes from what is left.
  */

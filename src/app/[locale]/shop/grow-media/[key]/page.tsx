@@ -15,7 +15,7 @@ import type { Shot } from "@/components/catalogue/Gallery";
 import { MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
 import { readCartUnitsFor } from "@/lib/cart/server";
 import { formatDeliveryDate } from "@/lib/delivery-date";
-import { mediumReadyDate } from "@/lib/grow-media/lead-time";
+import { fromShelf, heldReadyDate } from "@/lib/trays/lead-time";
 
 /**
  * `/shop/grow-media/[key]` — SPEC §24.3. The grow-medium detail page.
@@ -28,8 +28,8 @@ import { mediumReadyDate } from "@/lib/grow-media/lead-time";
  * "very minimal" layout — the spec rows are the headline facts and are not
  * repeated as a table, and the price lives only in the buy box.
  *
- * The date does not move with the quantity: three blocks and one block are
- * one order to one maker, so every entry of `dispatch` is the same.
+ * The date moves with the quantity as a tray's does: next day up to the
+ * blocks we hold, a day later beyond (`heldReadyDate`).
  *
  * 404 unless the row exists, is active, and has a content file — the grid's
  * own test.
@@ -86,8 +86,13 @@ export default async function GrowMediumPage({
   ];
 
   const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
-  const ready = t("dispatch", {
-    date: formatDeliveryDate(mediumReadyDate(row.leadDays), dateLocale),
+  /* One line per quantity the stepper reaches (the owner, 25 Sep 2026): up
+     to what we hold ships from our shelf next day, beyond it a day later.
+     The count itself is never printed. */
+  const dispatch = Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) => {
+    const units = i + 1;
+    const date = formatDeliveryDate(heldReadyDate(units, row.stockPacks), dateLocale);
+    return fromShelf(units, row.stockPacks) ? t("dispatchShelf", { date }) : t("dispatchRestock", { date });
   });
 
   return (
@@ -118,7 +123,7 @@ export default async function GrowMediumPage({
             added: d("added"),
             updated: d("updated"),
             viewCart: d("viewCart"),
-            dispatch: Array.from({ length: MAX_UNITS_PER_LINE }, () => ready),
+            dispatch,
             totals: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
               d("lineTotal", { total: (i + 1) * row.price }),
             ),

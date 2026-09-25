@@ -77,10 +77,10 @@ export function AddSeedForm({ suggestions }: { suggestions: string[] }) {
 
       <NumberField
         label={t("price")}
-        name="pricePer100g"
+        name="pricePer50g"
         min={1}
         hint={t("priceHint")}
-        error={errorFor("pricePer100g")}
+        error={errorFor("pricePer50g")}
       />
       {/* `min={0}` and no default: zero grams is a real answer (it is how sold
           out is stored), but an *empty* field is not — the action rejects it

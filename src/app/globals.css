@@ -1076,18 +1076,18 @@ html[data-loader="out"] .loader__mark {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Checkout's right column — `PayForm.tsx`
+   The cart's and checkout's right column — `PinnedColumn.tsx`
 
-   Pinned at `--pin-top`, the column's own starting offset, which `PayForm`
-   measures; so it never moves when the page scrolls. The fallback is only
+   Pinned at `--pin-top`, the column's own starting offset, which
+   `PinnedColumn` measures; so it never moves when the page scrolls. The fallback is only
    what the first paint uses before the measurement lands. Desktop only: below
    `lg` the column stacks under the form and scrolls with it. */
 @media (width >= 64rem) {
-  .pay-pin {
+  .pin-column {
     position: sticky;
     top: var(--pin-top, 13rem);
   }
-  .pay-pin__scroll {
+  .pin-column__scroll {
     max-height: calc(100dvh - var(--pin-top, 13rem) - 1rem);
     overflow-y: auto;
   }

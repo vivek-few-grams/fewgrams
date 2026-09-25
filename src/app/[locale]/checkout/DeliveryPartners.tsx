@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Bike, CalendarCheck, Check, ChevronDown, Loader2, PackageCheck, Radar, Truck } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
-import type { DeliveryScan } from "./state";
+import type { DeliveryScan, ScanOption } from "./state";
 
 export type PartnerName = "delhivery" | "ekart" | "shiprocket";
 
@@ -15,8 +15,14 @@ export type PartnerName = "delhivery" | "ekart" | "shiprocket";
  * customer watches it happen, and then sees each option's price with the
  * cheapest picked and theirs to change.
  *
- * Presentational only: `PayForm` runs the scan and owns the choice, because
- * the choice sets the total and the pay form posts it.
+ * **One choice per parcel.** An order ships from as many places as it has
+ * pickups, and each parcel is priced on its own route, so each gets its own
+ * options, cheapest picked. With more than one, each is headed "Parcel n"
+ * and what is in it — never where it comes from (CLAUDE.md, "No city name in
+ * customer copy"). The own run, when there are greens, is parcel 1.
+ *
+ * Presentational only: `PayForm` runs the scan and owns the choices, because
+ * they set the total and the pay form posts them.
  *
  * **Only the chosen option is shown**, with the rest one click away (the
  * owner, 24 Sep 2026): three rows of courier names read as a form to fill in,
@@ -44,14 +50,19 @@ export function DeliveryPartners({
   partners: PartnerName[];
   /** Null while scanning. */
   scan: DeliveryScan | null;
-  chosen: string | null;
-  onChoose: (id: string) => void;
+  /** Parcel id → chosen option id. */
+  chosen: Readonly<Record<string, string>>;
+  onChoose: (parcelId: string, optionId: string) => void;
   /** The step heading, rendered by `PayForm` so the numbering matches. */
   heading: (props: { id: string; n: number; done: boolean; muted: boolean; children: ReactNode }) => ReactNode;
 }) {
   const t = useTranslations("checkout");
   const tc = useTranslations("cart");
   const done = !locked && scan !== null && scan.status !== "none";
+  /* Named "parcel 1, parcel 2" only when there is more than one — a single
+     parcel is simply the delivery, as it always was. */
+  const shipments = scan?.status === "ready" ? (scan.ownRun ? 1 : 0) + scan.parcels.length : 0;
+  const split = shipments > 1;
 
   return (
     <section
@@ -94,23 +105,48 @@ export function DeliveryPartners({
             ))}
           </ul>
         </div>
-      ) : scan.status === "ownRun" ? (
-        <div className="scan-reveal mt-4 flex items-center justify-between gap-3 rounded-xl border border-sage bg-sage/15 px-4 py-3">
-          <span className="flex items-start gap-3">
-            <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-forest text-cream">
-              <Bike size={16} strokeWidth={1.75} />
-            </span>
-            <span>
-              <span className="block font-body text-sm font-semibold text-forest">{t("ownRunTitle")}</span>
-              <span className="mt-0.5 block font-body text-xs leading-relaxed text-stone">{t("ownRunBody")}</span>
-            </span>
-          </span>
-          <span className="shrink-0 font-body text-sm font-semibold tabular-nums text-forest">
-            {tc("subtotalValue", { amount: scan.amount })}
-          </span>
+      ) : scan.status === "ready" ? (
+        <div className="scan-reveal mt-3 space-y-4">
+          {scan.parcels.length > 0 && (
+            <p className="font-body text-xs leading-relaxed text-stone">{t("scanned", { count: partners.length })}</p>
+          )}
+          {split && (
+            <p className="rounded-lg bg-sage/20 px-3 py-2 font-body text-xs leading-relaxed text-forest">
+              {t("splitNote", { count: shipments })}
+            </p>
+          )}
+          {scan.ownRun && (
+            <div>
+              {split && <ParcelHeading n={1} items={scan.ownRun.items} />}
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-l-4 border-forest/10 border-l-sage bg-cream px-4 py-3 shadow-sm">
+                <span className="flex items-start gap-3">
+                  <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-forest text-cream">
+                    <Bike size={16} strokeWidth={1.75} />
+                  </span>
+                  <span>
+                    <span className="block font-body text-sm font-semibold text-forest">{t("ownRunTitle")}</span>
+                    <span className="mt-0.5 block font-body text-xs leading-relaxed text-stone">{t("ownRunBody")}</span>
+                  </span>
+                </span>
+                <span className="shrink-0 font-display text-base font-bold tabular-nums text-forest">
+                  {tc("subtotalValue", { amount: scan.ownRun.amount })}
+                </span>
+              </div>
+            </div>
+          )}
+          {scan.parcels.map((p, i) => (
+            <div key={p.id}>
+              {split && <ParcelHeading n={i + 1 + (scan.ownRun ? 1 : 0)} items={p.items} />}
+              <OptionList
+                name={`deliveryChoice-${p.id}`}
+                options={p.options}
+                pickup={p.pickup}
+                chosen={chosen[p.id] ?? null}
+                onChoose={(id) => onChoose(p.id, id)}
+              />
+            </div>
+          ))}
         </div>
-      ) : scan.status === "options" ? (
-        <OptionList options={scan.options} pickup={scan.pickup} chosen={chosen} onChoose={onChoose} />
       ) : scan.operatorNote ? (
         <div role="status" className="mt-4 rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta">
           <p>{scan.operatorNote.body}</p>
@@ -130,14 +166,28 @@ export function DeliveryPartners({
   );
 }
 
-type Option = Extract<DeliveryScan, { status: "options" }>["options"][number];
+type Option = ScanOption;
+
+/** "Parcel 2 · Drainage cell mats, Shelf rack" — what is in it, never where
+ *  it comes from. */
+function ParcelHeading({ n, items }: { n: number; items: string[] }) {
+  const t = useTranslations("checkout");
+  return (
+    <p className="mb-2 flex flex-wrap items-baseline gap-x-2 font-body text-xs">
+      <span className="font-semibold uppercase tracking-wider text-forest">{t("parcel", { n })}</span>
+      <span className="text-stone">{items.join(", ")}</span>
+    </p>
+  );
+}
 
 function OptionList({
+  name,
   options,
   pickup,
   chosen,
   onChoose,
 }: {
+  name: string;
   options: Option[];
   pickup: string | null;
   chosen: string | null;
@@ -154,7 +204,7 @@ function OptionList({
       {radio && (
         <input
           type="radio"
-          name="deliveryChoice"
+          name={name}
           value={o.id}
           checked={o.id === chosen}
           onChange={() => {
@@ -169,10 +219,9 @@ function OptionList({
   );
 
   return (
-    <div className="scan-reveal mt-3">
-      <p className="font-body text-xs leading-relaxed text-stone">{t("scanned", { count: options.length })}</p>
+    <div>
       {pickup && (
-        <p className="mt-2 flex items-start gap-2 rounded-lg bg-sage/20 px-3 py-2 font-body text-xs leading-relaxed text-forest">
+        <p className="flex items-start gap-2 rounded-lg bg-sage/20 px-3 py-2 font-body text-xs leading-relaxed text-forest">
           <PackageCheck aria-hidden size={14} strokeWidth={1.75} className="mt-px shrink-0" />
           <span>
             {t.rich("pickupNote", {

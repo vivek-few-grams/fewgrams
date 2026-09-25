@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, type ReactNode } from "react";
+import { useActionState, useEffect, useState, type ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowRight, CalendarCheck, Check, ChevronRight, Home, Info, Lock, MapPin, PenLine, Phone, Plus, ReceiptText, ShieldCheck, Truck } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
+import { PinnedColumn } from "@/components/ui/PinnedColumn";
 import { MAX_ADDRESSES } from "@/lib/account/validation";
 import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
 import { AddressEntry } from "../account/addresses/AddressEntry";
@@ -11,7 +12,7 @@ import { setDefaultAddressAction } from "../account/actions";
 import { scanDelivery, startCheckout } from "./actions";
 import { DeliveryPartners, type PartnerName } from "./DeliveryPartners";
 import { DeliveryRide } from "./DeliveryRide";
-import { CHECKOUT_IDLE, type CheckoutState, type DeliveryScan } from "./state";
+import { CHECKOUT_IDLE, choiceField, type CheckoutState, type DeliveryScan } from "./state";
 
 /** How long the delivery scan stays on screen at the least. */
 const MIN_SCAN_MS = 1800;
@@ -56,8 +57,9 @@ export type AddressPrefill = { recipient: string; phone: string };
  * Accepting an address starts a scan (`scanDelivery`): every connected
  * courier is asked for its price to that address, the step shows each one
  * being checked, and then lists every option with the cheapest picked. The
- * customer may pick another. A cart with greens skips the comparison — it
- * goes on the owner's own run at the fixed fee.
+ * customer may pick another. An order is split by where each thing is
+ * collected (SPEC §7), so there is one choice per courier parcel; greens and
+ * whatever of ours rides with them go on the owner's own run at the fixed fee.
  *
  * The scan is held on screen for at least `MIN_SCAN_MS` so it reads as a
  * comparison; a scan that comes back in 200 ms would otherwise flash past.
@@ -72,7 +74,8 @@ export type AddressPrefill = { recipient: string; phone: string };
  * The add form and the default switch post to the account's own actions, so
  * an address added here is the same row the account page shows, validated by
  * the same `validateAddress`. They sit **outside** the pay `<form>` — a form
- * cannot nest — and the pay form carries the chosen id in a hidden input.
+ * cannot nest — and the pay form carries the chosen address id, and one
+ * `delivery:<parcel>` option id per parcel, in hidden inputs.
  *
  * The server action places the order and returns a gateway session; this
  * component then hands that session to Cashfree's own checkout, which
@@ -90,8 +93,6 @@ export function PayForm({
   subtotal,
   partners,
   greensOnly,
-  readyDate,
-  pickupDate,
   addresses,
   savedCount,
   emptyBody,
@@ -109,12 +110,6 @@ export function PayForm({
   /** Fresh greens in the cart: only the own run's area can be delivered to,
    *  so a new address outside it is turned away at the PIN step. */
   greensOnly: boolean;
-  /** `YYYY-MM-DD` IST: when the whole cart is ready — the arrival date for
-   *  the own run, and the ready-to-ship date a courier's days count from. */
-  readyDate: string | null;
-  /** `YYYY-MM-DD` IST: the courier's collection day — `readyDate` plus a day
-   *  to pack (`courierPickup`). */
-  pickupDate: string | null;
   /** Deliverable addresses only, default first. */
   addresses: PayAddress[];
   /** Every saved address, deliverable or not — the limit counts them all. */
@@ -163,7 +158,8 @@ export function PayForm({
      lands after the customer has moved on is dropped, and `round` so a
      re-scan can be forced for the same address. */
   const [scan, setScan] = useState<{ key: string; result: DeliveryScan } | null>(null);
-  const [chosen, setChosen] = useState<string | null>(null);
+  /* Parcel id → the option picked for it; each starts on its cheapest. */
+  const [chosen, setChosen] = useState<Record<string, string>>({});
   const [round, setRound] = useState(0);
   const scanKey = confirmed && selected ? `${selected.addrId}#${round}` : null;
   const current = scan && scan.key === scanKey ? scan.result : null;
@@ -177,7 +173,11 @@ export function PayForm({
     ]).then(([result]) => {
       if (!live) return;
       setScan({ key: scanKey, result });
-      setChosen(result.status === "options" ? (result.options[0]?.id ?? null) : null);
+      setChosen(
+        result.status === "ready"
+          ? Object.fromEntries(result.parcels.flatMap((p) => (p.options[0] ? [[p.id, p.options[0].id]] : [])))
+          : {},
+      );
     });
     return () => {
       live = false;
@@ -185,31 +185,33 @@ export function PayForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `scanKey` names the address and the round; `selected` follows it.
   }, [scanKey, locale]);
 
+  /* Each parcel's chosen price, plus the own run's fee. Null until every
+     parcel has a choice, so the total is never shown short of a parcel. */
+  const picked =
+    current?.status === "ready"
+      ? current.parcels.map((p) => p.options.find((o) => o.id === chosen[p.id]) ?? null)
+      : null;
   const delivery =
-    current?.status === "ownRun"
-      ? current.amount
-      : current?.status === "options"
-        ? (current.options.find((o) => o.id === chosen)?.amount ?? null)
-        : null;
+    current?.status === "ready" && picked && picked.every(Boolean)
+      ? (current.ownRun?.amount ?? 0) + picked.reduce((sum, o) => sum + o!.amount, 0)
+      : null;
   const scanning = confirmed && current === null;
   const total = delivery === null ? null : subtotal + delivery;
 
-  /* The date under the order summary follows the partner chosen (the owner,
-     24 Sep 2026): a courier option's own arrival, the ready date for the own
-     run, and until a partner is picked, when the order is ready to ship. */
+  /* The date under the order summary follows the partners chosen (the owner,
+     24 Sep 2026): the day the last parcel arrives — the own run on its ready
+     date, each courier parcel on its chosen option's. Where a courier gave
+     no transit time, the latest collection day is the best that can be said. */
   const localeTag = useLocale() === "kn" ? "kn-IN" : "en-IN";
-  const chosenArrival =
-    current?.status === "options" ? (current.options.find((o) => o.id === chosen)?.arrives ?? null) : null;
-  const dateLine =
-    readyDate === null
-      ? null
-      : greensOnly || current?.status === "ownRun"
-        ? { key: "arrives", iso: readyDate }
-        : chosenArrival
-          ? { key: "arrives", iso: chosenArrival }
-          : pickupDate
-            ? { key: "readyToShip", iso: pickupDate }
-            : null;
+  const dateLine = (() => {
+    if (current?.status !== "ready" || !picked) return null;
+    const arrivals = [...(current.ownRun ? [current.ownRun.arrives] : []), ...picked.map((o) => o?.arrives ?? null)];
+    if (arrivals.every((d): d is string => d !== null)) {
+      return { key: "arrives", iso: arrivals.sort().at(-1)! };
+    }
+    const pickups = current.parcels.map((p) => p.pickup).sort();
+    return pickups.length > 0 ? { key: "readyToShip", iso: pickups.at(-1)! } : null;
+  })();
 
   /* The gateway hand-off happens inside the action, not in an effect after
      it: `pending` then stays true until the payment screen has replaced the
@@ -254,28 +256,6 @@ export function PayForm({
       router.refresh();
     }
   }, [state, router]);
-
-  /* Pin the right column exactly where it starts, so scrolling never moves
-     it. A fixed `top` cannot do that: the column's starting offset depends
-     on the header and on the heading, whose size is a `clamp()` of the
-     window width, so any constant makes it travel a few pixels and then
-     stop. The grid is measured rather than the aside, because a stuck
-     sticky element reports where it is stuck, not where it began. Any
-     change in the page's size — resize, fonts arriving — re-measures. */
-  const gridRef = useRef<HTMLDivElement>(null);
-  const asideRef = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const grid = gridRef.current;
-    const aside = asideRef.current;
-    if (!grid || !aside) return;
-    const measure = () => {
-      const top = grid.getBoundingClientRect().top + window.scrollY;
-      aside.style.setProperty("--pin-top", `${Math.round(top)}px`);
-    };
-    const observer = new ResizeObserver(measure);
-    observer.observe(document.body);
-    return () => observer.disconnect();
-  }, []);
 
   const error =
     state.status === "error"
@@ -528,7 +508,7 @@ export function PayForm({
   );
 
   return (
-    <div ref={gridRef} className="grid gap-6 lg:grid-cols-[1fr_360px] lg:gap-10">
+    <div className="grid gap-6 lg:grid-cols-[1fr_360px] lg:gap-10">
       <div className="space-y-5">
         {deliveryStep}
 
@@ -538,7 +518,7 @@ export function PayForm({
           partners={partners}
           scan={current}
           chosen={chosen}
-          onChoose={setChosen}
+          onChoose={(parcel, option) => setChosen((c) => ({ ...c, [parcel]: option }))}
           heading={({ id, n, done, muted, children }) => (
             <StepHeading id={id} n={n} done={done} muted={muted}>
               {children}
@@ -614,7 +594,9 @@ export function PayForm({
               <input type="hidden" name="locale" value={locale} />
               <input type="hidden" name="addrId" value={selected.addrId} />
               <input type="hidden" name="total" value={total ?? ""} />
-              <input type="hidden" name="deliveryOption" value={chosen ?? ""} />
+              {Object.entries(chosen).map(([parcel, option]) => (
+                <input key={parcel} type="hidden" name={choiceField(parcel)} value={option} />
+              ))}
               {error && (
                 <p role="alert" className="rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta">
                   {error}
@@ -637,8 +619,7 @@ export function PayForm({
 
       {/* The road scene hangs above the column, out of flow, so "Your order"
           starts on the same line as the delivery box. It is inside the
-          sticky element so the two stay on screen together. `.pay-pin` in
-          `globals.css` pins it at `--pin-top`, measured above.
+          sticky element so the two stay on screen together (`PinnedColumn`).
 
           The height cap is on an inner box, not the aside: a sticky panel
           taller than the window never shows its bottom, where the pay button
@@ -647,9 +628,9 @@ export function PayForm({
           The card is what is being bought and nothing else — the items and
           their total. Delivery, the grand total and the pay button are the
           payment step, in the left column. */}
-      <aside ref={asideRef} className="pay-pin relative lg:self-start">
+      <PinnedColumn className="relative lg:self-start">
         <DeliveryRide className="absolute inset-x-0 bottom-full mb-3 hidden lg:block" />
-        <div className="pay-pin__scroll co-card co-card--dark p-5 md:p-6">
+        <div className="pin-column__scroll co-card co-card--dark p-5 md:p-6">
           {summary}
           {dateLine && (
             <p className="mt-4 flex items-center gap-2.5 rounded-xl bg-cream/10 px-3.5 py-2.5 font-body text-[13px] text-cream/85">
@@ -663,7 +644,7 @@ export function PayForm({
             </p>
           )}
         </div>
-      </aside>
+      </PinnedColumn>
     </div>
   );
 }

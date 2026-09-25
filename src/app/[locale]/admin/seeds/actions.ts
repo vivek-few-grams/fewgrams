@@ -46,24 +46,23 @@ function refresh() {
 }
 
 /** Price and stock — the only two things this screen sets, plus active. */
-type Ops = Pick<Seed, "pricePer100g" | "stockGrams" | "active">;
+type Ops = Pick<Seed, "pricePer50g" | "stockGrams" | "active">;
 
 function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
-  const pricePer100g = money(fd, "pricePer100g");
-  if (pricePer100g === null)
-    return { ok: false, state: err("priceInvalid", "pricePer100g") };
+  const pricePer50g = money(fd, "pricePer50g");
+  if (pricePer50g === null)
+    return { ok: false, state: err("priceInvalid", "pricePer50g") };
 
-  /* `zeroOrMore`, not `money`: **zero is a legitimate stock figure** — an
-     empty shelf, where every order goes on the vendor run (SPEC §22.2). It is
-     not "sold out"; there is no such state for a seed any more. It also
-     rejects an empty field rather than reading it as a deliberate 0, which is
-     the bug that put every rack on sort order 0. */
+  /* `zeroOrMore`, not `money`: **zero is a legitimate stock figure** — the
+     seed is sold out (SPEC §22.2, the owner, 25 Sep 2026). It also rejects an
+     empty field rather than reading it as a deliberate 0, which is the bug
+     that put every rack on sort order 0. */
   const stockGrams = zeroOrMore(fd, "stockGrams");
   if (stockGrams === null) return { ok: false, state: err("stockInvalid", "stockGrams") };
 
   return {
     ok: true,
-    value: { pricePer100g, stockGrams, active: fd.get("active") === "on" },
+    value: { pricePer50g, stockGrams, active: fd.get("active") === "on" },
   };
 }
 

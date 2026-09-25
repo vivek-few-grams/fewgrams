@@ -2,7 +2,6 @@ import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { isValidContentKey } from "@/lib/content/content-key";
-import { isValidMediumLeadDays } from "./lead-time";
 import * as script from "../../../scripts/grow-media-fill.mjs";
 
 /**
@@ -35,16 +34,6 @@ describe("grow-media-fill.mjs and content/grow-media agree", () => {
   it("lists each item exactly once", () => {
     const keys = script.PRICE_LIST.map((r) => r.key);
     expect(new Set(keys).size).toBe(keys.length);
-  });
-
-  /** The script writes `leadDays` straight onto the row, bypassing the form
-   *  that validates it — so the figures in it have to satisfy the same rule
-   *  the admin screen enforces, or the script could seed a row the owner
-   *  cannot save an edit to. */
-  it("only carries lead times the admin screen would accept", () => {
-    for (const { key, leadDays } of script.PRICE_LIST) {
-      expect(isValidMediumLeadDays(leadDays), `${key}: ${leadDays} days`).toBe(true);
-    }
   });
 
   /** Every price is recorded as a whole rupee figure read off a supplier's

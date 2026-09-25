@@ -7,6 +7,8 @@ import {
   setReceiptNo,
 } from "@/lib/repo/orders";
 import { takeFromShelf } from "@/lib/repo/seeds";
+import { takeFromStock as takeTraysFromStock } from "@/lib/repo/trays";
+import { takeFromStock as takeMediaFromStock } from "@/lib/repo/grow-media";
 import { settlementFor, shiftForPaymentDay, type Order } from "./order";
 
 /**
@@ -49,17 +51,22 @@ export async function settleOrder(
 
   await setReceiptNo(orderId, await nextSequence("receipt"));
 
-  /* After the payment is recorded, and never able to undo it: a shelf that
-     turns out shorter than it was at checkout means part of the seed comes
-     from the vendor, not that the order is refused (SPEC §22.2). */
+  /* After the payment is recorded, and never able to undo it. Seeds are
+     capped at the shelf at checkout, so a shortfall means two orders for the
+     last of it were paid at once; trays and grow media may be ordered past
+     what is held, and the rest is brought in overnight (SPEC §22.2, §23.1). */
   for (const line of order.lines) {
-    if (line.kind !== "seed" || line.grams === null) continue;
     try {
-      const taken = await takeFromShelf(line.key, line.grams);
-      if (taken < line.grams) {
-        console.warn(
-          `[stock] ${orderId}: ${line.key} shelf held ${taken} g of ${line.grams} g; the rest is a vendor order`,
-        );
+      if (line.kind === "seed" && line.grams !== null) {
+        const taken = await takeFromShelf(line.key, line.grams);
+        if (taken < line.grams) {
+          console.warn(`[stock] ${orderId}: ${line.key} shelf held ${taken} g of ${line.grams} g — short, sort it out by hand`);
+        }
+      } else if (line.kind === "tray" || line.kind === "media") {
+        const taken = await (line.kind === "tray" ? takeTraysFromStock : takeMediaFromStock)(line.key, line.units);
+        if (taken < line.units) {
+          console.info(`[stock] ${orderId}: ${line.key} held ${taken} of ${line.units}; order ${line.units - taken} from the vendor`);
+        }
       }
     } catch (e) {
       console.error(`[stock] ${orderId}: could not draw down ${line.key}`, e);

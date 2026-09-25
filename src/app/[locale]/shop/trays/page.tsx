@@ -3,7 +3,7 @@ import { localeAlternates } from "@/i18n/alternates";
 import { listTrays } from "@/lib/repo/trays";
 import { attachTrayContent, trayCutout, trayHero } from "@/lib/content/trays";
 import { formatDeliveryDate } from "@/lib/delivery-date";
-import { trayReadyDate } from "@/lib/trays/lead-time";
+import { heldReadyDate } from "@/lib/trays/lead-time";
 import { CATEGORY_PANELS } from "@/lib/shop";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Sprout } from "@/components/ui/Sprout";
@@ -115,7 +115,7 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                  in the pack, the size, the thickness, the material. Labels
                  only, exactly as the seed grid does it; see `Marquee`. */
               const words = content.text.specs.map((row) => row.label);
-              const ready = formatDeliveryDate(trayReadyDate(item.leadDays), dateLocale);
+              const ready = formatDeliveryDate(heldReadyDate(1, item.stockPacks), dateLocale);
 
               return (
                 <li key={item.id} className="flex flex-col">

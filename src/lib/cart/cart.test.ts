@@ -302,7 +302,9 @@ describe("totals", () => {
   it("counts units and grams across the weighed kinds", () => {
     const lines = [seed("radish", 2), tray("tray-pair", 1)];
     expect(cartUnitCount(lines)).toBe(3);
-    expect(cartGrams(lines)).toBe(200);
+    /* Two 50 g seed units (the unit since 25 Sep 2026); the tray weighs
+       nothing here. */
+    expect(cartGrams(lines)).toBe(100);
   });
 
   it("is zero for an empty cart", () => {
@@ -350,7 +352,7 @@ describe("the grow-media kind on the wire", () => {
   it("adds a block to the unit count and nothing to the weight", () => {
     const lines = [seed("radish", 2), medium("horti-coir", 3)];
     expect(cartUnitCount(lines)).toBe(5);
-    expect(cartGrams(lines)).toBe(200);
+    expect(cartGrams(lines)).toBe(100);
   });
 
   /** Four content folders, one key: four lines, not one. */

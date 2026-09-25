@@ -2,7 +2,7 @@
 
 import { useActionState, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { AlertTriangle, Check, Search, Truck, X } from "lucide-react";
+import { AlertTriangle, Check, PackageX, Search, X } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import { sanitiseKey } from "@/lib/content/content-key";
@@ -33,18 +33,13 @@ import { NumberField } from "../fields";
  * It is also the only screen in the app where the figure appears at all: since
  * 17 Sep 2026 the customer-facing pages do not print it (SPEC §22.2).
  *
- * ## The derived column is a *speed*, not a limit — changed 17 Sep 2026
+ * ## The derived column is the limit — changed back 25 Sep 2026
  *
- * It used to read "Sells as 2 packs", because stock was the ceiling on what a
- * customer could order. The owner replaced that rule: any quantity can be
- * ordered, and the shelf decides whether it goes out tomorrow or is bought in
- * on a ten-day promise (SPEC §22.2, `src/lib/seeds/stock.ts`).
- *
- * So the column now answers the question the owner actually has standing at the
- * shelf — **how much of an order could I fill in the morning** — and an empty
- * row says "bought in", not "out of stock". Getting that wording wrong here
- * would be the worst kind of error on this screen: it would tell the owner a
- * seed is unsellable when the site is still happily taking orders for it.
+ * From 17 to 25 Sep 2026 any quantity could be ordered and the shelf only set
+ * the speed. The owner reversed that: what is held, in whole 50 g packs, is
+ * the most a customer can order, and an empty shelf is **sold out** (SPEC
+ * §22.2, `src/lib/seeds/stock.ts`). So the column reads as a limit again, and
+ * an empty row is flagged.
  */
 const COLUMNS =
   "minmax(10rem,1.5fr) minmax(5rem,0.8fr) minmax(5.5rem,0.9fr) minmax(6rem,1fr) 6rem 5.5rem 4rem";
@@ -207,10 +202,10 @@ function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
         <NumberField
           compact
           label={t("colPrice")}
-          name="pricePer100g"
+          name="pricePer50g"
           min={1}
-          defaultValue={seed.pricePer100g}
-          error={errorFor("pricePer100g")}
+          defaultValue={seed.pricePer50g}
+          error={errorFor("pricePer50g")}
         />
         <NumberField
           compact
@@ -263,6 +258,15 @@ function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
         />
       </form>
 
+      {/* A row saved before 25 Sep 2026 still holds its per-100 g price; the
+          field shows half of it until the owner saves a real per-50 g one. */}
+      {seed.priceFromOld100g && (
+        <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">
+          <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
+          {t("priceConvertedHint", { price: seed.pricePer50g })}
+        </p>
+      )}
+
       {!name && (
         <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">
           <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
@@ -285,25 +289,20 @@ function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
 }
 
 /**
- * What the grams in the field can fill from the shelf tomorrow.
- *
- * Two states. Whole packs, rounded down — 250 g fills two, and the odd 50 g
- * cannot fill a pack on its own. Nothing here is a cap on ordering; see the
- * note at the top of the file.
+ * What the grams in the field allow customers to order: whole 50 g packs,
+ * rounded down — 120 g is two. That is also the cap on ordering (the owner,
+ * 25 Sep 2026), so zero is **sold out**.
  */
 function PacksCell({ grams }: { grams: number }) {
   const t = useTranslations("admin.seeds");
   const packs = shelfPacks(grams);
 
   if (packs === 0) {
-    /* Not terracotta, and not an alarm. Nothing is broken and nothing is
-       unsellable — every order for this seed simply goes on the vendor run.
-       Colouring it like the missing-content flag would send the owner looking
-       for a fault that is not there. */
+    /* Terracotta: customers now see this seed as sold out. */
     return (
-      <p className="flex items-center gap-1.5 font-body text-xs font-semibold text-stone">
-        <Truck size={13} strokeWidth={2} className="shrink-0" />
-        {t("vendorOnly")}
+      <p className="flex items-center gap-1.5 font-body text-xs font-semibold text-terracotta">
+        <PackageX size={13} strokeWidth={2} className="shrink-0" />
+        {t("soldOut")}
       </p>
     );
   }

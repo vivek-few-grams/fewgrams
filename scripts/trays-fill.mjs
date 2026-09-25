@@ -49,7 +49,6 @@ export const PRICE_LIST = [
     key: "drain-cell-mat",
     listed: "Heavy Duty Drain Cell Mat (20 MM) (Pack of 5)",
     price: 300,
-    leadDays: 7,
     source:
       "pasumaithottakalai.com/products/heavy-duty-drain-cell-mat-20-mm-pack-of-5-...",
   },
@@ -57,14 +56,12 @@ export const PRICE_LIST = [
     key: "tray-pair",
     listed: "Micro Green Trays - 2 Trays (1 drained, 1 solid) - Sample Kit",
     price: 160,
-    leadDays: 7,
     source: "bazodo.com/product/683-micro-green-trays-2-trays-...-sample-kit",
   },
   {
     key: "tray-pair-food-grade",
     listed: "Food Grade Micro Green Trays - 2 Trays - Virgin Plastic Trays",
     price: 270,
-    leadDays: 7,
     source: "bazodo.com/product/691-food-grade-micro-green-trays-2-trays-...",
   },
 ];
@@ -117,21 +114,20 @@ async function main() {
   let added = 0;
   let updated = 0;
 
-  for (const { key, listed, price, leadDays, source } of PRICE_LIST) {
+  for (const { key, listed, price, source } of PRICE_LIST) {
     const prior = existing.get(key);
     const row = {
       id: prior?.id ?? randomUUID(),
       contentKey: key,
       price: shelfPrice(price, markup),
-      /* Kept, not reset: a lead time the owner has corrected on the admin
-         screen is better information than the figure this file launched with. */
-      leadDays: prior?.leadDays ?? leadDays,
+      /* Kept, not reset: the count is what the owner last typed on admin. */
+      stockPacks: prior?.stockPacks ?? 0,
       active: prior?.active ?? true,
     };
 
     const change = prior
-      ? `update  ₹${prior.price} → ₹${row.price}, ${row.leadDays} days`
-      : `add     ₹${row.price}, ${row.leadDays} days`;
+      ? `update  ₹${prior.price} → ₹${row.price}, ${row.stockPacks} held`
+      : `add     ₹${row.price}, ${row.stockPacks} held`;
     console.log(`${key.padEnd(22)} ${change}   (list: ${listed} @ ₹${price})`);
     console.log(`${" ".repeat(22)}         ${source}`);
 

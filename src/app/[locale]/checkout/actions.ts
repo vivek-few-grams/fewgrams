@@ -3,7 +3,8 @@
 import { hasLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { assertRole } from "@/lib/auth/guard";
-import { hydrateCart } from "@/lib/cart/server";
+import { hydrateCart, type HydratedCart } from "@/lib/cart/server";
+import { lineId } from "@/lib/cart/cart";
 import {
   PAYMENT_WINDOW_MINUTES,
   addressSnapshot,
@@ -11,16 +12,17 @@ import {
   newOrderId,
   orderTotal,
   type Order,
+  type OrderShipment,
 } from "@/lib/orders/order";
 import { paymentProvider } from "@/lib/payments";
 import { getTranslations } from "next-intl/server";
-import { deliveryCharge, deliveryOptions } from "@/lib/shipping/charge";
+import { deliveryCharge, deliveryPlan, type ChargeLine } from "@/lib/shipping/charge";
 import { checkDeliveryArea } from "@/lib/pincode/place";
 import { travelsOnOwnRun } from "@/lib/shipping/parcel";
-import { courierArrival, courierPickup, istDateISO } from "@/lib/delivery-date";
+import { courierArrival, courierPickup, istDateISO, latestDate } from "@/lib/delivery-date";
 import { getAddress, getProfile } from "@/lib/repo/profile";
 import { createOrder, setProviderOrderId } from "@/lib/repo/orders";
-import type { CheckoutState, DeliveryScan } from "./state";
+import { choiceField, type CheckoutState, type DeliveryScan } from "./state";
 
 const fail = (code: string, values?: Record<string, string>): CheckoutState => ({
   status: "error",
@@ -59,7 +61,7 @@ export async function startCheckout(
   if (!address) return fail("addressMissing");
   const cart = await hydrateCart(locale);
   if (cart.items.length === 0) return fail("cartEmpty");
-  if (cart.unavailable.length > 0 || !cart.readyDate) return fail("cartChanged");
+  if (cart.unavailable.length > 0 || cart.overStock.length > 0 || !cart.readyDate) return fail("cartChanged");
 
   const lines = linesFromCart(cart);
   /* SPEC §7: the area gate, enforced here server-side whatever the address
@@ -71,8 +73,14 @@ export async function startCheckout(
   }
   /* Quoted again here, for the address chosen, rather than taken from the
      page: the page's figure is only what the customer was shown, and a
-     mismatch below refuses the order just as a moved price does. */
-  const delivery = await deliveryCharge(lines, address.pincode, String(fd.get("deliveryOption") ?? "") || null);
+     mismatch below refuses the order just as a moved price does. The choice
+     is one courier option per parcel, posted as `delivery:<parcel id>`. */
+  const prefix = choiceField("");
+  const choices: Record<string, string> = {};
+  for (const [name, value] of fd.entries()) {
+    if (name.startsWith(prefix)) choices[name.slice(prefix.length)] = String(value);
+  }
+  const delivery = await deliveryCharge(lines, address.pincode, choices);
   if (!delivery.ok) return fail(delivery.reason === "optionGone" ? "deliveryChanged" : "deliveryUnavailable");
   const total = orderTotal(lines) + delivery.amount;
   if (Number(fd.get("total")) !== total) return fail("priceChanged");
@@ -80,6 +88,23 @@ export async function startCheckout(
   const now = new Date();
   const expiresAt = new Date(now.getTime() + PAYMENT_WINDOW_MINUTES * 60_000);
   const profile = await getProfile(actor.userId);
+
+  /* Each parcel is dated on its own: packed for a day once its slowest line
+     is ready, collected, and arriving the courier's days after that. The
+     own run delivers on its ready date itself. With no transit time, the
+     pickup day is the best that can be said. */
+  const shipments: OrderShipment[] = delivery.shipments.map((x) => {
+    const ready = shipmentReady(cart, x.lines);
+    return {
+      origin: { id: x.origin.id, name: x.origin.name, city: x.origin.city, pincode: x.origin.pincode },
+      method: x.method,
+      lines: x.lines.map(lineId),
+      charge: x.amount,
+      quote: x.quote,
+      deliveryDate: istDateISO(x.method === "courier" ? courierArrival(courierPickup(ready), x.days ?? 0) : ready),
+    };
+  });
+  const couriered = shipments.filter((x) => x.method === "courier");
 
   const order: Order = {
     id: newOrderId(),
@@ -89,17 +114,12 @@ export async function startCheckout(
     lines,
     total,
     deliveryCharge: delivery.amount,
-    deliveryMethod: delivery.method,
-    shippingQuote: delivery.quote,
-    /* A courier order is packed for a day, collected, and arrives the
-       courier's days after that; the own run delivers on the ready date
-       itself. With no transit time, the pickup day is the best that can be
-       said. */
-    deliveryDate: istDateISO(
-      delivery.method === "courier"
-        ? courierArrival(courierPickup(cart.readyDate), delivery.days ?? 0)
-        : cart.readyDate,
-    ),
+    deliveryMethod: shipments.some((x) => x.method === "own_run") ? "own_run" : "courier",
+    shippingQuote: shipments.length === 1 && couriered.length === 1 ? couriered[0].quote : null,
+    shipments,
+    /* The order is complete when its last parcel arrives. ISO dates sort as
+       strings. */
+    deliveryDate: shipments.map((x) => x.deliveryDate).sort().at(-1)!,
     address: addressSnapshot(address),
     locale,
     provider: provider.name,
@@ -170,24 +190,35 @@ export async function scanDelivery(addrId: string, rawLocale: string): Promise<D
   const lines = linesFromCart(cart);
   if (travelsOnOwnRun(lines) && !(await checkDeliveryArea(address.pincode)).served) return none;
 
-  const found = await deliveryOptions(lines, address.pincode);
+  const found = await deliveryPlan(lines, address.pincode);
   if (found.ok) {
-    return found.method === "own_run"
-      ? { status: "ownRun", amount: found.amount }
-      : {
-          status: "options",
-          pickup: cart.readyDate ? istDateISO(courierPickup(cart.readyDate)) : null,
-          options: found.options.map(({ id, courier, carrier, amount, days }) => ({
+    const names = new Map(cart.items.map((i) => [lineId(i), i.name]));
+    const itemNames = (ls: readonly ChargeLine[]) => ls.map((l) => names.get(lineId(l)) ?? l.key);
+    return {
+      status: "ready",
+      ownRun: found.ownRun
+        ? {
+            amount: found.ownRun.amount,
+            arrives: istDateISO(shipmentReady(cart, found.ownRun.lines)),
+            items: itemNames(found.ownRun.lines),
+          }
+        : null,
+      parcels: found.parcels.map((p) => {
+        const pickup = courierPickup(shipmentReady(cart, p.lines));
+        return {
+          id: p.id,
+          items: itemNames(p.lines),
+          pickup: istDateISO(pickup),
+          options: p.options.map(({ id, courier, carrier, amount, days }) => ({
             id,
             courier,
             carrier,
             amount,
-            arrives:
-              days !== null && cart.readyDate
-                ? istDateISO(courierArrival(courierPickup(cart.readyDate), days))
-                : null,
+            arrives: days !== null ? istDateISO(courierArrival(pickup, days)) : null,
           })),
         };
+      }),
+    };
   }
   /* Something not set up is the owner's to fix, not the customer's to wait
      out — named for an admin, and only for an admin. A courier that did not
@@ -197,4 +228,13 @@ export async function scanDelivery(addrId: string, rawLocale: string): Promise<D
     return { status: "none", operatorNote: { body: ta(found.reason), cta: ta("cta") } };
   }
   return none;
+}
+
+/** The day a shipment's slowest line is ready — each parcel waits only for
+ *  what is in it, not for the rest of the order. */
+function shipmentReady(cart: HydratedCart, lines: readonly ChargeLine[]): Date {
+  const ids = new Set(lines.map(lineId));
+  const date = latestDate(cart.items.filter((i) => ids.has(lineId(i))).map((i) => i.readyDate));
+  if (!date) throw new Error("A shipment with no line in the cart");
+  return date;
 }

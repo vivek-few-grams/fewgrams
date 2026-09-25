@@ -4,11 +4,6 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { IDLE, type FormState } from "@/lib/forms";
 import { sanitiseKey } from "@/lib/content/content-key";
-import {
-  TRAY_DEFAULT_LEAD_DAYS,
-  TRAY_MAX_LEAD_DAYS,
-  TRAY_MIN_LEAD_DAYS,
-} from "@/lib/trays/lead-time";
 import { addTray } from "./actions";
 import { NumberField } from "../fields";
 
@@ -95,14 +90,13 @@ export function AddTrayForm({ suggestions }: { suggestions: string[] }) {
         error={errorFor("price")}
       />
       <NumberField
-        label={t("leadDays")}
-        name="leadDays"
-        min={TRAY_MIN_LEAD_DAYS}
-        max={TRAY_MAX_LEAD_DAYS}
+        label={t("stockPacks")}
+        name="stockPacks"
+        min={0}
         step={1}
-        defaultValue={TRAY_DEFAULT_LEAD_DAYS}
-        hint={t("leadDaysHint", { min: TRAY_MIN_LEAD_DAYS, max: TRAY_MAX_LEAD_DAYS })}
-        error={errorFor("leadDays")}
+        defaultValue={0}
+        hint={t("stockPacksHint")}
+        error={errorFor("stockPacks")}
       />
 
       <label className="flex items-center gap-2 font-body text-sm text-forest sm:col-span-2 lg:col-span-4">

@@ -7,7 +7,7 @@ import {
   growMediumHero,
 } from "@/lib/content/grow-media";
 import { formatDeliveryDate } from "@/lib/delivery-date";
-import { mediumReadyDate } from "@/lib/grow-media/lead-time";
+import { heldReadyDate } from "@/lib/trays/lead-time";
 import { CATEGORY_PANELS } from "@/lib/shop";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Sprout } from "@/components/ui/Sprout";
@@ -92,7 +92,7 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
               const cutout = growMediumCutout(content);
               /* The spec labels, as on the tray grid — labels only. */
               const words = content.text.specs.map((row) => row.label);
-              const ready = formatDeliveryDate(mediumReadyDate(item.leadDays), dateLocale);
+              const ready = formatDeliveryDate(heldReadyDate(1, item.stockPacks), dateLocale);
 
               return (
                 <li key={item.id} className="flex flex-col">

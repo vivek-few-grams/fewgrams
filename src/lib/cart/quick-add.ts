@@ -20,13 +20,17 @@ export async function quickAddFor() {
     notSellable: q("errors.notSellable"),
     cartFull: q("errors.cartFull"),
     unitsInvalid: q("errors.unitsInvalid"),
+    soldOut: q("errors.soldOut"),
+    overStock: q("errors.overStock"),
     generic: q("errors.generic"),
   };
-  return (kind: CartKind, contentKey: string, name: string) => ({
+  /* `max` defaults to the per-line cap; a seed passes what its shelf allows
+     (`seedMaxUnits`), and 0 renders the sold-out chip. */
+  return (kind: CartKind, contentKey: string, name: string, max: number = MAX_UNITS_PER_LINE) => ({
     kind,
     contentKey,
     inCart: unitsFor(lines, kind, contentKey),
-    max: MAX_UNITS_PER_LINE,
+    max,
     labels: {
       add: q("add"),
       addAria: q("addAria", { name }),
@@ -36,6 +40,7 @@ export async function quickAddFor() {
         lineQuantity(kind, i + 1, c),
       ),
       errors,
+      soldOut: q("soldOut"),
     },
   });
 }

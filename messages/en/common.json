@@ -73,7 +73,10 @@
       "notSellable": "This is not on sale at the moment.",
       "cartFull": "Your cart is full. Remove something to add this.",
       "unitsInvalid": "That quantity is not available.",
-      "generic": "That did not save. Please try again."
-    }
+      "generic": "That did not save. Please try again.",
+      "soldOut": "Sold out right now.",
+      "overStock": "That is all we have right now."
+    },
+    "soldOut": "Sold out"
   }
 }

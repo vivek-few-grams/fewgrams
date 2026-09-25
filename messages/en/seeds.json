@@ -2,10 +2,10 @@
   "title": "Seeds",
   "description": "Untreated seed, cleaned for sowing — the same seed we grow our own trays from.",
   "heading": "The same seed we sow.",
-  "body": "Sold by the 100 g, untreated and cleaned for sowing — the same seed that goes into our own trays. Order any amount: whatever we have on the shelf reaches you the next day, and anything more we bring in for you within 10 days.",
+  "body": "Sold by the 50 g, untreated and cleaned for sowing — the same seed that goes into our own trays. Everything ships off our shelf the next day.",
   "empty": "No seed is listed right now — check back shortly.",
   "emptyLink": "See the greens we grow",
-  "meta": "₹{price, number}/100 g",
+  "meta": "₹{price, number}/50 g",
   "growPrompt": "Would rather we grew them for you?",
   "growLink": "See the varieties",
   "detail": {
@@ -25,26 +25,29 @@
     "prevPhotos": "Previous photos",
     "nextPhotos": "More photos",
     "quantity": "How much",
-    "decrease": "One less 100 g",
-    "increase": "One more 100 g",
+    "decrease": "One less 50 g",
+    "increase": "One more 50 g",
     "addToCart": "Add to cart",
     "updateCart": "Update cart",
     "added": "Added to your cart.",
     "updated": "Cart updated.",
     "viewCart": "View cart",
     "lineTotal": "₹{total, number}",
-    "lineBreakdown": "{grams, number} g · ₹{price, number} per 100 g",
-    "buyNote": "Sold by the 100 g, minimum one pack. Seed travels on the same run as the greens, so ordering it alongside a punnet costs no extra trip.",
+    "lineBreakdown": "{grams, number} g · ₹{price, number} per 50 g",
+    "buyNote": "Sold by the 50 g, minimum one pack. Off our shelf, so it ships the next day.",
     "errors": {
-      "unitsInvalid": "Choose between 1 and 20 packs of 100 g.",
+      "unitsInvalid": "Choose between 1 and 20 packs of 50 g.",
       "notSellable": "That seed is not on sale at the moment.",
       "cartFull": "Your cart is full at 12 items. Remove one to add another.",
-      "generic": "That did not save. Please try again."
+      "generic": "That did not save. Please try again.",
+      "soldOut": "This seed is sold out right now.",
+      "overStock": "That is more than we have right now. Choose a smaller amount."
     },
     "dispatchLabel": "Getting it to you",
     "dispatchFact": "Next day from our shelf",
-    "dispatchNote": "Order more than we hold and we bring the rest in for you — with you within {days, number} days.",
-    "dispatchShelf": "From our shelf — with you {date}",
-    "dispatchVendor": "We order this in for you — with you by {date}"
+    "dispatchNote": "Order today and it is with you {date}.",
+    "soldOutFact": "Sold out right now",
+    "soldOutTitle": "Sold out",
+    "soldOutBody": "We have none of this seed on the shelf right now. Check back soon — we restock regularly."
   }
 }

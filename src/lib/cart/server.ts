@@ -11,9 +11,8 @@ import { attachGrowMediumContent, growMediumHero } from "@/lib/content/grow-medi
 import { findSellableRack } from "@/lib/racks/catalogue";
 import { rackLineName } from "@/lib/racks/describe";
 import { rackReadyDate } from "@/lib/racks/lead-time";
-import { seedReadyDate, seedSourcing, type SeedSourcing } from "@/lib/seeds/stock";
-import { trayReadyDate } from "@/lib/trays/lead-time";
-import { mediumReadyDate } from "@/lib/grow-media/lead-time";
+import { seedMaxUnits, seedReadyDate, type SeedSourcing } from "@/lib/seeds/stock";
+import { fromShelf, heldReadyDate } from "@/lib/trays/lead-time";
 import { adhocReadyDate, latestDate } from "@/lib/delivery-date";
 import {
   CART_COOKIE,
@@ -76,38 +75,30 @@ export type CartItem = {
   lineTotal: number;
   image: { src: string; alt: string } | null;
   /**
-   * The ceiling this line's stepper may reach — `MAX_UNITS_PER_LINE` for
-   * **every** kind.
-   *
-   * It used to be the lower of that and a seed's stock. Since 17 Sep 2026 a
-   * seed is never capped by stock; ordering more than we hold changes the
-   * delivery date instead (`sourcing`), and a tray has no stock to cap against
-   * at all. What is left is the per-line wholesale threshold, which is the same
-   * twenty units whatever a unit happens to be.
+   * The ceiling this line's stepper may reach — `MAX_UNITS_PER_LINE`, and
+   * for a seed the lower of that and what is on the shelf in 50 g units
+   * (the owner, 25 Sep 2026). **0 means sold out.** A line above it (the
+   * shelf fell after it was added) is listed in `overStock` and checkout
+   * refuses it until reduced.
    */
   maxUnits: number;
-  /** Varieties only — a seed is on the shelf and a tray is at the supplier. */
+  /** Varieties only — nothing else is grown. */
   growDays: number | null;
   /**
    * When this line alone would reach the customer. **Every line has one**, and
    * the reason differs by kind — three rules now: a green's is `growDays`
-   * after tomorrow's sow, a seed's is tomorrow off the shelf or the vendor
-   * lead time, a tray's is its own supplier lead time.
+   * after tomorrow's sow, a seed's is tomorrow off the shelf, a tray's or a
+   * grow medium's is tomorrow up to what is held and a day later beyond.
    *
    * Shown per line so a customer can see which item is holding the order
    * back — which is the whole reason the order's single date is not a
    * surprise.
    */
   readyDate: Date;
-  /**
-   * Seeds only: whether this quantity comes off our shelf or has to be bought
-   * in (SPEC §22.2). Null for a variety, which is grown rather than stocked.
-   *
-   * **Quantity-dependent, so it is computed per line and not per catalogue
-   * row**: the same seed is `"shelf"` at 100 g and `"vendor"` at 900 g. Never
-   * render the grams behind it — it is an internal figure (the owner's
-   * instruction, 17 Sep 2026).
-   */
+  /** For what we hold — seeds, trays, grow media: `"shelf"` when this line
+   *  comes off our shelf, `"vendor"` when a tray or grow-media line is more
+   *  than we hold and is brought in overnight (the owner, 25 Sep 2026). A
+   *  seed is always `"shelf"`. Null for greens and racks. */
   sourcing: SeedSourcing | null;
 };
 
@@ -138,29 +129,18 @@ export type HydratedCart = {
   /** True when at least one line is a green, which is what makes the date a
    *  grow window rather than a dispatch. */
   hasVarieties: boolean;
-  /** True when at least one line is a tray or a mat, so the page can say the
-   *  order is being placed with a supplier rather than leave a week
-   *  unexplained. Nothing in that category is ever in stock (SPEC §23.1), so
-   *  unlike `hasVendorSeeds` this needs no quantity to be true. */
+  /** True when at least one line is a tray or a mat. */
   hasTrays: boolean;
-  /** True when at least one line is a grow medium — ordered in from the
-   *  supplier exactly as a tray is (SPEC §24.1), so the page explains the
-   *  week the same way. */
+  /** True when at least one line is a grow medium. */
   hasMedia: boolean;
   /** True when at least one line is a rack, so the page can say that racks are
    *  built to order and delivered inside Bengaluru — a three-day line sitting
    *  under a ten-day one needs a reason, not just a date. */
   hasRacks: boolean;
-  /**
-   * True when at least one seed line is bigger than what is on the shelf, so
-   * the page can say the order is being brought in rather than leave a ten-day
-   * date unexplained.
-   *
-   * This is the closest the customer-facing UI comes to the stock figure, and
-   * deliberately so: it says *that* we are ordering it in, never how much of
-   * it we had.
-   */
-  hasVendorSeeds: boolean;
+  /** `lineId`s of seed lines asking for more than the shelf now holds —
+   *  including a seed now sold out. Checkout refuses until they are reduced;
+   *  the cart page says which. Never says how much is held. */
+  overStock: string[];
   /**
    * Keys that were in the cookie but no longer resolve to something sellable —
    * deactivated in admin, deleted, or its content file removed.
@@ -207,7 +187,7 @@ const EMPTY: HydratedCart = {
   hasTrays: false,
   hasMedia: false,
   hasRacks: false,
-  hasVendorSeeds: false,
+  overStock: [],
   unavailable: [],
 };
 
@@ -250,28 +230,20 @@ export async function hydrateCart(
    * page.**
    *
    * A discriminated union rather than three nullable fields on `Base`: with
-   * two kinds a `heldGrams: number | null` was readable, and at three it would
-   * have been two nullable numbers whose valid combinations existed only in a
+   * several nullable fields whose valid combinations existed only in a
    * comment. This way the switch below is exhaustive, and a fourth kind is a
    * compile error rather than a silently missed branch.
-   *
-   * `heldGrams` in particular must not leak: the grams we hold are an internal
-   * figure (the owner's instruction, 17 Sep 2026).
    */
   type Timing =
     | { by: "grow"; growDays: number }
-    | { by: "shelf"; heldGrams: number }
-    | { by: "supplier"; leadDays: number }
-    /* Distinct from `supplier` even though both are a flat number of days,
-       because they are different promises: a tray's is somebody else's
-       dispatch time and varies per row, a rack's is our own build time and is
-       one constant for every range (`RACK_LEAD_DAYS`). Collapsing them would
-       make the next change to either one touch both. */
-    | { by: "build" }
-    /* A grow medium's supplier lead time. Its own arm rather than sharing
-       `supplier`, because its bounds live in their own module
-       (`grow-media/lead-time.ts`) and may part from the tray's. */
-    | { by: "medium"; leadDays: number };
+    | { by: "shelf" }
+    /* Trays and grow media, held in Bengaluru since 25 Sep 2026: next day
+       up to the packs held, a day later beyond (`heldReadyDate`). The
+       count never reaches a page. */
+    | { by: "held"; stockPacks: number }
+    /* A rack's is our own build time, one constant for every range
+       (`RACK_LEAD_DAYS`). */
+    | { by: "build" };
 
   /**
    * A catalogue row, minus everything that depends on how much was ordered.
@@ -300,28 +272,25 @@ export async function hydrateCart(
   }
   for (const s of withSeedContent) {
     if (!s.content) continue;
-    /* No stock test. A seed we hold none of is still on sale — the quantity
-       ordered decides the date, not whether the line exists at all. This is
-       where a `packs === 0` skip used to make an empty shelf look like a
-       withdrawn product. */
+    /* The shelf is the limit (the owner, 25 Sep 2026): `maxUnits` is what
+       is held, in 50 g units. A seed we hold none of stays a line — with a
+       max of 0, so the cart says it is sold out rather than dropping it. */
     byId.set(lineId({ kind: "seed", key: s.contentKey }), {
       kind: "seed",
       key: s.contentKey,
       name: s.content.text.name,
-      unitPrice: s.pricePer100g,
+      unitPrice: s.pricePer50g,
       image: seedHero(s.content),
-      maxUnits: MAX_UNITS_PER_LINE,
+      maxUnits: seedMaxUnits(s.stockGrams),
       growDays: null,
-      timing: { by: "shelf", heldGrams: s.stockGrams },
+      timing: { by: "shelf" },
     });
   }
   for (const tr of withTrayContent) {
     if (!tr.content) continue;
-    /* No stock test here either, and for a stronger reason than a seed's:
-       there is no stock figure at all (SPEC §23.1). Every tray line is a
-       supplier order, so the only question its date answers is how long that
-       supplier takes. `price` is per pack, which is why `unitPrice` no longer
-       carries a weight in its name. */
+    /* No stock cap: more than is held still sells, a day later (the owner,
+       25 Sep 2026). `price` is per pack, which is why `unitPrice` carries no
+       weight in its name. */
     byId.set(lineId({ kind: "tray", key: tr.contentKey }), {
       kind: "tray",
       key: tr.contentKey,
@@ -330,13 +299,13 @@ export async function hydrateCart(
       image: trayHero(tr.content),
       maxUnits: MAX_UNITS_PER_LINE,
       growDays: null,
-      timing: { by: "supplier", leadDays: tr.leadDays },
+      timing: { by: "held", stockPacks: tr.stockPacks },
     });
   }
 
   for (const m of withMediumContent) {
     if (!m.content) continue;
-    /* No stock test, as for a tray: nothing in this category is held. */
+    /* The tray rule exactly. */
     byId.set(lineId({ kind: "media", key: m.contentKey }), {
       kind: "media",
       key: m.contentKey,
@@ -345,7 +314,7 @@ export async function hydrateCart(
       image: growMediumHero(m.content),
       maxUnits: MAX_UNITS_PER_LINE,
       growDays: null,
-      timing: { by: "medium", leadDays: m.leadDays },
+      timing: { by: "held", stockPacks: m.stockPacks },
     });
   }
 
@@ -411,19 +380,23 @@ export async function hydrateCart(
        tray's from its supplier's lead time, a rack's from our own build
        time. */
     const { timing, ...rest } = base;
-    const sourcing =
-      timing.by === "shelf" ? seedSourcing(grams ?? 0, timing.heldGrams) : null;
+    const sourcing: SeedSourcing | null =
+      timing.by === "shelf"
+        ? "shelf"
+        : timing.by === "held"
+          ? fromShelf(line.units, timing.stockPacks)
+            ? "shelf"
+            : "vendor"
+          : null;
 
     const readyDate =
       timing.by === "grow"
         ? adhocReadyDate(timing.growDays, now)
         : timing.by === "shelf"
-          ? seedReadyDate(sourcing ?? "vendor", now)
-          : timing.by === "supplier"
-            ? trayReadyDate(timing.leadDays, now)
-            : timing.by === "medium"
-              ? mediumReadyDate(timing.leadDays, now)
-              : rackReadyDate(now);
+          ? seedReadyDate(now)
+          : timing.by === "held"
+            ? heldReadyDate(line.units, timing.stockPacks, now)
+            : rackReadyDate(now);
 
     items.push({
       ...rest,
@@ -453,8 +426,8 @@ export async function hydrateCart(
     hasTrays: items.some((i) => i.kind === "tray"),
     hasMedia: items.some((i) => i.kind === "media"),
     hasRacks: items.some((i) => i.kind === "rack"),
-    hasVendorSeeds: items.some((i) => i.sourcing === "vendor"),
     unavailable,
+    overStock: items.filter((i) => i.units > i.maxUnits).map(lineId),
   };
 }
 

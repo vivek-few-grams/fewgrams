@@ -201,11 +201,14 @@ export const SeedEntity = new Entity(
     attributes: {
       id: { type: "string", required: true },
       contentKey: { type: "string", required: true },
-      pricePer100g: { type: "number", required: true },
-      /** Grams on the shelf. Required, and zero is a legitimate value — an
-       *  empty shelf, where every order is bought in (SPEC §22.2). It is not
-       *  an absent figure and it is not "out of stock": the seed still
-       *  sells. */
+      /** ₹ per 50 g, from 25 Sep 2026. Optional only because rows saved
+       *  before then hold `pricePer100g` instead; the repo reads that as half
+       *  until the row is saved again. */
+      pricePer50g: { type: "number" },
+      /** Retired 25 Sep 2026 — see `pricePer50g`. Never written again. */
+      pricePer100g: { type: "number" },
+      /** Grams on the shelf — the most that can be ordered (the owner,
+       *  25 Sep 2026). Zero is sold out. */
       stockGrams: { type: "number", required: true },
       active: { type: "boolean", required: true },
     },
@@ -253,10 +256,12 @@ export const TrayEntity = new Entity(
       contentKey: { type: "string", required: true },
       /** ₹ for the pack as sold, whole — see the note on `Tray.price`. */
       price: { type: "number", required: true },
-      /** Days from order to delivery. Required and never zero: nothing in
-       *  this category is ever in stock, so there is no same-day or next-day
-       *  path to represent (SPEC §23.1). */
-      leadDays: { type: "number", required: true },
+      /** Packs held (the owner, 25 Sep 2026). Absent on rows saved before
+       *  then, read as none. */
+      stockPacks: { type: "number" },
+      /** Retired 25 Sep 2026 with the stock count: the supplier lead time
+       *  every order used to wait on. Still on stored rows; never read. */
+      leadDays: { type: "number" },
       active: { type: "boolean", required: true },
       /** Packing for the courier — see `Tray`. Optional because it is
        *  measured after the row is priced. */
@@ -306,8 +311,10 @@ export const GrowMediumEntity = new Entity(
       contentKey: { type: "string", required: true },
       /** ₹ for one pack as sold, whole — see `GrowMedium.price`. */
       price: { type: "number", required: true },
-      /** Days from order to delivery. Never zero: nothing here is held. */
-      leadDays: { type: "number", required: true },
+      /** Blocks held — see `TrayEntity.stockPacks`. */
+      stockPacks: { type: "number" },
+      /** Retired 25 Sep 2026 — see `TrayEntity.leadDays`. */
+      leadDays: { type: "number" },
       active: { type: "boolean", required: true },
       /** Packing for the courier — see `GrowMedium`. Optional because it is
        *  measured after the row is priced. */
@@ -962,6 +969,51 @@ export const ShippingSettingsEntity = new Entity(
        *  angle and pipe racks pack as a bundle. Still on the stored row, so
        *  kept as an optional attribute; nothing reads or writes it. */
       shelfStackCm: { type: "number" },
+      /** Where else parcels are collected from — a supplier who hands our
+       *  customer's parcel straight to the courier (the owner, 24 Sep 2026).
+       *  The pickup above is always `home`; these are the others. Absent on
+       *  rows saved before then, read back as none. */
+      origins: {
+        type: "list",
+        items: {
+          type: "map",
+          properties: {
+            id: { type: "string", required: true },
+            name: { type: "string", required: true },
+            phone: { type: "string", required: true },
+            address: { type: "string", required: true },
+            city: { type: "string", required: true },
+            pincode: { type: "string", required: true },
+          },
+        },
+      },
+      /** Each item's vendor pickup, keyed `rack:shelf`, `tray:<contentKey>`
+       *  and so on (`originItemKey`) — set on the item's own admin screen.
+       *  Checkout prices each such item from ours and from its vendor and
+       *  takes the cheaper (the owner, 25 Sep 2026). */
+      vendors: {
+        type: "list",
+        items: {
+          type: "map",
+          properties: {
+            item: { type: "string", required: true },
+            origin: { type: "string", required: true },
+          },
+        },
+      },
+      /** Retired 25 Sep 2026, the day it was added: the items checkout
+       *  priced from their vendor. Checkout now compares both. Still on
+       *  stored rows, so kept optional; nothing reads or writes it. */
+      shipsFrom: {
+        type: "list",
+        items: {
+          type: "map",
+          properties: {
+            item: { type: "string", required: true },
+            origin: { type: "string", required: true },
+          },
+        },
+      },
       updatedAt: { type: "string", required: true },
     },
     indexes: {
@@ -1077,6 +1129,41 @@ export const OrderEntity = new Entity(
           quotedTotal: { type: "number", required: true },
           chargedGrams: { type: "number", required: true },
           zone: { type: "string", required: true },
+        },
+      },
+      /** One per pickup — see `OrderShipment`. Absent on orders placed
+       *  before 24 Sep 2026. */
+      shipments: {
+        type: "list",
+        items: {
+          type: "map",
+          properties: {
+            origin: {
+              type: "map",
+              required: true,
+              properties: {
+                id: { type: "string", required: true },
+                name: { type: "string", required: true },
+                city: { type: "string", required: true },
+                pincode: { type: "string", required: true },
+              },
+            },
+            method: { type: ["own_run", "courier"] as const, required: true },
+            lines: { type: "list", required: true, items: { type: "string" } },
+            charge: { type: "number", required: true },
+            quote: {
+              type: "map",
+              properties: {
+                courier: { type: ["delhivery", "ekart", "shiprocket"] as const, required: true },
+                carrier: { type: "string" },
+                serviceId: { type: "string" },
+                quotedTotal: { type: "number", required: true },
+                chargedGrams: { type: "number", required: true },
+                zone: { type: "string", required: true },
+              },
+            },
+            deliveryDate: { type: "string", required: true },
+          },
         },
       },
       deliveryDate: { type: "string", required: true },

@@ -51,6 +51,9 @@ export function QuickAdd({
      *  "2 trays". A client component cannot format messages itself. */
     quantities: string[];
     errors: Record<string, string>;
+    /** Shown instead of the button when `max` is 0 — a seed with nothing on
+     *  the shelf (the owner, 25 Sep 2026). */
+    soldOut?: string;
   };
   /** Placement only. Compact by design (the owner, 24 Sep 2026): it sits on
    *  the caption's line, beside the name and price, not as a bar under it. */
@@ -79,6 +82,18 @@ export function QuickAdd({
       }
     });
   };
+
+  /* Sold out: nothing to add. A line already in the cart can still be
+     reduced or removed from the cart page. */
+  if (max < 1 && units === 0) {
+    return (
+      <div className={className}>
+        <span className="inline-flex h-8 items-center rounded-full bg-forest/10 px-3 font-body text-xs font-semibold text-stone">
+          {labels.soldOut}
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div className={className}>

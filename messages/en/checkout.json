@@ -71,5 +71,13 @@
   "hideOthers": "Hide other partners",
   "readyToShip": "Handed to the courier <b>{date}</b> — the arrival date follows the delivery partner",
   "arrivesLabel": "Arrives",
-  "pickupNote": "We take a day to pack your order and hand it to the courier on <b>{date}</b>. Each arrival date counts from then."
+  "pickupNote": "We take a day to pack your order and hand it to the courier on <b>{date}</b>. Each arrival date counts from then.",
+  "groupReady": "Ready {date}",
+  "reasonGrow": "Grown for you",
+  "reasonShelf": "From our shelf",
+  "reasonOrdered": "Ordered in for you",
+  "reasonBuild": "Built for you",
+  "groupsNote": "Each parcel leaves once everything in it is ready.",
+  "splitNote": "Your order comes in {count, number} parcels. Each is collected from where it's kept and priced on its own, so each has its own delivery partner and date.",
+  "parcel": "Parcel {n}"
 }

@@ -5,9 +5,10 @@ import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { lineId } from "@/lib/cart/cart";
+import type { CartItem } from "@/lib/cart/server";
 import { lineUnits } from "@/lib/cart/line-display";
 import { hydrateCart } from "@/lib/cart/server";
-import { courierPickup, istDateISO } from "@/lib/delivery-date";
+import { formatDeliveryDate, istDateISO } from "@/lib/delivery-date";
 import { paymentProvider } from "@/lib/payments";
 import { shippingProviders } from "@/lib/shipping";
 import { travelsOnOwnRun } from "@/lib/shipping/parcel";
@@ -96,6 +97,41 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
     );
   }
 
+  /* A cart whose lines are ready on different days is grouped by that day
+     (the owner, 24 Sep 2026): the customer sees what is ready when and why,
+     instead of a single "everything arrives" date the cart used to state
+     before any courier was chosen. Each parcel leaves once what is in it is
+     ready; the arrival is under the card once partners are picked
+     (`PayForm`). */
+  const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
+  const groups = readyGroups(cart.items);
+  const line = (item: (typeof cart.items)[number]) => (
+    <li
+      key={lineId(item)}
+      className="flex items-center justify-between gap-4 border-b border-cream/15 py-3"
+    >
+      <span className="flex min-w-0 items-center gap-3.5">
+        {/* The product's own photo where it has one — a picture says
+            "these greens" faster than a name — and its kind's icon
+            where it does not (packet photography for seeds, say). */}
+        {item.image ? (
+          <span className="relative size-10 shrink-0 overflow-hidden rounded-full bg-forest-deep ring-2 ring-cream/15">
+            <Image src={item.image.src} alt={item.image.alt} fill sizes="40px" className="object-cover" />
+          </span>
+        ) : (
+          <KindIcon kind={item.kind} className="size-10 bg-forest-deep text-cream ring-2 ring-cream/15" />
+        )}
+        <span className="min-w-0">
+          <span className="block font-body text-sm font-semibold text-cream">{item.name}</span>
+          <span className="mt-0.5 block font-body text-xs text-cream/65">{lineUnits(item, tc)}</span>
+        </span>
+      </span>
+      <span className="shrink-0 font-body text-sm font-semibold tabular-nums text-cream">
+        {tc("subtotalValue", { amount: item.lineTotal })}
+      </span>
+    </li>
+  );
+
   /* The right-hand card: what is being bought — the lines and their total,
      nothing about delivery. Delivery, the grand total and the pay button are
      `PayForm`'s payment step, because only the form knows which address —
@@ -108,34 +144,24 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
       <p className="mt-1 font-body text-sm text-cream/70">
         {t("summaryLine", { count: cart.items.length, amount: cart.subtotal })}
       </p>
-      <ul className="mt-4 border-t border-cream/15">
-        {cart.items.map((item) => (
-          <li
-            key={lineId(item)}
-            className="flex items-center justify-between gap-4 border-b border-cream/15 py-3"
-          >
-            <span className="flex min-w-0 items-center gap-3.5">
-              {/* The product's own photo where it has one — a picture says
-                  "these greens" faster than a name — and its kind's icon
-                  where it does not (packet photography for seeds, say). */}
-              {item.image ? (
-                <span className="relative size-10 shrink-0 overflow-hidden rounded-full bg-forest-deep ring-2 ring-cream/15">
-                  <Image src={item.image.src} alt={item.image.alt} fill sizes="40px" className="object-cover" />
+      {groups.length > 1 ? (
+        <div className="mt-4 border-t border-cream/15">
+          {groups.map((g) => (
+            <div key={g.iso} className="border-b border-cream/15 pb-1 pt-3">
+              <p className="flex flex-wrap items-baseline gap-x-2 font-body text-[11px] uppercase tracking-widest text-cream/60">
+                <span className="font-semibold text-cream">
+                  {t("groupReady", { date: formatDeliveryDate(g.date, dateLocale) })}
                 </span>
-              ) : (
-                <KindIcon kind={item.kind} className="size-10 bg-forest-deep text-cream ring-2 ring-cream/15" />
-              )}
-              <span className="min-w-0">
-                <span className="block font-body text-sm font-semibold text-cream">{item.name}</span>
-                <span className="mt-0.5 block font-body text-xs text-cream/65">{lineUnits(item, tc)}</span>
-              </span>
-            </span>
-            <span className="shrink-0 font-body text-sm font-semibold tabular-nums text-cream">
-              {tc("subtotalValue", { amount: item.lineTotal })}
-            </span>
-          </li>
-        ))}
-      </ul>
+                <span>{g.reasons.map((r) => t(r)).join(" · ")}</span>
+              </p>
+              <ul className="[&>li:last-child]:border-b-0">{g.items.map(line)}</ul>
+            </div>
+          ))}
+          <p className="pt-3 font-body text-xs leading-relaxed text-cream/65">{t("groupsNote")}</p>
+        </div>
+      ) : (
+        <ul className="mt-4 border-t border-cream/15">{cart.items.map(line)}</ul>
+      )}
       <div className="flex items-baseline justify-between gap-4 pt-4">
         <span className="font-body text-sm font-semibold text-cream">{t("itemsTotal")}</span>
         <span className="font-display text-xl font-bold tabular-nums text-cream">
@@ -155,7 +181,7 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
         <p className="mt-1 font-body text-sm text-stone">{t("subheading")}</p>
 
         <div className="mt-5">
-          {cart.unavailable.length > 0 ? (
+          {cart.unavailable.length > 0 || cart.overStock.length > 0 ? (
             <div className="grid gap-8 lg:grid-cols-[1fr_400px] lg:gap-12">
               <div className="rounded-2xl bg-sand p-6 md:p-8">
                 <Notice
@@ -177,8 +203,6 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
               subtotal={cart.subtotal}
               partners={shippingProviders().map((p) => p.name)}
               greensOnly={greens}
-              readyDate={cart.readyDate ? istDateISO(cart.readyDate) : null}
-              pickupDate={cart.readyDate ? istDateISO(courierPickup(cart.readyDate)) : null}
               addresses={deliverable.map((a) => ({
                 addrId: a.addrId,
                 recipient: a.recipient,
@@ -229,4 +253,29 @@ function Notice({
       )}
     </div>
   );
+}
+
+/**
+ * The cart's lines by the day each is ready, earliest first, with the reasons
+ * that day is what it is. Keyed on the kind first and the line's sourcing
+ * second — shelf or brought in — for the kinds we hold.
+ */
+function readyGroups(items: readonly CartItem[]) {
+  const byDay = new Map<string, { iso: string; date: Date; items: CartItem[]; reasons: string[] }>();
+  for (const item of items) {
+    const iso = istDateISO(item.readyDate);
+    const g = byDay.get(iso) ?? { iso, date: item.readyDate, items: [], reasons: [] };
+    const reason =
+      item.kind === "variety"
+        ? "reasonGrow"
+        : item.kind === "rack"
+          ? "reasonBuild"
+          : item.sourcing === "shelf"
+            ? "reasonShelf"
+            : "reasonOrdered";
+    if (!g.reasons.includes(reason)) g.reasons.push(reason);
+    g.items.push(item);
+    byDay.set(iso, g);
+  }
+  return [...byDay.values()].sort((a, b) => a.date.getTime() - b.date.getTime());
 }

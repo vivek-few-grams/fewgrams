@@ -10,7 +10,7 @@ import type { Shot } from "@/components/catalogue/Gallery";
 import { MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
 import { readCartUnitsFor } from "@/lib/cart/server";
 import { formatDeliveryDate } from "@/lib/delivery-date";
-import { trayReadyDate } from "@/lib/trays/lead-time";
+import { fromShelf, heldReadyDate } from "@/lib/trays/lead-time";
 
 /**
  * `/shop/trays/[key]` — SPEC §23.3. The tray detail page.
@@ -48,16 +48,13 @@ import { trayReadyDate } from "@/lib/trays/lead-time";
  * page the facts and the table say different things; here they would be the
  * same four rows twice.
  *
- * ## The date does not move with the quantity
+ * ## The date moves with the quantity (the owner, 25 Sep 2026)
  *
- * `AddToCart` takes `dispatch` as one line per reachable quantity, because for
- * a seed the promise changes as the stepper passes what is on the shelf
- * (SPEC §22.2). For a tray it does not: five packs and one pack are the same
- * single order to the same supplier, so every entry in the array is identical.
- *
- * Filling it anyway rather than adding a "one string" variant to the component
- * keeps one contract for all three kinds, and the uniformity is the honest
- * answer — a customer stepping to twenty should see the date *not* move.
+ * `AddToCart` takes `dispatch` as one line per reachable quantity. Up to the
+ * packs we hold, a tray ships from our shelf next day; beyond them it is
+ * brought in overnight and ships a day later (`heldReadyDate`). So stepping
+ * past the count changes the promise before the customer commits — without
+ * the count ever being printed.
  *
  * Three lookups have to succeed, the same test the grid applies:
  *
@@ -122,10 +119,13 @@ export default async function TrayPage({
   ];
 
   const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
-  /* One date for every quantity — see the note at the top of the file. Worked
-     out once and repeated, rather than recomputed twenty times. */
-  const ready = t("dispatch", {
-    date: formatDeliveryDate(trayReadyDate(row.leadDays), dateLocale),
+  /* One line per quantity the stepper reaches (the owner, 25 Sep 2026): up
+     to what we hold ships from our shelf next day, beyond it a day later.
+     The count itself is never printed. */
+  const dispatch = Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) => {
+    const units = i + 1;
+    const date = formatDeliveryDate(heldReadyDate(units, row.stockPacks), dateLocale);
+    return fromShelf(units, row.stockPacks) ? t("dispatchShelf", { date }) : t("dispatchRestock", { date });
   });
 
   return (
@@ -151,9 +151,8 @@ export default async function TrayPage({
         <AddToCart
           kind="tray"
           contentKey={row.contentKey}
-          /* The per-line wholesale cap, and the only cap there is: nothing in
-             this category is held, so there is no stock to run out of
-             (SPEC §23.1). */
+          /* The per-line wholesale cap, and the only cap: more than we hold
+             still sells, a day later. */
           max={MAX_UNITS_PER_LINE}
           inCart={inCart}
           labels={{
@@ -165,8 +164,7 @@ export default async function TrayPage({
             added: d("added"),
             updated: d("updated"),
             viewCart: d("viewCart"),
-            /* Identical for every quantity, deliberately. */
-            dispatch: Array.from({ length: MAX_UNITS_PER_LINE }, () => ready),
+            dispatch,
             /* Pre-formatted for every reachable quantity: a client component
                cannot call `getTranslations`, and currency formatting belongs
                to Intl via the message file rather than to concatenation on the

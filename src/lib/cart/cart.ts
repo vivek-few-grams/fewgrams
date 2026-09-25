@@ -37,7 +37,7 @@ import { isValidRackCartKey } from "@/lib/racks/cart-key";
  * into one line and then quote one of the two prices for both.
  *
  * Trays followed the same day and made the kind carry a second job: **what a
- * unit *is*.** A seed unit is 100 g; a tray-product unit is one pack, of two
+ * unit *is*.** A seed unit is 50 g (100 g until 25 Sep 2026); a tray-product unit is one pack, of two
  * trays or five mats. A variety unit joined them on 19 Sep 2026 — it is now
  * one grown tray, not 100 g — so `GRAMS_PER_UNIT` applies to a shrinking
  * minority of kinds, and `isWeighed` is what says which. A cart holding one
@@ -172,8 +172,10 @@ export const MAX_LINES = 12;
 export const CART_COOKIE = "fewgrams_cart";
 
 /** Grams in one unit **of a weighed kind** — a seed's minimum order (SPEC
- *  §22.2). It does not apply to a green, a tray or a rack — see `isWeighed`. */
-export const GRAMS_PER_UNIT = 100;
+ *  §22.2), 50 g since 25 Sep 2026. A cookie written before then counted
+ *  100 g units, so its seed lines read back at half the grams — the cart is
+ *  a wish and is re-priced on every read, and the customer sees the change. It does not apply to a green, a tray or a rack — see `isWeighed`. */
+export const GRAMS_PER_UNIT = 50;
 
 /** A line's identity — kind **and** key. Used as a React key and to compare
  *  lines, so that `radish` the seed and `radish` the green never collide. */

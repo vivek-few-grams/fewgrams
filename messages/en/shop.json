@@ -104,9 +104,9 @@
     "cardLink": "See sizes and prices"
   },
   "trays": {
-    "body": "Bought in for you from our suppliers rather than held in stock, so each of these is ordered the day you ask for it. The price is for the whole pack.",
-    "dispatch": "Ordered in for you — with you by {date}",
-    "note": "Trays and mats travel on the same delivery as your greens and your seed — one trip, on the date of the slowest thing in the order.",
+    "body": "Kept in stock in Bengaluru, so most orders leave the next day. The price is for the whole pack.",
+    "dispatch": "Ready to ship {date}",
+    "note": "Trays and mats travel with the rest of your order.",
     "cardLink": "See the detail",
     "detail": {
       "back": "All trays & drainage",
@@ -124,17 +124,19 @@
       "viewCart": "View cart",
       "lineTotal": "₹{total, number}",
       "lineBreakdown": "{count, plural, one {# pack} other {# packs}} · ₹{price, number} each",
-      "buyNote": "Sold by the pack. We do not keep these in stock — your order goes to our supplier the day you place it, and it travels on the same delivery as anything else you order.",
+      "buyNote": "Sold by the pack. Most orders leave from our shelf the next day; a larger order takes one more day while we bring it in.",
       "errors": {
         "unitsInvalid": "Choose between 1 and 20 packs.",
         "notSellable": "That item is not on sale at the moment.",
         "cartFull": "Your cart is full at 12 items. Remove one to add another.",
         "generic": "That did not save. Please try again."
       }
-    }
+    },
+    "dispatchShelf": "From our shelf — ready to ship {date}",
+    "dispatchRestock": "We bring it in for you — ready to ship {date}"
   },
   "growMedia": {
-    "body": "The cocopeat we grow our own microgreens in, now available to you. We order it fresh for each order rather than keep it on a shelf, and the price is for the whole block.",
+    "body": "The cocopeat we grow our own microgreens in, now available to you. Kept in stock in Bengaluru, and the price is for the whole block.",
     "badge": "Recommended by Fewgrams",
     "tileWords": {
       "cocopeat": "Cocopeat",
@@ -144,8 +146,8 @@
       "holdsWater": "Holds water",
       "airyRoots": "Airy roots"
     },
-    "dispatch": "Ordered in for you — with you by {date}",
-    "note": "Grow media travel on the same delivery as your greens, seed and trays — one trip, on the date of the slowest thing in the order.",
+    "dispatch": "Ready to ship {date}",
+    "note": "Grow media travel with the rest of your order.",
     "cardLink": "See the detail",
     "detail": {
       "back": "All grow media",
@@ -166,13 +168,15 @@
       "viewCart": "View cart",
       "lineTotal": "₹{total, number}",
       "lineBreakdown": "{count, plural, one {# block} other {# blocks}} · ₹{price, number} each",
-      "buyNote": "Sold by the block. We order it fresh for each order rather than keep it in stock, and it travels on the same delivery as anything else you order.",
+      "buyNote": "Sold by the block. Most orders leave from our shelf the next day; a larger order takes one more day while we bring it in.",
       "errors": {
         "unitsInvalid": "Choose between 1 and 20 blocks.",
         "notSellable": "That item is not on sale at the moment.",
         "cartFull": "Your cart is full at 12 items. Remove one to add another.",
         "generic": "That did not save. Please try again."
       }
-    }
+    },
+    "dispatchShelf": "From our shelf — ready to ship {date}",
+    "dispatchRestock": "We bring it in for you — ready to ship {date}"
   }
 }

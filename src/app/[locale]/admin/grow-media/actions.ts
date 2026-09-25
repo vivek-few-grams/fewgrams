@@ -10,11 +10,7 @@ import {
 } from "@/lib/repo/grow-media";
 import { isValidContentKey } from "@/lib/content/content-key";
 import { err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
-import {
-  MEDIUM_MAX_LEAD_DAYS,
-  MEDIUM_MIN_LEAD_DAYS,
-  isValidMediumLeadDays,
-} from "@/lib/grow-media/lead-time";
+import { isValidStockPacks } from "@/lib/grow-media/lead-time";
 import type { GrowMedium } from "@/lib/types";
 
 /**
@@ -35,27 +31,21 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
 }
 
-/** The price and the lead time — the only two things this screen sets, plus
- *  active. */
-type Ops = Pick<GrowMedium, "price" | "leadDays" | "active">;
+/** The price and the blocks held — the only two things this screen sets,
+ *  plus active. */
+type Ops = Pick<GrowMedium, "price" | "stockPacks" | "active">;
 
 function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
   const price = money(fd, "price");
   if (price === null) return { ok: false, state: err("priceInvalid", "price") };
 
-  /* Refused rather than clamped — see the tray version for why. */
-  const leadDays = zeroOrMore(fd, "leadDays");
-  if (leadDays === null || !isValidMediumLeadDays(leadDays)) {
-    return {
-      ok: false,
-      state: err("leadDaysInvalid", "leadDays", {
-        min: String(MEDIUM_MIN_LEAD_DAYS),
-        max: String(MEDIUM_MAX_LEAD_DAYS),
-      }),
-    };
+  /* The tray rule — see `trays/actions.ts`. */
+  const stockPacks = zeroOrMore(fd, "stockPacks");
+  if (stockPacks === null || !isValidStockPacks(stockPacks)) {
+    return { ok: false, state: err("stockInvalid", "stockPacks") };
   }
 
-  return { ok: true, value: { price, leadDays, active: fd.get("active") === "on" } };
+  return { ok: true, value: { price, stockPacks, active: fd.get("active") === "on" } };
 }
 
 /**

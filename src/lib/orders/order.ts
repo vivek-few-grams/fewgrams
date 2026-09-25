@@ -66,6 +66,27 @@ export type ShippingQuote = {
   zone: string;
 };
 
+/**
+ * One parcel of an order — SPEC §7 (the owner, 24 Sep 2026). A supplier hands
+ * its parcel straight to the courier, so an order is as many shipments as it
+ * has pickups, each booked, dated and charged on its own. Empty on orders
+ * placed before then, which carry only `shippingQuote`.
+ */
+export type OrderShipment = {
+  /** The pickup's id (`home` for the owner's own) and, snapshotted, where it
+   *  is — booking needs the address as it was when the order was placed. */
+  origin: { id: string; name: string; city: string; pincode: string };
+  method: "own_run" | "courier";
+  /** `lineId`s — `kind:key` — of the order lines in this parcel. */
+  lines: string[];
+  /** Rupees, whole; the shipments' charges add up to `deliveryCharge`. */
+  charge: number;
+  /** Null for the own run. */
+  quote: ShippingQuote | null;
+  /** `YYYY-MM-DD`, IST: when this parcel reaches the customer. */
+  deliveryDate: string;
+};
+
 export type Order = {
   id: string;
   userId: string;
@@ -78,13 +99,16 @@ export type Order = {
   /** Rupees, whole, included in `total`. 0 on orders placed while delivery
    *  was free (before 23 Sep 2026). */
   deliveryCharge: number;
-  /** The owner's own same-day run (anything with greens) or the courier;
-   *  null on those older orders. */
+  /** `own_run` when the greens' run carries any of it, else `courier`;
+   *  null on those older orders. The parcels are `shipments`. */
   deliveryMethod: "own_run" | "courier" | null;
-  /** The courier quote behind `deliveryCharge`; null for the own run, whose
-   *  fee is fixed, and on older orders. */
+  /** The courier quote behind `deliveryCharge` when the order is exactly
+   *  one courier parcel; null otherwise, and for the own run. Kept for the
+   *  orders placed before `shipments`, which have only this. */
   shippingQuote: ShippingQuote | null;
-  /** `YYYY-MM-DD`, IST: one trip, on the slowest line's date. */
+  /** Every parcel, with its own pickup, courier and date. */
+  shipments: OrderShipment[];
+  /** `YYYY-MM-DD`, IST: when the last parcel arrives. */
   deliveryDate: string;
   address: OrderAddress;
   locale: string;

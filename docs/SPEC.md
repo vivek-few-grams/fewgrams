@@ -1062,12 +1062,45 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
     every one; for 10–12 kg Ekart wins far away and Delhivery in the metros and nearby.
   - Shiprocket's `rate` is taken as GST-inclusive (no tax field; its Delhivery rate lands within
     2% of Delhivery's own inclusive quote). Confirm against the first invoice.
+- **Where an order is collected from** (the owner, 24–25 Sep 2026). **Everything ships from our
+  Bengaluru pickup, except shelf racks, which always ship from their maker** (`lineOrigin`,
+  `src/lib/shipping/origin.ts`).
+  - Why: two live tests on 25 Sep. Three vendor parcels (trays from Salem 637103, a rack from
+    Chennai 600078, seed from us) cost ₹99–232 more than one box from Bengaluru to every city
+    tried; sent alone, a tray or mat cost the same from either (flat national rates), and the
+    rack from its maker won only for Chennai customers. So trays, grow media and the other racks
+    are held here (§23.1, §24), and only the shelf-rack maker ships direct.
+  - The maker's address is a **vendor pickup** (name, phone, address, city, PIN) on the settings
+    row, chosen on admin → racks and edited on admin → delivery. Until one is chosen, shelf racks
+    ship from ours. A vendor still chosen cannot be removed.
+  - The order is split by pickup (`splitShipments`): at most our parcel and the maker's, each
+    measured on its own, quoted from its own PIN, all at once. One parcel no courier will carry
+    refuses the whole order. With greens, everything of ours rides the own run; the rack still
+    goes by courier from its maker.
+  - **The customer picks a partner per parcel**, cheapest pre-picked; parcels are headed "Parcel
+    n" and what is in them — no pickup town is named. Each parcel is dated on its own; the
+    order's `deliveryDate` is the last arrival. The order stores `shipments` (pickup snapshot,
+    line ids, charge, quote, date), and admin → the order shows a row per parcel.
+  - Each vendor address must be registered as a pickup location on the Delhivery, Ekart and
+    Shiprocket accounts before a parcel can be booked from it. Admin → delivery checks that
+    Delhivery collects from each vendor PIN.
+  - A per-order price comparison (our pickup vs each item's vendor, cheapest charged) and an
+    order-page pickup planner were built the same day and removed on the owner's decision above.
 - Everything consolidates onto the **same Saturday run**.
-- **Seed has its own dispatch rule, set 17 Sep 2026** (§22.2): up to what is on the shelf goes out
+- **Seed has its own dispatch rule** (§22.2): since 25 Sep 2026 only what is on the shelf can be
+  ordered, and it goes out next day. *Until then:* up to what is on the shelf went out
   **next day**, and anything beyond it is bought in from the supplier and promised **within 10
   days**. That is a *timing* rule and it does not set a *charge* — the seed delivery rate is still
   unset above. A cart mixing seed and greens takes one trip on the slowest line's date, so this
   rule can push a greens order later than its grow window.
+- **Trays and grow media are held in Bengaluru from 25 Sep 2026** (the owner: *"stock first then
+  if its more add 1 day extra so that I can order from vendor get delivery in next day"*). Each
+  row has a count of packs held (`stockPacks`, admin → trays / grow media). Up to it ships next
+  day off the shelf; more still sells, **one day later** (`heldReadyDate`, `RESTOCK_EXTRA_DAYS`
+  in `src/lib/trays/lead-time.ts`), and the line is marked "order from the vendor" on the admin
+  order. A paid order takes its packs off the count (`takeFromStock`). The count is never
+  shown; the buy box's date line changes as the stepper passes it. The per-row supplier
+  `leadDays` below is retired (still on stored rows, never read).
 - **Trays and drainage have one too, set the same day** (§23.1): nothing is held, so every order is
   bought in and promised on a **per-item lead time with a floor of 7 days**. Three rules now
   coexist — grow days, the seed shelf, and a supplier lead time — and `latestDate` is what keeps
@@ -4015,7 +4048,30 @@ of which the old `/admin/products` screen demonstrated:
 Trays and snacks stay on `Product` until they get screens of their own. Racks
 were pulled out for a different reason — computed pricing (§19).
 
-### 22.2 The stock rule: any quantity, and the shelf sets the date
+### 22.2 The stock rule: the shelf is the limit, in 50 g steps
+
+**Changed 25 Sep 2026, by the owner:** *"if its beyond my inventory, it will say sold out, if
+its fully 0 or dont allow to enter more than allowed and minimum order qty can be 50 gms. cost in
+admin also should be configured per 50 gms."*
+
+- **Sold by the 50 g**, minimum 50 g — one cart unit (`GRAMS_PER_UNIT = 50`,
+  `SEED_MIN_ORDER_GRAMS`). The price is **per 50 g** on admin → seeds (`pricePer50g`); a row saved
+  before the change still holds `pricePer100g`, read as half (rounded up) and flagged in red on its
+  admin row until saved. Cart cookies written before counted 100 g units, so their seed lines read
+  back at half the grams — a cart is a wish and is re-priced on every read.
+- **The shelf is the limit** (`seedMaxUnits` in `src/lib/seeds/stock.ts`): the stepper on the seed
+  page, the grid's quick add and the cart stop at what is held in whole 50 g packs (and the 20-unit
+  line cap, so 1 kg); `sellable()` refuses an add or an increase past it (`soldOut`,
+  `overStock`). **Under 50 g held is sold out** — the page shows "Sold out" instead of the buy box,
+  the grid a "Sold out" chip. A cart line left above the shelf (stock fell after it was added) is
+  flagged on the cart, and checkout refuses it (`overStock`) until reduced.
+- **Every seed ships next day off our shelf.** The vendor route and its ten-day promise below are
+  retired; `sourcing` is always `shelf` on new orders and `vendor` survives only on old ones.
+- The grams held are still never shown to a customer.
+
+*What follows is the rule it replaced (17–25 Sep 2026), kept for the reasoning.*
+
+#### Superseded: any quantity, and the shelf sets the date
 
 **Rewritten 17 Sep 2026, hours after it was first built.** The original rule
 was the owner's: stock was a hard cap, anything under 100 g read as out of

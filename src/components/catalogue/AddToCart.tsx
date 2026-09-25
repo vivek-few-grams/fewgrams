@@ -47,22 +47,17 @@ import { setCartQuantity } from "@/app/[locale]/cart/actions";
  * `inCart` would wipe the "Added to your cart" confirmation the instant it
  * appeared.
  *
- * ## `max` is one cap, not two, and nothing here can sell out
+ * ## `max` is the cap, and 0 is sold out
  *
- * `max` is the per-line wholesale ceiling (`MAX_UNITS_PER_LINE`) for **both**
- * kinds. Greens have no stock at all — they are sown to order — and a seed's
- * stock stopped being a ceiling on 17 Sep 2026, when the owner replaced it
- * with a delivery rule: *"we should let them allow to order how much ever they
- * want but the delivery logic changes."*
+ * `max` is the per-line wholesale ceiling (`MAX_UNITS_PER_LINE`) for a
+ * green, and for a seed the lower of that and what is on the shelf in 50 g
+ * units (the owner, 25 Sep 2026 — from 17 Sep a seed could be ordered past
+ * the shelf and was bought in). A seed with nothing on the shelf has `max`
+ * 0, and the panel says it is sold out instead of offering a stepper.
  *
- * So the sold-out panel this component used to render is **gone**, along with
- * the `max < 1` branch that chose it. Nothing in the catalogue can now be
- * unbuyable-but-listed: a withdrawn item 404s on its own page, and an empty
- * shelf is a later date rather than a refusal (`src/lib/seeds/stock.ts`).
- *
- * What replaced it is `dispatch` — one pre-formatted line per quantity, so
- * stepping past what the shelf holds changes the promise in front of the
- * customer *before* they commit, rather than surprising them at checkout.
+ * `dispatch` is one pre-formatted line per quantity, for a kind whose date
+ * depends on the amount; nothing passes it now that every seed ships next
+ * day, but it stays optional rather than being ripped out mid-change.
  *
  * All validation is repeated server-side in `setCartQuantity`. The clamping
  * here is a convenience: a form control is not a security boundary (SPEC §8).
@@ -110,6 +105,8 @@ export function AddToCart({
     totals: string[];
     breakdowns: string[];
     errors: Record<string, string>;
+    /** Shown in place of the stepper when `max` is 0. */
+    soldOut?: { title: string; body: string };
   };
 }) {
   /* Seeded from the cart so this control and the header badge agree on load.
@@ -136,6 +133,15 @@ export function AddToCart({
     state.status === "error"
       ? labels.errors[state.code] ?? labels.errors.generic
       : null;
+
+  if (max < 1) {
+    return (
+      <div role="status" className="mt-8 rounded-2xl bg-sand p-5 sm:p-6">
+        <p className="font-display text-xl font-bold text-forest">{labels.soldOut?.title}</p>
+        <p className="mt-2 font-body text-sm leading-relaxed text-stone">{labels.soldOut?.body}</p>
+      </div>
+    );
+  }
 
   return (
     <form action={action} className="mt-8 rounded-2xl bg-sand p-5 sm:p-6">

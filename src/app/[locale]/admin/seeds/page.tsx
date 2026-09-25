@@ -77,7 +77,8 @@ export default async function SeedsAdmin() {
           seed: {
             id: s.id,
             contentKey: s.contentKey,
-            pricePer100g: s.pricePer100g,
+            pricePer50g: s.pricePer50g,
+            ...(s.priceFromOld100g ? { priceFromOld100g: true } : {}),
             stockGrams: s.stockGrams,
             active: s.active,
           },

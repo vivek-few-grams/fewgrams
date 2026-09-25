@@ -188,10 +188,10 @@ describe("seed keys", () => {
   });
 
   it("stores zero grams rather than dropping the attribute", () => {
-    /* Zero is a real state: an empty shelf, where every order is bought in
-       (SPEC §22.2). If the marshaller or the schema treated it as absent, the
-       row would read back with no stock figure at all, and `seedSourcing`
-       would be deciding a delivery date from `undefined`. */
+    /* Zero is a real state: an empty shelf, sold out (SPEC §22.2). If the
+       marshaller or the schema treated it as absent, the row would read back
+       with no stock figure at all, and `seedMaxUnits` would be deciding what
+       can be ordered from `undefined`. */
     const { Item } = SeedEntity.put({ ...seed, stockGrams: 0 }).params();
     expect(Item.stockGrams).toBe(0);
   });
@@ -202,7 +202,7 @@ describe("tray keys", () => {
     id: "8b41-uuid",
     contentKey: "drain-cell-mat",
     price: 300,
-    leadDays: 7,
+    stockPacks: 0,
     active: true,
   };
 
@@ -253,12 +253,11 @@ describe("tray keys", () => {
     ).not.toContain("begins_with");
   });
 
-  /** There is no stock attribute to lose here, which is the point — but the
-   *  lead time is the figure the customer-facing date is computed from, so it
-   *  must survive the round trip as a number rather than a string. */
-  it("stores the lead time as a number", () => {
+  /** Zero packs held is a real count (every order a day later), so it must
+   *  be stored, not dropped as absent. */
+  it("stores zero packs held rather than dropping the attribute", () => {
     const { Item } = TrayEntity.put(tray).params();
-    expect(Item.leadDays).toBe(7);
+    expect(Item.stockPacks).toBe(0);
   });
 });
 
@@ -267,7 +266,7 @@ describe("grow medium keys", () => {
     id: "c0c0-uuid",
     contentKey: "horti-coir",
     price: 399,
-    leadDays: 7,
+    stockPacks: 0,
     active: true,
   };
 
@@ -298,7 +297,7 @@ describe("grow medium keys", () => {
       id: "8b41-uuid",
       contentKey: "radish",
       price: 300,
-      leadDays: 7,
+      stockPacks: 0,
       active: true,
     }).params().Item;
 
