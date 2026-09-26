@@ -903,6 +903,39 @@ picks into grow-day groups, assigns each to the correct rotation week, and **sho
 their week-by-week delivery schedule before payment** — "here is what arrives on each of your four
 Saturdays". This preview is a required part of the BYO flow, not a nice-to-have.
 
+### 5.2.1 Subscriptions — built 26 Sep 2026
+
+The owner's model: **one bundle is one box every Saturday for four Saturdays**; take two
+Everyday Essentials for two boxes, and mix plans freely in one checkout. **Pick Your Own is not
+subscribable** — its card links to `/microgreens`, and `subscribablePlans()` excludes any plan with
+no `monthlyPrice`, so the page and the action agree.
+
+- **One shared rotation calendar.** Week 1–4 are slots in a cycle every subscriber shares, counted
+  from `ROTATION_ANCHOR` (Sat 10 Oct 2026 = week 1) in `src/lib/subscriptions/rotation.ts`, `mod 4`.
+  Not week-of-month: a five-Saturday month would repeat a week. Someone subscribing mid-month starts
+  on whichever week comes next, and the home page's rotation modal and `/subscribe` list the four
+  Saturdays in date order, each with its own week. Moving the anchor relabels every future Saturday.
+- **`/subscribe`**, not the cart: bundle steppers, the four Saturdays, an address in the delivery
+  area (greens, own run), delivery included. `startSubscription` recomputes everything, writes a
+  `pending_payment` row, opens the same gateway as checkout.
+- **Ids `FS…`** (orders are `FG…`). The return route and webhook dispatch on the prefix to
+  `settleSubscription`, which follows `settleOrder`'s rule (`settlementFor`, a conditional write,
+  receipt number from the shared `receipt` sequence). Paid after a cutoff it was priced before, the
+  whole term moves a week (`shiftForCutoff`).
+- **Storage:** `SubscriptionEntity`, `SUB#<id> / META`, GSI2 `SUBSTATUS#<status>`, GSI3
+  `USER#<userId> / SUB#<createdAt>` (sparse, paid only). The four Saturdays are a list on the row —
+  no `WEEK#` rows yet (see the entity comment). **Expired is derived** from the last Saturday, never
+  stored.
+- **Snapshot vs live:** a subscription stores its dates, rotation weeks and `gramsPerBox`; the
+  **varieties** are read live from the plan rotation, because flat pricing exists so the owner can
+  swap a green (§5.1) and the swap must reach the tray plan.
+- **`/admin/subscriptions`** — the tray plan (§6) for the next four Saturdays: grams per variety
+  (box weight split evenly across that week's varieties), trays at the **low** yield (high yield as
+  best case), seed, sow-by date, and a red flag when sow-by has passed; the rotation on real dates;
+  active / ended / unpaid lists.
+- **Known gap:** a slow crop in a subscriber's first box may have a sow-by date before they paid.
+  The dashboard flags it ("Past — sow today"); the first-delivery rule itself is still §5.3's.
+
 ### 5.3 Weekly operating rhythm
 
 **This cycle governs subscriptions only.** A one-off order (§18.6) is sown the **next day** and cut
@@ -966,6 +999,14 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
   area); the PIN step turns an out-of-area PIN away only at a checkout with greens in the cart,
   with the "order on WhatsApp" card; and `startCheckout` enforces the area server-side for greens
   alone. A courier that cannot reach a PIN simply offers no price.
+- **Greens set aside, not the whole cart** (the owner, 26 Sep 2026). A cart with greens **and**
+  other things is offered every saved address, and the PIN step lets any PIN through. For an
+  address outside the area the greens are set aside: the address card says so, the order summary
+  greys them under "Not deliverable to your location" with the price struck through and out of the
+  total, `scanDelivery` quotes without them and `startCheckout` orders without them — all through
+  `splitByArea`, so the three cannot disagree. After payment only the lines bought leave the cart
+  (`cartAfterOrder`); the greens stay for another address. A cart of greens alone is refused as
+  before.
 - **The delivery area is a district, not a PIN list** (set 23 Sep 2026, replacing eighteen PINs
   hard-coded in `brand.ts`, which refused Bengaluru PINs nobody had typed in). A PIN is served
   when India Post's directory (data.gov.in, `src/lib/pincode/`) places it in **Bengaluru Urban** —
@@ -2240,10 +2281,11 @@ next-day delivery before they reach a product page.
 | 1 | **Header** (§18.1) | |
 | 2 | **Hero** — full-bleed microgreens image, full viewport width | Says what this is in three seconds |
 | 3 | **Our process** — five numbered steps on one row, joined by a hairline that draws towards the next: seed from suppliers we know (non-hybrid, non-GMO, untreated, hand-checked) → clean tray and new medium → sown only on your order → quality checked, cut, delivered → and again from scratch every week. No freezing, no storing. Revealed on scroll with a marker → line → text stagger (`Reveal` + the `.reveal-*` kit) | The core differentiator, and the answer to "is this safe to eat". Rewritten 16 Sep 2026 to add the hygiene claims — sterilised trays and never-reused coco peat, the specific thing a buyer worries about — while staying on one row, because six steps wrapped to two and lost the left-to-right flow that makes a numbered sequence legible. The fifth step is the weekly cycle rather than a fifth task: the connector used to run out at "delivered", and repeating the whole sequence is the claim a subscriber most needs to believe |
-| 4 | **Bundles** (`#plans`, §18.4) | The conversion surface |
-| 5 | **Other products** — racks · trays · seeds · snacks, four tiles | One-off revenue, clearly secondary. Same card motion as §17.4 |
-| 6 | **Trust tags** — organically grown · no chemicals · trusted seed sources · fresh, never frozen | Icon badges, `sage` on `forest` |
-| 7 | **Footer** | Org details, legal, contact, FSSAI number |
+| 4 | **Why microgreens** — a head-to-head, with an **"Honestly grown"** badge under the microgreens name and both drawings animated (the field's sprayer sweeps and its plants shiver; the tray's sprouts sway happily as light falls from the lamp onto them; all still under reduced motion): grown-up greens on a sand card (each problem marked with a warning triangle) against microgreens on a forest card (each answer ✓), a drawing heading each column and a topic label between them — grow time & sprays (one row: the short time indoors is why nothing is sprayed) · soil (the same field soil crop after crop, against fresh coco peat every sow on a sterilised tray; not water — a customer cannot verify ours either — and no named contaminant) · nutrition · on your plate (one row: freshness, washing and how much you need). On a phone each topic sits above its two sides. The grow time is the min–max `growDays` of the varieties on sale, never written into copy. The nutrition row is attributed in the copy to a published USDA study (Xiao et al., J. Agric. Food Chem., 2012; no link shown) — never a nutrient claim about our own greens, and no "healthy" | Answers "why this at all" before the plans ask for a subscription. Added 26 Sep 2026 |
+| 5 | **Bundles** (`#plans`, §18.4) | The conversion surface |
+| 6 | **Other products** — racks · trays · seeds · snacks, four tiles | One-off revenue, clearly secondary. Same card motion as §17.4 |
+| 7 | **Trust tags** — organically grown · no chemicals · trusted seed sources · grown to order · fresh, never frozen. Five small badges (26 Sep 2026) | Icon badges, `sage` on `forest` |
+| 8 | **Footer** | Org details, legal, contact, FSSAI number |
 
 **Dropped from §12's original list:** testimonials. There are no customers yet; an empty carousel
 signals that nobody buys this, and inventing quotes is an unacceptable trade for a food brand. The

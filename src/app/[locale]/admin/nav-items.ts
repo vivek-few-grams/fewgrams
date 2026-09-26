@@ -33,7 +33,14 @@ export const ADMIN_NAV_GROUPS: {
   { heading: null, items: [{ label: "overview", href: "/admin" }] },
   /* Above the catalogue: orders are what an operator opens every day, the
      catalogue screens only when a price or a product changes. */
-  { heading: "operations", items: [{ label: "orders", href: "/admin/orders" }] },
+  {
+    heading: "operations",
+    items: [
+      { label: "orders", href: "/admin/orders" },
+      /* Weekly plans and the tray plan they add up to (SPEC §5, §6). */
+      { label: "subscriptions", href: "/admin/subscriptions" },
+    ],
+  },
   {
     heading: "catalogue",
     items: [

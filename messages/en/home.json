@@ -69,6 +69,44 @@
       }
     }
   },
+  "why": {
+    "heading": "Why microgreens, not grown‑up greens?",
+    "lede": "Same plant, cut young. Here is everything that changes.",
+    "vs": "vs",
+    "them": {
+      "name": "Grown-up greens",
+      "alt": "A full-grown leafy plant in an open field, under a sprayer."
+    },
+    "us": {
+      "name": "Microgreens",
+      "alt": "A tray of young microgreens growing indoors under a lamp.",
+      "badge": "Honestly grown"
+    },
+    "rows": {
+      "time": {
+        "topic": "Grow time & sprays",
+        "them": "Weeks in an open field mean more time for pests and disease to strike, and multiple types of chemical sprays to fight them",
+        "usRange": "{min, number}–{max, number} days indoors, cut before pests take hold. No pesticides, no chemicals",
+        "usSingle": "{days, number} days indoors, cut before pests take hold. No pesticides, no chemicals",
+        "usNone": "A few days indoors, cut before pests take hold. No pesticides, no chemicals"
+      },
+      "nutrition": {
+        "topic": "Nutrition",
+        "them": "Fewer vitamins than the young leaf of the same plant, USDA scientists found",
+        "us": "Most of the 25 microgreens they tested held more vitamins and carotenoids"
+      },
+      "soil": {
+        "topic": "Soil",
+        "them": "The same field soil, crop after crop, season after season",
+        "us": "Fresh coco peat for every sow, never reused, on a tray sterilised each time"
+      },
+      "plate": {
+        "topic": "On your plate",
+        "them": "Comes through a market, needs a long soak to shift the soil, and cooks down to a spoonful",
+        "us": "Cut the morning it reaches you. A quick rinse, and a raw handful flavours the whole plate"
+      }
+    }
+  },
   "otherProducts": {
     "eyebrow": "Everything else",
     "heading": "Grow your own, or eat them ready-made.",
@@ -94,6 +132,10 @@
     "seed": {
       "title": "Trusted seed sources",
       "note": "Untreated seed only"
+    },
+    "toOrder": {
+      "title": "Grown to order",
+      "note": "Sown only when you order"
     },
     "neverFrozen": {
       "title": "Never frozen",

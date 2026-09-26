@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { AccountTabs } from "./AccountTabs";
+import { SideColumn } from "./SideColumn";
 import { signOutAction } from "./actions";
 
 /**
@@ -23,6 +24,7 @@ import { signOutAction } from "./actions";
  */
 export default async function AccountLayout({
   children,
+  aside,
   params,
 }: LayoutProps<"/[locale]/account">) {
   const { locale } = await params;
@@ -32,7 +34,7 @@ export default async function AccountLayout({
   const t = await getTranslations("account.shell");
 
   return (
-    <div className="mx-auto max-w-[1000px] px-6 py-12 md:px-10 md:py-16">
+    <div className="mx-auto max-w-[1000px] px-6 pb-12 pt-6 md:px-10 md:pb-16 md:pt-8 lg:max-w-[1400px] lg:px-12">
       <div className="flex flex-wrap items-baseline justify-between gap-4">
         <h1 className="font-display text-2xl font-bold tracking-tight text-forest">
           <Link href="/account">{t("title")}</Link>
@@ -57,9 +59,20 @@ export default async function AccountLayout({
         </div>
       </div>
 
-      <AccountTabs />
-
-      <div className="mt-8">{children}</div>
+      {/* From `lg` the sections become a column on the right and the page
+          fills the left (the owner, 26 Sep 2026). `flex-row-reverse` keeps
+          the nav first in the DOM, so it is still reached before the page by
+          keyboard and screen reader. Below `lg` it stays a row of tabs on
+          top, where a side column would squeeze the page. */}
+      <div className="lg:mt-10 lg:flex lg:flex-row-reverse lg:items-start lg:gap-10">
+        {/* `aside` is the `@aside` slot: what a page puts above the menu —
+            an order's delivery address, and nothing elsewhere. */}
+        <SideColumn>
+          {aside}
+          <AccountTabs />
+        </SideColumn>
+        <div className="mt-8 min-w-0 lg:mt-0 lg:flex-1">{children}</div>
+      </div>
     </div>
   );
 }

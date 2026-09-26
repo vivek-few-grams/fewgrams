@@ -78,5 +78,12 @@
   "reasonBuild": "Built for you",
   "groupsNote": "Each parcel leaves once everything in it is ready.",
   "splitNote": "Your order comes in {count, number} parcels. Each is collected from where it's kept and priced on its own, so each has its own delivery partner and date.",
-  "parcel": "Parcel {n}"
+  "parcel": "Parcel {n}",
+  "confirming": {
+    "title": "Payment received",
+    "body": "Confirming your order. This takes a few seconds, so please keep this page open."
+  },
+  "setAsideHeading": "Not deliverable to your location",
+  "setAsideBody": "Fresh greens reach selected areas only, so these aren't in this order or its total. They stay in your cart for another address.",
+  "setAsideAddress": "Fresh greens don't reach this PIN code. The rest of your order ships by courier; the greens stay in your cart."
 }

@@ -413,6 +413,86 @@
   opacity: 0;
 }
 
+/* The two drawings in "Why microgreens" (WhyMicrogreens.tsx). The field is
+   sprayed and its plants shiver; the tray's sprouts sway. SVG groups need
+   `transform-box` set, or `transform-origin` is measured from the viewBox
+   corner. The lance pivots on its handle, which is in viewBox units. */
+.why-lance {
+  transform-box: view-box;
+  transform-origin: -10px 34px;
+  animation: why-lance 3.2s ease-in-out infinite alternate;
+}
+@keyframes why-lance {
+  from { transform: rotate(-3deg); }
+  to { transform: rotate(4deg); }
+}
+.why-mist {
+  animation: why-mist 1.1s ease-in-out infinite alternate;
+}
+@keyframes why-mist {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+.why-drop {
+  animation: why-drop 1.1s linear infinite;
+}
+@keyframes why-drop {
+  0% { transform: translate(-18px, -10px); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translate(10px, 14px); opacity: 0; }
+}
+/* Still most of the cycle, then a flinch: irritated, not windblown. */
+.why-shiver {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: why-shiver 2.4s ease-in-out infinite;
+}
+@keyframes why-shiver {
+  0%, 55%, 100% { transform: rotate(0) scaleY(1); }
+  60% { transform: rotate(-3deg) scaleY(0.97); }
+  65% { transform: rotate(3deg) scaleY(0.96); }
+  70% { transform: rotate(-2.5deg) scaleY(0.97); }
+  75% { transform: rotate(2deg) scaleY(0.98); }
+  82% { transform: rotate(-1deg) scaleY(1); }
+  90% { transform: rotate(0) scaleY(1); }
+}
+/* Happy, not windblown: a wider swing with a little lift through the
+   middle of each pass, like a sprout stretching up to the light. */
+.why-sway {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: why-sway 2s ease-in-out infinite alternate;
+}
+@keyframes why-sway {
+  0% { transform: rotate(-8deg) scaleY(1); }
+  50% { transform: rotate(0deg) scaleY(1.06); }
+  100% { transform: rotate(8deg) scaleY(1); }
+}
+/* Falls from the lamp (y 56) to about the leaf tops (y 130). */
+.why-photon {
+  animation: why-photon 2s ease-in infinite;
+}
+@keyframes why-photon {
+  0% { transform: translateY(0); opacity: 0; }
+  15% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(74px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .why-lance,
+  .why-mist,
+  .why-drop,
+  .why-shiver,
+  .why-sway {
+    animation: none;
+  }
+  /* A photon frozen mid-fall is a stray dot, so it goes altogether. */
+  .why-photon {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 /* §17.4 again: everything arrives at once and in place. The `[data-reveal]`
    rules are overridden too, because `Reveal` bails out before setting the
    attribute — but if it ever did, this is what stops it hiding content that
@@ -1199,4 +1279,286 @@ html[data-loader="out"] .loader__mark {
   .nav-sprout:focus-visible .nav-sprout__face { transform: none; opacity: 1; }
   .nav-sprout:hover .nav-sprout__face--back,
   .nav-sprout:focus-visible .nav-sprout__face--back { transform: translateY(35%) scaleY(0); opacity: 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Order confirmation — `account/orders/[id]/OrderHero.tsx`
+
+   Every moving part's resting style is its FINISHED state (items in the
+   box, flaps shut, tape on, stamp on; sprouts grown), and the motion is
+   added only under `no-preference`. A visitor who asked for less motion
+   therefore sees the closed box, never the first frame of an animation
+   that does not play. `.pack--still` (a delivered order) is the same.
+
+   The packing loop is one 10s timeline shared by every part, so the parts
+   stay in step: filler, a punnet, a tray and seed packets are lowered in
+   2–34% (held in view above the box, so each reads as itself), the lid snaps shut
+   35–43% (back flap, then front — about half a second each; the owner
+   wanted it quicker, 26 Sep 2026), the tape gun runs the seam 45–61%, the
+   label lands 61–67%, the stamp presses 66–77%, a hop at 79%, and the
+   finished box holds until the scene fades out and in across the loop, so
+   the reset is never seen.
+
+   A flap turning by θ about its hinge maps its local up-vector (0,−20) to
+   a mix of screen-up and the box's depth, which runs (±9, ∓7) per half
+   flap. That is the matrix [1 c; 0 d], written `scaleY(d) skewX(atan c)` —
+   in that order both terms are continuous through the fold (as
+   `skewX scaleY` the skew flips sign where the flap is edge-on).
+     front flap, φ from closed:  c = −0.45 cos φ,  d = 0.35 cos φ + sin φ
+     back flap,  ψ from closed:  c =  0.45 cos ψ,  d = sin ψ − 0.35 cos ψ
+   ───────────────────────────────────────────────────────────── */
+/* Only the parts that move turn about their own box. Applied to every
+   element, it also moved the origin of each static `rotate()`/`scale()`
+   attribute — the sun's rays piled up and the seed leaves drifted. */
+.pack-scene, .pack-box, .pack-shadow, .pack-item, .pack-flap, .pack-tape, .pack-tape-side,
+.pack-gun, .pack-roll, .pack-label, .pack-stamp, .pack-stamp-tool, .pack-spark, .pack-plant,
+.grow-sprout, .grow-drop, .grow-sun { transform-box: fill-box; }
+.pack-item, .pack-plant, .pack-stamp-tool, .pack-shadow { transform-origin: 50% 100%; }
+.pack-flap--back-open { transform-origin: 0% 100%; opacity: 0; }
+.pack-flap--back { transform-origin: 0% 100%; transform: scaleY(-0.35) skewX(24.23deg); }
+.pack-flap--front { transform-origin: 0% 100%; transform: scaleY(0.35) skewX(-24.23deg); }
+.pack-tape { transform-origin: 0% 50%; }
+.pack-tape-side { transform-origin: 50% 0%; }
+.pack-gun, .pack-stamp-tool { opacity: 0; }
+.pack-roll, .pack-label, .pack-stamp, .pack-spark { transform-origin: 50% 50%; }
+.pack-spark { opacity: 0; }
+.grow-sprout { transform-origin: 50% 100%; }
+.grow-drop { opacity: 0; }
+.grow-sun { transform-origin: 50% 50%; }
+.order-fall { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .pack:not(.pack--still) .pack-scene   { animation: pack-scene 10s linear infinite; }
+  .pack:not(.pack--still) .pack-item--0 { animation: pack-drop-0 10s ease-in infinite; }
+  .pack:not(.pack--still) .pack-item--1 { animation: pack-drop-1 10s ease-in infinite; }
+  .pack:not(.pack--still) .pack-item--2 { animation: pack-drop-2 10s ease-in infinite; }
+  .pack:not(.pack--still) .pack-item--3 { animation: pack-drop-3 10s ease-in infinite; }
+  .pack:not(.pack--still) .pack-flap--back-open { animation: pack-flap-back-open 10s linear infinite; }
+  .pack:not(.pack--still) .pack-flap--back  { animation: pack-flap-back 10s linear infinite; }
+  .pack:not(.pack--still) .pack-flap--front { animation: pack-flap-front 10s linear infinite; }
+  .pack:not(.pack--still) .pack-gun       { animation: pack-gun 10s ease-in-out infinite; }
+  .pack:not(.pack--still) .pack-roll      { animation: pack-roll 10s ease-in-out infinite; }
+  .pack:not(.pack--still) .pack-tape      { animation: pack-tape 10s ease-in-out infinite; }
+  .pack:not(.pack--still) .pack-tape-side { animation: pack-tape-side 10s ease-out infinite; }
+  .pack:not(.pack--still) .pack-label     { animation: pack-label 10s var(--ease-brand) infinite; }
+  .pack:not(.pack--still) .pack-stamp-tool { animation: pack-stamp-tool 10s ease-in-out infinite; }
+  .pack:not(.pack--still) .pack-stamp     { animation: pack-stamp 10s ease-out infinite; }
+  .pack:not(.pack--still) .pack-box       { animation: pack-hop 10s ease-in-out infinite; }
+  .pack:not(.pack--still) .pack-shadow    { animation: pack-shadow 10s ease-in-out infinite; }
+  .pack:not(.pack--still) .pack-spark     { animation: pack-spark 10s ease-out infinite; }
+  .pack:not(.pack--still) .pack-spark--1  { animation-delay: 0.08s; }
+  .pack:not(.pack--still) .pack-spark--2  { animation-delay: 0.16s; }
+  .pack:not(.pack--still) .pack-plant     { animation: pack-plant 3.5s ease-in-out infinite alternate; }
+
+  .grow-sprout { animation: grow-sprout 7s var(--ease-brand) infinite backwards; }
+  .grow-drop   { animation: grow-drop 7s ease-in infinite; }
+  .grow-drop--1 { animation-delay: 0.5s; }
+  .grow-drop--2 { animation-delay: 1s; }
+  .grow-sun    { animation: grow-sun 24s linear infinite; }
+
+  /* Leaves falling once across the band, just after payment. */
+  .order-fall {
+    display: block;
+    animation: order-fall 2.8s cubic-bezier(0.3, 0.1, 0.6, 1) 1 both;
+  }
+
+  /* The tracker's current step breathes. */
+  .order-ping { animation: order-ping 2s ease-out infinite; }
+}
+
+@keyframes pack-drop-0 {
+  0%, 2% { transform: translateY(-110px) scaleY(1); opacity: 0; animation-timing-function: ease-out; }
+  4% { transform: translateY(-64px) scaleY(1); opacity: 1; animation-timing-function: linear; }
+  7% { transform: translateY(-52px) scaleY(1); animation-timing-function: ease-in; }
+  9% { transform: translateY(0) scaleY(0.9); animation-timing-function: ease-out; }
+  10.5% { transform: translateY(-3px) scaleY(1.03); animation-timing-function: ease-in-out; }
+  12%, 100% { transform: translateY(0) scaleY(1); opacity: 1; }
+}
+@keyframes pack-drop-1 {
+  0%, 8% { transform: translateY(-110px) scaleY(1); opacity: 0; animation-timing-function: ease-out; }
+  10% { transform: translateY(-64px) scaleY(1); opacity: 1; animation-timing-function: linear; }
+  13% { transform: translateY(-52px) scaleY(1); animation-timing-function: ease-in; }
+  15% { transform: translateY(0) scaleY(0.9); animation-timing-function: ease-out; }
+  16.5% { transform: translateY(-3px) scaleY(1.03); animation-timing-function: ease-in-out; }
+  18%, 100% { transform: translateY(0) scaleY(1); opacity: 1; }
+}
+@keyframes pack-drop-2 {
+  0%, 16% { transform: translateY(-110px) scaleY(1); opacity: 0; animation-timing-function: ease-out; }
+  18% { transform: translateY(-64px) scaleY(1); opacity: 1; animation-timing-function: linear; }
+  21% { transform: translateY(-52px) scaleY(1); animation-timing-function: ease-in; }
+  23% { transform: translateY(0) scaleY(0.9); animation-timing-function: ease-out; }
+  24.5% { transform: translateY(-3px) scaleY(1.03); animation-timing-function: ease-in-out; }
+  26%, 100% { transform: translateY(0) scaleY(1); opacity: 1; }
+}
+@keyframes pack-drop-3 {
+  0%, 24% { transform: translateY(-110px) scaleY(1); opacity: 0; animation-timing-function: ease-out; }
+  26% { transform: translateY(-64px) scaleY(1); opacity: 1; animation-timing-function: linear; }
+  29% { transform: translateY(-52px) scaleY(1); animation-timing-function: ease-in; }
+  31% { transform: translateY(0) scaleY(0.9); animation-timing-function: ease-out; }
+  32.5% { transform: translateY(-3px) scaleY(1.03); animation-timing-function: ease-in-out; }
+  34%, 100% { transform: translateY(0) scaleY(1); opacity: 1; }
+}
+@keyframes pack-flap-back-open {
+  0%, 35% { transform: scaleY(1.041) skewX(-12.68deg); opacity: 1; }
+  35.8% { transform: scaleY(1.000) skewX(0.00deg); }
+  36.5% { transform: scaleY(0.691) skewX(12.68deg); }
+  37.1% { transform: scaleY(0.197) skewX(21.29deg); }
+  37.4% { transform: scaleY(0) skewX(23.01deg); opacity: 1; }
+  37.5%, 100% { transform: scaleY(0) skewX(23.01deg); opacity: 0; }
+}
+@keyframes pack-flap-back {
+  0%, 37.4% { transform: scaleY(0) skewX(23.01deg); opacity: 0; }
+  37.5% { opacity: 1; }
+  38%, 100% { transform: scaleY(-0.350) skewX(24.23deg); opacity: 1; }
+}
+@keyframes pack-flap-front {
+  0%, 38% { transform: scaleY(-0.803) skewX(21.29deg); }
+  38.6% { transform: scaleY(-0.350) skewX(24.23deg); }
+  39.2% { transform: scaleY(0.197) skewX(21.29deg); }
+  39.8% { transform: scaleY(0.691) skewX(12.68deg); }
+  40.4% { transform: scaleY(1.000) skewX(0deg); }
+  41% { transform: scaleY(1.041) skewX(-12.68deg); }
+  41.6% { transform: scaleY(0.803) skewX(-21.29deg); }
+  42.2% { transform: scaleY(0.350) skewX(-24.23deg); }
+  42.7% { transform: scaleY(0.518) skewX(-23.90deg); }
+  43.2%, 100% { transform: scaleY(0.350) skewX(-24.23deg); }
+}
+@keyframes pack-gun {
+  0%, 45% { transform: translate(0, -24px); opacity: 0; }
+  48% { transform: translate(0, 0); opacity: 1; }
+  58% { transform: translate(116px, 0); opacity: 1; }
+  61%, 100% { transform: translate(122px, -26px); opacity: 0; }
+}
+@keyframes pack-roll {
+  0%, 48% { transform: rotate(0deg); }
+  58%, 100% { transform: rotate(720deg); }
+}
+@keyframes pack-tape {
+  0%, 48% { transform: scaleX(0); }
+  58%, 100% { transform: scaleX(1); }
+}
+@keyframes pack-tape-side {
+  0%, 58.5% { transform: scaleY(0); }
+  61%, 100% { transform: scaleY(1); }
+}
+@keyframes pack-label {
+  0%, 61% { transform: translate(-50px, -30px) rotate(-20deg); opacity: 0; }
+  62% { opacity: 1; }
+  65% { transform: translate(2px, 1px) rotate(2deg); }
+  67%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+}
+@keyframes pack-stamp-tool {
+  0%, 66% { transform: translateY(-40px) scaleY(1); opacity: 0; }
+  68% { transform: translateY(-40px) scaleY(1); opacity: 1; }
+  71% { transform: translateY(0) scaleY(1); }
+  72% { transform: translateY(0) scaleY(0.9); }
+  73% { transform: translateY(0) scaleY(1); opacity: 1; }
+  77%, 100% { transform: translateY(-46px) scaleY(1); opacity: 0; }
+}
+@keyframes pack-stamp {
+  0%, 71.5% { transform: scale(1.06); opacity: 0; }
+  72% { opacity: 1; }
+  75%, 100% { transform: scale(1); opacity: 1; }
+}
+@keyframes pack-hop {
+  0%, 77% { transform: translateY(0); }
+  79% { transform: translateY(-6px); }
+  81.5%, 100% { transform: translateY(0); }
+}
+@keyframes pack-shadow {
+  0%, 77% { transform: scaleX(1); opacity: 1; }
+  79% { transform: scaleX(0.9); opacity: 0.6; }
+  81.5%, 100% { transform: scaleX(1); opacity: 1; }
+}
+@keyframes pack-spark {
+  0%, 78.5% { opacity: 0; transform: scale(0.3); }
+  81% { opacity: 1; transform: scale(1); }
+  85%, 100% { opacity: 0; transform: scale(1.3); }
+}
+@keyframes pack-plant {
+  from { transform: rotate(-3deg); }
+  to { transform: rotate(3deg); }
+}
+/* Faded out across the loop, so every part's jump back to its start
+   happens unseen. */
+@keyframes pack-scene {
+  0% { opacity: 0; }
+  2%, 96% { opacity: 1; }
+  99.5%, 100% { opacity: 0; }
+}
+
+@keyframes grow-sprout {
+  0%, 6% { transform: scaleY(0); }
+  32% { transform: scaleY(1) rotate(0); }
+  48% { transform: scaleY(1) rotate(-4deg); }
+  64% { transform: scaleY(1) rotate(3deg); }
+  80% { transform: scaleY(1) rotate(-2deg); }
+  90% { transform: scaleY(1) rotate(0); }
+  97%, 100% { transform: scaleY(0); }
+}
+@keyframes grow-drop {
+  0% { opacity: 0; transform: translateY(0); }
+  6% { opacity: 1; }
+  22% { opacity: 1; transform: translateY(86px); }
+  26%, 100% { opacity: 0; transform: translateY(96px); }
+}
+@keyframes grow-sun {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes order-fall {
+  0% { transform: translateY(0) rotate(0); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translate(calc(var(--spin) * 30px), 420px) rotate(calc(var(--spin) * 300deg)); opacity: 0; }
+}
+@keyframes order-ping {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Payment confirming — `checkout/PaymentConfirming.tsx`
+
+   Five sprouts come up out of the tray one after another, open their
+   leaves, hold, and sink back, on a 2.8s loop; three dots breathe under
+   the words. Resting style is the grown tray, and the motion runs only
+   under `no-preference`.
+
+   The sprout turns about its own foot (`fill-box`, 50% 100%). A leaf
+   turns about the top of its stem, which is the origin of its parent's
+   `translate()` — so it keeps the default view-box and `0 0`.
+   ───────────────────────────────────────────────────────────── */
+.confirm-sprout { transform-box: fill-box; transform-origin: 50% 100%; }
+.confirm-leaf { transform-origin: 0 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .confirm-sprout { animation: confirm-sprout 2.8s var(--ease-brand) infinite backwards; }
+  .confirm-leaf--l { animation: confirm-leaf-l 2.8s var(--ease-brand) infinite backwards; }
+  .confirm-leaf--r { animation: confirm-leaf-r 2.8s var(--ease-brand) infinite backwards; }
+  .confirm-dot { animation: confirm-dot 1.2s ease-in-out infinite; }
+}
+
+@keyframes confirm-sprout {
+  0% { transform: scaleY(0); }
+  28% { transform: scaleY(1.06); }
+  36% { transform: scaleY(1) rotate(0deg); }
+  52% { transform: scaleY(1) rotate(-3deg); }
+  68% { transform: scaleY(1) rotate(2deg); }
+  82% { transform: scaleY(1) rotate(0deg); }
+  96%, 100% { transform: scaleY(0) rotate(0deg); }
+}
+/* Folded upright while the stem rises, then open out. */
+@keyframes confirm-leaf-l {
+  0%, 18% { transform: rotate(50deg) scale(0.4); }
+  40%, 84% { transform: rotate(0deg) scale(1); }
+  96%, 100% { transform: rotate(50deg) scale(0.4); }
+}
+@keyframes confirm-leaf-r {
+  0%, 18% { transform: rotate(-50deg) scale(0.4); }
+  40%, 84% { transform: rotate(0deg) scale(1); }
+  96%, 100% { transform: rotate(-50deg) scale(0.4); }
+}
+@keyframes confirm-dot {
+  0%, 100% { opacity: 0.25; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1); }
 }

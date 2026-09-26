@@ -45,7 +45,8 @@
     "productVisibility": "Product visibility",
     "operations": "Operations",
     "orders": "Orders",
-    "delivery": "Delivery"
+    "delivery": "Delivery",
+    "subscriptions": "Subscriptions"
   },
   "varieties": {
     "title": "Varieties",
@@ -829,6 +830,74 @@
       "required": "Required.",
       "phoneInvalid": "Enter a 10-digit mobile number.",
       "pincodeInvalid": "Enter a 6-digit PIN code."
+    }
+  },
+  "subscriptions": {
+    "title": "Subscriptions",
+    "intro": "Every paid weekly plan, what each coming Saturday adds up to in trays, and the rotation behind it. One bundle is one box a Saturday for four Saturdays; a box's grams are split evenly across that week's varieties.",
+    "statActive": "Active subscriptions",
+    "statBoxes": "Boxes on {date}",
+    "statOpen": "Last day to join {date}",
+    "statOpenHint": "The Friday-night cutoff for the next open Saturday",
+    "statExpired": "Ended",
+    "trayPlanHeading": "Tray plan",
+    "trayPlanIntro": "Grams of each variety every paid box adds up to, per Saturday. Trays are at the variety's low yield, so a light tray still fills every box; the figure in brackets is the high yield. Sow by is the Saturday less the grow days.",
+    "locked": "Cutoff passed",
+    "openNow": "Still taking subscribers",
+    "openLater": "Open",
+    "noBoxes": "No boxes yet.",
+    "planBoxes": "{plan} × {count, number}",
+    "subscribers": "{count, plural, one {# subscriber} other {# subscribers}}",
+    "emptyWeekWarning": "{plans}: week {n} has no varieties set, so these boxes have nothing to sow. Set week {n} on admin → plans.",
+    "colVariety": "Variety",
+    "colWeight": "Needed",
+    "colTrays": "Trays to sow",
+    "colSeed": "Seed",
+    "colSowBy": "Sow by",
+    "inBoxes": "in {count, plural, one {# box} other {# boxes}}",
+    "noYield": "No yield set",
+    "atBest": "({count, number} at best)",
+    "notInCatalogue": "Not in varieties",
+    "late": "Past — sow today",
+    "totalTrays": "Total trays",
+    "kg": "{kg, number} kg",
+    "grams": "{grams, number} g",
+    "growDays": "{days, number}d",
+    "rotationHeading": "Rotation",
+    "rotationIntro": "Every subscriber gets the same week on the same Saturday, so someone joining mid-month starts on whichever week comes next. Per-variety grams are the box weight split evenly.",
+    "editRotation": "Edit on plans",
+    "noPlans": "No active plan is priced by the month yet.",
+    "colSaturday": "Saturday",
+    "week": "Week {n}",
+    "weekEmpty": "Nothing set",
+    "perVariety": "{grams, number} g each per box",
+    "listHeading": "Subscribers",
+    "filterLabel": "Filter subscriptions",
+    "view": {
+      "active": "Active ({count, number})",
+      "expired": "Ended ({count, number})",
+      "pending": "Unpaid checkouts"
+    },
+    "empty": {
+      "active": "No active subscriptions.",
+      "expired": "No subscription has ended yet.",
+      "pending": "No unpaid subscription checkouts."
+    },
+    "colReceipt": "Receipt",
+    "colCustomer": "Customer",
+    "colPlans": "Plans",
+    "colNext": "Next box",
+    "colSchedule": "Saturdays",
+    "colTotal": "Paid",
+    "boxesPerWeek": "{count, plural, one {# box} other {# boxes}} a week",
+    "left": "{left, number} of {total, number} to come",
+    "range": "{from} – {to}",
+    "state": {
+      "pending": "Awaiting payment",
+      "cancelled": "Cancelled",
+      "upcoming": "Starts soon",
+      "active": "Active",
+      "expired": "Ended"
     }
   }
 }

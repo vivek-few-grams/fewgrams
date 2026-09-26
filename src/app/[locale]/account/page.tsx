@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { CalendarDays, MapPin, Package, UserRound } from "lucide-react";
+import { CalendarDays, MapPin, Package } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { getDefaultAddress, getProfile } from "@/lib/repo/profile";
@@ -40,7 +40,8 @@ export default async function AccountOverview({ params }: PageProps<"/[locale]/a
 
   return (
     <div className="space-y-6">
-      <div>
+      {/* The side column starts level with what follows this (SideColumn). */}
+      <div data-account-intro>
         <h2 className="font-display text-xl font-semibold text-forest">
           {name ? t("heading", { name }) : t("headingAnon")}
         </h2>
@@ -131,13 +132,6 @@ export default async function AccountOverview({ params }: PageProps<"/[locale]/a
           )}
         </Card>
       </div>
-
-      {/* Role is deliberately shown rather than hidden: an admin signing in
-          should be able to see, in one place, which hat they are wearing. */}
-      <p className="flex items-center gap-2 font-body text-xs text-stone">
-        <UserRound size={14} strokeWidth={1.5} />
-        {t("role")}: {actor.role}
-      </p>
     </div>
   );
 }

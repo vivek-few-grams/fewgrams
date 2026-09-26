@@ -35,7 +35,8 @@ export default async function OrdersPage({
 
   return (
     <div className="space-y-6">
-      <div>
+      {/* The side column starts level with what follows this (SideColumn). */}
+      <div data-account-intro>
         <h2 className="font-display text-xl font-semibold text-forest">{t("heading")}</h2>
         <p className="mt-2 max-w-xl font-body text-sm text-stone">{t("body")}</p>
       </div>

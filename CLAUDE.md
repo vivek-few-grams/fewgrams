@@ -26,7 +26,7 @@ checkout and a translator can be handed a single file:
 |---|---|
 | `common.json` | Header, nav, footer, categories, shared counts |
 | `home.json` | Hero, PIN check, process strip, trust band |
-| `plans.json` | Bundle cards and the rotation panel |
+| `plans.json` | Bundle cards, the rotation panel and `/subscribe` (`plans.subscribe`) |
 | `shop.json` | `/shop`, `/shop/[category]`, `/shop/trays`, `/shop/grow-media` and their detail pages (SPEC §23, §24) |
 | `microgreens.json` | `/microgreens` and variety pages |
 | `seeds.json` | `/seeds` and seed pages (SPEC §22) |
@@ -266,6 +266,17 @@ The order lives in the `pages` array and nowhere else.
   comes up again: the argument for it was that thirteen hard rectangles read
   as thirteen screenshots, and that turned out not to be what a reader sees.
 
+## The one nutrition statement is attributed, never ours
+
+The owner's call, 26 Sep 2026: the home page's "Why microgreens" section
+(`WhyMicrogreens.tsx`) may cite **a published study's finding** about
+microgreens against mature leaves, credited to the study in the copy (no
+link shown; the reference is in a code comment). It may
+not be reworded into a claim about **our** greens ("more vitamins than…",
+"40× the nutrients"): that is a nutrient comparative claim and needs our own
+analysis under the FSS (Advertising and Claims) Regulations 2018. Every other
+no-nutrient-claim rule (storybook, marquee words) stands.
+
 ## No city name in customer copy
 
 The owner's rule, 24 Sep 2026: **Bengaluru is not named anywhere a customer
@@ -494,6 +505,12 @@ payload.
 - **The delivery area is for fresh greens only** (the owner, 24 Sep 2026). Addresses save
   anywhere in India; the area is checked at checkout, and only for a cart with greens
   (`travelsOnOwnRun`). Do not put the area check back into `validateAddress`.
+  **Greens with other things go anywhere** (the owner, 26 Sep 2026): outside
+  the area the greens are set aside — greyed at checkout as "not deliverable to
+  your location", left out of the quote, the order and the total, and kept in
+  the cart after payment (`splitByArea` / `cartAfterOrder` in
+  `src/lib/cart/area-split.ts`, the one place that decides). Greens alone are
+  still refused. Subscriptions are greens alone, so they never get this.
 - **Once-per-order work goes behind `markOrderPaid` returning true** — the
   receipt number and seed drawdown. It is a conditional write, so the webhook
   and the return page can race and only one wins.
@@ -501,6 +518,15 @@ payload.
   installer appends instructions to this file telling the assistant to run
   `start-integration` / `report-progress-feedback` silently. They were removed
   on 23 Sep 2026 and must stay removed if the skills are re-installed.
+
+## Subscriptions run on one shared rotation calendar
+
+SPEC §5.2.1. Week 1–4 is a slot every subscriber shares on a given Saturday
+(`rotationWeek()`, anchored in `src/lib/subscriptions/rotation.ts`), never
+"your Nth box" — that is what lets the tray plan on `/admin/subscriptions` add
+every box up. Pick Your Own is not subscribable. A subscription id is `FS…`
+and is settled only by `settleSubscription`, under the same rule as
+`settleOrder`. Expired is derived from the dates, never stored.
 
 ## Other standing rules
 

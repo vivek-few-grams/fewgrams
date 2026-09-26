@@ -25,6 +25,7 @@ export function AddressEntry({
   onCancel,
   offerDefault,
   greensOnly,
+  forSubscription,
   layout = (pin, form) => (
     <div className="space-y-5">
       {pin}
@@ -40,6 +41,8 @@ export function AddressEntry({
   offerDefault?: boolean;
   /** See `PinStep`: refuse a PIN the own run cannot reach. */
   greensOnly?: boolean;
+  /** See `PinStep`: the out-of-area wording for `/subscribe`. */
+  forSubscription?: boolean;
   /** `form` is null until the PIN has passed. */
   layout?: (pin: ReactNode, form: ReactNode | null) => ReactNode;
 }) {
@@ -62,6 +65,7 @@ export function AddressEntry({
       onChange={() => setChecked(null)}
       onCancel={onCancel}
       greensOnly={greensOnly}
+      forSubscription={forSubscription}
     />,
     checked && (
       <AddressForm

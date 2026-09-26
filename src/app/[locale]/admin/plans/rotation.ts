@@ -8,8 +8,10 @@
  * them copying the number is how a five-week rotation gets half-built.
  */
 
-/** SPEC §5.2 — a month is four Saturdays, so a rotation is four weeks. */
-export const ROTATION_WEEKS = [1, 2, 3, 4] as const;
+/** SPEC §5.2 — a month is four Saturdays, so a rotation is four weeks.
+ *  Declared once in `src/lib/subscriptions/weeks.ts`, which the tray plan
+ *  and the subscription schedule read too. */
+export { ROTATION_WEEKS } from "@/lib/subscriptions/weeks";
 
 /** The field name each week's checkboxes share. Every ticked box posts its
  *  variety key under this name, so the action reads them with `getAll`. */

@@ -30,6 +30,7 @@ export function PinStep({
   onChange,
   onCancel,
   greensOnly = false,
+  forSubscription = false,
 }: {
   checked: CheckedPin | null;
   onChecked: (c: CheckedPin) => void;
@@ -43,6 +44,9 @@ export function PinStep({
    *  do. Everywhere else any PIN passes, since everything but greens goes
    *  by courier (the owner, 24 Sep 2026). */
   greensOnly?: boolean;
+  /** On `/subscribe` there is no cart to take the greens out of, so the
+   *  out-of-area card says so differently. */
+  forSubscription?: boolean;
 }) {
   const t = useTranslations("account.addresses");
   const e = useTranslations("account.errors");
@@ -174,6 +178,7 @@ export function PinStep({
       {status === "notServed" && (
         <OutsideArea
           pincode={pin}
+          forSubscription={forSubscription}
           onClose={() => {
             asked.current = "";
             setPin("");
@@ -196,7 +201,15 @@ export function PinStep({
  * the request is from without asking. Numbers and inbox come from
  * `content/contact.json`; WhatsApp is offered only while it has one.
  */
-function OutsideArea({ pincode, onClose }: { pincode: string; onClose: () => void }) {
+function OutsideArea({
+  pincode,
+  forSubscription,
+  onClose,
+}: {
+  pincode: string;
+  forSubscription: boolean;
+  onClose: () => void;
+}) {
   const t = useTranslations("account.addresses.outsideArea");
   const message = t("prefill", { pincode, brand: brand.name });
   const mailto = mailtoHref(t("subject", { pincode }), message);
@@ -223,7 +236,7 @@ function OutsideArea({ pincode, onClose }: { pincode: string; onClose: () => voi
         </span>
         {t("heading", { pincode })}
       </p>
-      <p className="mt-3 font-body text-sm leading-relaxed text-stone">{t("body")}</p>
+      <p className="mt-3 font-body text-sm leading-relaxed text-stone">{t(forSubscription ? "bodySubscription" : "body")}</p>
       <div className="mt-4 flex flex-wrap gap-2.5">
         {whatsapp && (
           <a

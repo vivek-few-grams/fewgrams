@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Hero } from "@/components/home/Hero";
 import { Process } from "@/components/home/Process";
+import { WhyMicrogreens } from "@/components/home/WhyMicrogreens";
 import { Bundles } from "@/components/home/Bundles";
 import { OtherProducts } from "@/components/home/OtherProducts";
 import { TrustTags } from "@/components/home/TrustTags";
@@ -31,11 +32,12 @@ import { currentActor } from "@/lib/auth/guard";
  *   1  Header        (in layout.tsx)
  *   2  Hero          full-bleed image, headline below, PIN check
  *   3  Our process   the differentiator, deliberately above any pricing
- *   4  Bundles       #plans — the conversion surface, read from DynamoDB
- *   5  Other products racks · trays · seeds · snacks, with live counts
- *   6  Top seeds     five best sellers, arrow to /seeds
- *   7  Trust tags    the closing note, just above the footer
- *   8  Footer        (in layout.tsx)
+ *   4  Why microgreens  young, indoors, unsprayed — beside a field-vs-tray drawing
+ *   5  Bundles       #plans — the conversion surface, read from DynamoDB
+ *   6  Other products racks · trays · seeds · snacks, with live counts
+ *   7  Top seeds     five best sellers, arrow to /seeds
+ *   8  Trust tags    the closing note, just above the footer
+ *   9  Footer        (in layout.tsx)
  *
  * `force-dynamic` while the catalogue is being built, so anything added in
  * admin shows up on refresh. Switch to ISR with a revalidate tag once the
@@ -70,6 +72,11 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
      content/varieties/<key>.json rather than in DynamoDB (SPEC §4.3), so the
      page resolves the labels and hands Bundles a plain map. */
   const varietyNames = await varietyNameMap(locale);
+
+  /* The "why microgreens" caption prints the grow time from the varieties on
+     sale, never from copy — `growDays` is tuned in admin. */
+  const days = varieties.map((v) => v.growDays).filter((d) => d > 0);
+  const growDays = days.length > 0 ? { min: Math.min(...days), max: Math.max(...days) } : null;
 
   /* Same "the real names, not the category label twice" word clouds as
      `/shop` (CLAUDE.md's marquee rules) — the two surfaces show the same
@@ -145,6 +152,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
     <>
       <Hero />
       <Process />
+      <WhyMicrogreens growDays={growDays} />
       <Bundles
         plans={plans}
         varieties={varieties}

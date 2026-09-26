@@ -6,11 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import { CalendarDays, Check, X } from "lucide-react";
 import { planPanels, type Plan, type PlanPanel, type PlanWeek, type Variety } from "@/lib/types";
 import type { PlanText } from "@/lib/content/plans";
-import {
-  deliverySchedule,
-  firstDeliveryDate,
-  formatDeliveryDate,
-} from "@/lib/delivery-date";
+import { firstDeliveryDate, formatDeliveryDate } from "@/lib/delivery-date";
+import { subscriptionSchedule, type ScheduledBox } from "@/lib/subscriptions/rotation";
 import Image from "next/image";
 import { Sprout } from "@/components/ui/Sprout";
 
@@ -217,7 +214,9 @@ export function Bundles({
      it. */
   const grounds = planPanels(plans.map(({ plan }) => plan.recommended));
   const firstDelivery = formatDeliveryDate(firstDeliveryDate());
-  const schedule = deliverySchedule();
+  /* Each Saturday with the rotation week the shared calendar puts it on — so
+     the modal opens on whichever week comes next, not always on week 1. */
+  const schedule = subscriptionSchedule();
   /* Varieties carry no name in DynamoDB (SPEC §4.3) — the caller resolves it
      from content/varieties/<key>.json and hands down a plain key→name map. */
   const nameOf = (key: string) => varietyNames[key] ?? key;
@@ -457,13 +456,17 @@ function BundleCard({
             Subscribe buttons beside it, visible as a slight step in a row of
             three, and the class is what guarantees the next variant someone
             adds matches. */}
-        <button
-          className={`mt-5 w-full rounded-full border px-5 py-3 font-body text-sm font-semibold transition-colors ${
+        {/* Subscribe goes to `/subscribe` with this plan preselected. Pick
+            Your Own is not subscribable (the owner, 26 Sep 2026), so its
+            button goes where greens are picked one tray at a time. */}
+        <Link
+          href={isByo ? "/microgreens" : { pathname: "/subscribe", query: { plan: plan.contentKey } }}
+          className={`mt-5 block w-full rounded-full border px-5 py-3 text-center font-body text-sm font-semibold transition-colors ${
             isByo ? p.ctaAlt : p.cta
           }`}
         >
           {isByo ? tp("card.buildMyBundle") : tp("card.subscribe")}
-        </button>
+        </Link>
 
         {/* The row is **always** here, even with nothing in it.
             The footer is bottom-anchored (`mt-auto`) in cards the grid makes
@@ -528,7 +531,7 @@ function RotationModal({
   onClose,
 }: {
   entry: PlanWithWeeks;
-  schedule: Date[];
+  schedule: ScheduledBox[];
   nameOf: (key: string) => string;
   varieties: Variety[];
   onClose: () => void;
@@ -648,9 +651,16 @@ function RotationModal({
               together — the gap between them is interior padding, so the border
               reads as one continuous rule rather than four dashes. */}
           <ol className="mt-8 grid grid-cols-2 gap-y-7 sm:grid-cols-4 sm:gap-y-0">
-            {entry.weeks.map((w, i) => (
+            {/* One column per Saturday of a subscription taken today, in date
+                order, each on its own rotation week. Subscribing mid-month
+                starts on whatever week the shared calendar is on
+                (`src/lib/subscriptions/rotation.ts`), so week 3 can come
+                first. A week with nothing set shows an empty column. */}
+            {schedule.map((box, i) => {
+              const w = entry.weeks.find((x) => x.week === box.week) ?? { week: box.week, varietyKeys: [] };
+              return (
               <li
-                key={w.week}
+                key={box.date.toISOString()}
                 /* `--i` drives every delay in this column — see `.rot-week`
                    and friends in globals.css. Set here rather than computed
                    into a delay string so the timing lives in one file. */
@@ -664,14 +674,8 @@ function RotationModal({
                 <p className="font-body text-[11px] uppercase tracking-widest text-stone">
                   {tp("card.week", { n: w.week })}
                 </p>
-                {/* Indexed by the week's own number, not by its position in the
-                    array. A rotation may have a gap — an empty week is not
-                    stored — and with `schedule[i]` week 4 printed the third
-                    Saturday. */}
                 <p className="mt-0.5 font-display text-base font-semibold text-forest">
-                  {schedule[w.week - 1]
-                    ? formatDeliveryDate(schedule[w.week - 1])
-                    : tp("noDate")}
+                  {formatDeliveryDate(box.date)}
                 </p>
                 {/* No panel behind the list any more. On sand it needed one to
                     separate itself; on this ground it would just be a second
@@ -693,7 +697,8 @@ function RotationModal({
                   ))}
                 </ul>
               </li>
-              ))}
+              );
+            })}
           </ol>
         </div>
       </div>

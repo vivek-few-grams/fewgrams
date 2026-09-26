@@ -12,6 +12,7 @@ import { formatDeliveryDate, istDateISO } from "@/lib/delivery-date";
 import { GATEWAY_LABEL, paymentProvider } from "@/lib/payments";
 import { shippingProviders } from "@/lib/shipping";
 import { travelsOnOwnRun } from "@/lib/shipping/parcel";
+import { splitByArea } from "@/lib/cart/area-split";
 import { checkDeliveryArea } from "@/lib/pincode/place";
 import { getProfile, listAddresses } from "@/lib/repo/profile";
 import { KindIcon } from "@/components/cart/KindIcon";
@@ -76,7 +77,13 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
         )
       : [],
   );
-  const deliverable = greens ? addresses.filter((a) => served.get(a.pincode)) : addresses;
+  /* Greens alone can go only where the own run goes. Greens **with** other
+     things can go anywhere (the owner, 26 Sep 2026): outside the area the
+     greens are set aside, greyed in the summary, and the rest is ordered
+     (`splitByArea`). */
+  const mixed = greens && cart.items.some((i) => i.kind !== "variety");
+  const outside = (pin: string) => greens && !served.get(pin);
+  const deliverable = greens && !mixed ? addresses.filter((a) => served.get(a.pincode)) : addresses;
   const provider = paymentProvider();
   const open = provider !== null;
 
@@ -105,7 +112,7 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
      ready; the arrival is under the card once partners are picked
      (`PayForm`). */
   const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
-  const groups = readyGroups(cart.items);
+  const reachable = splitByArea(cart.items, false);
   const line = (item: (typeof cart.items)[number]) => (
     <li
       key={lineId(item)}
@@ -127,7 +134,7 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
           <span className="mt-0.5 block font-body text-xs text-cream/65">{lineUnits(item, tc)}</span>
         </span>
       </span>
-      <span className="shrink-0 font-body text-sm font-semibold tabular-nums text-cream">
+      <span className="line-price shrink-0 font-body text-sm font-semibold tabular-nums text-cream">
         {tc("subtotalValue", { amount: item.lineTotal })}
       </span>
     </li>
@@ -137,13 +144,20 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
      nothing about delivery. Delivery, the grand total and the pay button are
      `PayForm`'s payment step, because only the form knows which address —
      and so which delivery charge — is chosen. */
-  const summary = (
-    <section aria-labelledby="order-summary">
+  const summaryFor = (inArea: boolean) => {
+    const { kept: items, setAside } = splitByArea(cart.items, inArea);
+    const groups = readyGroups(items);
+    const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
+    /* Keyed because the page hands `PayForm` two of these, one for each kind
+       of address, and it swaps them in one slot: without a key React logs a
+       missing-key warning for the pair (seen in dev, 26 Sep 2026). */
+    return (
+    <section key={inArea ? "in-area" : "outside"} aria-labelledby="order-summary">
       <h2 id="order-summary" className="font-display text-lg font-bold text-cream">
         {t("summaryHeading")}
       </h2>
       <p className="mt-1 font-body text-sm text-cream/70">
-        {t("summaryLine", { count: cart.items.length, amount: cart.subtotal })}
+        {t("summaryLine", { count: items.length, amount: subtotal })}
       </p>
       {groups.length > 1 ? (
         <div className="mt-4 border-t border-cream/15">
@@ -161,16 +175,30 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
           <p className="pt-3 font-body text-xs leading-relaxed text-cream/65">{t("groupsNote")}</p>
         </div>
       ) : (
-        <ul className="mt-4 border-t border-cream/15">{cart.items.map(line)}</ul>
+        <ul className="mt-4 border-t border-cream/15">{items.map(line)}</ul>
       )}
       <div className="flex items-baseline justify-between gap-4 pt-4">
         <span className="font-body text-sm font-semibold text-cream">{t("itemsTotal")}</span>
         <span className="font-display text-xl font-bold tabular-nums text-cream">
-          {tc("subtotalValue", { amount: cart.subtotal })}
+          {tc("subtotalValue", { amount: subtotal })}
         </span>
       </div>
+      {/* Greens the chosen address is outside the area for: shown, greyed,
+          and not counted — they stay in the cart after this order. */}
+      {setAside.length > 0 && (
+        <div className="mt-5 rounded-xl border border-cream/15 bg-cream/5 p-3.5">
+          <p className="font-body text-[11px] font-semibold uppercase tracking-widest text-cream/70">
+            {t("setAsideHeading")}
+          </p>
+          <ul className="mt-1 opacity-55 grayscale [&>li:last-child]:border-b-0 [&_.line-price]:line-through">
+            {setAside.map(line)}
+          </ul>
+          <p className="mt-2 font-body text-xs leading-relaxed text-cream/70">{t("setAsideBody")}</p>
+        </div>
+      )}
     </section>
-  );
+    );
+  };
 
   return (
     <div className="co-page">
@@ -193,18 +221,21 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
                 />
               </div>
               <aside className="lg:sticky lg:top-28 lg:self-start">
-                <div className="co-card co-card--dark p-5 md:p-6">{summary}</div>
+                <div className="co-card co-card--dark p-5 md:p-6">{summaryFor(true)}</div>
               </aside>
             </div>
           ) : (
             <PayForm
               locale={locale}
-              summary={summary}
+              summary={summaryFor(true)}
+              /* Only when there is something to set aside and something left. */
+              summaryOutside={mixed ? summaryFor(false) : null}
+              subtotalOutside={reachable.kept.reduce((sum, i) => sum + i.lineTotal, 0)}
               payable={open}
               gatewayLabel={provider ? GATEWAY_LABEL[provider.name] : ""}
               subtotal={cart.subtotal}
               partners={shippingProviders().map((p) => p.name)}
-              greensOnly={greens}
+              greensOnly={greens && !mixed}
               addresses={deliverable.map((a) => ({
                 addrId: a.addrId,
                 recipient: a.recipient,
@@ -212,6 +243,7 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
                 place: formatPlace(a),
                 phone: formatPhone(a.phone),
                 isDefault: a.isDefault,
+                outsideArea: outside(a.pincode),
               }))}
               savedCount={addresses.length}
               emptyBody={addresses.length === 0 ? t("noAddressBody") : t("noDeliverableBody")}

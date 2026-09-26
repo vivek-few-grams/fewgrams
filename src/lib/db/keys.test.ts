@@ -25,6 +25,7 @@ import {
   ShippingSettingsEntity,
   TrayEntity,
   ShelfPlateEntity,
+  SubscriptionEntity,
   VarietyEntity,
 } from "@/lib/db/entities";
 
@@ -810,5 +811,55 @@ describe("order keys — SPEC §4, §13", () => {
     const item = CounterEntity.put({ name: "receipt", value: 1 }).params().Item;
     expect(item.PK).toBe("COUNTER#receipt");
     expect(item.SK).toBe("META");
+  });
+});
+
+describe("subscription keys — SPEC §4, §5", () => {
+  const sub = {
+    id: "FS0000000001",
+    userId: "u1",
+    status: "pending_payment" as const,
+    lines: [
+      {
+        planId: "p1",
+        planKey: "essential",
+        name: "Everyday Essentials",
+        boxes: 2,
+        monthlyPrice: 1200,
+        lineTotal: 2400,
+        gramsPerBox: 200,
+      },
+    ],
+    total: 2400,
+    deliveries: [{ date: "2026-10-10", week: 1 }],
+    address: { label: "Home", recipient: "A", phone: "9876543210", line1: "1 Road", pincode: "560001" },
+    locale: "en",
+    provider: "razorpay" as const,
+    createdAt: "2026-09-26T07:00:00.000Z",
+    updatedAt: "2026-09-26T07:00:00.000Z",
+    expiresAt: "2026-09-26T07:30:00.000Z",
+  };
+
+  it("writes PK=SUB#<id> SK=META in the orders table", () => {
+    const params = SubscriptionEntity.put(sub).params();
+    expect(params.TableName).toBe(TABLES.orders);
+    expect(params.Item.PK).toBe("SUB#FS0000000001");
+    expect(params.Item.SK).toBe("META");
+  });
+
+  it("lists by SUBSTATUS#, which the order screens' STATUS# lists cannot reach", () => {
+    const item = SubscriptionEntity.put(sub).params().Item;
+    expect(item.GSI2PK).toBe("SUBSTATUS#pending_payment");
+    expect(String(item.GSI2PK).startsWith("STATUS#")).toBe(false);
+  });
+
+  it("keeps an unpaid subscription out of the customer's history, and a paid one beside their orders", () => {
+    expect(SubscriptionEntity.put(sub).params().Item.GSI3PK).toBeUndefined();
+    const item = SubscriptionEntity.put({ ...sub, status: "active" }).params().Item;
+    expect(item.GSI3PK).toBe("USER#u1");
+    expect(item.GSI3SK).toBe("SUB#2026-09-26T07:00:00.000Z");
+    /* Same partition as the customer's orders; the prefixes keep them apart. */
+    expect("SUB#x".startsWith("ORDER#")).toBe(false);
+    expect(item.GSI1PK).toBeUndefined();
   });
 });

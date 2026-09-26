@@ -2,14 +2,13 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { CalendarCheck, CircleCheck, Clock, RotateCcw } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { requireRole } from "@/lib/auth/guard";
-import { hasRole } from "@/lib/auth/roles";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { lineUnits } from "@/lib/cart/line-display";
 import { formatDeliveryDate } from "@/lib/delivery-date";
-import { formatReceiptNo, isOrderId, paymentWindowClosed } from "@/lib/orders/order";
-import { getOrder } from "@/lib/repo/orders";
+import { formatReceiptNo, paymentWindowClosed, type Order } from "@/lib/orders/order";
 import { Card } from "../../ui";
+import { loadVisibleOrder } from "./load";
+import { OrderHero, type HeroStage } from "./OrderHero";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +16,38 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/account/
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "account.orders.detail" });
   return { title: t("title"), robots: { index: false, follow: false } };
+}
+
+/** How long after payment the confirmation still celebrates. */
+const JUST_PAID_MS = 15 * 60_000;
+
+/** True in the first minutes after payment. A server render reads the clock
+ *  once per request, which is what this page is (`force-dynamic`). */
+function paidMomentsAgo(order: Order): boolean {
+  return order.status === "paid" && order.paidAt !== null && Date.now() - Date.parse(order.paidAt) < JUST_PAID_MS;
+}
+
+/**
+ * What the hero shows for an order's status, or null for one that has left
+ * the normal path (failed, refunded), which keeps the plain status card.
+ * A paid order with fresh greens in it is **growing**, not packing: greens
+ * are sown to order, so nothing is in a box yet (CLAUDE.md, SPEC §5.3).
+ */
+function heroStage(order: Order): HeroStage | null {
+  switch (order.status) {
+    case "paid":
+      return order.lines.some((l) => l.kind === "variety") ? "growing" : "packing";
+    case "picked":
+      return "packing";
+    case "ready_for_delivery":
+      return "ready";
+    case "out_for_delivery":
+      return "onTheWay";
+    case "delivered":
+      return "delivered";
+    default:
+      return null;
+  }
 }
 
 /** A `YYYY-MM-DD` IST date as the instant `formatDeliveryDate` expects. */
@@ -39,10 +70,8 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  const actor = await requireRole("customer");
-  if (!isOrderId(id)) notFound();
-  const order = await getOrder(id);
-  if (!order || (order.userId !== actor.userId && !hasRole(actor.role, "admin"))) notFound();
+  const order = await loadVisibleOrder(id);
+  if (!order) notFound();
 
   const t = await getTranslations("account.orders.detail");
   const status = await getTranslations("account.orders.status");
@@ -52,12 +81,22 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
   const pending = order.status === "pending_payment";
   const expired = pending && paymentWindowClosed(order);
   const recheck = `/api/payments/return/${locale}?order_id=${order.id}`;
+  const ref =
+    order.receiptNo !== null
+      ? t("receipt", { number: formatReceiptNo(order.receiptNo) })
+      : t("orderRef", { id: order.id });
+  const stage = heroStage(order);
+  /* The leaves fall once, on the visit straight after paying — not every
+     time the receipt is opened again. */
+  const justPaid = paidMomentsAgo(order);
 
   return (
     <div className="space-y-6">
+      {/* Phones and tablets only: from `lg` the account menu's Orders row is
+          the way back to the list. */}
       <Link
         href="/account/orders"
-        className="font-body text-sm text-stone underline underline-offset-4 transition-colors hover:text-forest"
+        className="font-body text-sm text-stone underline underline-offset-4 transition-colors hover:text-forest lg:hidden"
       >
         {t("back")}
       </Link>
@@ -96,6 +135,26 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
             </div>
           </div>
         </Card>
+      ) : stage ? (
+        <OrderHero
+          stage={stage}
+          celebrate={justPaid}
+          copy={{
+            eyebrow: ref,
+            heading: order.status === "paid" ? t("paidHeading") : status(order.status),
+            body: t(`stageBody.${stage}`),
+            arrives: t("arrives", { date: formatDeliveryDate(istDay(order.deliveryDate), dateLocale) }),
+            progressLabel: t("progressLabel"),
+            steps: {
+              placed: t("steps.placed"),
+              prepare: stage === "growing" ? t("steps.growing") : t("steps.packing"),
+              onTheWay: t("steps.onTheWay"),
+              delivered: t("steps.delivered"),
+            },
+            stepDone: t("stepDone"),
+            stepNow: t("stepNow"),
+          }}
+        />
       ) : (
         <Card>
           <div className="flex items-start gap-3">
@@ -103,11 +162,7 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
               <CircleCheck size={20} strokeWidth={1.5} />
             </span>
             <div>
-              <p className="font-body text-xs uppercase tracking-wider text-stone">
-                {order.receiptNo !== null
-                  ? t("receipt", { number: formatReceiptNo(order.receiptNo) })
-                  : t("orderRef", { id: order.id })}
-              </p>
+              <p className="font-body text-xs uppercase tracking-wider text-stone">{ref}</p>
               <h2 className="mt-1 font-display text-xl font-semibold text-forest">
                 {order.status === "paid" ? t("paidHeading") : status(order.status)}
               </h2>
@@ -155,6 +210,9 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
         </div>
       </Card>
 
+      {/* Phones and tablets only: from `lg` the address sits above the account
+          menu (`@aside/orders/[id]`). */}
+      <div className="lg:hidden">
       <Card title={t("deliverTo")}>
         <p className="font-body text-sm leading-relaxed text-forest">
           {[
@@ -169,6 +227,7 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
             .join(", ")}
         </p>
       </Card>
+      </div>
     </div>
   );
 }

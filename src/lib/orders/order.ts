@@ -229,7 +229,9 @@ export type Settlement =
  * the return page arriving together.
  */
 export function settlementFor(
-  order: Pick<Order, "id" | "status" | "total">,
+  /* Any payable record — an order, or a subscription (`FS…`), which has
+     statuses of its own but starts from the same `pending_payment`. */
+  order: Pick<Order, "id" | "total"> & { status: string },
   gateway: { status: ProviderOrderStatus; attempts: PaymentAttempt[] },
 ): Settlement {
   if (order.status !== "pending_payment" || gateway.status !== "paid") return { action: "none" };

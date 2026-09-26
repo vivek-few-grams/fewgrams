@@ -2,6 +2,8 @@ import { paymentProvider } from "@/lib/payments";
 import type { GatewayName } from "@/lib/payments/provider";
 import { isOrderId } from "@/lib/orders/order";
 import { settleOrder } from "@/lib/orders/settle";
+import { isSubscriptionId } from "@/lib/subscriptions/subscription";
+import { settleSubscription } from "@/lib/subscriptions/settle";
 
 /**
  * A gateway's payment webhook — SPEC §9. Each gateway has its own URL,
@@ -31,10 +33,14 @@ export async function handlePaymentWebhook(gateway: GatewayName, request: Reques
   const orderId = provider.webhookOrderId(raw);
   /* The dashboard's "test" ping and event types we do not act on. Not
      ours to retry, so acknowledged. */
-  if (!orderId || !isOrderId(orderId)) return new Response("ignored", { status: 200 });
+  /* An order is `FG…` and a subscription `FS…`; the prefix is the only
+     thing that says which one the gateway is talking about. */
+  const isSub = Boolean(orderId && isSubscriptionId(orderId));
+  if (!orderId || (!isOrderId(orderId) && !isSub)) return new Response("ignored", { status: 200 });
 
   try {
-    await settleOrder(orderId, "webhook", provider);
+    if (isSub) await settleSubscription(orderId, "webhook", provider);
+    else await settleOrder(orderId, "webhook", provider);
   } catch (e) {
     console.error(`[payments] webhook settle failed for ${orderId}`, e);
     return new Response("settle failed", { status: 500 });

@@ -37,7 +37,8 @@ export default async function AddressesPage({
 
   return (
     <div className="max-w-2xl space-y-6">
-      <div>
+      {/* The side column starts level with what follows this (SideColumn). */}
+      <div data-account-intro>
         <h2 className="font-display text-xl font-semibold text-forest">{t("heading")}</h2>
         <p className="mt-2 font-body text-sm text-stone">{t("body")}</p>
         <p className="mt-1 font-body text-xs text-stone/80">

@@ -15,7 +15,13 @@ import type { GatewayCheckout } from "@/lib/payments/provider";
  * Each vendor's script is loaded here, on submit, rather than at the top of
  * the page, so a visit to checkout does not load a third-party script.
  */
-export async function openGateway(checkout: GatewayCheckout): Promise<"notCompleted"> {
+export async function openGateway(
+  checkout: GatewayCheckout,
+  /** Called the moment the gateway reports a payment, before the page starts
+   *  leaving for the return route — which settles the order server to server
+   *  and takes a few seconds, so the page shows it is working meanwhile. */
+  onPaid?: () => void,
+): Promise<"notCompleted"> {
   if (checkout.gateway === "cashfree") {
     const { load } = await import("@cashfreepayments/cashfree-js");
     const cashfree = await load({ mode: checkout.mode });
@@ -43,7 +49,10 @@ export async function openGateway(checkout: GatewayCheckout): Promise<"notComple
       timeout: checkout.timeoutSeconds,
       /* The response carries a signature, deliberately not checked here or
          sent anywhere: the return route asks Razorpay itself. */
-      handler: () => window.location.assign(checkout.returnUrl),
+      handler: () => {
+        onPaid?.();
+        window.location.assign(checkout.returnUrl);
+      },
       modal: { ondismiss: () => resolve("notCompleted") },
     });
     /* A failed attempt keeps the screen open for another try, so it is not

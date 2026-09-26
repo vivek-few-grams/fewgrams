@@ -1241,6 +1241,125 @@ export const OrderEntity = new Entity(
 );
 
 /**
+ * Subscription — SPEC §4, §5, §5.2.1.
+ *   PK = SUB#<id>   SK = META
+ *   GSI2PK = SUBSTATUS#<status>   GSI2SK = <createdAt>
+ *   GSI3PK = USER#<userId>        GSI3SK = SUB#<createdAt>   (paid onwards)
+ *
+ * **Deviations from the SPEC §4 table, both deliberate:**
+ *
+ * - **No `SUB#<id> / WEEK#<date>` rows.** They were to put each Saturday on
+ *   the `DELIVERY#` index. The Saturdays are a four-item list on this row
+ *   instead, and the tray plan reads the `active` status partition — a few
+ *   hundred rows at most, and one Query rather than four writes per checkout.
+ *   Add the week rows when one query must return greens and one-off orders
+ *   for a Saturday together (§4.1).
+ * - **The customer index is GSI3, not GSI1**, because on this table GSI1 is
+ *   the delivery run. `SUB#` and the orders' `ORDER#` sort keys share a
+ *   customer's partition and cannot reach each other.
+ *
+ * The status partition is `SUBSTATUS#`, not `STATUS#`, so the order screens'
+ * `STATUS#paid` lists can never pick up a subscription. GSI3 is sparse by
+ * status for the same reason as an order's: an unpaid checkout is not in the
+ * customer's history.
+ */
+export const SubscriptionEntity = new Entity(
+  {
+    model: { ...model, entity: "subscription" },
+    attributes: {
+      id: { type: "string", required: true },
+      userId: { type: "string", required: true },
+      email: { type: "string" },
+      status: { type: ["pending_payment", "active", "cancelled"] as const, required: true },
+      lines: {
+        type: "list",
+        required: true,
+        items: {
+          type: "map",
+          properties: {
+            planId: { type: "string", required: true },
+            planKey: { type: "string", required: true },
+            name: { type: "string", required: true },
+            boxes: { type: "number", required: true },
+            monthlyPrice: { type: "number", required: true },
+            lineTotal: { type: "number", required: true },
+            gramsPerBox: { type: "number", required: true },
+          },
+        },
+      },
+      total: { type: "number", required: true },
+      deliveries: {
+        type: "list",
+        required: true,
+        items: {
+          type: "map",
+          properties: {
+            date: { type: "string", required: true },
+            week: { type: "number", required: true },
+          },
+        },
+      },
+      address: {
+        type: "map",
+        required: true,
+        properties: {
+          label: { type: "string", required: true },
+          recipient: { type: "string", required: true },
+          phone: { type: "string", required: true },
+          line1: { type: "string", required: true },
+          line2: { type: "string" },
+          landmark: { type: "string" },
+          city: { type: "string" },
+          district: { type: "string" },
+          state: { type: "string" },
+          pincode: { type: "string", required: true },
+          notes: { type: "string" },
+          geo: {
+            type: "map",
+            properties: {
+              lat: { type: "number", required: true },
+              lng: { type: "number", required: true },
+              accuracyM: { type: "number" },
+            },
+          },
+        },
+      },
+      locale: { type: "string", required: true },
+      provider: { type: ["cashfree", "razorpay"] as const, required: true },
+      providerOrderId: { type: "string" },
+      receiptNo: { type: "number" },
+      paidAt: { type: "string" },
+      createdAt: { type: "string", required: true },
+      updatedAt: { type: "string", required: true },
+      expiresAt: { type: "string", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "SUB#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      byStatus: {
+        index: "GSI2",
+        pk: {
+          field: "GSI2PK",
+          composite: ["status"],
+          template: "SUBSTATUS#${status}",
+          casing: "none",
+        },
+        sk: { field: "GSI2SK", composite: ["createdAt"], template: "${createdAt}", casing: "none" },
+      },
+      byUser: {
+        index: "GSI3",
+        condition: placed,
+        pk: { field: "GSI3PK", composite: ["userId"], template: "USER#${userId}", casing: "none" },
+        sk: { field: "GSI3SK", composite: ["createdAt"], template: "SUB#${createdAt}", casing: "none" },
+      },
+    },
+  },
+  ordersConfig,
+);
+
+/**
  * One payment event from the gateway — SPEC §4, §9 ("store every payment
  * event").
  *   PK = PAYMENT#<id>   SK = META   GSI1PK = ORDER#<orderId>   GSI1SK = PAYMENT#<id>

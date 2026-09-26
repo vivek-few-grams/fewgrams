@@ -19,6 +19,7 @@ import { getTranslations } from "next-intl/server";
 import { deliveryCharge, deliveryPlan, type ChargeLine } from "@/lib/shipping/charge";
 import { checkDeliveryArea } from "@/lib/pincode/place";
 import { travelsOnOwnRun } from "@/lib/shipping/parcel";
+import { splitByArea } from "@/lib/cart/area-split";
 import { courierArrival, courierPickup, istDateISO, latestDate } from "@/lib/delivery-date";
 import { getAddress, getProfile } from "@/lib/repo/profile";
 import { createOrder, setProviderOrderId } from "@/lib/repo/orders";
@@ -63,13 +64,16 @@ export async function startCheckout(
   if (cart.items.length === 0) return fail("cartEmpty");
   if (cart.unavailable.length > 0 || cart.overStock.length > 0 || !cart.readyDate) return fail("cartChanged");
 
-  const lines = linesFromCart(cart);
   /* SPEC §7: the area gate, enforced here server-side whatever the address
      book holds — for fresh greens only, which go on the owner's own run.
-     Everything else goes by courier, and a courier that cannot reach the
-     PIN simply offers no price. */
+     Outside the area the greens are set aside and the rest is ordered, as
+     the page showed it (`splitByArea`); greens alone are refused. Everything
+     else goes by courier, and a courier that cannot reach the PIN simply
+     offers no price. */
+  let lines = linesFromCart(cart);
   if (travelsOnOwnRun(lines) && !(await checkDeliveryArea(address.pincode)).served) {
-    return fail("pincodeNotServed", { pincode: address.pincode });
+    lines = splitByArea(lines, false).kept;
+    if (lines.length === 0) return fail("pincodeNotServed", { pincode: address.pincode });
   }
   /* Quoted again here, for the address chosen, rather than taken from the
      page: the page's figure is only what the customer was shown, and a
@@ -187,8 +191,13 @@ export async function scanDelivery(addrId: string, rawLocale: string): Promise<D
   if (!address) return none;
   const cart = await hydrateCart(locale);
   if (cart.items.length === 0) return none;
-  const lines = linesFromCart(cart);
-  if (travelsOnOwnRun(lines) && !(await checkDeliveryArea(address.pincode)).served) return none;
+  /* Outside the area the greens are left out of the quote, exactly as
+     `startCheckout` leaves them out of the order. */
+  let lines = linesFromCart(cart);
+  if (travelsOnOwnRun(lines) && !(await checkDeliveryArea(address.pincode)).served) {
+    lines = splitByArea(lines, false).kept;
+    if (lines.length === 0) return none;
+  }
 
   const found = await deliveryPlan(lines, address.pincode);
   if (found.ok) {

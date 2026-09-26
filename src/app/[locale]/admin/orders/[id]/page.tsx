@@ -42,32 +42,34 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
 
   return (
     <div className="space-y-8">
-      <Link
-        href="/admin/orders"
-        className="font-body text-sm text-stone underline underline-offset-4 hover:text-forest"
-      >
-        {t("back")}
-      </Link>
-
-      <section>
-        <p className="font-body text-xs uppercase tracking-wider text-stone">{order.id}</p>
-        <h1 className="mt-1 font-display text-2xl font-bold text-forest">
-          {order.receiptNo !== null ? formatReceiptNo(order.receiptNo) : t("noReceipt")}
-        </h1>
-        <p className="mt-2 font-body text-sm text-forest">
-          {t(`status.${order.status}`)} ·{" "}
-          {t("deliverOn", {
-            date: format.dateTime(new Date(`${order.deliveryDate}T00:00:00+05:30`), {
-              dateStyle: "full",
-            }),
-          })}
-        </p>
-        <p className="mt-1 font-body text-xs text-stone">
-          {t("placed", { when: when(order.createdAt) })}
-          {order.paidAt && ` · ${t("paidAt", { when: when(order.paidAt) })}`}
-        </p>
-
-        <div className="mt-5">
+      {/* The way back and the next move sit to the right of the order, from
+          `md`; on a phone they come first, above it. */}
+      <section className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between md:gap-8">
+        <div className="min-w-0">
+          <p className="font-body text-xs uppercase tracking-wider text-stone">{order.id}</p>
+          <h1 className="mt-1 font-display text-2xl font-bold text-forest">
+            {order.receiptNo !== null ? formatReceiptNo(order.receiptNo) : t("noReceipt")}
+          </h1>
+          <p className="mt-2 font-body text-sm text-forest">
+            {t(`status.${order.status}`)} ·{" "}
+            {t("deliverOn", {
+              date: format.dateTime(new Date(`${order.deliveryDate}T00:00:00+05:30`), {
+                dateStyle: "full",
+              }),
+            })}
+          </p>
+          <p className="mt-1 font-body text-xs text-stone">
+            {t("placed", { when: when(order.createdAt) })}
+            {order.paidAt && ` · ${t("paidAt", { when: when(order.paidAt) })}`}
+          </p>
+        </div>
+        <div className="order-first flex flex-col items-start gap-4 md:order-none md:shrink-0 md:items-end">
+          <Link
+            href="/admin/orders"
+            className="font-body text-sm text-stone underline underline-offset-4 hover:text-forest"
+          >
+            {t("back")}
+          </Link>
           <OrderSteps order={order} />
         </div>
       </section>
