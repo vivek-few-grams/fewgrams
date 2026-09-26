@@ -133,13 +133,13 @@
       "title": "Trusted seed sources",
       "note": "Untreated seed only"
     },
-    "toOrder": {
-      "title": "Grown to order",
-      "note": "Sown only when you order"
-    },
     "neverFrozen": {
       "title": "Never frozen",
-      "note": "Cut and delivered the same morning"
+      "note": "Cut and delivered that morning"
+    },
+    "sameTrays": {
+      "title": "We eat what you eat",
+      "note": "Same trays feed our family"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { CalendarCheck, Leaf, ShieldCheck, Snowflake, Sprout as SproutIcon } from "lucide-react";
+import { HeartHandshake, Leaf, ShieldCheck, Snowflake, Sprout as SproutIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 /**
@@ -14,10 +14,12 @@ const tags = [
   { key: "organic", icon: Leaf },
   { key: "noChemicals", icon: ShieldCheck },
   { key: "seed", icon: SproutIcon },
-  /* The fifth (the owner, 26 Sep 2026): the claim that most sets us apart —
-     "Our process" says it too, and here it closes the page as a seal. */
-  { key: "toOrder", icon: CalendarCheck },
   { key: "neverFrozen", icon: Snowflake },
+  /* Last, so the page closes on it (the owner, 26 Sep 2026): nothing is
+     grown only for customers — the family eats from the same trays, so there
+     is no second grade. "Same trays" is the proof; "no quality difference"
+     is what the reader concludes. */
+  { key: "sameTrays", icon: HeartHandshake },
 ] as const;
 
 export async function TrustTags() {
@@ -30,10 +32,10 @@ export async function TrustTags() {
        straight onto the forest footer read as one block (the owner, same
        day), and sand also sets it apart from the cream sections above. */
     <section data-footer-flush className="bg-sand">
-      <div className="mx-auto max-w-[1400px] px-6 py-10 md:px-12 md:py-12">
+      <div className="mx-auto max-w-[1400px] px-6 py-6 md:px-12 md:py-8">
         {/* Badges rather than a row of small line icons (the owner, 25 Sep
-            2026: "big but not so promising"; then five and smaller on 26
-            Sep, so the band is a closing line rather than a section). The
+            2026: "big but not so promising"; then smaller on 26 Sep,
+            so the band is a closing line rather than a section). The
             old 48px circle was `bg-forest` on a `bg-forest` band, so only the
             22px glyph showed.
             Now a forest medallion with a cream glyph — the house rule for an
@@ -47,10 +49,10 @@ export async function TrustTags() {
                   <t.icon className="size-6 md:size-7" strokeWidth={1.5} aria-hidden="true" />
                 </span>
               </span>
-              <h3 className="mt-3 font-display text-base font-bold text-forest md:text-lg">
+              <h3 className="mt-2.5 font-display text-base font-bold text-forest md:text-lg">
                 {tr(`${t.key}.title`)}
               </h3>
-              <p className="mt-1 max-w-[24ch] font-body text-xs text-stone md:text-sm">{tr(`${t.key}.note`)}</p>
+              <p className="mt-1 max-w-[30ch] font-body text-xs text-stone md:text-sm lg:max-w-none">{tr(`${t.key}.note`)}</p>
             </li>
           ))}
         </ul>
