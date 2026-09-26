@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import { Bike, CalendarCheck, Check, ChevronDown, Loader2, PackageCheck, Radar, Truck } from "lucide-react";
+import { Bike, CalendarCheck, Check, ChevronDown, HandHeart, Loader2, Radar } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
 import type { DeliveryScan, ScanOption } from "./state";
@@ -92,9 +93,7 @@ export function DeliveryPartners({
                 className="scan-row flex items-center justify-between gap-3 rounded-xl border border-forest/10 bg-cream/70 px-4 py-3"
               >
                 <span className="flex items-center gap-3">
-                  <span aria-hidden className="grid size-9 place-items-center rounded-full bg-forest text-cream">
-                    <Truck size={16} strokeWidth={1.75} />
-                  </span>
+                  <CourierLogo courier={p} />
                   <span className="font-body text-sm font-semibold text-forest">{t(`partners.${p}`)}</span>
                 </span>
                 <span className="flex items-center gap-1.5 font-body text-xs text-stone">
@@ -108,7 +107,19 @@ export function DeliveryPartners({
       ) : scan.status === "ready" ? (
         <div className="scan-reveal mt-3 space-y-4">
           {scan.parcels.length > 0 && (
-            <p className="font-body text-xs leading-relaxed text-stone">{t("scanned", { count: partners.length })}</p>
+            /* Why the customer pays delivery at all (the owner, 26 Sep 2026): the
+               cheapest of every partner, and no "free delivery" hidden in the
+               product prices. A claim the code keeps true — `deliveryCharge`
+               charges the courier's own quote, rounded up to the rupee. */
+            <p className="flex items-start gap-2.5 rounded-lg bg-sage/20 px-3 py-2.5 font-body text-xs leading-relaxed text-forest">
+              <HandHeart aria-hidden size={16} strokeWidth={1.75} className="mt-px shrink-0" />
+              <span>
+                {t.rich("scanned", {
+                  count: partners.length,
+                  b: (chunks) => <strong className="font-semibold">{chunks}</strong>,
+                })}
+              </span>
+            </p>
           )}
           {split && (
             <p className="rounded-lg bg-sage/20 px-3 py-2 font-body text-xs leading-relaxed text-forest">
@@ -140,7 +151,6 @@ export function DeliveryPartners({
               <OptionList
                 name={`deliveryChoice-${p.id}`}
                 options={p.options}
-                pickup={p.pickup}
                 chosen={chosen[p.id] ?? null}
                 onChoose={(id) => onChoose(p.id, id)}
               />
@@ -183,18 +193,15 @@ function ParcelHeading({ n, items }: { n: number; items: string[] }) {
 function OptionList({
   name,
   options,
-  pickup,
   chosen,
   onChoose,
 }: {
   name: string;
   options: Option[];
-  pickup: string | null;
   chosen: string | null;
   onChoose: (id: string) => void;
 }) {
   const t = useTranslations("checkout");
-  const localeTag = useLocale() === "kn" ? "kn-IN" : "en-IN";
   const [open, setOpen] = useState(false);
   const picked = options.find((o) => o.id === chosen) ?? options[0];
   const others = options.length - 1;
@@ -220,18 +227,6 @@ function OptionList({
 
   return (
     <div>
-      {pickup && (
-        <p className="flex items-start gap-2 rounded-lg bg-sage/20 px-3 py-2 font-body text-xs leading-relaxed text-forest">
-          <PackageCheck aria-hidden size={14} strokeWidth={1.75} className="mt-px shrink-0" />
-          <span>
-            {t.rich("pickupNote", {
-              date: formatDeliveryDate(fromIstDateISO(pickup), localeTag),
-              b: (chunks) => <strong className="font-semibold">{chunks}</strong>,
-            })}
-          </span>
-        </p>
-      )}
-
       {open ? (
         <fieldset className="scan-reveal mt-3">
           <legend className="sr-only">{t("chooseOption")}</legend>
@@ -278,15 +273,51 @@ function OptionList({
  * not as a caption under the courier's name, because when it arrives is half
  * of what the customer is choosing.
  */
+/**
+ * Each courier's own icon, in a small circle where a generic truck used to be
+ * (the owner, 26 Sep 2026: "can we use their real logo?", then "smaller
+ * icons" — their app-icon marks rather than the wordmarks). The name stays as
+ * text beside it, so the icon is decorative and `alt` is empty. Each is shown
+ * as the square it is, not cropped to a circle.
+ *
+ * Built from each courier's own artwork (`public/couriers/README.md`). A
+ * Shiprocket row names the carrier it books ("Delhivery via Shiprocket") but
+ * shows Shiprocket's icon, since Shiprocket is who is booked. Used on the
+ * scan's "checking" rows too, so each courier looks the same while it is asked
+ * and once it has answered. A `Record`, so a fourth courier is a type error
+ * until it has one.
+ */
+const COURIER_ICON: Record<PartnerName, string> = {
+  delhivery: "/couriers/delhivery-icon.png",
+  ekart: "/couriers/ekart-icon.png",
+  shiprocket: "/couriers/shiprocket-icon.png",
+};
+
+function CourierLogo({ courier }: { courier: PartnerName }) {
+  return (
+    /* The courier's square app icon on its own, corners softened — no disc
+       around it (the owner, 26 Sep 2026). */
+    <Image
+      src={COURIER_ICON[courier]}
+      alt=""
+      width={36}
+      height={36}
+      /* Served as the file itself, not through the optimiser: the icons are
+         128 px already, and the optimiser's cache does not notice a file
+         replaced in place — a re-cut icon kept showing the old crop. */
+      unoptimized
+      className="size-9 shrink-0 rounded-lg"
+    />
+  );
+}
+
 function OptionBody({ option: o, cheapest }: { option: Option; cheapest: boolean }) {
   const t = useTranslations("checkout");
   const tc = useTranslations("cart");
   const localeTag = useLocale() === "kn" ? "kn-IN" : "en-IN";
   return (
     <>
-      <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-forest text-cream">
-        <Truck size={16} strokeWidth={1.75} />
-      </span>
+      <CourierLogo courier={o.courier} />
       <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
         <span className="font-body text-sm font-semibold text-forest">
           {o.carrier ? t("via", { carrier: o.carrier, partner: t(`partners.${o.courier}`) }) : t(`partners.${o.courier}`)}

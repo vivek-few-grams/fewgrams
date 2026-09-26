@@ -196,6 +196,24 @@ using it.
 
 ---
 
+## Payments — Razorpay test mode (added 26 Sep 2026)
+
+Razorpay is the gateway when its keys are set; it wins over Cashfree if both are. Add to
+`.env.local`, from the Razorpay dashboard in **Test Mode → Account & Settings → API Keys**:
+
+```
+RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=...
+RAZORPAY_WEBHOOK_SECRET=        # optional; the secret you type when adding the webhook
+```
+
+The mode comes from the key itself: `rzp_test_` is test mode, `rzp_live_` is live. Payments
+are captured by the app when it settles an order, so the dashboard's auto-capture setting does
+not matter. As with Cashfree, no webhook reaches localhost and the return route settles the
+order. To test the webhook, tunnel the dev server and add
+`<tunnel>/api/payments/razorpay/webhook` with the `payment.captured`, `payment.failed` and
+`order.paid` events. Test cards and UPI ids: razorpay.com/docs/payments/payments/test-card-details.
+
 ## Payments — Cashfree sandbox (added 23 Sep 2026)
 
 Add to `.env.local`, from Cashfree's **Test Environment → Developers → API Keys**:

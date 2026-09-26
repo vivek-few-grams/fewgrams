@@ -700,7 +700,7 @@
       "dropped": "Abandoned",
       "pending": "Pending"
     },
-    "gatewayRef": "Cashfree payment {id}",
+    "gatewayRef": "{gateway} payment {id}",
     "source": {
       "webhook": "webhook",
       "return": "return page"

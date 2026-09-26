@@ -1195,7 +1195,7 @@ export const OrderEntity = new Entity(
         },
       },
       locale: { type: "string", required: true },
-      provider: { type: ["cashfree"] as const, required: true },
+      provider: { type: ["cashfree", "razorpay"] as const, required: true },
       providerOrderId: { type: "string" },
       receiptNo: { type: "number" },
       paidAt: { type: "string" },
@@ -1259,7 +1259,7 @@ export const PaymentEntity = new Entity(
     attributes: {
       id: { type: "string", required: true },
       orderId: { type: "string", required: true },
-      provider: { type: ["cashfree"] as const, required: true },
+      provider: { type: ["cashfree", "razorpay"] as const, required: true },
       providerPaymentId: { type: "string", required: true },
       status: { type: ["success", "failed", "dropped", "pending"] as const, required: true },
       amount: { type: "number", required: true },

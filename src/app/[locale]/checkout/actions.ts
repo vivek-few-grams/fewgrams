@@ -148,10 +148,11 @@ export async function startCheckout(
         name: profile?.name ?? address.recipient,
       },
       returnUrl: `${origin}/api/payments/return/${locale}`,
-      /* Cashfree accepts only an HTTPS notify URL. On localhost there is no
+      /* Cashfree accepts only an HTTPS notify URL, and Razorpay ignores it
+         (its webhook is set in the dashboard). On localhost there is no
          webhook, and the return route settles the order instead. */
       notifyUrl: origin.startsWith("https://")
-        ? `${origin}/api/payments/cashfree/webhook`
+        ? `${origin}/api/payments/${provider.name}/webhook`
         : null,
       expiresAt,
     });
@@ -159,8 +160,7 @@ export async function startCheckout(
     return {
       status: "ready",
       orderId: order.id,
-      sessionId: created.sessionId,
-      mode: provider.mode,
+      checkout: created.checkout,
     };
   } catch (e) {
     console.error(`[payments] could not open a gateway order for ${order.id}`, e);

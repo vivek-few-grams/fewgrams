@@ -2,7 +2,7 @@ import type { EntityItem } from "electrodb";
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import { CounterEntity, OrderEntity, PaymentEntity } from "@/lib/db/entities";
 import type { Order, OrderLine } from "@/lib/orders/order";
-import type { PaymentAttempt } from "@/lib/payments";
+import type { GatewayName, PaymentAttempt } from "@/lib/payments";
 import type { OrderStatus, OrderSummary } from "@/lib/types";
 import { SOLD_STATUSES, seedGramsByKey } from "@/lib/seeds/best-sellers";
 
@@ -114,12 +114,15 @@ export async function setProviderOrderId(id: string, providerOrderId: string): P
 export async function recordPayment(
   attempt: PaymentAttempt,
   source: "webhook" | "return",
+  provider: GatewayName,
 ): Promise<boolean> {
   try {
     await PaymentEntity.create({
-      id: `cf_${attempt.providerPaymentId}_${attempt.status}`,
+      /* `cf_` rows predate Razorpay and keep their ids. A Razorpay payment id
+         already reads `pay_…`, so its row reads `rzp_pay_…`. */
+      id: `${provider === "cashfree" ? "cf" : "rzp"}_${attempt.providerPaymentId}_${attempt.status}`,
       orderId: attempt.orderId,
-      provider: "cashfree",
+      provider,
       providerPaymentId: attempt.providerPaymentId,
       status: attempt.status,
       amount: attempt.amount,

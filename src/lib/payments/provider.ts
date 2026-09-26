@@ -1,10 +1,11 @@
 /**
  * The payment gateway seam — SPEC §2.1, §9.
  *
- * Business logic talks to this interface and never to a vendor. Cashfree is
- * the one adapter today (`cashfree.ts`); a second gateway is a second file
- * implementing these four methods, not a change to checkout or to the order
- * lifecycle.
+ * Business logic talks to this interface and never to a vendor. Two adapters
+ * implement it — Razorpay (`razorpay.ts`) and Cashfree (`cashfree.ts`) — and
+ * `paymentProvider()` picks the one whose keys are set. The only thing that
+ * differs downstream is how the browser opens the payment screen
+ * (`GatewayCheckout`).
  *
  * Everything crossing the seam is normalised: rupees as a number, our own
  * order id, and a four-value status. A vendor's own vocabulary
@@ -47,12 +48,41 @@ export type CreateOrderInput = {
   expiresAt: Date;
 };
 
+export type GatewayName = "cashfree" | "razorpay";
+
+/** How each gateway is named in copy ("You pay on Razorpay's secure screen").
+ *  A brand, the same in every language, so not a message. */
+export const GATEWAY_LABEL: Record<GatewayName, string> = { cashfree: "Cashfree", razorpay: "Razorpay" };
+
+/**
+ * What the browser needs to open the gateway's payment screen. None of it is
+ * a secret: a Razorpay key id is public by design, and each of these can pay
+ * only this one order, for the amount the server set.
+ */
+export type GatewayCheckout =
+  | { gateway: "cashfree"; sessionId: string; mode: "sandbox" | "production" }
+  | {
+      gateway: "razorpay";
+      keyId: string;
+      razorpayOrderId: string;
+      /** Must match the Razorpay order's own amount, in paise. */
+      amountPaise: number;
+      prefill: { contact: string; email: string | null; name: string | null };
+      /** Our return route with `?order_id=` on it, opened once the payment
+       *  succeeds. */
+      returnUrl: string;
+      /** What is left of the payment window, for the checkout's timeout. */
+      timeoutSeconds: number;
+    };
+
 export type CreatedOrder = {
-  /** Handed to the browser SDK to open the gateway's checkout. Not a secret:
-   *  it can only pay this one order, for the amount the server set. */
-  sessionId: string;
   providerOrderId: string;
+  checkout: GatewayCheckout;
 };
+
+/** Which order to ask about: ours, and the gateway's own id for it — Cashfree
+ *  is asked by ours, Razorpay only knows its own. */
+export type ProviderOrderRef = { orderId: string; providerOrderId: string | null };
 
 /** The gateway's verdict on the order as a whole. Only `paid` lets an order
  *  be fulfilled; the attempts are then checked for the amount. */
@@ -60,7 +90,7 @@ export type ProviderOrderStatus = "paid" | "active" | "expired" | "terminated";
 
 export interface PaymentProvider {
   /** Which gateway this is, recorded on every order and payment row. */
-  readonly name: "cashfree";
+  readonly name: GatewayName;
   /** Browser SDK mode — sandbox or production. */
   readonly mode: "sandbox" | "production";
 
@@ -69,7 +99,7 @@ export interface PaymentProvider {
   /** The order's status and every attempt on it, fetched server to server.
    *  **This is the only source a payment is confirmed from** — neither the
    *  browser redirect nor a webhook payload is trusted on its own. */
-  fetchOrder(orderId: string): Promise<{ status: ProviderOrderStatus; attempts: PaymentAttempt[] }>;
+  fetchOrder(ref: ProviderOrderRef): Promise<{ status: ProviderOrderStatus; attempts: PaymentAttempt[] }>;
 
   /** True only when the body was signed by the gateway. Takes the **raw**
    *  body: a signature over re-serialised JSON will not match. */

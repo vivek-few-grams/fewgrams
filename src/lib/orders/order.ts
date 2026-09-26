@@ -4,7 +4,7 @@ import type { HydratedCart } from "@/lib/cart/server";
 import { istDateISO } from "@/lib/delivery-date";
 import type { SeedSourcing } from "@/lib/seeds/stock";
 import type { PaymentAttempt } from "@/lib/payments";
-import type { ProviderOrderStatus } from "@/lib/payments/provider";
+import type { GatewayName, ProviderOrderStatus } from "@/lib/payments/provider";
 import type { Address, OrderStatus } from "@/lib/types";
 
 /**
@@ -112,7 +112,7 @@ export type Order = {
   deliveryDate: string;
   address: OrderAddress;
   locale: string;
-  provider: "cashfree";
+  provider: GatewayName;
   providerOrderId: string | null;
   /** Assigned at payment, so an abandoned checkout leaves no gap in the
    *  sequence (SPEC §9.1). */

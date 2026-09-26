@@ -5,6 +5,7 @@ import type {
   PaymentAttempt,
   PaymentAttemptStatus,
   PaymentProvider,
+  ProviderOrderRef,
   ProviderOrderStatus,
 } from "./provider";
 
@@ -156,10 +157,13 @@ export class CashfreeProvider implements PaymentProvider {
       "/orders",
       { method: "POST", body, idempotencyKey: `fewgrams-order-${input.orderId}-create-v1` },
     );
-    return { sessionId: res.payment_session_id, providerOrderId: String(res.cf_order_id) };
+    return {
+      providerOrderId: String(res.cf_order_id),
+      checkout: { gateway: "cashfree", sessionId: res.payment_session_id, mode: this.mode },
+    };
   }
 
-  async fetchOrder(orderId: string) {
+  async fetchOrder({ orderId }: ProviderOrderRef) {
     const path = `/orders/${encodeURIComponent(orderId)}`;
     const [order, payments] = await Promise.all([
       this.call<{ order_status?: string }>(path, { method: "GET" }),

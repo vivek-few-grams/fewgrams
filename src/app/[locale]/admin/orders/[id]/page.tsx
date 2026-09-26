@@ -3,6 +3,7 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { formatReceiptNo, isOrderId, type ShippingQuote } from "@/lib/orders/order";
+import { GATEWAY_LABEL } from "@/lib/payments/provider";
 import { getOrder, listPayments } from "@/lib/repo/orders";
 import { OrderSteps } from "../OrderSteps";
 
@@ -179,7 +180,7 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                 {t(`attempt.${p.status}`)} · {t("amount", { amount: p.amount })}
                 {p.method && ` · ${p.method}`}
                 <span className="block text-xs text-stone">
-                  {t("gatewayRef", { id: p.id })} · {t(`source.${p.source}`)} ·{" "}
+                  {t("gatewayRef", { gateway: GATEWAY_LABEL[order.provider], id: p.id })} · {t(`source.${p.source}`)} ·{" "}
                   {when(p.receivedAt)}
                 </span>
               </li>

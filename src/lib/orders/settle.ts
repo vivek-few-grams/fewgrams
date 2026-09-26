@@ -32,9 +32,13 @@ export async function settleOrder(
   const order = await getOrder(orderId);
   if (!order || order.status !== "pending_payment") return order;
   if (!provider) return order;
+  /* An order is settled by the gateway it was opened with. After a switch,
+     an unpaid order from the old one is left to expire rather than asked of
+     a gateway that has never heard of it. */
+  if (order.provider !== provider.name) return order;
 
-  const gateway = await provider.fetchOrder(orderId);
-  for (const attempt of gateway.attempts) await recordPayment(attempt, source);
+  const gateway = await provider.fetchOrder({ orderId, providerOrderId: order.providerOrderId });
+  for (const attempt of gateway.attempts) await recordPayment(attempt, source, provider.name);
 
   const settlement = settlementFor(order, gateway);
   if (settlement.action === "mismatch") {

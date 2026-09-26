@@ -10,6 +10,7 @@ import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
 import { AddressEntry } from "../account/addresses/AddressEntry";
 import { setDefaultAddressAction } from "../account/actions";
 import { scanDelivery, startCheckout } from "./actions";
+import { openGateway } from "./open-gateway";
 import { DeliveryPartners, type PartnerName } from "./DeliveryPartners";
 import { DeliveryRide } from "./DeliveryRide";
 import { CHECKOUT_IDLE, choiceField, type CheckoutState, type DeliveryScan } from "./state";
@@ -77,19 +78,17 @@ export type AddressPrefill = { recipient: string; phone: string };
  * cannot nest — and the pay form carries the chosen address id, and one
  * `delivery:<parcel>` option id per parcel, in hidden inputs.
  *
- * The server action places the order and returns a gateway session; this
- * component then hands that session to Cashfree's own checkout, which
- * replaces the page. The browser learns nothing it could use to change the
- * amount: the session was opened by the server, for the server's total.
- *
- * `@cashfreepayments/cashfree-js` injects its script the moment it is
- * imported, so it is imported on submit rather than at the top of this file
- * — otherwise every visit to checkout would load a third-party script.
+ * The server action places the order and returns what the gateway's own
+ * payment screen needs (`openGateway` — Razorpay's modal, or Cashfree's
+ * redirect). The browser learns nothing it could use to change the amount:
+ * the gateway order was opened by the server, for the server's total. Each
+ * vendor's script loads on submit, not with the page.
  */
 export function PayForm({
   locale,
   summary,
   payable,
+  gatewayLabel,
   subtotal,
   partners,
   greensOnly,
@@ -104,6 +103,8 @@ export function PayForm({
   /** False when no gateway is configured: the address step still works, the
       pay button is replaced by a notice. */
   payable: boolean;
+  /** The configured gateway's name, for the "you pay on …" note. */
+  gatewayLabel: string;
   subtotal: number;
   /** The couriers a scan will ask, for its "checking" rows. */
   partners: PartnerName[];
@@ -225,17 +226,9 @@ export function PayForm({
       }
       if (next.status !== "ready") return next;
       try {
-        const { load } = await import("@cashfreepayments/cashfree-js");
-        const cashfree = await load({ mode: next.mode });
-        if (!cashfree) return { status: "error", code: "notCompleted" };
-        const result = await cashfree.checkout({
-          paymentSessionId: next.sessionId,
-          redirectTarget: "_self",
-        });
-        /* On success the redirect has already replaced the page. An error
-           means the screen was closed or never opened — "not completed",
-           never "failed", because a payment may still be in flight. */
-        return result.error ? { status: "error", code: "notCompleted" } : next;
+        /* Only comes back if the screen was closed or never opened; on
+           success the page is replaced first. */
+        return { status: "error", code: await openGateway(next.checkout) };
       } catch {
         return { status: "error", code: "notCompleted" };
       }
@@ -611,7 +604,7 @@ export function PayForm({
           {payable && (
             <p className="mt-3 flex items-start justify-center gap-1.5 text-center font-body text-xs leading-relaxed text-stone sm:justify-end sm:text-right">
               <ShieldCheck size={14} strokeWidth={1.75} className="mt-px shrink-0 text-forest/70" />
-              {t("payNote")}
+              {t("payNote", { gateway: gatewayLabel })}
             </p>
           )}
         </section>

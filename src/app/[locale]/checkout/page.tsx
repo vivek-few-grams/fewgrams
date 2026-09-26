@@ -9,7 +9,7 @@ import type { CartItem } from "@/lib/cart/server";
 import { lineUnits } from "@/lib/cart/line-display";
 import { hydrateCart } from "@/lib/cart/server";
 import { formatDeliveryDate, istDateISO } from "@/lib/delivery-date";
-import { paymentProvider } from "@/lib/payments";
+import { GATEWAY_LABEL, paymentProvider } from "@/lib/payments";
 import { shippingProviders } from "@/lib/shipping";
 import { travelsOnOwnRun } from "@/lib/shipping/parcel";
 import { checkDeliveryArea } from "@/lib/pincode/place";
@@ -77,7 +77,8 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
       : [],
   );
   const deliverable = greens ? addresses.filter((a) => served.get(a.pincode)) : addresses;
-  const open = paymentProvider() !== null;
+  const provider = paymentProvider();
+  const open = provider !== null;
 
   if (cart.items.length === 0) {
     return (
@@ -200,6 +201,7 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
               locale={locale}
               summary={summary}
               payable={open}
+              gatewayLabel={provider ? GATEWAY_LABEL[provider.name] : ""}
               subtotal={cart.subtotal}
               partners={shippingProviders().map((p) => p.name)}
               greensOnly={greens}

@@ -6,10 +6,11 @@ import { isOrderId } from "@/lib/orders/order";
 import { settleOrder } from "@/lib/orders/settle";
 
 /**
- * Where Cashfree sends the customer after the payment screen — SPEC §9.
+ * Where the gateway sends the customer after the payment screen — SPEC §9.
  *
  * `/api/payments/return/<locale>?order_id=<id>`. The locale is a path segment
- * because Cashfree appends `?order_id=` to the URL it was given; a query
+ * because Cashfree appends `?order_id=` to the URL it was given (Razorpay's
+ * `openGateway` puts it on the same way); a query
  * string of our own would end up with two `?`.
  *
  * **Arriving here proves nothing.** The query string is the customer's to

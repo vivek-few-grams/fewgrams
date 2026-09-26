@@ -469,14 +469,17 @@ as `localised` in any file that needs both.
 ## An order is paid only by `settleOrder`
 
 `src/lib/orders/settle.ts`. The browser redirect and the webhook each only
-**name** an order; `settleOrder` asks Cashfree server to server and pays it
+**name** an order; `settleOrder` asks the gateway server to server and pays it
 only when the gateway calls it `PAID` **and** an attempt succeeded for exactly
 the order's total (SPEC §9.2). Never mark an order paid anywhere else, and
 never read an amount, a status or a line from the browser or from a webhook
 payload.
 
-- **The gateway sits behind `PaymentProvider`** (`src/lib/payments/`). Business
-  code never imports `cashfree.ts` directly.
+- **The gateway sits behind `PaymentProvider`** (`src/lib/payments/`) — Razorpay when its keys
+  are set, else Cashfree (the owner, 26 Sep 2026). Business code never imports `razorpay.ts` or
+  `cashfree.ts` directly; the browser opens the payment screen through `openGateway`. Razorpay
+  payments are captured by `fetchOrder` itself, for exactly the order's amount, so the
+  dashboard's auto-capture setting does not matter.
 - **The couriers sit behind `ShippingProvider`** (`src/lib/shipping/`), the same way —
   Delhivery, Ekart and Shiprocket, all asked at once by `deliveryOptions` in `charge.ts`,
   and the customer picks. Business code never imports a courier file directly, and quotes
