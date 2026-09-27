@@ -40,6 +40,8 @@ function toOrder(row: OrderRow): Order {
       ...x,
       quote: x.quote ?? null,
       trackingNumber: x.trackingNumber ?? null,
+      bookingStartedAt: x.bookingStartedAt ?? null,
+      booking: x.booking ?? null,
     })),
     deliveryDate: row.deliveryDate,
     address: row.address,
@@ -247,8 +249,14 @@ export async function advanceOrderStatus(
   }
 }
 
-function toShipmentRow({ quote, trackingNumber, ...x }: Order["shipments"][number]) {
-  return { ...x, ...(quote ? { quote } : {}), ...(trackingNumber ? { trackingNumber } : {}) };
+function toShipmentRow({ quote, trackingNumber, bookingStartedAt, booking, ...x }: Order["shipments"][number]) {
+  return {
+    ...x,
+    ...(quote ? { quote } : {}),
+    ...(trackingNumber ? { trackingNumber } : {}),
+    ...(bookingStartedAt ? { bookingStartedAt } : {}),
+    ...(booking ? { booking } : {}),
+  };
 }
 
 /**
@@ -326,4 +334,36 @@ export function seedGramsSold(): Promise<Record<string, number>> {
     seedSales = null;
   });
   return grams;
+}
+
+/**
+ * Replace one parcel, **conditional on the order not having changed since it
+ * was read** (`updatedAt`). This is the booking lock: two presses of "Book"
+ * read the same order, the first write wins, and the second is refused before
+ * it reaches the courier — so a parcel is never booked, and paid for, twice.
+ * Returns the order as written, or null when somebody else wrote first.
+ */
+export async function replaceShipment(
+  order: Order,
+  index: number,
+  shipment: Order["shipments"][number],
+): Promise<Order | null> {
+  const shipments = order.shipments.map((x, i) => (i === index ? shipment : x));
+  const updatedAt = new Date().toISOString();
+  try {
+    await OrderEntity.patch({ id: order.id })
+      .set({
+        shipments: shipments.map(toShipmentRow),
+        deliveryDate: order.deliveryDate,
+        userId: order.userId,
+        createdAt: order.createdAt,
+        updatedAt,
+      })
+      .where((attr, { eq }) => eq(attr.updatedAt, order.updatedAt))
+      .go();
+    return { ...order, shipments, updatedAt };
+  } catch (e) {
+    if (isConditionFailure(e)) return null;
+    throw e;
+  }
 }

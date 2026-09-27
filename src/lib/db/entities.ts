@@ -1163,9 +1163,31 @@ export const OrderEntity = new Entity(
               },
             },
             deliveryDate: { type: "string", required: true },
-            /** The courier's tracking number (AWB), typed on the admin order
-             *  page once the parcel is booked; shown on the customer's order. */
+            /** The courier's tracking number (AWB) — from booking, or typed
+             *  on the admin order page; shown on the customer's order. */
             trackingNumber: { type: "string" },
+            /** Set when admin starts a booking and cleared if the courier
+             *  refuses it: a parcel carrying this and no tracking number was
+             *  left mid-booking (27 Sep 2026). */
+            bookingStartedAt: { type: "string" },
+            /** What the courier answered when the parcel was booked from
+             *  admin (27 Sep 2026). */
+            booking: {
+              type: "map",
+              properties: {
+                bookedAt: { type: "string", required: true },
+                /** The courier's own id for the shipment, where it has one
+                 *  separate from the AWB (Shiprocket's shipment id). */
+                courierRef: { type: "string" },
+                pickupDate: { type: "string", required: true },
+                /** True once the courier accepted the pickup request. */
+                pickupRequested: { type: "boolean", required: true },
+                /** Why a pickup request failed, when the booking itself went
+                 *  through — the courier's words, for the admin screen. */
+                pickupError: { type: "string" },
+                labelUrl: { type: "string" },
+              },
+            },
           },
         },
       },
@@ -1273,7 +1295,7 @@ export const SubscriptionEntity = new Entity(
       id: { type: "string", required: true },
       userId: { type: "string", required: true },
       email: { type: "string" },
-      status: { type: ["pending_payment", "active", "cancelled"] as const, required: true },
+      status: { type: ["pending_payment", "active", "paused", "cancelled"] as const, required: true },
       lines: {
         type: "list",
         required: true,
@@ -1302,6 +1324,10 @@ export const SubscriptionEntity = new Entity(
           },
         },
       },
+      /** Saturdays skipped from admin, and boxes held by a pause (27 Sep
+       *  2026). Absent on older rows; the repo reads them as [] and 0. */
+      skipped: { type: "list", items: { type: "string" } },
+      held: { type: "number" },
       address: {
         type: "map",
         required: true,

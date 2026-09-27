@@ -275,9 +275,30 @@ SHIPROCKET_PASSWORD="..."
 **Escape a `$` in any password as `\$`.** Next expands `$NAME` in env files, so an unescaped
 `$6Q` silently becomes empty and sign-in fails with a wrong-password error.
 
-Both are production-only and read-only here: a quote spends nothing. The Shiprocket API user
-needs the **Courier** module at least (Orders, Shipments and Settings for booking later).
-Admin → delivery shows whether each one is answering.
+Both are production-only: a quote spends nothing, but a **booking** does. The Shiprocket API
+user needs the **Courier**, **Orders** and **Shipments** modules for booking. Admin → delivery
+shows whether each one is answering.
+
+## Booking couriers from admin (added 27 Sep 2026)
+
+"Book with …" on an order ready for delivery creates the shipment with the courier the customer
+chose and requests its pickup (`src/lib/shipping/book.ts`). **It spends wallet money**, so it is
+off unless the server has:
+
+```
+COURIER_BOOKING=on
+SELLER_GSTIN=...                 # optional; sent to Delhivery and Ekart when set
+```
+
+Leave `COURIER_BOOKING` unset locally: Ekart and Shiprocket have no test system, so the
+credentials above are live and a local click would book a real parcel. To try booking without
+spending, point Delhivery at staging (`DELHIVERY_ENV=staging` with a staging token) and book an
+order whose customer chose Delhivery.
+
+**Every pickup must be registered on each courier's account under exactly its name on admin →
+delivery** — the Delhivery warehouse name, the Shiprocket pickup nickname and the Ekart address
+alias. That name is how each courier finds the pickup; a mismatch is refused with the courier's
+own message on the order page, and nothing is booked.
 
 Vendor reference docs are installed as the project skill `.claude/skills/app-check-config`
 (git-ignored; re-install with `npx @cashfreepayments/agent-skills add skills --frameworks

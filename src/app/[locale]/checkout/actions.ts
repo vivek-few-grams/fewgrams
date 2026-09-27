@@ -107,6 +107,8 @@ export async function startCheckout(
       quote: x.quote,
       deliveryDate: istDateISO(x.method === "courier" ? courierArrival(courierPickup(ready), x.days ?? 0) : ready),
       trackingNumber: null,
+      bookingStartedAt: null,
+      booking: null,
     };
   });
   const couriered = shipments.filter((x) => x.method === "courier");

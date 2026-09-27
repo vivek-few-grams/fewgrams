@@ -36,11 +36,13 @@ const ACCOUNT_STATE = {
     dot: "bg-terracotta",
     key: "admin",
   },
+  /* No staff pages exist (removed 27 Sep 2026), so a staff sign-in goes to
+     its own account like any customer until the delivery run app is built. */
   staff: {
-    href: "/staff",
+    href: "/account",
     tone: "text-forest hover:text-stone",
     dot: "bg-sage",
-    key: "staff",
+    key: "account",
   },
   customer: {
     href: "/account",

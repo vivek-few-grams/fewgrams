@@ -2,6 +2,7 @@ import type { EntityItem } from "electrodb";
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import { SubscriptionEntity } from "@/lib/db/entities";
 import type {
+  ScheduleChange,
   Subscription,
   SubscriptionDelivery,
   SubscriptionStatus,
@@ -23,6 +24,8 @@ function toSubscription(row: Row): Subscription {
     lines: row.lines.map((l) => ({ ...l })),
     total: row.total,
     deliveries: row.deliveries.map((d) => ({ date: d.date, week: d.week })),
+    skipped: row.skipped ?? [],
+    held: row.held ?? 0,
     address: row.address,
     locale: row.locale,
     provider: row.provider,
@@ -116,4 +119,32 @@ export async function listSubscriptionsForUser(userId: string): Promise<Subscrip
     .byUser({ userId })
     .go({ ...LIST_OPTS, order: "desc" });
   return data.map(toSubscription);
+}
+
+/**
+ * Write a skip, pause, resume or cancel (`ScheduleChange`). Conditional on
+ * `updatedAt` still being what `sub` was read with, so two admins changing
+ * one subscription at once cannot both write a schedule worked out from the
+ * same starting point: the second is refused and sees the first's result. Supplies
+ * `userId` and `createdAt` for the indexes a status change rewrites.
+ */
+export async function changeSubscriptionSchedule(sub: Subscription, change: ScheduleChange): Promise<boolean> {
+  try {
+    await SubscriptionEntity.patch({ id: sub.id })
+      .set({
+        status: change.status,
+        deliveries: change.deliveries,
+        skipped: change.skipped,
+        held: change.held,
+        userId: sub.userId,
+        createdAt: sub.createdAt,
+        updatedAt: new Date().toISOString(),
+      })
+      .where(({ updatedAt }, { eq }) => eq(updatedAt, sub.updatedAt))
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
 }

@@ -43,6 +43,9 @@ function courier(
       if (answer instanceof Error) throw answer;
       return typeof answer === "function" ? answer(input) : answer;
     },
+    async book(): Promise<never> {
+      throw new Error("Checkout never books");
+    },
   };
   return p;
 }

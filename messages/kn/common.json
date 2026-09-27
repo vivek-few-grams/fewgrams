@@ -18,7 +18,6 @@
     "cart": "ಬುಟ್ಟಿ",
     "signIn": "ಸೈನ್ ಇನ್",
     "account": "ಖಾತೆ",
-    "staff": "ಸಿಬ್ಬಂದಿ",
     "admin": "ನಿರ್ವಾಹಕ",
     "signedInAs": "{label} — {who} ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದೆ",
     "cartWithCount": "ಬುಟ್ಟಿ, {count, plural, one {# ವಸ್ತು} other {# ವಸ್ತುಗಳು}}"
@@ -54,7 +53,6 @@
     "shop": "ಅಂಗಡಿ",
     "brand": "ಫ್ಯೂಗ್ರಾಮ್ಸ್",
     "legal": "ಕಾನೂನು",
-    "ourStory": "ನಮ್ಮ ಕಥೆ",
     "howWeGrow": "ನಾವು ಹೇಗೆ ಬೆಳೆಸುತ್ತೇವೆ",
     "faq": "ಪ್ರಶ್ನೋತ್ತರ",
     "contact": "ಸಂಪರ್ಕಿಸಿ",

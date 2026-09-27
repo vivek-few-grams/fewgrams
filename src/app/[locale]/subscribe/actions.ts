@@ -86,6 +86,8 @@ export async function startSubscription(_prev: CheckoutState, fd: FormData): Pro
     lines,
     total,
     deliveries: subscriptionSchedule(now).map((b) => ({ date: istDateISO(b.date), week: b.week })),
+    skipped: [],
+    held: 0,
     address: addressSnapshot(address),
     locale,
     provider: provider.name,

@@ -88,7 +88,43 @@ export type OrderShipment = {
   /** The courier's tracking number, once booked. Null until then, and
    *  always for the own run. */
   trackingNumber: string | null;
+  /** Set while a booking is with the courier; see `bookingState`. */
+  bookingStartedAt: string | null;
+  /** The courier's answer, when booked from admin. Null when not booked, or
+   *  when the tracking number was typed in by hand. */
+  booking: ShipmentBooking | null;
 };
+
+export type ShipmentBooking = {
+  bookedAt: string;
+  courierRef?: string;
+  /** `YYYY-MM-DD`, IST. */
+  pickupDate: string;
+  pickupRequested: boolean;
+  pickupError?: string;
+  labelUrl?: string;
+};
+
+/**
+ * Where one courier parcel stands for booking — 27 Sep 2026.
+ *
+ * - `unbooked` — can be booked.
+ * - `booked` — has a tracking number, from a booking or typed in.
+ * - `stuck` — a booking was started and never finished: the courier may or
+ *   may not have created the shipment. Check its dashboard before retrying,
+ *   or the parcel is booked (and paid for) twice.
+ */
+export type BookingState = "unbooked" | "booked" | "stuck";
+
+export function bookingState(x: Pick<OrderShipment, "trackingNumber" | "bookingStartedAt">): BookingState {
+  if (x.trackingNumber) return "booked";
+  return x.bookingStartedAt ? "stuck" : "unbooked";
+}
+
+/** Only a finished, not-yet-dispatched order has parcels to book. */
+export function canBook(order: Pick<Order, "status">, x: Pick<OrderShipment, "method" | "quote">): boolean {
+  return order.status === "ready_for_delivery" && x.method === "courier" && x.quote !== null;
+}
 
 /** What a courier tracking number looks like — AWBs are letters, digits and
  *  the odd hyphen. Loose on purpose: it guards against a pasted sentence, not
@@ -252,11 +288,10 @@ export function settlementFor(
 }
 
 /**
- * Where an operator may move an order next (SPEC §13).
- *
- * `refunded` is not offered: refunds go through the gateway and are not
- * wired up yet, and a status that says "refunded" with no refund behind it
- * is worse than no button.
+ * Where an operator may move an order next (SPEC §13) — the forward path,
+ * one button per move on the board. Cancelling and refunding sit apart
+ * (`canCancel`, `canMarkRefunded`): they are offered on the order page only,
+ * behind a confirmation, never as a one-press step on a card.
  */
 const NEXT: Partial<Record<OrderStatus, OrderStatus[]>> = {
   paid: ["picked"],
@@ -271,4 +306,26 @@ export function nextStatuses(from: OrderStatus): OrderStatus[] {
 
 export function canAdvance(from: OrderStatus, to: OrderStatus): boolean {
   return nextStatuses(from).includes(to);
+}
+
+/**
+ * Statuses an operator may cancel from: paid, but not yet with the courier or
+ * the delivery run. Past that the order is `delivered` or `failed`.
+ */
+const CANCELLABLE: readonly OrderStatus[] = ["paid", "picked", "ready_for_delivery"];
+
+export function canCancel(from: OrderStatus): boolean {
+  return CANCELLABLE.includes(from);
+}
+
+/**
+ * The money goes back in the gateway's own dashboard (the owner, 27 Sep
+ * 2026) — nothing here calls a refund API. Marking it records that it was
+ * done, so the customer's order page says "Refunded" rather than leaving
+ * them to wonder.
+ */
+const REFUNDABLE: readonly OrderStatus[] = ["cancelled", "failed"];
+
+export function canMarkRefunded(from: OrderStatus): boolean {
+  return REFUNDABLE.includes(from);
 }

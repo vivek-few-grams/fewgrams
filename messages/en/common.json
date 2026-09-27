@@ -18,7 +18,6 @@
     "cart": "Cart",
     "signIn": "Sign in",
     "account": "Account",
-    "staff": "Staff",
     "admin": "Admin",
     "signedInAs": "{label} — signed in as {who}",
     "cartWithCount": "Cart, {count, plural, one {# item} other {# items}}"
@@ -54,7 +53,6 @@
     "shop": "Shop",
     "brand": "Fewgrams",
     "legal": "Legal",
-    "ourStory": "Our story",
     "howWeGrow": "How we grow",
     "faq": "FAQ",
     "contact": "Contact",

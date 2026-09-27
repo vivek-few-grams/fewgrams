@@ -1,7 +1,8 @@
 import { randomBytes } from "node:crypto";
-import { istDateISO } from "@/lib/delivery-date";
+import { fromIstDateISO, istDateISO } from "@/lib/delivery-date";
 import type { OrderAddress } from "@/lib/orders/order";
 import type { GatewayName } from "@/lib/payments/provider";
+import { rotationWeek, subscriptionSchedule } from "./rotation";
 
 /**
  * A subscription — SPEC §5, §5.2.1. Pure logic only; storage is
@@ -18,7 +19,9 @@ import type { GatewayName } from "@/lib/payments/provider";
  * `monthlyPrice` is refused by `startSubscription`, not just hidden.
  */
 
-export type SubscriptionStatus = "pending_payment" | "active" | "cancelled";
+/** `paused` and `cancelled` are set from admin only (the owner, 27 Sep 2026);
+ *  a customer asks on WhatsApp or by email. */
+export type SubscriptionStatus = "pending_payment" | "active" | "paused" | "cancelled";
 
 export type SubscriptionLine = {
   planId: string;
@@ -52,8 +55,16 @@ export type Subscription = {
   /** Rupees for the whole term; delivery is included (plan copy says so). */
   total: number;
   /** Every Saturday of the term, `YYYY-MM-DD` IST, first box first. Moved on
-   *  a week if it is paid after the cutoff it was priced against. */
+   *  a week if it is paid after the cutoff it was priced against. A skip
+   *  moves one to the end, a pause takes the future ones off until resumed,
+   *  and a cancel drops them — so this is always the boxes that did or will
+   *  arrive, and the tray plan can keep reading it as it is. */
   deliveries: SubscriptionDelivery[];
+  /** Saturdays taken off by a skip, for the record on both screens. */
+  skipped: string[];
+  /** Boxes owed while `paused`, put back on the calendar by a resume. 0
+   *  otherwise. */
+  held: number;
   address: OrderAddress;
   locale: string;
   provider: GatewayName;
@@ -97,7 +108,7 @@ export function boxesPerWeek(sub: Pick<Subscription, "lines">): number {
  * - `active` — at least one box delivered, at least one to come.
  * - `expired` — the last Saturday has passed.
  */
-export type SubscriptionState = "pending" | "cancelled" | "upcoming" | "active" | "expired";
+export type SubscriptionState = "pending" | "cancelled" | "paused" | "upcoming" | "active" | "expired";
 
 export function subscriptionState(
   sub: Pick<Subscription, "status" | "deliveries">,
@@ -105,6 +116,7 @@ export function subscriptionState(
 ): SubscriptionState {
   if (sub.status === "pending_payment") return "pending";
   if (sub.status === "cancelled") return "cancelled";
+  if (sub.status === "paused") return "paused";
   const today = istDateISO(now);
   const dates = sub.deliveries.map((d) => d.date).sort();
   if (dates.length === 0 || dates.at(-1)! < today) return "expired";
@@ -143,4 +155,116 @@ export function shiftForCutoff(
     date: new Date(Date.parse(d.date) + weeks * 7 * DAY_MS).toISOString().slice(0, 10),
     week: ((d.week - 1 + weeks) % weeksInRotation) + 1,
   }));
+}
+
+/* ─────────────── Skip, pause, resume, cancel — admin, 27 Sep 2026 ───────────────
+ *
+ * A Saturday can be changed while it is still ahead: strictly after today.
+ * Today's boxes are already cut and on the road. Whether a Saturday that is
+ * already sown for should still be skipped is the owner's call, so it is not
+ * refused here; the screen says which Saturdays are locked.
+ */
+
+const WEEK_MS = 7 * DAY_MS;
+
+const byDate = (a: SubscriptionDelivery, b: SubscriptionDelivery) => a.date.localeCompare(b.date);
+
+/** The Saturdays still ahead of `now` — the ones a skip, pause or cancel may
+ *  touch. */
+export function changeableDeliveries(
+  sub: Pick<Subscription, "deliveries">,
+  now: Date = new Date(),
+): SubscriptionDelivery[] {
+  const today = istDateISO(now);
+  return sub.deliveries.filter((d) => d.date > today).sort(byDate);
+}
+
+export type ScheduleChange = Pick<Subscription, "status" | "deliveries" | "skipped" | "held">;
+
+/**
+ * Skip one Saturday. The box is not lost: it moves to the Saturday after the
+ * last one, on whatever rotation week that is, so the customer still gets
+ * every box they paid for. Null when that Saturday cannot be skipped.
+ */
+export function skipDelivery(
+  sub: Pick<Subscription, "status" | "deliveries" | "skipped" | "held">,
+  date: string,
+  now: Date = new Date(),
+): ScheduleChange | null {
+  if (sub.status !== "active") return null;
+  if (!changeableDeliveries(sub, now).some((d) => d.date === date)) return null;
+  const kept = sub.deliveries.filter((d) => d.date !== date).sort(byDate);
+  const last = kept.at(-1)?.date ?? date;
+  const added = new Date(fromIstDateISO(last).getTime() + WEEK_MS);
+  return {
+    status: "active",
+    deliveries: [...kept, { date: istDateISO(added), week: rotationWeek(added) }],
+    skipped: [...sub.skipped, date].sort(),
+    held: 0,
+  };
+}
+
+/** Pause: every Saturday still ahead comes off the calendar and is held.
+ *  Null when there is nothing left to pause. */
+export function pauseDeliveries(
+  sub: Pick<Subscription, "status" | "deliveries" | "skipped" | "held">,
+  now: Date = new Date(),
+): ScheduleChange | null {
+  if (sub.status !== "active") return null;
+  const ahead = changeableDeliveries(sub, now);
+  if (ahead.length === 0) return null;
+  const today = istDateISO(now);
+  return {
+    status: "paused",
+    deliveries: sub.deliveries.filter((d) => d.date <= today).sort(byDate),
+    skipped: sub.skipped,
+    held: ahead.length,
+  };
+}
+
+/** Resume: the held boxes go back on the calendar from the first Saturday
+ *  still open to new boxes (SPEC §5.3), each on its own rotation week. */
+export function resumeDeliveries(
+  sub: Pick<Subscription, "status" | "deliveries" | "skipped" | "held">,
+  now: Date = new Date(),
+): ScheduleChange | null {
+  if (sub.status !== "paused" || sub.held <= 0) return null;
+  const added = subscriptionSchedule(now, sub.held).map((b) => ({ date: istDateISO(b.date), week: b.week }));
+  return {
+    status: "active",
+    deliveries: [...sub.deliveries, ...added].sort(byDate),
+    skipped: sub.skipped,
+    held: 0,
+  };
+}
+
+/**
+ * Cancel: the Saturdays still ahead are dropped, so what is left is what
+ * was delivered. The refund, for however many boxes that leaves undelivered
+ * (`undeliveredBoxes`), is made in the gateway's dashboard. Null once
+ * expired or already cancelled.
+ */
+export function cancelDeliveries(
+  sub: Pick<Subscription, "status" | "deliveries" | "skipped" | "held">,
+  now: Date = new Date(),
+): ScheduleChange | null {
+  if (sub.status !== "active" && sub.status !== "paused") return null;
+  if (sub.status === "active" && changeableDeliveries(sub, now).length === 0) return null;
+  const today = istDateISO(now);
+  return {
+    status: "cancelled",
+    deliveries: sub.deliveries.filter((d) => d.date <= today).sort(byDate),
+    skipped: sub.skipped,
+    held: 0,
+  };
+}
+
+/** Saturdays not yet delivered — ahead on the calendar, or held by a pause.
+ *  What a cancel leaves to refund, in Saturdays (each is `boxesPerWeek`
+ *  boxes). */
+export function undeliveredSaturdays(
+  sub: Pick<Subscription, "status" | "deliveries" | "held">,
+  now: Date = new Date(),
+): number {
+  return changeableDeliveries(sub, now).length + (sub.status === "paused" ? sub.held : 0);
 }

@@ -525,6 +525,37 @@ payload.
   `start-integration` / `report-progress-feedback` silently. They were removed
   on 23 Sep 2026 and must stay removed if the skills are re-installed.
 
+## Cancelling and refunding are admin moves; money moves in the gateway
+
+The owner, 27 Sep 2026. **Admin cancels** a paid order that has not left
+(`paid`, `picked`, `ready_for_delivery` — `canCancel`), and `cancelOrder` puts
+its seed grams and tray and cocopeat packs back in stock. **The refund is made
+in the Razorpay/Cashfree dashboard**, then recorded with "Mark refunded"
+(`cancelled` or `failed` → `refunded`). Nothing calls a refund API. Neither
+move is a one-press step on the board (`nextStatuses`); both sit on the order
+page behind `ConfirmSubmit`.
+
+## Booking a courier spends money, so it is locked and switched
+
+`src/lib/shipping/book.ts`. The parcel goes to the courier the customer chose
+(its `quote`). **Off unless `COURIER_BOOKING=on`** — the local Ekart and
+Shiprocket credentials are live. Before the courier is called the parcel is
+marked `bookingStartedAt` by a write conditional on the order's `updatedAt`
+(`replaceShipment`), so a double press never books twice; a courier refusal
+clears it, a crash leaves the parcel `stuck` and the page says to check the
+dashboard first. An adapter's `book` **must not throw once a tracking number
+exists** — a failed pickup request is reported in the result. Each pickup's
+name on admin → delivery must match its registration on every courier.
+
+## Skip, pause and cancel a subscription from admin only
+
+`/admin/subscriptions/[id]`, logic in `subscription.ts`. A skip moves that
+Saturday's box to the end of the term (the customer keeps every box paid
+for); a pause holds the Saturdays still ahead in `held` and a resume puts them
+back from the first open Saturday; a cancel drops them. `deliveries` is always
+the boxes that did or will arrive, so the tray plan reads it unchanged. The
+customer asks on WhatsApp or email; their page only reports it.
+
 ## Subscriptions run on one shared rotation calendar
 
 SPEC §5.2.1. Week 1–4 is a slot every subscriber shares on a given Saturday

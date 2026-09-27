@@ -19,7 +19,7 @@ const ACTIVE = ["paid", "picked", "ready_for_delivery"] as const satisfies reado
  * them — so a `?status=paid` link lands on the board rather than on a second
  * view of one lane.
  */
-const DONE = ["out_for_delivery", "delivered", "failed", "refunded"] as const satisfies readonly OrderStatus[];
+const DONE = ["out_for_delivery", "delivered", "failed", "cancelled", "refunded"] as const satisfies readonly OrderStatus[];
 const TABBED: readonly OrderStatus[] = [...DONE, "pending_payment"];
 const isTabbed = (v: string): v is OrderStatus => (TABBED as readonly string[]).includes(v);
 

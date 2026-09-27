@@ -1,3 +1,5 @@
+import type { BoxCm } from "./weight";
+
 /**
  * The courier seam — SPEC §7.
  *
@@ -12,9 +14,11 @@
  * integer, PIN codes as six-digit strings, and our own two-value speed. A
  * courier's vocabulary (`md=S`, `is_oda`, zone `D2`) stops at the adapter.
  *
- * Read-only for now: nothing here creates a shipment or spends wallet money.
- * Delhivery also answers serviceability and delivery-date questions; those
- * stay on `DelhiveryProvider`, since no other courier is asked them.
+ * `options` is read-only. `book` creates a shipment and asks for a pickup,
+ * which **spends wallet money** — it is called only from the admin order page
+ * (`src/lib/shipping/book.ts`), one parcel at a time, behind a lock. Delhivery
+ * also answers serviceability and delivery-date questions; those stay on
+ * `DelhiveryProvider`, since no other courier is asked them.
  */
 
 /** Surface is road, and the default; express is air. Within Bengaluru the
@@ -90,6 +94,52 @@ export type DeliveryEstimate = {
   date: string;
 };
 
+/** Everything a courier needs to create one prepaid forward shipment. */
+export type BookingInput = {
+  /** Unique per parcel and stable across retries: the order id, with
+   *  `-2`, `-3` for an order's later parcels. Couriers refuse a repeat. */
+  reference: string;
+  /** ISO timestamp the order was placed. */
+  orderDate: string;
+  /** Where it is collected. `name` must match the pickup location registered
+   *  on the courier's account exactly — that is how every courier finds it. */
+  pickup: { name: string; phone: string; address: string; city: string; pincode: string };
+  drop: {
+    name: string;
+    phone: string;
+    email: string | null;
+    line1: string;
+    line2?: string;
+    landmark?: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+  items: { name: string; sku: string; units: number; unitPrice: number }[];
+  /** Rupees, the goods only. Prepaid: nothing is collected at the door. */
+  value: number;
+  /** The grams the parcel was quoted at, and the box that bills at them
+   *  (`boxForGrams`) — booked as quoted, reweighed by the courier. */
+  grams: number;
+  box: BoxCm;
+  speed: ShippingSpeed;
+  /** Shiprocket's carrier id from the quote; null for the others. */
+  serviceId: string | null;
+  /** `YYYY-MM-DD`, IST: the day the courier should collect. */
+  pickupDate: string;
+};
+
+export type BookingResult = {
+  trackingNumber: string;
+  /** The courier's own shipment id, when it has one apart from the AWB. */
+  courierRef: string | null;
+  /** False when the shipment was created but the pickup request failed —
+   *  the parcel is booked either way and must not be booked again. */
+  pickupRequested: boolean;
+  pickupError: string | null;
+  labelUrl: string | null;
+};
+
 export interface ShippingProvider {
   readonly name: CourierName;
   readonly mode: "staging" | "production";
@@ -100,4 +150,13 @@ export interface ShippingProvider {
    * empty list that could read as "free".
    */
   options(input: QuoteInput): Promise<CourierOption[]>;
+
+  /**
+   * Create the shipment and request its pickup. Throws when no shipment was
+   * created, so the caller can release its lock and let the operator retry.
+   * Once a tracking number exists it **must not throw** — a failed pickup
+   * request is reported in the result, not raised, or the retry would book
+   * the parcel a second time.
+   */
+  book(input: BookingInput): Promise<BookingResult>;
 }

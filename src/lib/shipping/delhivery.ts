@@ -1,4 +1,7 @@
+import { brand } from "@/lib/brand";
 import type {
+  BookingInput,
+  BookingResult,
   CourierOption,
   DeliveryEstimate,
   Quote,
@@ -28,8 +31,18 @@ import type {
  * refused by staging with a 401, so a mismatch between `DELHIVERY_ENV` and
  * the token fails loudly rather than quoting from the wrong system.
  *
- * Nothing here books a shipment, fetches a waybill or raises a pickup. Those
- * spend wallet money and arrive with the admin "Create shipment" step.
+ * Booking (27 Sep 2026, `book`), from the Express API reference
+ * (delhivery-express-api-doc.readme.io):
+ *
+ * - `POST /api/cmu/create.json` — the body is the literal form string
+ *   `format=json&data=<JSON>`. **A refusal still answers 200**: success is
+ *   `packages[0].status === "Success"`, and the AWB is `packages[0].waybill`.
+ *   `pickup_location.name` must match a warehouse registered on the account
+ *   exactly ("ClientWarehouse matching query does not exist" otherwise).
+ * - `POST /fm/request/new/` — the pickup, JSON, 201 on success. One open
+ *   pickup per warehouse at a time, so a second parcel on the same day is
+ *   refused here while already covered by the first; that is reported, not
+ *   raised.
  */
 
 const HOSTS = {
@@ -42,6 +55,15 @@ const HOSTS = {
 const TIMEOUT_MS = 10_000;
 
 const MODE: Record<ShippingSpeed, "S" | "E"> = { surface: "S", express: "E" };
+
+/** Inside Delhivery's working hours; the day is the operator's pick. */
+const PICKUP_TIME = "11:00:00";
+
+type Created = {
+  success?: boolean;
+  rmk?: string;
+  packages?: Array<{ status?: string; waybill?: string; remarks?: string[] | string }>;
+};
 
 type PinCodes = {
   delivery_codes?: Array<{
@@ -104,6 +126,92 @@ export class DelhiveryProvider implements ShippingProvider {
       throw new Error(`Delhivery GET ${path} failed: ${res.status} ${detail.slice(0, 300)}`);
     }
     return (await res.json()) as T;
+  }
+
+  /**
+   * Create the shipment, then ask for its pickup. Throws only while no
+   * waybill exists; a refused pickup comes back in the result.
+   */
+  async book(input: BookingInput): Promise<BookingResult> {
+    assertPin(input.pickup.pincode);
+    assertPin(input.drop.pincode);
+    const gstin = process.env.SELLER_GSTIN;
+    const data = {
+      pickup_location: { name: input.pickup.name },
+      shipments: [
+        {
+          order: input.reference,
+          order_date: `${delhiveryPickupDate(new Date(input.orderDate))}:00`,
+          name: input.drop.name,
+          add: [input.drop.line1, input.drop.line2, input.drop.landmark].filter(Boolean).join(", "),
+          pin: input.drop.pincode,
+          city: input.drop.city,
+          state: input.drop.state,
+          country: "India",
+          phone: input.drop.phone,
+          payment_mode: "Prepaid",
+          cod_amount: 0,
+          total_amount: input.value,
+          products_desc: input.items.map((i) => i.name).join(", ").slice(0, 200),
+          quantity: String(input.items.reduce((n, i) => n + i.units, 0)),
+          seller_name: brand.name,
+          ...(gstin ? { seller_gst_tin: gstin } : {}),
+          weight: String(input.grams),
+          shipment_length: input.box.length,
+          shipment_width: input.box.width,
+          shipment_height: input.box.height,
+          shipping_mode: input.speed === "express" ? "Express" : "Surface",
+        },
+      ],
+    };
+    const res = await fetch(`${HOSTS[this.mode]}/api/cmu/create.json`, {
+      method: "POST",
+      headers: {
+        authorization: `Token ${this.token}`,
+        accept: "application/json",
+        "content-type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ format: "json", data: JSON.stringify(data) }).toString(),
+      cache: "no-store",
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    const body = (await res.json().catch(() => ({}))) as Created;
+    const pkg = body.packages?.[0];
+    if (!res.ok || pkg?.status !== "Success" || !pkg.waybill) {
+      const why = [pkg?.remarks, body.rmk].flat().filter(Boolean).join("; ");
+      throw new Error(`Delhivery refused the shipment: ${res.status} ${why || "no reason given"}`.slice(0, 500));
+    }
+
+    /* The waybill exists: from here nothing may throw. */
+    let pickupError: string | null = null;
+    try {
+      const pick = await fetch(`${HOSTS[this.mode]}/fm/request/new/`, {
+        method: "POST",
+        headers: {
+          authorization: `Token ${this.token}`,
+          accept: "application/json",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          pickup_time: PICKUP_TIME,
+          pickup_date: input.pickupDate,
+          pickup_location: input.pickup.name,
+          expected_package_count: 1,
+        }),
+        cache: "no-store",
+        signal: AbortSignal.timeout(TIMEOUT_MS),
+      });
+      if (!pick.ok) pickupError = `${pick.status} ${(await pick.text().catch(() => "")).slice(0, 300)}`;
+    } catch (e) {
+      pickupError = e instanceof Error ? e.message : String(e);
+    }
+    return {
+      trackingNumber: pkg.waybill,
+      courierRef: null,
+      pickupRequested: pickupError === null,
+      pickupError,
+      labelUrl: null,
+    };
   }
 
   async serviceability(pincode: string): Promise<Serviceability | null> {

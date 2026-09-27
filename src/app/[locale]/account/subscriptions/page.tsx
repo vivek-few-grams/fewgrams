@@ -69,7 +69,9 @@ export default async function SubscriptionsPage({
           </div>
           <span
             className={`rounded-full px-3 py-1 font-body text-xs font-semibold ${
-              state === "expired" ? "bg-sand text-stone" : "bg-forest text-cream"
+              state === "expired" || state === "cancelled" || state === "paused"
+                ? "bg-sand text-stone"
+                : "bg-forest text-cream"
             }`}
           >
             {t(`state.${state}`)}
@@ -91,6 +93,21 @@ export default async function SubscriptionsPage({
             );
           })}
         </ol>
+        {/* Set from admin (27 Sep 2026); the customer asks us for any of
+            these, so the page only reports them. */}
+        {sub.status === "paused" && (
+          <p className="mt-4 font-body text-sm text-forest">{t("pausedNote", { count: sub.held })}</p>
+        )}
+        {sub.status === "cancelled" && (
+          <p className="mt-4 font-body text-sm text-forest">{t("cancelledNote")}</p>
+        )}
+        {sub.skipped.length > 0 && (
+          <p className="mt-2 font-body text-xs text-stone">
+            {t("skippedNote", {
+              dates: sub.skipped.map((d) => formatDeliveryDate(fromIstDateISO(d), dateLocale)).join(", "),
+            })}
+          </p>
+        )}
         <p className="mt-4 font-body text-xs text-stone">
           {t("deliverTo", { name: sub.address.recipient, pincode: sub.address.pincode })}
         </p>

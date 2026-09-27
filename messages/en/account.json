@@ -145,6 +145,7 @@
       "out_for_delivery": "Out for delivery",
       "delivered": "Delivered",
       "failed": "Delivery failed",
+      "cancelled": "Cancelled",
       "refunded": "Refunded"
     },
     "detail": {
@@ -185,8 +186,12 @@
         "heading": "Tracking",
         "parcel": "Parcel {n}",
         "number": "{courier} tracking number",
-        "pending": "Your tracking number appears here once the parcel is handed to the courier."
-      }
+        "pending": "Your tracking number appears here once the parcel is handed to the courier.",
+        "track": "Track this parcel"
+      },
+      "cancelledBody": "This order has been cancelled and nothing will be delivered. Your refund goes back to the way you paid; this page will say so once it is on its way.",
+      "refundedBody": "We have refunded ₹{amount, number} to the way you paid.",
+      "refundPolicy": "Read our refund policy"
     }
   },
   "errors": {
@@ -216,6 +221,7 @@
     "state": {
       "pending": "Awaiting payment",
       "cancelled": "Cancelled",
+      "paused": "Paused",
       "upcoming": "Starts soon",
       "active": "Active",
       "expired": "Ended"
@@ -226,6 +232,9 @@
     "confirmingBody": "We're waiting to hear from the payment provider. This page will show your subscription as soon as it's confirmed — refresh in a minute.",
     "empty": "No subscriptions yet",
     "emptyBody": "A weekly plan brings a box of fresh greens every Saturday for four weeks.",
-    "browsePlans": "See the plans"
+    "browsePlans": "See the plans",
+    "pausedNote": "Paused. Your remaining {count, plural, one {Saturday is} other {Saturdays are}} held and will be scheduled again when you resume — message us when you are ready.",
+    "cancelledNote": "This plan has been cancelled; nothing more will be delivered.",
+    "skippedNote": "Skipped: {dates}. Each skipped box was moved to the end of your plan."
   }
 }

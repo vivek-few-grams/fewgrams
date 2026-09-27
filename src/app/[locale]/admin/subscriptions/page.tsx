@@ -18,7 +18,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const VIEWS = ["active", "expired", "pending"] as const;
+const VIEWS = ["active", "paused", "expired", "cancelled", "pending"] as const;
 type View = (typeof VIEWS)[number];
 const isView = (v: unknown): v is View => typeof v === "string" && (VIEWS as readonly string[]).includes(v);
 
@@ -54,9 +54,11 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
   const now = new Date();
   const today = istDateISO(now);
 
-  const [paid, pending, planRows, varieties, names] = await Promise.all([
+  const [paid, pending, paused, cancelled, planRows, varieties, names] = await Promise.all([
     listSubscriptionsByStatus("active"),
     view === "pending" ? listSubscriptionsByStatus("pending_payment") : Promise.resolve([]),
+    listSubscriptionsByStatus("paused"),
+    listSubscriptionsByStatus("cancelled"),
     listPlansWithWeeks(),
     listVarieties(),
     varietyNameMap("en"),
@@ -84,7 +86,8 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
   const weight = (g: number) => (g >= 1000 ? t("kg", { kg: Math.round(g / 10) / 100 }) : t("grams", { grams: g }));
   const money = (n: number) => format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 
-  const list = view === "active" ? current : view === "expired" ? expired : pending;
+  const lists: Record<View, Subscription[]> = { active: current, paused, expired, cancelled, pending };
+  const list = lists[view];
 
   return (
     <div className="space-y-10">
@@ -199,7 +202,7 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
                 v === view ? "bg-forest text-cream" : "border border-forest/20 text-forest hover:bg-forest/5"
               }`}
             >
-              {t(`view.${v}`, { count: v === "active" ? current.length : v === "expired" ? expired.length : pending.length })}
+              {t(`view.${v}`, { count: lists[v].length })}
             </Link>
           ))}
         </nav>
@@ -385,7 +388,12 @@ function SubRow({
   return (
     <tr className="border-b border-forest/10 last:border-0 align-top">
       <td className={td}>
-        <span className="font-semibold text-forest">{sub.receiptNo !== null ? formatReceiptNo(sub.receiptNo) : sub.id}</span>
+        <Link
+          href={`/admin/subscriptions/${sub.id}`}
+          className="font-semibold text-forest underline underline-offset-4 hover:text-stone"
+        >
+          {sub.receiptNo !== null ? formatReceiptNo(sub.receiptNo) : sub.id}
+        </Link>
         <span className="block text-xs text-stone">
           {format.dateTime(new Date(sub.paidAt ?? sub.createdAt), { dateStyle: "medium" })}
         </span>

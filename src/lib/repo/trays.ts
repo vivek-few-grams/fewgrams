@@ -89,3 +89,14 @@ export async function takeFromStock(contentKey: string, units: number): Promise<
   }
   throw new Error(`Stock for ${contentKey} kept changing; gave up after 5 attempts`);
 }
+
+/**
+ * Put `units` packs back — a paid order was cancelled before it left (27 Sep
+ * 2026). An atomic `ADD`, so it cannot race `takeFromStock`.
+ */
+export async function returnToStock(contentKey: string, units: number): Promise<void> {
+  const { data } = await TrayEntity.query.byCatalogue({ contentKey }).go(LIST_OPTS);
+  const row = data[0];
+  if (!row) return;
+  await TrayEntity.patch({ id: row.id }).add({ stockPacks: units }).go();
+}

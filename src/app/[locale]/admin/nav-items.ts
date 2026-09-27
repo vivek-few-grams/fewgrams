@@ -39,6 +39,8 @@ export const ADMIN_NAV_GROUPS: {
       { label: "orders", href: "/admin/orders" },
       /* Weekly plans and the tray plan they add up to (SPEC §5, §6). */
       { label: "subscriptions", href: "/admin/subscriptions" },
+      /* Everyone who has signed in, and what they have bought (27 Sep 2026). */
+      { label: "customers", href: "/admin/customers" },
     ],
   },
   {

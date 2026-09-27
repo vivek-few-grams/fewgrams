@@ -1,4 +1,5 @@
-import type { CourierOption, QuoteInput, ShippingProvider } from "./provider";
+import { brand } from "@/lib/brand";
+import type { BookingInput, BookingResult, CourierOption, QuoteInput, ShippingProvider } from "./provider";
 import { boxForGrams } from "./weight";
 
 /**
@@ -17,6 +18,15 @@ import { boxForGrams } from "./weight";
  * - **`tat.max` is the days used**, so the date promised is the courier's
  *   later one, never its best case.
  *
+ * Booking (27 Sep 2026, `book`), from the Elite OpenAPI spec v3.8.10
+ * (app.elite.ekartlogistics.in/api/docs):
+ *
+ * - **`PUT`** `/api/v1/package/create` — weight in integer grams, the box in
+ *   integer cm, `service` required. Pickup and return addresses are the
+ *   **alias** registered on the account (`{ name }`). Answers `tracking_id`.
+ * - There is no separate pickup call: creating the shipment books its pickup,
+ *   and `preferred_dispatch_date` says which day.
+ *
  * The account is on the Flat plan (₹90 to 2 kg anywhere, ₹35 a kg after,
  * RTO free), so the estimate is the plan's price and the declared value
  * only sets liability.
@@ -28,6 +38,7 @@ const TIMEOUT_MS = 10_000;
 const REFRESH_MARGIN_MS = 5 * 60_000;
 
 type Token = { access_token?: string; expires_in?: number };
+type Created = { status?: boolean; remark?: string; tracking_id?: string; message?: string; description?: string };
 type Serviceable = {
   tat?: { min?: number; max?: number };
   forwardDeliveredCharges?: { deliveredTotalTax?: string; totalForwardDeliveredEstimate?: string };
@@ -106,5 +117,71 @@ export class EkartProvider implements ShippingProvider {
         days: Number.isFinite(days) && days > 0 ? days : null,
       },
     ];
+  }
+
+  /** One call: the shipment and its pickup together. Throws when Ekart
+   *  answers with no tracking id, which means nothing was created. */
+  async book(input: BookingInput): Promise<BookingResult> {
+    const gstin = process.env.SELLER_GSTIN;
+    const units = input.items.reduce((n, i) => n + i.units, 0);
+    const invoice = input.reference;
+    const res = await fetch(`${HOST}/api/v1/package/create`, {
+      method: "PUT",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        authorization: `Bearer ${await this.bearer()}`,
+      },
+      body: JSON.stringify({
+        order_number: input.reference,
+        invoice_number: invoice,
+        invoice_date: input.orderDate.slice(0, 10),
+        seller_name: brand.name,
+        seller_address: `${input.pickup.address}, ${input.pickup.city} ${input.pickup.pincode}`,
+        ...(gstin ? { seller_gst_tin: gstin } : {}),
+        consignee_name: input.drop.name,
+        consignee_gst_amount: 0,
+        products_desc: input.items.map((i) => i.name).join(", ").slice(0, 200),
+        payment_mode: "Prepaid",
+        cod_amount: 0,
+        total_amount: input.value,
+        taxable_amount: input.value,
+        tax_value: 0,
+        commodity_value: String(input.value),
+        quantity: units,
+        weight: Math.ceil(input.grams),
+        length: Math.ceil(input.box.length),
+        width: Math.ceil(input.box.width),
+        height: Math.ceil(input.box.height),
+        service: input.speed === "express" ? "EXPRESS" : "SURFACE",
+        drop_location: {
+          name: input.drop.name,
+          address: [input.drop.line1, input.drop.line2, input.drop.landmark].filter(Boolean).join(", "),
+          city: input.drop.city,
+          state: input.drop.state,
+          country: "India",
+          phone: Number(input.drop.phone.replace(/\D/g, "").slice(-10)),
+          pin: Number(input.drop.pincode),
+        },
+        pickup_location: { name: input.pickup.name },
+        return_location: { name: input.pickup.name },
+        preferred_dispatch_date: input.pickupDate,
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    const body = (await res.json().catch(() => ({}))) as Created;
+    if (!res.ok || !body.tracking_id) {
+      if (res.status === 401) this.token = null;
+      const why = body.description || body.message || body.remark || "no reason given";
+      throw new Error(`Ekart refused the shipment: ${res.status} ${why}`.slice(0, 500));
+    }
+    return {
+      trackingNumber: body.tracking_id,
+      courierRef: null,
+      pickupRequested: true,
+      pickupError: null,
+      labelUrl: null,
+    };
   }
 }

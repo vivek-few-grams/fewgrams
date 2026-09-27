@@ -46,7 +46,8 @@
     "operations": "Operations",
     "orders": "Orders",
     "delivery": "Delivery",
-    "subscriptions": "Subscriptions"
+    "subscriptions": "Subscriptions",
+    "customers": "Customers"
   },
   "varieties": {
     "title": "Varieties",
@@ -714,6 +715,7 @@
       "out_for_delivery": "Out for delivery",
       "delivered": "Delivered",
       "failed": "Delivery failed",
+      "cancelled": "Cancelled",
       "refunded": "Refunded"
     },
     "action": {
@@ -735,7 +737,53 @@
       "placeholder": "From the courier",
       "save": "Save",
       "hint": "Shown on the customer's order page."
-    }
+    },
+    "cancelOrder": {
+      "label": "Cancel order",
+      "title": "Cancel this order?",
+      "confirm": "The customer sees “Cancelled” on their order page, and any seeds, trays or cocopeat on it go back into stock. Refund the payment yourself in the {gateway} dashboard, then come back and mark it refunded.",
+      "yes": "Yes, cancel it",
+      "keep": "Keep the order"
+    },
+    "refund": {
+      "label": "Mark refunded",
+      "title": "Mark this order refunded?",
+      "confirm": "Only once you have refunded ₹{amount, number} in the {gateway} dashboard. Nothing is sent to {gateway} from here; the customer sees “Refunded” on their order page.",
+      "yes": "Yes, it is refunded",
+      "hint": "Refund in the {gateway} dashboard first, then record it here."
+    },
+    "book": {
+      "label": "Book with {courier}",
+      "retryLabel": "Book with {courier} again",
+      "title": "Book this parcel with {courier}?",
+      "confirm": "{courier} creates the shipment and is asked to collect it on the date you picked. The charge comes out of the {courier} wallet.",
+      "retryConfirm": "Only if you have checked the {courier} dashboard and this parcel is not there. If it is, booking again creates a second shipment and pays for it twice — copy its tracking number in below instead.",
+      "yes": "Yes, book it",
+      "cancel": "Cancel",
+      "pickupDate": "Pickup on",
+      "done": "Booked — tracking {tracking}. Pickup requested.",
+      "doneNoPickup": "Booked — tracking {tracking}. The pickup request failed; ask for one in the courier's dashboard.",
+      "notReady": "Book once the order is ready for delivery.",
+      "stuck": "A booking was started {when} and never finished. The courier may have created the shipment: check its dashboard before booking again.",
+      "booked": "Booked {when} · tracking {tracking}",
+      "pickupOn": "Pickup requested for {date}",
+      "pickupFailed": "Pickup request failed: {error}",
+      "labelLink": "Shipping label",
+      "manual": "Or enter a tracking number from the courier's dashboard",
+      "error": {
+        "notBookable": "This parcel cannot be booked now — the order must be ready for delivery and the parcel sent by courier.",
+        "alreadyBooked": "This parcel is already booked.",
+        "stuck": "A booking for this parcel was left unfinished. Reload the page.",
+        "raced": "Someone else changed this order at the same moment. Reload the page and check before trying again.",
+        "noCourier": "This courier's API keys are not set on the server, so it cannot be booked from here.",
+        "noPickup": "This parcel's pickup is no longer on admin → delivery.",
+        "badDate": "Pick a pickup date from today on.",
+        "courier": "The courier refused the booking. Nothing was booked — fix the problem below and try again.",
+        "disabled": "Booking is switched off on this server."
+      },
+      "disabled": "Booking from here is switched off on this server (COURIER_BOOKING). Book in the courier's dashboard and enter the tracking number below."
+    },
+    "customerLink": "All orders from this customer"
   },
   "delivery": {
     "title": "Delivery",
@@ -882,12 +930,16 @@
     "view": {
       "active": "Active ({count, number})",
       "expired": "Ended ({count, number})",
-      "pending": "Unpaid checkouts"
+      "pending": "Unpaid checkouts",
+      "paused": "Paused ({count, number})",
+      "cancelled": "Cancelled ({count, number})"
     },
     "empty": {
       "active": "No active subscriptions.",
       "expired": "No subscription has ended yet.",
-      "pending": "No unpaid subscription checkouts."
+      "pending": "No unpaid subscription checkouts.",
+      "paused": "No paused subscriptions.",
+      "cancelled": "No cancelled subscriptions."
     },
     "colReceipt": "Receipt",
     "colCustomer": "Customer",
@@ -901,9 +953,84 @@
     "state": {
       "pending": "Awaiting payment",
       "cancelled": "Cancelled",
+      "paused": "Paused",
       "upcoming": "Starts soon",
       "active": "Active",
       "expired": "Ended"
+    },
+    "detail": {
+      "back": "All subscriptions",
+      "paidOn": "Paid {date}",
+      "customerHeading": "Customer",
+      "customerLink": "This customer's orders and plans",
+      "plansHeading": "Plans",
+      "total": "Paid for the term",
+      "saturdaysHeading": "Saturdays",
+      "saturdaysIntro": "Skipping a Saturday moves that box to the end of the term, so the customer still gets every box they paid for. Saturdays already sown for are marked; skipping one of those leaves its trays spare.",
+      "delivered": "Delivered",
+      "today": "Today",
+      "sown": "Already sown for",
+      "upcoming": "To come",
+      "noSaturdays": "No Saturdays on the calendar.",
+      "skippedHeading": "Skipped",
+      "skip": {
+        "label": "Skip",
+        "title": "Skip {date}?",
+        "confirm": "No box goes out that Saturday. One more Saturday is added after {last}, on whichever week of the rotation it falls, so the customer still gets every box.",
+        "yes": "Yes, skip it"
+      },
+      "pause": {
+        "label": "Pause",
+        "title": "Pause this subscription?",
+        "confirm": "{count, plural, one {The # Saturday still to come comes} other {The # Saturdays still to come come}} off the calendar and {count, plural, one {is} other {are}} held until you resume. Nothing goes out while it is paused.",
+        "yes": "Yes, pause it"
+      },
+      "paused": "Paused with {count, plural, one {# Saturday} other {# Saturdays}} held.",
+      "resume": {
+        "label": "Resume",
+        "hint": "Held Saturdays go back on the calendar from {date}, the first Saturday still open."
+      },
+      "cancelSub": {
+        "label": "Cancel subscription",
+        "title": "Cancel this subscription?",
+        "confirm": "{count, plural, =0 {Nothing is left to deliver.} one {# Saturday is left undelivered ({boxes, plural, one {# box} other {# boxes}}).} other {# Saturdays are left undelivered ({boxes, plural, one {# box} other {# boxes}}).}} They come off the calendar and the customer sees “Cancelled”. Refund what you owe them in the {gateway} dashboard.",
+        "yes": "Yes, cancel it",
+        "keep": "Keep it"
+      },
+      "cancelledNote": "Cancelled. Any refund is made in the {gateway} dashboard.",
+      "cancel": "Cancel"
     }
+  },
+  "customers": {
+    "title": "Customers",
+    "intro": "Everyone who has signed in, most recent buyer first. Open one to see their orders, plans and addresses.",
+    "searchLabel": "Search customers",
+    "searchPlaceholder": "Name, email or phone",
+    "search": "Search",
+    "clear": "Clear",
+    "count": "{count, number} of {total, number}",
+    "empty": "Nobody has signed in yet.",
+    "noMatch": "No customer matches that search.",
+    "noName": "No name given",
+    "colCustomer": "Customer",
+    "colPhone": "Phone",
+    "colOrders": "Orders",
+    "colSpent": "Spent",
+    "colLast": "Last order",
+    "colPlans": "Plans running",
+    "role": {
+      "customer": "Customer",
+      "staff": "Staff",
+      "admin": "Admin"
+    },
+    "back": "All customers",
+    "ordersHeading": "Orders",
+    "noOrders": "No orders yet.",
+    "items": "{count, plural, one {# item} other {# items}}",
+    "plansHeading": "Weekly plans",
+    "noPlans": "No weekly plans.",
+    "addressesHeading": "Addresses",
+    "noAddresses": "No saved addresses.",
+    "default": "Default"
   }
 }

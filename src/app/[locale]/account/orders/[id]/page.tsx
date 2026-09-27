@@ -1,11 +1,12 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { CalendarCheck, CircleCheck, Clock, RotateCcw } from "lucide-react";
+import { CalendarCheck, CircleCheck, CircleX, Clock, RotateCcw } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { lineUnits } from "@/lib/cart/line-display";
 import { formatDeliveryDate } from "@/lib/delivery-date";
 import { formatReceiptNo, paymentWindowClosed, type Order } from "@/lib/orders/order";
+import { trackingUrl } from "@/lib/shipping/tracking";
 import { Card } from "../../ui";
 import { loadVisibleOrder } from "./load";
 import { OrderHero, type HeroStage } from "./OrderHero";
@@ -80,7 +81,11 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
   const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
 
   const pending = order.status === "pending_payment";
-  const couriered = order.shipments.filter((x) => x.method === "courier");
+  /* A cancelled order is never booked, so it has no tracking to wait for. */
+  const couriered =
+    order.status === "cancelled" || order.status === "refunded"
+      ? []
+      : order.shipments.filter((x) => x.method === "courier");
   const expired = pending && paymentWindowClosed(order);
   const recheck = `/api/payments/return/${locale}?order_id=${order.id}`;
   const ref =
@@ -134,6 +139,36 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
                   {t("backToCart")}
                 </Link>
               </div>
+            </div>
+          </div>
+        </Card>
+      ) : order.status === "cancelled" || order.status === "refunded" ? (
+        /* Cancelled by us (admin, 27 Sep 2026), then marked refunded once the
+           money is back through the gateway. No delivery date: nothing is
+           coming. */
+        <Card>
+          <div className="flex items-start gap-3">
+            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-forest text-cream">
+              {order.status === "refunded" ? (
+                <RotateCcw size={20} strokeWidth={1.5} />
+              ) : (
+                <CircleX size={20} strokeWidth={1.5} />
+              )}
+            </span>
+            <div>
+              <p className="font-body text-xs uppercase tracking-wider text-stone">{ref}</p>
+              <h2 className="mt-1 font-display text-xl font-semibold text-forest">{status(order.status)}</h2>
+              <p className="mt-2 max-w-xl font-body text-sm text-stone">
+                {order.status === "refunded"
+                  ? t("refundedBody", { amount: order.total })
+                  : t("cancelledBody")}
+              </p>
+              <Link
+                href="/refund-policy"
+                className="mt-3 inline-block font-body text-sm text-forest underline underline-offset-4 transition-colors hover:text-stone"
+              >
+                {t("refundPolicy")}
+              </Link>
             </div>
           </div>
         </Card>
@@ -234,6 +269,16 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
                     <span className="block select-all font-mono text-base font-semibold tracking-wide text-forest">
                       {x.trackingNumber}
                     </span>
+                    {x.quote && (
+                      <a
+                        href={trackingUrl(x.quote.courier, x.trackingNumber)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-1 inline-block font-body text-sm text-forest underline underline-offset-4 transition-colors hover:text-stone"
+                      >
+                        {t("tracking.track")}
+                      </a>
+                    )}
                   </>
                 ) : (
                   <span className="block text-stone">{t("tracking.pending")}</span>

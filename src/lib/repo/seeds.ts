@@ -113,3 +113,14 @@ export async function takeFromShelf(contentKey: string, grams: number): Promise<
 export async function deleteSeed(id: string): Promise<void> {
   await SeedEntity.delete({ id }).go();
 }
+
+/**
+ * Put `grams` back on the shelf — a paid order was cancelled before it left
+ * (27 Sep 2026). An atomic `ADD`, so it cannot race `takeFromShelf`. A seed
+ * whose row has since been deleted is skipped: there is no shelf to return to.
+ */
+export async function returnToShelf(contentKey: string, grams: number): Promise<void> {
+  const seed = await getSeedByKey(contentKey);
+  if (!seed) return;
+  await SeedEntity.patch({ id: seed.id }).add({ stockGrams: grams }).go();
+}

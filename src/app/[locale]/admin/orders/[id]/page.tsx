@@ -5,7 +5,8 @@ import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { formatReceiptNo, isOrderId, type ShippingQuote } from "@/lib/orders/order";
 import { GATEWAY_LABEL } from "@/lib/payments/provider";
 import { getOrder, listPayments } from "@/lib/repo/orders";
-import { setTracking } from "../actions";
+import { ParcelBooking } from "../ParcelBooking";
+import { OrderCancel } from "../OrderCancel";
 import { OrderSteps } from "../OrderSteps";
 
 export const dynamic = "force-dynamic";
@@ -30,9 +31,11 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
   const format = await getFormatter();
   /* Shiprocket's quote names the carrier chosen, which is what booking the
      shipment has to match. */
+  const courierLabel = (q: ShippingQuote) =>
+    q.carrier ? t("courierVia", { carrier: q.carrier, courier: t(`courier.${q.courier}`) }) : t(`courier.${q.courier}`);
   const quoteText = (q: ShippingQuote) =>
     t("deliveryQuote", {
-      courier: q.carrier ? t("courierVia", { carrier: q.carrier, courier: t(`courier.${q.courier}`) }) : t(`courier.${q.courier}`),
+      courier: courierLabel(q),
       zone: q.zone,
       quoted: q.quotedTotal,
     });
@@ -72,6 +75,7 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
             {t("back")}
           </Link>
           <OrderSteps order={order} />
+          <OrderCancel order={order} />
         </div>
       </section>
 
@@ -116,27 +120,13 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                         })}
                       </span>
                       {x.method === "courier" && (
-                        <form action={setTracking} className="mt-2 flex flex-wrap items-center gap-2">
-                          <input type="hidden" name="id" value={order.id} />
-                          <input type="hidden" name="index" value={i} />
-                          <label className="flex items-center gap-2 text-xs text-stone">
-                            {t("tracking.label")}
-                            <input
-                              name="tracking"
-                              defaultValue={x.trackingNumber ?? ""}
-                              placeholder={t("tracking.placeholder")}
-                              pattern="[A-Za-z0-9\-]{6,40}"
-                              className="w-44 rounded-lg border border-forest/20 bg-cream px-2 py-1 font-mono text-xs text-forest"
-                            />
-                          </label>
-                          <button
-                            type="submit"
-                            className="rounded-full border border-forest/25 px-3 py-1 text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream"
-                          >
-                            {t("tracking.save")}
-                          </button>
-                          <span className="text-xs text-stone">{t("tracking.hint")}</span>
-                        </form>
+                        <ParcelBooking
+                          order={order}
+                          index={i}
+                          courier={x.quote ? courierLabel(x.quote) : ""}
+                          when={when}
+                          day={(iso) => format.dateTime(new Date(`${iso}T00:00:00+05:30`), { dateStyle: "medium" })}
+                        />
                       )}
                     </td>
                     <td className="py-2.5 font-body text-sm tabular-nums text-forest">
@@ -184,15 +174,29 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
             order.address.line2,
             order.address.landmark,
             formatPlace(order.address),
-            formatPhone(order.address.phone),
           ]
             .filter(Boolean)
             .join(", ")}
         </p>
+        <p className="mt-1 font-body text-sm text-forest">
+          <a href={`tel:${order.address.phone}`} className="tabular-nums underline underline-offset-4 hover:text-stone">
+            {formatPhone(order.address.phone)}
+          </a>
+        </p>
         {order.address.notes && (
           <p className="mt-1 font-body text-xs text-stone">{order.address.notes}</p>
         )}
-        <p className="mt-2 font-body text-xs text-stone">{order.email}</p>
+        <p className="mt-2 font-body text-xs text-stone">
+          {order.email && (
+            <a href={`mailto:${order.email}`} className="underline underline-offset-4 hover:text-forest">
+              {order.email}
+            </a>
+          )}
+          {" · "}
+          <Link href={`/admin/customers/${order.userId}`} className="underline underline-offset-4 hover:text-forest">
+            {t("customerLink")}
+          </Link>
+        </p>
       </section>
 
       <section className="rounded-2xl border border-forest/15 p-6">

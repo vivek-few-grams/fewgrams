@@ -429,7 +429,9 @@ export type UserProfile = {
  * started; `picked` means someone has taken it on and is putting it
  * together; `ready_for_delivery` means it is complete and waiting for the
  * delivery agent. `packed` was here before picking was split out, and no row
- * ever held it.
+ * ever held it. `cancelled` is an operator's decision before the courier has
+ * it (27 Sep 2026); `refunded` follows it, or `failed`, once the money has
+ * been returned in the gateway's dashboard.
  */
 export const ORDER_STATUSES = [
   "pending_payment",
@@ -439,6 +441,7 @@ export const ORDER_STATUSES = [
   "out_for_delivery",
   "delivered",
   "failed",
+  "cancelled",
   "refunded",
 ] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
