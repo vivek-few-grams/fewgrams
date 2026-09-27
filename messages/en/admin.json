@@ -729,7 +729,13 @@
     "deliveryOwnRun": "Own same-day run — fixed microgreens fee",
     "courierVia": "{carrier} via {courier}",
     "shipmentLine": "Parcel from {name}, {city} {pincode}",
-    "shipmentArrives": "arrives {date}"
+    "shipmentArrives": "arrives {date}",
+    "tracking": {
+      "label": "Tracking number",
+      "placeholder": "From the courier",
+      "save": "Save",
+      "hint": "Shown on the customer's order page."
+    }
   },
   "delivery": {
     "title": "Delivery",

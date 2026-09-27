@@ -1,0 +1,50 @@
+{
+  "faq": {
+    "title": "Questions and answers",
+    "description": "How our microgreens are grown, where and when we deliver, how weekly plans work, and how to order.",
+    "eyebrow": "FAQ",
+    "heading": "Questions, answered",
+    "intro": "How our greens are grown, when they reach you, and how ordering works. If your question isn't here, ask us.",
+    "sectionsLabel": "Sections",
+    "more": {
+      "heading": "Still have a question?",
+      "body": "Message us on WhatsApp or email. A person reads every one.",
+      "cta": "Contact us"
+    }
+  },
+  "contact": {
+    "title": "Contact us",
+    "description": "Reach Fewgrams on WhatsApp or by email — about an order, a delivery, or what to grow.",
+    "eyebrow": "Contact",
+    "heading": "Talk to us",
+    "intro": "About an order, a delivery or what to grow — a person reads every message.",
+    "whatsapp": {
+      "label": "WhatsApp",
+      "body": "Quickest for an order or a delivery.",
+      "action": "Message us",
+      "message": "Hi Fewgrams, "
+    },
+    "email": {
+      "label": "Email",
+      "body": "For anything that needs detail or a photo.",
+      "subject": "A question for Fewgrams"
+    },
+    "order": {
+      "heading": "About an order?",
+      "body": "Include your order number — it's on each order under Account → Orders.",
+      "link": "Your orders"
+    },
+    "faq": {
+      "heading": "Quick answers",
+      "body": "Delivery areas and dates, weekly plans and keeping greens fresh are in the FAQ.",
+      "link": "Read the FAQ"
+    },
+    "website": {
+      "eyebrow": "Websites",
+      "heading": "Like our website? We can build yours.",
+      "body": "We build software as well as grow greens. If you run a small business and want a shop like this one — catalogue, checkout, delivery and an admin to run it — tell us what you sell.",
+      "subject": "A website for my business",
+      "message": "Hi, I'd like to talk about a website for my business."
+    }
+  }
+}

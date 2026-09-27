@@ -85,7 +85,15 @@ export type OrderShipment = {
   quote: ShippingQuote | null;
   /** `YYYY-MM-DD`, IST: when this parcel reaches the customer. */
   deliveryDate: string;
+  /** The courier's tracking number, once booked. Null until then, and
+   *  always for the own run. */
+  trackingNumber: string | null;
 };
+
+/** What a courier tracking number looks like — AWBs are letters, digits and
+ *  the odd hyphen. Loose on purpose: it guards against a pasted sentence, not
+ *  against one courier's format. */
+export const TRACKING_NUMBER = /^[A-Za-z0-9-]{6,40}$/;
 
 export type Order = {
   id: string;

@@ -50,13 +50,12 @@
     "seeds": "{count, plural, =0 {Coming soon} one {# seed} other {# seeds}}"
   },
   "footer": {
-    "deliveryNote": "Delivered on Saturdays.",
+    "deliveryNote": "Weekly plans arrive on Saturdays.",
     "shop": "Shop",
     "brand": "Fewgrams",
     "legal": "Legal",
     "ourStory": "Our story",
     "howWeGrow": "How we grow",
-    "recipes": "Recipes",
     "faq": "FAQ",
     "contact": "Contact",
     "plans": "Plans",

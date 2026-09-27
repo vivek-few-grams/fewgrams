@@ -36,7 +36,11 @@ function toOrder(row: OrderRow): Order {
     deliveryCharge: row.deliveryCharge ?? 0,
     deliveryMethod: row.deliveryMethod ?? null,
     shippingQuote: row.shippingQuote ?? null,
-    shipments: (row.shipments ?? []).map((x) => ({ ...x, quote: x.quote ?? null })),
+    shipments: (row.shipments ?? []).map((x) => ({
+      ...x,
+      quote: x.quote ?? null,
+      trackingNumber: x.trackingNumber ?? null,
+    })),
     deliveryDate: row.deliveryDate,
     address: row.address,
     locale: row.locale,
@@ -74,7 +78,7 @@ function toRow(o: Order) {
     ...(o.deliveryMethod ? { deliveryMethod: o.deliveryMethod } : {}),
     ...(o.shippingQuote ? { shippingQuote: o.shippingQuote } : {}),
     ...(o.shipments.length > 0
-      ? { shipments: o.shipments.map(({ quote, ...x }) => ({ ...x, ...(quote ? { quote } : {}) })) }
+      ? { shipments: o.shipments.map(toShipmentRow) }
       : {}),
     deliveryDate: o.deliveryDate,
     address: o.address,
@@ -241,6 +245,32 @@ export async function advanceOrderStatus(
     if (isConditionFailure(e)) return false;
     throw e;
   }
+}
+
+function toShipmentRow({ quote, trackingNumber, ...x }: Order["shipments"][number]) {
+  return { ...x, ...(quote ? { quote } : {}), ...(trackingNumber ? { trackingNumber } : {}) };
+}
+
+/**
+ * Record (or clear, with null) one parcel's tracking number. The whole list
+ * is written back: an order's parcels are fixed at checkout and never change
+ * afterwards, so there is nothing to race except another tracking edit.
+ */
+export async function setShipmentTracking(
+  order: Order,
+  index: number,
+  trackingNumber: string | null,
+): Promise<void> {
+  const shipments = order.shipments.map((x, i) => (i === index ? { ...x, trackingNumber } : x));
+  await OrderEntity.patch({ id: order.id })
+    .set({
+      shipments: shipments.map(toShipmentRow),
+      deliveryDate: order.deliveryDate,
+      userId: order.userId,
+      createdAt: order.createdAt,
+      updatedAt: new Date().toISOString(),
+    })
+    .go();
 }
 
 function summarise(o: Order): OrderSummary {

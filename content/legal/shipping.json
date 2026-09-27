@@ -1,0 +1,227 @@
+{
+  "updated": "2026-09-27",
+  "sections": [
+    "summary",
+    "where",
+    "greens",
+    "plans",
+    "courier",
+    "when-ready",
+    "two-parcels",
+    "charges",
+    "tracking",
+    "address",
+    "failed",
+    "damage",
+    "delays",
+    "contact"
+  ],
+  "en": {
+    "intro": [
+      "This policy explains how {tradingName} delivers your order, where we deliver, when it arrives and what delivery costs. It is part of our Terms and conditions."
+    ],
+    "sections": {
+      "summary": {
+        "heading": "At a glance",
+        "body": [
+          "Fresh greens are delivered by us, on the day they are cut, to selected areas only. Weekly plans arrive every Saturday.",
+          "Seeds, trays, cocopeat and racks go by courier to anywhere in India our courier partners reach, and you choose the courier at checkout.",
+          "You see the delivery date and the delivery charge before you pay."
+        ]
+      },
+      "where": {
+        "heading": "Where we deliver",
+        "body": [
+          "Fresh greens need to reach you on the day they are cut, so we deliver them ourselves, only inside our delivery area. Checkout checks your PIN code before you pay and never takes payment for greens it cannot deliver.",
+          "Everything else — seeds, trays, cocopeat and racks — goes by courier to any PIN code our courier partners serve in India. If no courier serves your PIN code, checkout says so and does not take payment.",
+          "If your cart has greens and other items and your address is outside the delivery area, the greens are set aside — left out of the order and its total, and kept in your cart — and the rest ships by courier."
+        ]
+      },
+      "greens": {
+        "heading": "Fresh greens",
+        "body": [
+          "When you order greens, we sow them the morning after, and cut them on the day they reach you. How long that takes depends on the variety; the date is shown on each variety's page and in your cart before you pay.",
+          "We deliver during the day and message you before we arrive.",
+          "One order is one delivery: everything in it comes together, on the date its slowest item is ready."
+        ]
+      },
+      "plans": {
+        "heading": "Weekly plans",
+        "body": [
+          "A weekly plan delivers one box every Saturday for four Saturdays. A plan paid before Friday midnight is sown that Sunday and starts on the Saturday after; a plan paid later starts one week later. The four Saturdays are shown before you pay. Delivery is included."
+        ]
+      },
+      "courier": {
+        "heading": "Courier delivery",
+        "body": [
+          "At checkout we ask our courier partners — Delhivery, Ekart and Shiprocket — for a price for your parcel and list each one with the date it would arrive. The cheapest is picked for you; you can choose another.",
+          "We take a full day to pack, so your parcel is handed to the courier the day after it is ready. The arrival date shown is the courier's estimate from then; the date you chose is saved with your order."
+        ]
+      },
+      "when-ready": {
+        "heading": "When each item is ready",
+        "body": [
+          "Seeds: every seed we sell is on our shelf, so it is ready the next day.",
+          "Trays and cocopeat: we keep them in stock, so they are ready the next day. For a large quantity we may need to bring more in, which adds one day; the product page shows the date as you add packs.",
+          "Racks: built to order in the size you choose. The rack's page shows when yours will be ready."
+        ]
+      },
+      "two-parcels": {
+        "heading": "Orders in more than one parcel",
+        "body": [
+          "Shelf racks are made and sent by the workshop that builds them, so they travel as a separate parcel. Everything else comes from us. Checkout shows each parcel with its own courier, charge and date, and you choose a courier for each."
+        ]
+      },
+      "charges": {
+        "heading": "Delivery charges",
+        "body": [
+          "An order with fresh greens pays one fixed delivery charge, because we bring it ourselves. Seeds, trays and cocopeat in the same order come with it at no extra charge; a shelf rack in the same order still travels by courier from its workshop.",
+          "An order without greens pays the courier's live price for your parcel. Couriers charge by the space a box takes as well as its weight, whichever is larger, so we measure every item and quote that.",
+          "Weekly plans include delivery. There is no free-delivery threshold. The exact charge is shown at checkout before you pay."
+        ]
+      },
+      "tracking": {
+        "heading": "Tracking your parcel",
+        "body": [
+          "Once a courier parcel is handed over, its courier and tracking number appear on your order under Account → Orders, so you can follow it on the courier's own website. Greens delivered by us do not need tracking: we message you before we arrive."
+        ]
+      },
+      "address": {
+        "heading": "Your address",
+        "body": [
+          "Please check the address, PIN code and phone number before you pay; we deliver to the address on the order. If you need to change it, message us on WhatsApp or email us straight away with your order number. We can change it only before the order leaves us, and a change for greens must still be inside the delivery area."
+        ]
+      },
+      "failed": {
+        "heading": "If a delivery cannot be made",
+        "body": [
+          "Greens: if nobody can receive them or the address is wrong, we try to contact you. If you ask, we deliver once more on a later run and you pay the delivery charge again. Greens that could not be delivered are not refunded.",
+          "Courier parcels: if a parcel is returned to us because it was refused, nobody could be reached or the address was wrong, we refund the price of the items minus the shipping charges both ways."
+        ]
+      },
+      "damage": {
+        "heading": "Damaged or wrong on arrival",
+        "body": [
+          "Tell us within 24 hours of delivery for greens, or 48 hours for anything else, with photographs, and we will replace or refund it as our Refund policy describes."
+        ]
+      },
+      "delays": {
+        "heading": "Delays",
+        "body": [
+          "We deliver on the date we promised. A courier's arrival date is its own estimate, and events beyond our control — extreme weather, crop failure, strikes, courier disruption — can cause a delay. If your order is delayed, we will tell you, and refund anything we cannot deliver."
+        ]
+      },
+      "contact": {
+        "heading": "Questions",
+        "body": [
+          "Message {phone} on WhatsApp or write to {email}, with your order number if you have one.",
+          "This policy is also published in Kannada. If the two versions differ, the English version applies."
+        ]
+      }
+    }
+  },
+  "kn": {
+    "intro": [
+      "{tradingName} ನಿಮ್ಮ ಆರ್ಡರ್ ಅನ್ನು ಹೇಗೆ ತಲುಪಿಸುತ್ತದೆ, ಎಲ್ಲಿಗೆ ತಲುಪಿಸುತ್ತದೆ, ಅದು ಯಾವಾಗ ಬರುತ್ತದೆ ಮತ್ತು ಡೆಲಿವರಿಗೆ ಎಷ್ಟು ವೆಚ್ಚ ಎಂಬುದನ್ನು ಈ ನೀತಿ ವಿವರಿಸುತ್ತದೆ. ಇದು ನಮ್ಮ ನಿಯಮಗಳು ಮತ್ತು ಷರತ್ತುಗಳ ಭಾಗ."
+    ],
+    "sections": {
+      "summary": {
+        "heading": "ಒಂದು ನೋಟದಲ್ಲಿ",
+        "body": [
+          "ತಾಜಾ ಸೊಪ್ಪನ್ನು ಕತ್ತರಿಸಿದ ದಿನವೇ, ಆಯ್ದ ಪ್ರದೇಶಗಳಿಗೆ ಮಾತ್ರ, ನಾವೇ ತಲುಪಿಸುತ್ತೇವೆ. ವಾರದ ಯೋಜನೆಗಳು ಪ್ರತಿ ಶನಿವಾರ ಬರುತ್ತವೆ.",
+          "ಬೀಜಗಳು, ಟ್ರೇಗಳು, ಕೊಕೊಪೀಟ್ ಮತ್ತು ರ್ಯಾಕ್‌ಗಳು ನಮ್ಮ ಕೊರಿಯರ್ ಪಾಲುದಾರರು ತಲುಪುವ ಭಾರತದ ಯಾವುದೇ ಸ್ಥಳಕ್ಕೆ ಕೊರಿಯರ್ ಮೂಲಕ ಹೋಗುತ್ತವೆ, ಮತ್ತು ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ನೀವೇ ಕೊರಿಯರ್ ಆರಿಸುತ್ತೀರಿ.",
+          "ಪಾವತಿಸುವ ಮೊದಲೇ ಡೆಲಿವರಿ ದಿನಾಂಕ ಮತ್ತು ಡೆಲಿವರಿ ಶುಲ್ಕವನ್ನು ನೋಡುತ್ತೀರಿ."
+        ]
+      },
+      "where": {
+        "heading": "ನಾವು ಎಲ್ಲಿಗೆ ತಲುಪಿಸುತ್ತೇವೆ",
+        "body": [
+          "ತಾಜಾ ಸೊಪ್ಪು ಕತ್ತರಿಸಿದ ದಿನವೇ ನಿಮ್ಮನ್ನು ತಲುಪಬೇಕು, ಹಾಗಾಗಿ ನಮ್ಮ ಡೆಲಿವರಿ ಪ್ರದೇಶದೊಳಗೆ ಮಾತ್ರ ನಾವೇ ತಲುಪಿಸುತ್ತೇವೆ. ಪಾವತಿಸುವ ಮೊದಲು ಚೆಕ್‌ಔಟ್ ನಿಮ್ಮ ಪಿನ್ ಕೋಡ್ ಪರಿಶೀಲಿಸುತ್ತದೆ, ಮತ್ತು ತಲುಪಿಸಲಾಗದ ಸೊಪ್ಪಿಗೆ ಎಂದಿಗೂ ಹಣ ತೆಗೆದುಕೊಳ್ಳುವುದಿಲ್ಲ.",
+          "ಉಳಿದೆಲ್ಲವೂ — ಬೀಜಗಳು, ಟ್ರೇಗಳು, ಕೊಕೊಪೀಟ್ ಮತ್ತು ರ್ಯಾಕ್‌ಗಳು — ನಮ್ಮ ಕೊರಿಯರ್ ಪಾಲುದಾರರು ಸೇವೆ ನೀಡುವ ಭಾರತದ ಯಾವುದೇ ಪಿನ್ ಕೋಡ್‌ಗೆ ಕೊರಿಯರ್ ಮೂಲಕ ಹೋಗುತ್ತವೆ. ಯಾವ ಕೊರಿಯರ್ ಕೂಡ ನಿಮ್ಮ ಪಿನ್ ಕೋಡ್‌ಗೆ ಸೇವೆ ನೀಡದಿದ್ದರೆ, ಚೆಕ್‌ಔಟ್ ಅದನ್ನು ತಿಳಿಸುತ್ತದೆ ಮತ್ತು ಹಣ ತೆಗೆದುಕೊಳ್ಳುವುದಿಲ್ಲ.",
+          "ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲಿ ಸೊಪ್ಪು ಮತ್ತು ಬೇರೆ ವಸ್ತುಗಳಿದ್ದು ನಿಮ್ಮ ವಿಳಾಸ ಡೆಲಿವರಿ ಪ್ರದೇಶದ ಹೊರಗಿದ್ದರೆ, ಸೊಪ್ಪನ್ನು ಪಕ್ಕಕ್ಕಿಡಲಾಗುತ್ತದೆ — ಆರ್ಡರ್ ಮತ್ತು ಅದರ ಒಟ್ಟು ಮೊತ್ತದಿಂದ ಹೊರಗುಳಿದು, ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲೇ ಉಳಿಯುತ್ತದೆ — ಉಳಿದದ್ದು ಕೊರಿಯರ್ ಮೂಲಕ ಹೋಗುತ್ತದೆ."
+        ]
+      },
+      "greens": {
+        "heading": "ತಾಜಾ ಸೊಪ್ಪು",
+        "body": [
+          "ನೀವು ಸೊಪ್ಪು ಆರ್ಡರ್ ಮಾಡಿದರೆ, ಮರುದಿನ ಬೆಳಿಗ್ಗೆ ಬಿತ್ತಿ, ಅದು ನಿಮ್ಮನ್ನು ತಲುಪುವ ದಿನವೇ ಕತ್ತರಿಸುತ್ತೇವೆ. ಅದಕ್ಕೆ ಎಷ್ಟು ಸಮಯ ಎಂಬುದು ತಳಿಯನ್ನು ಅವಲಂಬಿಸಿದೆ; ಪಾವತಿಸುವ ಮೊದಲು ಆ ದಿನಾಂಕ ಪ್ರತಿ ತಳಿಯ ಪುಟದಲ್ಲೂ ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲೂ ಕಾಣುತ್ತದೆ.",
+          "ನಾವು ಹಗಲಿನಲ್ಲಿ ತಲುಪಿಸುತ್ತೇವೆ ಮತ್ತು ಬರುವ ಮೊದಲು ನಿಮಗೆ ಸಂದೇಶ ಕಳುಹಿಸುತ್ತೇವೆ.",
+          "ಒಂದು ಆರ್ಡರ್ ಎಂದರೆ ಒಂದು ಡೆಲಿವರಿ: ಅದರಲ್ಲಿರುವುದೆಲ್ಲವೂ ಒಟ್ಟಿಗೆ, ಅತ್ಯಂತ ನಿಧಾನವಾಗಿ ಸಿದ್ಧವಾಗುವ ವಸ್ತುವಿನ ದಿನಾಂಕದಂದು ಬರುತ್ತದೆ."
+        ]
+      },
+      "plans": {
+        "heading": "ವಾರದ ಯೋಜನೆಗಳು",
+        "body": [
+          "ವಾರದ ಯೋಜನೆ ನಾಲ್ಕು ಶನಿವಾರಗಳು, ಪ್ರತಿ ಶನಿವಾರ ಒಂದು ಡಬ್ಬ ತಲುಪಿಸುತ್ತದೆ. ಶುಕ್ರವಾರ ಮಧ್ಯರಾತ್ರಿಯ ಮೊದಲು ಪಾವತಿಸಿದ ಯೋಜನೆಯನ್ನು ಆ ಭಾನುವಾರ ಬಿತ್ತಿ, ಅದರ ನಂತರದ ಶನಿವಾರ ಆರಂಭಿಸಲಾಗುತ್ತದೆ; ತಡವಾಗಿ ಪಾವತಿಸಿದ್ದು ಒಂದು ವಾರ ತಡವಾಗಿ ಆರಂಭವಾಗುತ್ತದೆ. ಪಾವತಿಸುವ ಮೊದಲು ನಾಲ್ಕು ಶನಿವಾರಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತದೆ. ಡೆಲಿವರಿ ಸೇರಿದೆ."
+        ]
+      },
+      "courier": {
+        "heading": "ಕೊರಿಯರ್ ಡೆಲಿವರಿ",
+        "body": [
+          "ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ನಾವು ನಮ್ಮ ಕೊರಿಯರ್ ಪಾಲುದಾರರನ್ನು — ಡೆಲ್ಹಿವರಿ, ಇಕಾರ್ಟ್ ಮತ್ತು ಶಿಪ್‌ರಾಕೆಟ್ — ನಿಮ್ಮ ಪಾರ್ಸೆಲ್‌ಗೆ ಬೆಲೆ ಕೇಳಿ, ಪ್ರತಿಯೊಂದನ್ನೂ ಅದು ತಲುಪುವ ದಿನಾಂಕದೊಂದಿಗೆ ಪಟ್ಟಿ ಮಾಡುತ್ತೇವೆ. ಅಗ್ಗದ್ದನ್ನು ನಿಮಗಾಗಿ ಆರಿಸಿರುತ್ತೇವೆ; ನೀವು ಬೇರೆಯದನ್ನು ಆರಿಸಬಹುದು.",
+          "ಪ್ಯಾಕ್ ಮಾಡಲು ನಮಗೆ ಒಂದು ಪೂರ್ತಿ ದಿನ ಬೇಕು, ಹಾಗಾಗಿ ನಿಮ್ಮ ಪಾರ್ಸೆಲ್ ಸಿದ್ಧವಾದ ಮರುದಿನ ಕೊರಿಯರ್‌ಗೆ ಹಸ್ತಾಂತರವಾಗುತ್ತದೆ. ತೋರಿಸಿದ ತಲುಪುವ ದಿನಾಂಕ ಅಲ್ಲಿಂದ ಕೊರಿಯರ್‌ನ ಅಂದಾಜು; ನೀವು ಆರಿಸಿದ ದಿನಾಂಕ ನಿಮ್ಮ ಆರ್ಡರ್‌ನೊಂದಿಗೆ ಉಳಿಯುತ್ತದೆ."
+        ]
+      },
+      "when-ready": {
+        "heading": "ಪ್ರತಿ ವಸ್ತು ಯಾವಾಗ ಸಿದ್ಧ",
+        "body": [
+          "ಬೀಜಗಳು: ನಾವು ಮಾರುವ ಪ್ರತಿ ಬೀಜವೂ ನಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿದೆ, ಹಾಗಾಗಿ ಮರುದಿನ ಸಿದ್ಧ.",
+          "ಟ್ರೇಗಳು ಮತ್ತು ಕೊಕೊಪೀಟ್: ಅವನ್ನು ದಾಸ್ತಾನಿನಲ್ಲಿಡುತ್ತೇವೆ, ಹಾಗಾಗಿ ಮರುದಿನ ಸಿದ್ಧ. ದೊಡ್ಡ ಪ್ರಮಾಣಕ್ಕೆ ಇನ್ನಷ್ಟು ತರಿಸಬೇಕಾಗಬಹುದು, ಅದಕ್ಕೆ ಒಂದು ದಿನ ಹೆಚ್ಚು; ನೀವು ಪ್ಯಾಕ್‌ಗಳನ್ನು ಸೇರಿಸಿದಂತೆ ಉತ್ಪನ್ನ ಪುಟ ದಿನಾಂಕ ತೋರಿಸುತ್ತದೆ.",
+          "ರ್ಯಾಕ್‌ಗಳು: ನೀವು ಆರಿಸುವ ಗಾತ್ರದಲ್ಲಿ ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ತಯಾರಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮದು ಯಾವಾಗ ಸಿದ್ಧವಾಗುತ್ತದೆ ಎಂಬುದನ್ನು ರ್ಯಾಕ್‌ನ ಪುಟ ತೋರಿಸುತ್ತದೆ."
+        ]
+      },
+      "two-parcels": {
+        "heading": "ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಪಾರ್ಸೆಲ್‌ಗಳಲ್ಲಿ ಆರ್ಡರ್‌ಗಳು",
+        "body": [
+          "ಶೆಲ್ಫ್ ರ್ಯಾಕ್‌ಗಳನ್ನು ಅವನ್ನು ತಯಾರಿಸುವ ಕಾರ್ಯಾಗಾರವೇ ಮಾಡಿ ಕಳುಹಿಸುತ್ತದೆ, ಹಾಗಾಗಿ ಅವು ಪ್ರತ್ಯೇಕ ಪಾರ್ಸೆಲ್ ಆಗಿ ಬರುತ್ತವೆ. ಉಳಿದೆಲ್ಲವೂ ನಮ್ಮಿಂದ ಬರುತ್ತದೆ. ಚೆಕ್‌ಔಟ್ ಪ್ರತಿ ಪಾರ್ಸೆಲ್ ಅನ್ನು ಅದರದೇ ಕೊರಿಯರ್, ಶುಲ್ಕ ಮತ್ತು ದಿನಾಂಕದೊಂದಿಗೆ ತೋರಿಸುತ್ತದೆ, ಮತ್ತು ಪ್ರತಿಯೊಂದಕ್ಕೂ ನೀವು ಕೊರಿಯರ್ ಆರಿಸುತ್ತೀರಿ."
+        ]
+      },
+      "charges": {
+        "heading": "ಡೆಲಿವರಿ ಶುಲ್ಕಗಳು",
+        "body": [
+          "ತಾಜಾ ಸೊಪ್ಪಿರುವ ಆರ್ಡರ್‌ಗೆ ಒಂದು ನಿಗದಿತ ಡೆಲಿವರಿ ಶುಲ್ಕ, ಏಕೆಂದರೆ ನಾವೇ ಅದನ್ನು ತರುತ್ತೇವೆ. ಅದೇ ಆರ್ಡರ್‌ನಲ್ಲಿರುವ ಬೀಜಗಳು, ಟ್ರೇಗಳು ಮತ್ತು ಕೊಕೊಪೀಟ್ ಹೆಚ್ಚುವರಿ ಶುಲ್ಕವಿಲ್ಲದೆ ಜೊತೆಗೇ ಬರುತ್ತವೆ; ಅದೇ ಆರ್ಡರ್‌ನಲ್ಲಿರುವ ಶೆಲ್ಫ್ ರ್ಯಾಕ್ ಮಾತ್ರ ಅದರ ಕಾರ್ಯಾಗಾರದಿಂದ ಕೊರಿಯರ್ ಮೂಲಕವೇ ಬರುತ್ತದೆ.",
+          "ಸೊಪ್ಪಿಲ್ಲದ ಆರ್ಡರ್‌ಗೆ ನಿಮ್ಮ ಪಾರ್ಸೆಲ್‌ಗೆ ಕೊರಿಯರ್‌ನ ಆ ಕ್ಷಣದ ಬೆಲೆ. ಕೊರಿಯರ್‌ಗಳು ಡಬ್ಬದ ತೂಕ ಮತ್ತು ಅದು ಹಿಡಿಯುವ ಜಾಗ — ಯಾವುದು ಹೆಚ್ಚೋ ಅದಕ್ಕೆ — ಶುಲ್ಕ ವಿಧಿಸುತ್ತವೆ, ಹಾಗಾಗಿ ನಾವು ಪ್ರತಿ ವಸ್ತುವನ್ನೂ ಅಳೆದು ಅದರಂತೆ ಬೆಲೆ ತಿಳಿಸುತ್ತೇವೆ.",
+          "ವಾರದ ಯೋಜನೆಗಳಲ್ಲಿ ಡೆಲಿವರಿ ಸೇರಿದೆ. ಉಚಿತ ಡೆಲಿವರಿಗೆ ಕನಿಷ್ಠ ಮೊತ್ತದ ನಿಯಮವಿಲ್ಲ. ಪಾವತಿಸುವ ಮೊದಲು ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ನಿಖರ ಶುಲ್ಕ ಕಾಣುತ್ತದೆ."
+        ]
+      },
+      "tracking": {
+        "heading": "ನಿಮ್ಮ ಪಾರ್ಸೆಲ್ ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದು",
+        "body": [
+          "ಕೊರಿಯರ್ ಪಾರ್ಸೆಲ್ ಹಸ್ತಾಂತರವಾದ ಕೂಡಲೇ, ಅದರ ಕೊರಿಯರ್ ಮತ್ತು ಟ್ರ್ಯಾಕಿಂಗ್ ಸಂಖ್ಯೆ ಖಾತೆ → ಆರ್ಡರ್‌ಗಳು ಅಡಿಯಲ್ಲಿ ನಿಮ್ಮ ಆರ್ಡರ್‌ನಲ್ಲಿ ಕಾಣುತ್ತದೆ, ಹಾಗಾಗಿ ಕೊರಿಯರ್‌ನ ಸ್ವಂತ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಅದನ್ನು ಹಿಂಬಾಲಿಸಬಹುದು. ನಾವೇ ತಲುಪಿಸುವ ಸೊಪ್ಪಿಗೆ ಟ್ರ್ಯಾಕಿಂಗ್ ಬೇಕಿಲ್ಲ: ಬರುವ ಮೊದಲು ನಿಮಗೆ ಸಂದೇಶ ಕಳುಹಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "address": {
+        "heading": "ನಿಮ್ಮ ವಿಳಾಸ",
+        "body": [
+          "ಪಾವತಿಸುವ ಮೊದಲು ದಯವಿಟ್ಟು ವಿಳಾಸ, ಪಿನ್ ಕೋಡ್ ಮತ್ತು ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ಪರಿಶೀಲಿಸಿ; ಆರ್ಡರ್‌ನಲ್ಲಿರುವ ವಿಳಾಸಕ್ಕೆ ನಾವು ತಲುಪಿಸುತ್ತೇವೆ. ಅದನ್ನು ಬದಲಿಸಬೇಕಿದ್ದರೆ, ತಕ್ಷಣ ನಿಮ್ಮ ಆರ್ಡರ್ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಂದೇಶ ಕಳುಹಿಸಿ ಅಥವಾ ಇಮೇಲ್ ಮಾಡಿ. ಆರ್ಡರ್ ನಮ್ಮಿಂದ ಹೊರಡುವ ಮೊದಲು ಮಾತ್ರ ಬದಲಿಸಬಹುದು, ಮತ್ತು ಸೊಪ್ಪಿಗೆ ಹೊಸ ವಿಳಾಸವೂ ಡೆಲಿವರಿ ಪ್ರದೇಶದೊಳಗೇ ಇರಬೇಕು."
+        ]
+      },
+      "failed": {
+        "heading": "ಡೆಲಿವರಿ ಸಾಧ್ಯವಾಗದಿದ್ದರೆ",
+        "body": [
+          "ಸೊಪ್ಪು: ಯಾರೂ ಸ್ವೀಕರಿಸಲಾಗದಿದ್ದರೆ ಅಥವಾ ವಿಳಾಸ ತಪ್ಪಾಗಿದ್ದರೆ, ನಾವು ನಿಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತೇವೆ. ನೀವು ಕೇಳಿದರೆ ಮುಂದಿನ ಸುತ್ತಿನಲ್ಲಿ ಇನ್ನೊಮ್ಮೆ ತಲುಪಿಸುತ್ತೇವೆ, ಅದಕ್ಕೆ ನೀವು ಡೆಲಿವರಿ ಶುಲ್ಕವನ್ನು ಮತ್ತೆ ಪಾವತಿಸುತ್ತೀರಿ. ತಲುಪಿಸಲಾಗದ ಸೊಪ್ಪಿಗೆ ಹಣ ಹಿಂದಿರುಗಿಸುವುದಿಲ್ಲ.",
+          "ಕೊರಿಯರ್ ಪಾರ್ಸೆಲ್‌ಗಳು: ಪಾರ್ಸೆಲ್ ಅನ್ನು ನಿರಾಕರಿಸಿದ್ದರಿಂದ, ಯಾರೂ ಸಿಗದ್ದರಿಂದ ಅಥವಾ ವಿಳಾಸ ತಪ್ಪಾಗಿದ್ದರಿಂದ ಅದು ನಮಗೆ ವಾಪಸ್ ಬಂದರೆ, ಎರಡೂ ಕಡೆಯ ಸಾಗಣೆ ಶುಲ್ಕ ಕಳೆದು ವಸ್ತುಗಳ ಬೆಲೆಯನ್ನು ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "damage": {
+        "heading": "ಹಾನಿಯಾಗಿ ಅಥವಾ ತಪ್ಪಾಗಿ ಬಂದರೆ",
+        "body": [
+          "ಸೊಪ್ಪಿಗೆ ಡೆಲಿವರಿಯಾದ 24 ಗಂಟೆಗಳೊಳಗೆ, ಉಳಿದ ಯಾವುದಕ್ಕೂ 48 ಗಂಟೆಗಳೊಳಗೆ ಫೋಟೋಗಳೊಂದಿಗೆ ತಿಳಿಸಿ; ನಮ್ಮ ಹಣ ಹಿಂದಿರುಗಿಸುವ ನೀತಿ ವಿವರಿಸುವಂತೆ ನಾವು ಅದನ್ನು ಬದಲಿಸುತ್ತೇವೆ ಅಥವಾ ಹಣ ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "delays": {
+        "heading": "ವಿಳಂಬಗಳು",
+        "body": [
+          "ನಾವು ಭರವಸೆ ನೀಡಿದ ದಿನಾಂಕದಂದು ತಲುಪಿಸುತ್ತೇವೆ. ಕೊರಿಯರ್‌ನ ತಲುಪುವ ದಿನಾಂಕ ಅದರದೇ ಅಂದಾಜು, ಮತ್ತು ನಮ್ಮ ನಿಯಂತ್ರಣ ಮೀರಿದ ಘಟನೆಗಳು — ತೀವ್ರ ಹವಾಮಾನ, ಬೆಳೆ ವೈಫಲ್ಯ, ಮುಷ್ಕರ, ಕೊರಿಯರ್ ಅಡಚಣೆ — ವಿಳಂಬಕ್ಕೆ ಕಾರಣವಾಗಬಹುದು. ನಿಮ್ಮ ಆರ್ಡರ್ ತಡವಾದರೆ ನಿಮಗೆ ತಿಳಿಸುತ್ತೇವೆ, ಮತ್ತು ತಲುಪಿಸಲಾಗದ್ದರ ಹಣ ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "contact": {
+        "heading": "ಪ್ರಶ್ನೆಗಳು",
+        "body": [
+          "ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ {phone} ಗೆ ಸಂದೇಶ ಕಳುಹಿಸಿ ಅಥವಾ {email} ಗೆ ಬರೆಯಿರಿ, ಆರ್ಡರ್ ಸಂಖ್ಯೆ ಇದ್ದರೆ ಅದರೊಂದಿಗೆ.",
+          "ಈ ನೀತಿ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲೂ ಪ್ರಕಟವಾಗಿದೆ. ಎರಡು ಆವೃತ್ತಿಗಳು ಭಿನ್ನವಾಗಿದ್ದರೆ, ಇಂಗ್ಲಿಷ್ ಆವೃತ್ತಿ ಅನ್ವಯಿಸುತ್ತದೆ."
+        ]
+      }
+    }
+  }
+}

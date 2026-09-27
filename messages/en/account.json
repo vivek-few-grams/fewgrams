@@ -124,7 +124,7 @@
   "orders": {
     "title": "Orders",
     "heading": "Your orders",
-    "body": "Every subscription and one-off order you've placed, with its delivery date and receipt.",
+    "body": "Every weekly plan and order you've placed, with its delivery date and receipt.",
     "empty": "No orders yet",
     "emptyBody": "When you subscribe to a weekly box or buy seeds, racks or trays, it appears here.",
     "browsePlans": "See the plans",
@@ -180,6 +180,12 @@
         "ready": "Packed and ready. It leaves with the delivery partner next.",
         "onTheWay": "It's on its way to you.",
         "delivered": "Delivered. We hope you love it."
+      },
+      "tracking": {
+        "heading": "Tracking",
+        "parcel": "Parcel {n}",
+        "number": "{courier} tracking number",
+        "pending": "Your tracking number appears here once the parcel is handed to the courier."
       }
     }
   },

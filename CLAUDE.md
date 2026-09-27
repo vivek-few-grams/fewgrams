@@ -35,6 +35,8 @@ checkout and a translator can be handed a single file:
 | `checkout.json` | `/checkout` — address, total and the pay button (SPEC §9.2) |
 | `auth.json` | Login, verify, forbidden |
 | `account.json` | `/account` and its profile, addresses and orders screens |
+| `help.json` | `/faq` and `/contact` — **chrome only**; the questions and answers are editorial copy in `content/faq.json` (one ordered file, like the book; `faq-contract.ts` refuses a price, a day count or the city) |
+| `legal.json` | `/terms` (and the privacy, refund and shipping pages to come) — **chrome only**; the clauses are `content/legal/<doc>.json`, with names and address as tokens from `content/legal/business.json` |
 | `admin.json` | Admin shell and screens — **English only by design** (SPEC §4.4 scopes Kannada to customer-facing pages) |
 
 This covers **UI chrome**. Editorial copy belongs in `content/` instead, per
@@ -283,6 +285,10 @@ The owner's rule, 24 Sep 2026: **Bengaluru is not named anywhere a customer
 reads** — say "our delivery area" or "selected areas". The area itself is a
 district rule in `src/lib/pincode/area.ts`, not a place the copy should
 promise; `brand.city` was removed so nothing can interpolate it back in.
+
+**One exception: the legal pages** (the owner, 27 Sep 2026). A registered
+address and a jurisdiction clause ("the courts at Bengaluru") need a place, so
+`content/legal/` may name it. Nowhere else.
 
 ## Contact details live in `content/contact.json`
 

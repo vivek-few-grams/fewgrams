@@ -1,0 +1,491 @@
+{
+  "sections": [
+    {
+      "key": "microgreens",
+      "questions": [
+        "what-are-microgreens",
+        "grown-to-order",
+        "how-grown",
+        "sold-by-tray",
+        "wash",
+        "storage",
+        "eating",
+        "cautions"
+      ]
+    },
+    {
+      "key": "delivery",
+      "questions": [
+        "where-deliver",
+        "outside-area",
+        "greens-arrival",
+        "one-delivery",
+        "delivery-charge",
+        "courier-choice",
+        "courier-arrival",
+        "two-parcels",
+        "parcel-size"
+      ]
+    },
+    {
+      "key": "plans",
+      "questions": [
+        "plan-works",
+        "plan-contents",
+        "first-box",
+        "choose-varieties",
+        "renewal",
+        "plan-area"
+      ]
+    },
+    {
+      "key": "ordering",
+      "questions": [
+        "account",
+        "payment",
+        "confirmed",
+        "track-order",
+        "change-order"
+      ]
+    },
+    {
+      "key": "growing",
+      "questions": [
+        "seed-packs",
+        "seed-dispatch",
+        "trays-media-dispatch",
+        "racks"
+      ]
+    }
+  ],
+  "en": {
+    "sections": {
+      "microgreens": "Microgreens",
+      "delivery": "Delivery",
+      "plans": "Weekly plans",
+      "ordering": "Ordering and payment",
+      "growing": "Seeds, trays and racks"
+    },
+    "questions": {
+      "what-are-microgreens": {
+        "question": "What are microgreens?",
+        "answer": [
+          "Young vegetable and herb plants, cut just after their first leaves open. They are the same plants as the full-grown vegetable — radish, mustard, sunflower, beetroot — harvested at the seedling stage, so you eat the tender stem and leaves rather than a root or a head."
+        ]
+      },
+      "grown-to-order": {
+        "question": "What does \"grown to order\" mean?",
+        "answer": [
+          "We don't grow greens and then wait for someone to buy them. When you order greens, we sow them the morning after, and cut the tray on the day it reaches you.",
+          "Nothing is frozen and nothing sits in a store room, which is why we can tell you the delivery date before you pay."
+        ]
+      },
+      "how-grown": {
+        "question": "How are they grown?",
+        "answer": [
+          "Indoors, in trays we sterilise before every sowing, filled with fresh cocopeat that is never reused. The seed is untreated and comes from suppliers we know.",
+          "We use no pesticides and no growth agents — only water and light. The \"How we grow\" page walks through each step."
+        ]
+      },
+      "sold-by-tray": {
+        "question": "Why are greens sold by the tray?",
+        "answer": [
+          "Because a tray is what we sow for you: one tray, one variety. How much a tray gives varies a little with the seed lot and the season, so the cart shows the range of grams to expect alongside the price, rather than a weight we can't promise to the gram."
+        ]
+      },
+      "wash": {
+        "question": "Do I need to wash them?",
+        "answer": [
+          "Yes — rinse them just before you eat them, and pat them dry. They are cut and packed fresh, not washed, because water left on the leaves shortens how long they keep."
+        ]
+      },
+      "storage": {
+        "question": "How do I store them?",
+        "answer": [
+          "Unwashed, in a lidded box lined with dry kitchen paper, in the fridge. Most varieties keep for about a week that way. The more delicate ones prefer a spot away from the coldest back wall.",
+          "Each variety's page has its own storage advice."
+        ]
+      },
+      "eating": {
+        "question": "How do I eat them?",
+        "answer": [
+          "Mostly raw. Scatter them over dal, parathas, dosas, eggs, sandwiches, salads and soups just before serving, or blend them into a chutney or smoothie.",
+          "Heat softens most of them in seconds, so add them at the end rather than cooking them in."
+        ]
+      },
+      "cautions": {
+        "question": "Is there anything I should be careful about?",
+        "answer": [
+          "Some varieties carry a caution — radish and mustard, for example, are brassicas. Each variety's page lists its own. If you have a health condition, read it before ordering, and ask your doctor if you are unsure."
+        ]
+      },
+      "where-deliver": {
+        "question": "Where do you deliver?",
+        "answer": [
+          "Seeds, trays, cocopeat and racks go by courier to anywhere in India our courier partners reach.",
+          "Fresh greens are different. We bring them ourselves, on the day they are cut, so they reach selected areas only. Checkout checks your PIN code before you pay, and never takes payment for greens it cannot deliver."
+        ]
+      },
+      "outside-area": {
+        "question": "My PIN code is outside the fresh-greens area. Can I still order?",
+        "answer": [
+          "Yes, everything except the greens. If your cart has greens and other things, checkout sets the greens aside — they are left out of the order and its total, and stay in your cart for another address — and the rest ships by courier.",
+          "If you would still like greens, message us on WhatsApp or email us. We look at every request and deliver it if we can."
+        ]
+      },
+      "greens-arrival": {
+        "question": "When will my greens arrive?",
+        "answer": [
+          "Greens you order arrive on the day they are cut, and that depends on how long the variety takes to grow. You see the date on each variety's page and again in your cart, before you pay.",
+          "Weekly plans are different: they arrive every Saturday."
+        ]
+      },
+      "one-delivery": {
+        "question": "I ordered several varieties. Will they come separately?",
+        "answer": [
+          "No. One order is one delivery, on the date the slowest item in it is ready. The cart shows that date before you pay, so it is never a surprise."
+        ]
+      },
+      "delivery-charge": {
+        "question": "How much is delivery?",
+        "answer": [
+          "An order with fresh greens pays one fixed delivery fee, because we bring it ourselves. Seeds, trays and cocopeat in the same order ride along at no extra charge.",
+          "An order without greens pays the courier's price for your parcel, quoted live for your address. Weekly plans include delivery.",
+          "Whichever it is, you see the exact amount at checkout before you pay. There is no free-delivery threshold."
+        ]
+      },
+      "courier-choice": {
+        "question": "Can I choose the courier?",
+        "answer": [
+          "Yes. At checkout we ask our courier partners at once and list each one's price with the date it would arrive. The cheapest is picked for you, and you can choose another."
+        ]
+      },
+      "courier-arrival": {
+        "question": "When will a courier order arrive?",
+        "answer": [
+          "We take a full day to pack, so your parcel is handed to the courier the day after it is ready. Each courier option at checkout shows its own arrival date, and your order keeps the one you chose."
+        ]
+      },
+      "two-parcels": {
+        "question": "Why is my order coming in two parcels?",
+        "answer": [
+          "Shelf racks are made and sent by the workshop that builds them, so they travel as their own parcel. Everything else in your order comes from us. Checkout shows each parcel with its own courier and date."
+        ]
+      },
+      "parcel-size": {
+        "question": "Why does a light parcel cost more than I expected to send?",
+        "answer": [
+          "Couriers charge for the space a box takes up as well as its weight, and bill whichever is larger. A pack of trays is light but long, so it is priced by its size. We measure every item so the price you see is the price the courier charges."
+        ]
+      },
+      "plan-works": {
+        "question": "How does a weekly plan work?",
+        "answer": [
+          "One plan is one box of fresh greens every Saturday, for four Saturdays in a row. Take two of a plan for two boxes a week, or mix plans in one checkout. Delivery is included."
+        ]
+      },
+      "plan-contents": {
+        "question": "What's in each box?",
+        "answer": [
+          "It changes over the four weeks. Each plan follows a rotation you can see on its card before you subscribe, so you know what arrives on which Saturday.",
+          "If a crop isn't good enough to send, we swap in another variety rather than send it. The price stays the same."
+        ]
+      },
+      "first-box": {
+        "question": "When does my first box arrive?",
+        "answer": [
+          "Subscribe before Friday midnight and your greens are sown that Sunday, for the Saturday after. Subscribe later and everything moves a week.",
+          "The subscribe page lists your four Saturdays before you pay."
+        ]
+      },
+      "choose-varieties": {
+        "question": "Can I choose the varieties in my plan?",
+        "answer": [
+          "Not in a weekly plan — their rotations are planned so every box has a good mix. To pick your own varieties, order them from the microgreens page, by the tray."
+        ]
+      },
+      "renewal": {
+        "question": "Does a plan renew automatically?",
+        "answer": [
+          "No. A plan is paid up front for its four Saturdays and there is no auto-debit. When it ends, you subscribe again if you would like more. You can see your plans under Account → Subscriptions."
+        ]
+      },
+      "plan-area": {
+        "question": "Can I subscribe if I live outside the fresh-greens area?",
+        "answer": [
+          "Not yet — a plan is fresh greens, so it needs an address inside the area. If you would still like greens, message us on WhatsApp or email us."
+        ]
+      },
+      "account": {
+        "question": "Do I need an account to order?",
+        "answer": [
+          "Yes, to check out. There is no password to remember: you sign in with a link we email you. Your addresses and orders are then kept together under Account."
+        ]
+      },
+      "payment": {
+        "question": "How do I pay?",
+        "answer": [
+          "Online, before the order is placed — UPI, cards and net banking, on our payment partner's secure screen. We never see your card or UPI details. There is no cash on delivery."
+        ]
+      },
+      "confirmed": {
+        "question": "How do I know my order went through?",
+        "answer": [
+          "Your order is confirmed once the payment partner tells us the full amount has been paid. If the page says it is still waiting, give it a minute and refresh — it appears under Account → Orders as soon as it is confirmed."
+        ]
+      },
+      "track-order": {
+        "question": "Where can I see my orders?",
+        "answer": [
+          "Under Account → Orders. Every order is listed there with its delivery date and receipt."
+        ]
+      },
+      "change-order": {
+        "question": "Can I change or cancel an order?",
+        "answer": [
+          "Fresh greens and weekly plans are sown for you, so they can't be cancelled once paid. If they arrive spoiled, damaged or wrong, tell us within 24 hours with a photo and choose a refund or a fresh tray.",
+          "Seeds, trays and cocopeat can be cancelled for a full refund until they're handed to the courier — message us on WhatsApp or by email with your order number. Racks are made to order and can't be cancelled. The Terms page has the details."
+        ]
+      },
+      "seed-packs": {
+        "question": "How are seeds sold?",
+        "answer": [
+          "In packs of 50 g, priced per pack. You can order as many packs as we have. When a seed shows as sold out, we have less than one pack left, and it comes back once we restock."
+        ]
+      },
+      "seed-dispatch": {
+        "question": "When do seeds ship?",
+        "answer": [
+          "Every seed we sell is on our shelf, so it is packed the next day. Checkout shows each courier's arrival date."
+        ]
+      },
+      "trays-media-dispatch": {
+        "question": "When do trays and cocopeat ship?",
+        "answer": [
+          "We keep them in stock, so they go out the next day. For a large quantity we may need to bring more in, which adds one day — the product page's delivery line changes as you add packs, so you see it before you pay."
+        ]
+      },
+      "racks": {
+        "question": "How do racks work?",
+        "answer": [
+          "Racks are built to order, in the size you pick. The rack's page shows the price for your choice and when it will be ready, and checkout shows the arrival date for your address."
+        ]
+      }
+    }
+  },
+  "kn": {
+    "sections": {
+      "microgreens": "ಮೈಕ್ರೋಗ್ರೀನ್ಸ್",
+      "delivery": "ಡೆಲಿವರಿ",
+      "plans": "ವಾರದ ಯೋಜನೆಗಳು",
+      "ordering": "ಆರ್ಡರ್ ಮತ್ತು ಪಾವತಿ",
+      "growing": "ಬೀಜಗಳು, ಟ್ರೇಗಳು ಮತ್ತು ರ್ಯಾಕ್‌ಗಳು"
+    },
+    "questions": {
+      "what-are-microgreens": {
+        "question": "ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಎಂದರೇನು?",
+        "answer": [
+          "ಮೊದಲ ಎಲೆಗಳು ತೆರೆದ ಕೂಡಲೇ ಕತ್ತರಿಸುವ ಎಳೆಯ ತರಕಾರಿ ಮತ್ತು ಸೊಪ್ಪಿನ ಗಿಡಗಳು. ಇವು ಪೂರ್ತಿ ಬೆಳೆದ ತರಕಾರಿಯ ಅದೇ ಗಿಡಗಳು — ಮೂಲಂಗಿ, ಸಾಸಿವೆ, ಸೂರ್ಯಕಾಂತಿ, ಬೀಟ್‌ರೂಟ್ — ಸಸಿಯ ಹಂತದಲ್ಲೇ ಕೊಯ್ಯಲಾಗುತ್ತದೆ. ಹಾಗಾಗಿ ನೀವು ಬೇರು ಅಥವಾ ಗಡ್ಡೆಯ ಬದಲು ಮೃದುವಾದ ಕಾಂಡ ಮತ್ತು ಎಲೆಗಳನ್ನು ತಿನ್ನುತ್ತೀರಿ."
+        ]
+      },
+      "grown-to-order": {
+        "question": "\"ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ಬೆಳೆಸುವುದು\" ಎಂದರೇನು?",
+        "answer": [
+          "ನಾವು ಸೊಪ್ಪನ್ನು ಬೆಳೆಸಿ ಯಾರಾದರೂ ಕೊಳ್ಳುವವರೆಗೆ ಕಾಯುವುದಿಲ್ಲ. ನೀವು ಸೊಪ್ಪು ಆರ್ಡರ್ ಮಾಡಿದರೆ, ಮರುದಿನ ಬೆಳಿಗ್ಗೆ ಬಿತ್ತುತ್ತೇವೆ, ಮತ್ತು ಅದು ನಿಮ್ಮನ್ನು ತಲುಪುವ ದಿನವೇ ಟ್ರೇ ಕತ್ತರಿಸಲಾಗುತ್ತದೆ.",
+          "ಯಾವುದನ್ನೂ ಫ್ರೀಜ್ ಮಾಡುವುದಿಲ್ಲ, ಯಾವುದೂ ಗೋದಾಮಿನಲ್ಲಿ ಕೂರುವುದಿಲ್ಲ — ಅದಕ್ಕೇ ನೀವು ಪಾವತಿಸುವ ಮೊದಲೇ ಡೆಲಿವರಿ ದಿನಾಂಕವನ್ನು ಹೇಳಲು ನಮಗೆ ಸಾಧ್ಯ."
+        ]
+      },
+      "how-grown": {
+        "question": "ಇವನ್ನು ಹೇಗೆ ಬೆಳೆಸಲಾಗುತ್ತದೆ?",
+        "answer": [
+          "ಒಳಾಂಗಣದಲ್ಲಿ, ಪ್ರತಿ ಬಿತ್ತನೆಗೆ ಮೊದಲು ಕ್ರಿಮಿರಹಿತಗೊಳಿಸಿದ ಟ್ರೇಗಳಲ್ಲಿ, ಮತ್ತೆ ಬಳಸದ ಹೊಸ ಕೊಕೊಪೀಟ್‌ನಲ್ಲಿ. ಬೀಜಗಳು ಸಂಸ್ಕರಿಸದವು, ನಮಗೆ ಪರಿಚಿತ ಪೂರೈಕೆದಾರರಿಂದ ಬಂದವು.",
+          "ನಾವು ಯಾವುದೇ ಕೀಟನಾಶಕ ಅಥವಾ ಬೆಳವಣಿಗೆ ಉತ್ತೇಜಕ ಬಳಸುವುದಿಲ್ಲ — ನೀರು ಮತ್ತು ಬೆಳಕು ಮಾತ್ರ. \"ನಾವು ಹೇಗೆ ಬೆಳೆಸುತ್ತೇವೆ\" ಪುಟದಲ್ಲಿ ಪ್ರತಿ ಹಂತವನ್ನೂ ನೋಡಬಹುದು."
+        ]
+      },
+      "sold-by-tray": {
+        "question": "ಸೊಪ್ಪನ್ನು ಟ್ರೇ ಲೆಕ್ಕದಲ್ಲಿ ಏಕೆ ಮಾರುತ್ತೀರಿ?",
+        "answer": [
+          "ಏಕೆಂದರೆ ನಿಮಗಾಗಿ ನಾವು ಬಿತ್ತುವುದು ಒಂದು ಟ್ರೇ: ಒಂದು ಟ್ರೇ, ಒಂದು ತಳಿ. ಒಂದು ಟ್ರೇಯಿಂದ ಸಿಗುವ ಪ್ರಮಾಣ ಬೀಜದ ಲಾಟ್ ಮತ್ತು ಋತುವಿಗೆ ತಕ್ಕಂತೆ ಸ್ವಲ್ಪ ಬದಲಾಗುತ್ತದೆ. ಹಾಗಾಗಿ ಗ್ರಾಂಗೆ ಗ್ರಾಂ ಭರವಸೆ ನೀಡಲಾಗದ ತೂಕದ ಬದಲು, ನಿರೀಕ್ಷಿಸಬಹುದಾದ ಗ್ರಾಂಗಳ ಶ್ರೇಣಿಯನ್ನು ಕಾರ್ಟ್ ಬೆಲೆಯ ಜೊತೆ ತೋರಿಸುತ್ತದೆ."
+        ]
+      },
+      "wash": {
+        "question": "ಇವನ್ನು ತೊಳೆಯಬೇಕೇ?",
+        "answer": [
+          "ಹೌದು — ತಿನ್ನುವ ಸ್ವಲ್ಪ ಮೊದಲು ತೊಳೆದು, ಒಣಗಿಸಿ. ಇವನ್ನು ತಾಜಾ ಕತ್ತರಿಸಿ ಪ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತದೆ, ತೊಳೆಯುವುದಿಲ್ಲ — ಎಲೆಗಳ ಮೇಲೆ ಉಳಿದ ನೀರು ಅವು ತಾಜಾ ಇರುವ ಅವಧಿಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ."
+        ]
+      },
+      "storage": {
+        "question": "ಇವನ್ನು ಹೇಗೆ ಸಂಗ್ರಹಿಸಬೇಕು?",
+        "answer": [
+          "ತೊಳೆಯದೆ, ಒಣ ಅಡುಗೆಮನೆ ಕಾಗದ ಹಾಸಿದ ಮುಚ್ಚಳವಿರುವ ಡಬ್ಬದಲ್ಲಿ, ಫ್ರಿಜ್‌ನಲ್ಲಿ. ಹೀಗಿಟ್ಟರೆ ಹೆಚ್ಚಿನ ತಳಿಗಳು ಸುಮಾರು ಒಂದು ವಾರ ತಾಜಾ ಇರುತ್ತವೆ. ಹೆಚ್ಚು ನಾಜೂಕಾದವುಗಳನ್ನು ಅತಿ ತಣ್ಣನೆಯ ಹಿಂಭಾಗದ ಗೋಡೆಯಿಂದ ದೂರ ಇಡಿ.",
+          "ಪ್ರತಿ ತಳಿಯ ಪುಟದಲ್ಲಿ ಅದರದೇ ಸಂಗ್ರಹ ಸಲಹೆ ಇದೆ."
+        ]
+      },
+      "eating": {
+        "question": "ಇವನ್ನು ಹೇಗೆ ತಿನ್ನಬೇಕು?",
+        "answer": [
+          "ಹೆಚ್ಚಾಗಿ ಹಸಿಯಾಗಿ. ಬಡಿಸುವ ಸ್ವಲ್ಪ ಮೊದಲು ಬೇಳೆ, ಪರೋಟ, ದೋಸೆ, ಮೊಟ್ಟೆ, ಸ್ಯಾಂಡ್‌ವಿಚ್, ಸಲಾಡ್ ಮತ್ತು ಸೂಪ್ ಮೇಲೆ ಉದುರಿಸಿ, ಅಥವಾ ಚಟ್ನಿ ಇಲ್ಲವೇ ಸ್ಮೂಥಿಯಲ್ಲಿ ರುಬ್ಬಿ.",
+          "ಬಿಸಿ ತಾಕಿದ ಕೆಲವೇ ಕ್ಷಣಗಳಲ್ಲಿ ಹೆಚ್ಚಿನವು ಮೆತ್ತಗಾಗುತ್ತವೆ, ಹಾಗಾಗಿ ಬೇಯಿಸುವ ಬದಲು ಕೊನೆಯಲ್ಲಿ ಸೇರಿಸಿ."
+        ]
+      },
+      "cautions": {
+        "question": "ನಾನು ಏನಾದರೂ ಎಚ್ಚರಿಕೆ ವಹಿಸಬೇಕೇ?",
+        "answer": [
+          "ಕೆಲವು ತಳಿಗಳಿಗೆ ಎಚ್ಚರಿಕೆಯ ಸೂಚನೆ ಇದೆ — ಉದಾಹರಣೆಗೆ ಮೂಲಂಗಿ ಮತ್ತು ಸಾಸಿವೆ ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದವು. ಪ್ರತಿ ತಳಿಯ ಪುಟದಲ್ಲಿ ಅದರದೇ ಸೂಚನೆಗಳಿವೆ. ನಿಮಗೆ ಆರೋಗ್ಯ ಸಮಸ್ಯೆ ಇದ್ದರೆ ಆರ್ಡರ್ ಮಾಡುವ ಮೊದಲು ಅದನ್ನು ಓದಿ, ಸಂಶಯವಿದ್ದರೆ ನಿಮ್ಮ ವೈದ್ಯರನ್ನು ಕೇಳಿ."
+        ]
+      },
+      "where-deliver": {
+        "question": "ನೀವು ಎಲ್ಲಿಗೆ ಡೆಲಿವರಿ ಮಾಡುತ್ತೀರಿ?",
+        "answer": [
+          "ಬೀಜಗಳು, ಟ್ರೇಗಳು, ಕೊಕೊಪೀಟ್ ಮತ್ತು ರ್ಯಾಕ್‌ಗಳು ನಮ್ಮ ಕೊರಿಯರ್ ಪಾಲುದಾರರು ತಲುಪುವ ಭಾರತದ ಯಾವುದೇ ಸ್ಥಳಕ್ಕೆ ಕೊರಿಯರ್ ಮೂಲಕ ಹೋಗುತ್ತವೆ.",
+          "ತಾಜಾ ಸೊಪ್ಪು ಬೇರೆ. ಕತ್ತರಿಸಿದ ದಿನವೇ ನಾವೇ ಅದನ್ನು ತಂದುಕೊಡುತ್ತೇವೆ, ಹಾಗಾಗಿ ಅದು ಆಯ್ದ ಪ್ರದೇಶಗಳಿಗೆ ಮಾತ್ರ ತಲುಪುತ್ತದೆ. ನೀವು ಪಾವತಿಸುವ ಮೊದಲು ಚೆಕ್‌ಔಟ್ ನಿಮ್ಮ ಪಿನ್ ಕೋಡ್ ಪರಿಶೀಲಿಸುತ್ತದೆ, ಮತ್ತು ತಲುಪಿಸಲಾಗದ ಸೊಪ್ಪಿಗೆ ಎಂದಿಗೂ ಹಣ ತೆಗೆದುಕೊಳ್ಳುವುದಿಲ್ಲ."
+        ]
+      },
+      "outside-area": {
+        "question": "ನನ್ನ ಪಿನ್ ಕೋಡ್ ತಾಜಾ ಸೊಪ್ಪಿನ ಪ್ರದೇಶದ ಹೊರಗಿದೆ. ನಾನು ಇನ್ನೂ ಆರ್ಡರ್ ಮಾಡಬಹುದೇ?",
+        "answer": [
+          "ಹೌದು, ಸೊಪ್ಪನ್ನು ಬಿಟ್ಟು ಉಳಿದೆಲ್ಲವನ್ನೂ. ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲಿ ಸೊಪ್ಪು ಮತ್ತು ಬೇರೆ ವಸ್ತುಗಳಿದ್ದರೆ, ಚೆಕ್‌ಔಟ್ ಸೊಪ್ಪನ್ನು ಪಕ್ಕಕ್ಕಿಡುತ್ತದೆ — ಅವು ಆರ್ಡರ್ ಮತ್ತು ಅದರ ಒಟ್ಟು ಮೊತ್ತದಿಂದ ಹೊರಗುಳಿದು, ಇನ್ನೊಂದು ವಿಳಾಸಕ್ಕಾಗಿ ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲೇ ಉಳಿಯುತ್ತವೆ — ಉಳಿದದ್ದು ಕೊರಿಯರ್ ಮೂಲಕ ಹೋಗುತ್ತದೆ.",
+          "ನಿಮಗೆ ಇನ್ನೂ ಸೊಪ್ಪು ಬೇಕಿದ್ದರೆ, ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಂದೇಶ ಕಳುಹಿಸಿ ಅಥವಾ ಇಮೇಲ್ ಮಾಡಿ. ಪ್ರತಿ ವಿನಂತಿಯನ್ನೂ ನಾವು ನೋಡುತ್ತೇವೆ, ಸಾಧ್ಯವಾದರೆ ತಲುಪಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "greens-arrival": {
+        "question": "ನನ್ನ ಸೊಪ್ಪು ಯಾವಾಗ ಬರುತ್ತದೆ?",
+        "answer": [
+          "ನೀವು ಆರ್ಡರ್ ಮಾಡಿದ ಸೊಪ್ಪು ಅದನ್ನು ಕತ್ತರಿಸಿದ ದಿನವೇ ಬರುತ್ತದೆ, ಮತ್ತು ಅದು ಆ ತಳಿ ಬೆಳೆಯಲು ತೆಗೆದುಕೊಳ್ಳುವ ಸಮಯವನ್ನು ಅವಲಂಬಿಸಿದೆ. ಪಾವತಿಸುವ ಮೊದಲು ಆ ದಿನಾಂಕವನ್ನು ಪ್ರತಿ ತಳಿಯ ಪುಟದಲ್ಲೂ, ಮತ್ತೆ ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲೂ ನೋಡುತ್ತೀರಿ.",
+          "ವಾರದ ಯೋಜನೆಗಳು ಬೇರೆ: ಅವು ಪ್ರತಿ ಶನಿವಾರ ಬರುತ್ತವೆ."
+        ]
+      },
+      "one-delivery": {
+        "question": "ನಾನು ಹಲವು ತಳಿಗಳನ್ನು ಆರ್ಡರ್ ಮಾಡಿದ್ದೇನೆ. ಅವು ಬೇರೆ ಬೇರೆಯಾಗಿ ಬರುತ್ತವೆಯೇ?",
+        "answer": [
+          "ಇಲ್ಲ. ಒಂದು ಆರ್ಡರ್ ಎಂದರೆ ಒಂದು ಡೆಲಿವರಿ — ಅದರಲ್ಲಿ ಅತ್ಯಂತ ನಿಧಾನವಾಗಿ ಸಿದ್ಧವಾಗುವ ವಸ್ತುವಿನ ದಿನಾಂಕದಂದು. ಪಾವತಿಸುವ ಮೊದಲೇ ಕಾರ್ಟ್ ಆ ದಿನಾಂಕ ತೋರಿಸುತ್ತದೆ, ಹಾಗಾಗಿ ಅಚ್ಚರಿ ಇರುವುದಿಲ್ಲ."
+        ]
+      },
+      "delivery-charge": {
+        "question": "ಡೆಲಿವರಿ ಶುಲ್ಕ ಎಷ್ಟು?",
+        "answer": [
+          "ತಾಜಾ ಸೊಪ್ಪಿರುವ ಆರ್ಡರ್‌ಗೆ ಒಂದು ನಿಗದಿತ ಡೆಲಿವರಿ ಶುಲ್ಕ, ಏಕೆಂದರೆ ನಾವೇ ಅದನ್ನು ತರುತ್ತೇವೆ. ಅದೇ ಆರ್ಡರ್‌ನಲ್ಲಿರುವ ಬೀಜಗಳು, ಟ್ರೇಗಳು ಮತ್ತು ಕೊಕೊಪೀಟ್ ಹೆಚ್ಚುವರಿ ಶುಲ್ಕವಿಲ್ಲದೆ ಜೊತೆಗೇ ಬರುತ್ತವೆ.",
+          "ಸೊಪ್ಪಿಲ್ಲದ ಆರ್ಡರ್‌ಗೆ ನಿಮ್ಮ ಪಾರ್ಸೆಲ್‌ಗೆ ಕೊರಿಯರ್‌ನ ಬೆಲೆ, ನಿಮ್ಮ ವಿಳಾಸಕ್ಕೆ ಆ ಕ್ಷಣದಲ್ಲಿ ಪಡೆದದ್ದು. ವಾರದ ಯೋಜನೆಗಳಲ್ಲಿ ಡೆಲಿವರಿ ಸೇರಿದೆ.",
+          "ಯಾವುದೇ ಆಗಿರಲಿ, ಪಾವತಿಸುವ ಮೊದಲು ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ನಿಖರ ಮೊತ್ತ ಕಾಣುತ್ತದೆ. ಉಚಿತ ಡೆಲಿವರಿಗೆ ಕನಿಷ್ಠ ಮೊತ್ತದ ನಿಯಮವಿಲ್ಲ."
+        ]
+      },
+      "courier-choice": {
+        "question": "ನಾನು ಕೊರಿಯರ್ ಆಯ್ಕೆ ಮಾಡಬಹುದೇ?",
+        "answer": [
+          "ಹೌದು. ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ನಾವು ನಮ್ಮ ಎಲ್ಲಾ ಕೊರಿಯರ್ ಪಾಲುದಾರರನ್ನು ಒಮ್ಮೆಗೇ ಕೇಳಿ, ಪ್ರತಿಯೊಂದರ ಬೆಲೆ ಮತ್ತು ಅದು ತಲುಪುವ ದಿನಾಂಕವನ್ನು ಪಟ್ಟಿ ಮಾಡುತ್ತೇವೆ. ಅಗ್ಗದ್ದನ್ನು ನಿಮಗಾಗಿ ಆರಿಸಿರುತ್ತೇವೆ, ನೀವು ಬೇರೆಯದನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು."
+        ]
+      },
+      "courier-arrival": {
+        "question": "ಕೊರಿಯರ್ ಆರ್ಡರ್ ಯಾವಾಗ ತಲುಪುತ್ತದೆ?",
+        "answer": [
+          "ಪ್ಯಾಕ್ ಮಾಡಲು ನಮಗೆ ಒಂದು ಪೂರ್ತಿ ದಿನ ಬೇಕು, ಹಾಗಾಗಿ ನಿಮ್ಮ ಪಾರ್ಸೆಲ್ ಸಿದ್ಧವಾದ ಮರುದಿನ ಕೊರಿಯರ್‌ಗೆ ಹಸ್ತಾಂತರವಾಗುತ್ತದೆ. ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ಪ್ರತಿ ಕೊರಿಯರ್ ಆಯ್ಕೆಯೂ ತನ್ನದೇ ತಲುಪುವ ದಿನಾಂಕ ತೋರಿಸುತ್ತದೆ, ಮತ್ತು ನೀವು ಆರಿಸಿದ ದಿನಾಂಕವೇ ನಿಮ್ಮ ಆರ್ಡರ್‌ನಲ್ಲಿ ಉಳಿಯುತ್ತದೆ."
+        ]
+      },
+      "two-parcels": {
+        "question": "ನನ್ನ ಆರ್ಡರ್ ಎರಡು ಪಾರ್ಸೆಲ್‌ಗಳಲ್ಲಿ ಏಕೆ ಬರುತ್ತಿದೆ?",
+        "answer": [
+          "ಶೆಲ್ಫ್ ರ್ಯಾಕ್‌ಗಳನ್ನು ಅವನ್ನು ತಯಾರಿಸುವ ಕಾರ್ಯಾಗಾರವೇ ಮಾಡಿ ಕಳುಹಿಸುತ್ತದೆ, ಹಾಗಾಗಿ ಅವು ಪ್ರತ್ಯೇಕ ಪಾರ್ಸೆಲ್ ಆಗಿ ಬರುತ್ತವೆ. ನಿಮ್ಮ ಆರ್ಡರ್‌ನ ಉಳಿದೆಲ್ಲವೂ ನಮ್ಮಿಂದ ಬರುತ್ತದೆ. ಚೆಕ್‌ಔಟ್ ಪ್ರತಿ ಪಾರ್ಸೆಲ್ ಅನ್ನು ಅದರದೇ ಕೊರಿಯರ್ ಮತ್ತು ದಿನಾಂಕದೊಂದಿಗೆ ತೋರಿಸುತ್ತದೆ."
+        ]
+      },
+      "parcel-size": {
+        "question": "ಹಗುರವಾದ ಪಾರ್ಸೆಲ್ ಕಳುಹಿಸಲು ನಾನು ಅಂದುಕೊಂಡಿದ್ದಕ್ಕಿಂತ ಹೆಚ್ಚು ಏಕೆ?",
+        "answer": [
+          "ಕೊರಿಯರ್‌ಗಳು ಡಬ್ಬದ ತೂಕದ ಜೊತೆಗೆ ಅದು ಹಿಡಿಯುವ ಜಾಗಕ್ಕೂ ಲೆಕ್ಕ ಹಾಕಿ, ಎರಡರಲ್ಲಿ ಯಾವುದು ಹೆಚ್ಚೋ ಅದಕ್ಕೆ ಶುಲ್ಕ ವಿಧಿಸುತ್ತವೆ. ಟ್ರೇಗಳ ಪ್ಯಾಕ್ ಹಗುರ ಆದರೆ ಉದ್ದ, ಹಾಗಾಗಿ ಅದರ ಗಾತ್ರದ ಮೇಲೆ ಬೆಲೆ. ನೀವು ನೋಡುವ ಬೆಲೆಯೇ ಕೊರಿಯರ್ ವಿಧಿಸುವ ಬೆಲೆ ಆಗಿರಲೆಂದು ನಾವು ಪ್ರತಿ ವಸ್ತುವನ್ನೂ ಅಳೆಯುತ್ತೇವೆ."
+        ]
+      },
+      "plan-works": {
+        "question": "ವಾರದ ಯೋಜನೆ ಹೇಗೆ ಕೆಲಸ ಮಾಡುತ್ತದೆ?",
+        "answer": [
+          "ಒಂದು ಯೋಜನೆ ಎಂದರೆ ಸತತ ನಾಲ್ಕು ಶನಿವಾರಗಳು, ಪ್ರತಿ ಶನಿವಾರ ಒಂದು ಡಬ್ಬ ತಾಜಾ ಸೊಪ್ಪು. ವಾರಕ್ಕೆ ಎರಡು ಡಬ್ಬಗಳಿಗಾಗಿ ಒಂದೇ ಯೋಜನೆಯನ್ನು ಎರಡು ತೆಗೆದುಕೊಳ್ಳಿ, ಅಥವಾ ಒಂದೇ ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ಬೇರೆ ಬೇರೆ ಯೋಜನೆಗಳನ್ನು ಸೇರಿಸಿ. ಡೆಲಿವರಿ ಸೇರಿದೆ."
+        ]
+      },
+      "plan-contents": {
+        "question": "ಪ್ರತಿ ಡಬ್ಬದಲ್ಲಿ ಏನಿರುತ್ತದೆ?",
+        "answer": [
+          "ನಾಲ್ಕು ವಾರಗಳಲ್ಲಿ ಅದು ಬದಲಾಗುತ್ತದೆ. ಪ್ರತಿ ಯೋಜನೆಯೂ ಒಂದು ಸರದಿಯನ್ನು ಅನುಸರಿಸುತ್ತದೆ, ಅದನ್ನು ಚಂದಾದಾರರಾಗುವ ಮೊದಲೇ ಅದರ ಕಾರ್ಡ್‌ನಲ್ಲಿ ನೋಡಬಹುದು — ಯಾವ ಶನಿವಾರ ಏನು ಬರುತ್ತದೆ ಎಂದು ನಿಮಗೆ ತಿಳಿದಿರುತ್ತದೆ.",
+          "ಒಂದು ಬೆಳೆ ಕಳುಹಿಸುವಷ್ಟು ಚೆನ್ನಾಗಿಲ್ಲದಿದ್ದರೆ, ಅದನ್ನು ಕಳುಹಿಸುವ ಬದಲು ಇನ್ನೊಂದು ತಳಿಯನ್ನು ಇಡುತ್ತೇವೆ. ಬೆಲೆ ಬದಲಾಗುವುದಿಲ್ಲ."
+        ]
+      },
+      "first-box": {
+        "question": "ನನ್ನ ಮೊದಲ ಡಬ್ಬ ಯಾವಾಗ ಬರುತ್ತದೆ?",
+        "answer": [
+          "ಶುಕ್ರವಾರ ಮಧ್ಯರಾತ್ರಿಯ ಮೊದಲು ಚಂದಾದಾರರಾದರೆ ನಿಮ್ಮ ಸೊಪ್ಪನ್ನು ಆ ಭಾನುವಾರ ಬಿತ್ತಿ, ಅದರ ನಂತರದ ಶನಿವಾರ ತಲುಪಿಸುತ್ತೇವೆ. ತಡವಾಗಿ ಚಂದಾದಾರರಾದರೆ ಎಲ್ಲವೂ ಒಂದು ವಾರ ಮುಂದಕ್ಕೆ ಹೋಗುತ್ತದೆ.",
+          "ನೀವು ಪಾವತಿಸುವ ಮೊದಲು ಚಂದಾದಾರಿಕೆ ಪುಟ ನಿಮ್ಮ ನಾಲ್ಕು ಶನಿವಾರಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುತ್ತದೆ."
+        ]
+      },
+      "choose-varieties": {
+        "question": "ನನ್ನ ಯೋಜನೆಯಲ್ಲಿನ ತಳಿಗಳನ್ನು ನಾನು ಆರಿಸಬಹುದೇ?",
+        "answer": [
+          "ವಾರದ ಯೋಜನೆಯಲ್ಲಿ ಇಲ್ಲ — ಪ್ರತಿ ಡಬ್ಬದಲ್ಲೂ ಒಳ್ಳೆಯ ಮಿಶ್ರಣ ಇರುವಂತೆ ಅವುಗಳ ಸರದಿಯನ್ನು ಯೋಜಿಸಲಾಗಿದೆ. ನಿಮ್ಮದೇ ತಳಿಗಳನ್ನು ಆರಿಸಲು, ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಪುಟದಿಂದ ಟ್ರೇ ಲೆಕ್ಕದಲ್ಲಿ ಆರ್ಡರ್ ಮಾಡಿ."
+        ]
+      },
+      "renewal": {
+        "question": "ಯೋಜನೆ ತಾನಾಗಿಯೇ ನವೀಕರಣಗೊಳ್ಳುತ್ತದೆಯೇ?",
+        "answer": [
+          "ಇಲ್ಲ. ಯೋಜನೆಯ ನಾಲ್ಕು ಶನಿವಾರಗಳಿಗೂ ಮುಂಚಿತವಾಗಿ ಪಾವತಿಸಲಾಗುತ್ತದೆ, ಸ್ವಯಂ-ಡೆಬಿಟ್ ಇಲ್ಲ. ಅದು ಮುಗಿದಾಗ, ಇನ್ನಷ್ಟು ಬೇಕಿದ್ದರೆ ಮತ್ತೆ ಚಂದಾದಾರರಾಗಿ. ನಿಮ್ಮ ಯೋಜನೆಗಳನ್ನು ಖಾತೆ → ಚಂದಾದಾರಿಕೆಗಳು ಅಡಿಯಲ್ಲಿ ನೋಡಬಹುದು."
+        ]
+      },
+      "plan-area": {
+        "question": "ನಾನು ತಾಜಾ ಸೊಪ್ಪಿನ ಪ್ರದೇಶದ ಹೊರಗೆ ಇದ್ದರೆ ಚಂದಾದಾರರಾಗಬಹುದೇ?",
+        "answer": [
+          "ಇನ್ನೂ ಇಲ್ಲ — ಯೋಜನೆ ಎಂದರೆ ತಾಜಾ ಸೊಪ್ಪು, ಹಾಗಾಗಿ ಅದಕ್ಕೆ ಪ್ರದೇಶದೊಳಗಿನ ವಿಳಾಸ ಬೇಕು. ನಿಮಗೆ ಇನ್ನೂ ಸೊಪ್ಪು ಬೇಕಿದ್ದರೆ, ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಂದೇಶ ಕಳುಹಿಸಿ ಅಥವಾ ಇಮೇಲ್ ಮಾಡಿ."
+        ]
+      },
+      "account": {
+        "question": "ಆರ್ಡರ್ ಮಾಡಲು ಖಾತೆ ಬೇಕೇ?",
+        "answer": [
+          "ಹೌದು, ಚೆಕ್‌ಔಟ್ ಮಾಡಲು. ನೆನಪಿಡಬೇಕಾದ ಪಾಸ್‌ವರ್ಡ್ ಇಲ್ಲ: ನಾವು ಇಮೇಲ್ ಮಾಡುವ ಲಿಂಕ್‌ನಿಂದ ನೀವು ಸೈನ್ ಇನ್ ಆಗುತ್ತೀರಿ. ನಂತರ ನಿಮ್ಮ ವಿಳಾಸಗಳು ಮತ್ತು ಆರ್ಡರ್‌ಗಳು ಖಾತೆಯಲ್ಲಿ ಒಟ್ಟಿಗೆ ಇರುತ್ತವೆ."
+        ]
+      },
+      "payment": {
+        "question": "ನಾನು ಹೇಗೆ ಪಾವತಿಸಬೇಕು?",
+        "answer": [
+          "ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ, ಆರ್ಡರ್ ಮಾಡುವ ಮೊದಲೇ — ಯುಪಿಐ, ಕಾರ್ಡ್‌ಗಳು ಮತ್ತು ನೆಟ್ ಬ್ಯಾಂಕಿಂಗ್, ನಮ್ಮ ಪಾವತಿ ಪಾಲುದಾರರ ಸುರಕ್ಷಿತ ಪರದೆಯಲ್ಲಿ. ನಿಮ್ಮ ಕಾರ್ಡ್ ಅಥವಾ ಯುಪಿಐ ವಿವರಗಳನ್ನು ನಾವು ಎಂದಿಗೂ ನೋಡುವುದಿಲ್ಲ. ಕ್ಯಾಶ್ ಆನ್ ಡೆಲಿವರಿ ಇಲ್ಲ."
+        ]
+      },
+      "confirmed": {
+        "question": "ನನ್ನ ಆರ್ಡರ್ ಆಗಿದೆ ಎಂದು ನನಗೆ ಹೇಗೆ ತಿಳಿಯುತ್ತದೆ?",
+        "answer": [
+          "ಪೂರ್ತಿ ಮೊತ್ತ ಪಾವತಿಯಾಗಿದೆ ಎಂದು ಪಾವತಿ ಪಾಲುದಾರರು ನಮಗೆ ತಿಳಿಸಿದ ಕೂಡಲೇ ನಿಮ್ಮ ಆರ್ಡರ್ ದೃಢವಾಗುತ್ತದೆ. ಪುಟವು ಇನ್ನೂ ಕಾಯುತ್ತಿದೆ ಎಂದು ಹೇಳಿದರೆ, ಒಂದು ನಿಮಿಷ ಬಿಟ್ಟು ರಿಫ್ರೆಶ್ ಮಾಡಿ — ದೃಢವಾದ ಕೂಡಲೇ ಅದು ಖಾತೆ → ಆರ್ಡರ್‌ಗಳು ಅಡಿಯಲ್ಲಿ ಕಾಣುತ್ತದೆ."
+        ]
+      },
+      "track-order": {
+        "question": "ನನ್ನ ಆರ್ಡರ್‌ಗಳನ್ನು ಎಲ್ಲಿ ನೋಡಬಹುದು?",
+        "answer": [
+          "ಖಾತೆ → ಆರ್ಡರ್‌ಗಳು ಅಡಿಯಲ್ಲಿ. ಪ್ರತಿ ಆರ್ಡರ್ ಅದರ ಡೆಲಿವರಿ ದಿನಾಂಕ ಮತ್ತು ರಸೀದಿಯೊಂದಿಗೆ ಅಲ್ಲಿ ಪಟ್ಟಿಯಾಗಿರುತ್ತದೆ."
+        ]
+      },
+      "change-order": {
+        "question": "ನಾನು ಆರ್ಡರ್ ಬದಲಾಯಿಸಬಹುದೇ ಅಥವಾ ರದ್ದುಮಾಡಬಹುದೇ?",
+        "answer": [
+          "ತಾಜಾ ಸೊಪ್ಪು ಮತ್ತು ವಾರದ ಯೋಜನೆಗಳನ್ನು ನಿಮಗಾಗಿ ಬಿತ್ತಲಾಗುತ್ತದೆ, ಹಾಗಾಗಿ ಪಾವತಿಸಿದ ನಂತರ ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ. ಅವು ಕೆಟ್ಟು, ಹಾನಿಯಾಗಿ ಅಥವಾ ತಪ್ಪಾಗಿ ಬಂದರೆ, 24 ಗಂಟೆಗಳೊಳಗೆ ಫೋಟೋದೊಂದಿಗೆ ತಿಳಿಸಿ, ಹಣ ಹಿಂದಿರುಗಿಸುವುದು ಅಥವಾ ತಾಜಾ ಟ್ರೇ — ಆರಿಸಿ.",
+          "ಬೀಜಗಳು, ಟ್ರೇಗಳು ಮತ್ತು ಕೊಕೊಪೀಟ್ ಅನ್ನು ಕೊರಿಯರ್‌ಗೆ ಹಸ್ತಾಂತರಿಸುವವರೆಗೆ ಪೂರ್ತಿ ಹಣ ಹಿಂದಿರುಗಿಸಿ ರದ್ದುಮಾಡಬಹುದು — ನಿಮ್ಮ ಆರ್ಡರ್ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ವಾಟ್ಸ್‌ಆ್ಯಪ್ ಅಥವಾ ಇಮೇಲ್ ಮೂಲಕ ತಿಳಿಸಿ. ರ್ಯಾಕ್‌ಗಳನ್ನು ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ತಯಾರಿಸುವುದರಿಂದ ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ. ವಿವರಗಳು ನಿಯಮಗಳ ಪುಟದಲ್ಲಿವೆ."
+        ]
+      },
+      "seed-packs": {
+        "question": "ಬೀಜಗಳನ್ನು ಹೇಗೆ ಮಾರುತ್ತೀರಿ?",
+        "answer": [
+          "೫೦ ಗ್ರಾಂ ಪ್ಯಾಕ್‌ಗಳಲ್ಲಿ, ಪ್ರತಿ ಪ್ಯಾಕ್‌ಗೆ ಬೆಲೆ. ನಮ್ಮಲ್ಲಿರುವಷ್ಟು ಪ್ಯಾಕ್‌ಗಳನ್ನು ನೀವು ಆರ್ಡರ್ ಮಾಡಬಹುದು. ಒಂದು ಬೀಜ ಖಾಲಿಯಾಗಿದೆ ಎಂದು ತೋರಿಸಿದರೆ, ನಮ್ಮಲ್ಲಿ ಒಂದು ಪ್ಯಾಕ್‌ಗಿಂತ ಕಡಿಮೆ ಉಳಿದಿದೆ; ಮತ್ತೆ ತರಿಸಿದಾಗ ಅದು ವಾಪಸ್ ಬರುತ್ತದೆ."
+        ]
+      },
+      "seed-dispatch": {
+        "question": "ಬೀಜಗಳು ಯಾವಾಗ ಕಳುಹಿಸಲ್ಪಡುತ್ತವೆ?",
+        "answer": [
+          "ನಾವು ಮಾರುವ ಪ್ರತಿ ಬೀಜವೂ ನಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲೇ ಇದೆ, ಹಾಗಾಗಿ ಮರುದಿನವೇ ಪ್ಯಾಕ್ ಆಗುತ್ತದೆ. ಚೆಕ್‌ಔಟ್ ಪ್ರತಿ ಕೊರಿಯರ್‌ನ ತಲುಪುವ ದಿನಾಂಕ ತೋರಿಸುತ್ತದೆ."
+        ]
+      },
+      "trays-media-dispatch": {
+        "question": "ಟ್ರೇಗಳು ಮತ್ತು ಕೊಕೊಪೀಟ್ ಯಾವಾಗ ಕಳುಹಿಸಲ್ಪಡುತ್ತವೆ?",
+        "answer": [
+          "ಅವನ್ನು ನಾವು ದಾಸ್ತಾನಿನಲ್ಲಿಡುತ್ತೇವೆ, ಹಾಗಾಗಿ ಮರುದಿನವೇ ಹೊರಡುತ್ತವೆ. ದೊಡ್ಡ ಪ್ರಮಾಣಕ್ಕೆ ನಾವು ಇನ್ನಷ್ಟು ತರಿಸಬೇಕಾಗಬಹುದು, ಅದಕ್ಕೆ ಒಂದು ದಿನ ಹೆಚ್ಚು — ನೀವು ಪ್ಯಾಕ್‌ಗಳನ್ನು ಸೇರಿಸಿದಂತೆ ಉತ್ಪನ್ನ ಪುಟದ ಡೆಲಿವರಿ ಸಾಲು ಬದಲಾಗುತ್ತದೆ, ಹಾಗಾಗಿ ಪಾವತಿಸುವ ಮೊದಲೇ ಅದನ್ನು ನೋಡುತ್ತೀರಿ."
+        ]
+      },
+      "racks": {
+        "question": "ರ್ಯಾಕ್‌ಗಳು ಹೇಗೆ?",
+        "answer": [
+          "ನೀವು ಆರಿಸುವ ಗಾತ್ರದಲ್ಲಿ ರ್ಯಾಕ್‌ಗಳನ್ನು ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ತಯಾರಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಆಯ್ಕೆಯ ಬೆಲೆ ಮತ್ತು ಅದು ಯಾವಾಗ ಸಿದ್ಧವಾಗುತ್ತದೆ ಎಂಬುದನ್ನು ರ್ಯಾಕ್‌ನ ಪುಟ ತೋರಿಸುತ್ತದೆ, ಮತ್ತು ನಿಮ್ಮ ವಿಳಾಸಕ್ಕೆ ತಲುಪುವ ದಿನಾಂಕವನ್ನು ಚೆಕ್‌ಔಟ್ ತೋರಿಸುತ್ತದೆ."
+        ]
+      }
+    }
+  }
+}

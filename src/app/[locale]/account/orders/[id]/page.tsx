@@ -76,9 +76,11 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
   const t = await getTranslations("account.orders.detail");
   const status = await getTranslations("account.orders.status");
   const tc = await getTranslations("cart");
+  const tp = await getTranslations("checkout.partners");
   const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
 
   const pending = order.status === "pending_payment";
+  const couriered = order.shipments.filter((x) => x.method === "courier");
   const expired = pending && paymentWindowClosed(order);
   const recheck = `/api/payments/return/${locale}?order_id=${order.id}`;
   const ref =
@@ -209,6 +211,38 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
           </span>
         </div>
       </Card>
+
+      {/* Courier parcels only — the own run needs no tracking. The number is
+          typed on the admin order page once the parcel is booked; until then
+          the card says when it will appear (Shipping policy). Shiprocket's
+          carrier is the one the customer tracks with, so it wins the name. */}
+      {!pending && couriered.length > 0 && (
+        <Card title={t("tracking.heading")}>
+          <ul className="space-y-3">
+            {couriered.map((x, i) => (
+              <li key={x.origin.id} className="font-body text-sm">
+                {couriered.length > 1 && (
+                  <span className="block text-xs text-stone">{t("tracking.parcel", { n: i + 1 })}</span>
+                )}
+                {x.trackingNumber ? (
+                  <>
+                    <span className="block text-stone">
+                      {t("tracking.number", {
+                        courier: x.quote?.carrier || (x.quote ? tp(x.quote.courier) : ""),
+                      })}
+                    </span>
+                    <span className="block select-all font-mono text-base font-semibold tracking-wide text-forest">
+                      {x.trackingNumber}
+                    </span>
+                  </>
+                ) : (
+                  <span className="block text-stone">{t("tracking.pending")}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </Card>
+      )}
 
       {/* Phones and tablets only: from `lg` the address sits above the account
           menu (`@aside/orders/[id]`). */}

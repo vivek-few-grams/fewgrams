@@ -1,0 +1,199 @@
+{
+  "updated": "2026-09-27",
+  "sections": [
+    "summary",
+    "greens",
+    "plans",
+    "supplies",
+    "racks",
+    "report",
+    "cannot-fulfil",
+    "failed-delivery",
+    "returned-parcel",
+    "delivery-charge",
+    "payment",
+    "contact"
+  ],
+  "en": {
+    "intro": [
+      "This policy explains when {tradingName} cancels, replaces or refunds an order, and how the money reaches you. It is part of our Terms and conditions; if anything here seems to differ from them, write to {email} and we will apply whichever is better for you."
+    ],
+    "sections": {
+      "summary": {
+        "heading": "At a glance",
+        "body": [
+          "Fresh greens and weekly plans are grown for you, so they cannot be cancelled once paid — but if they arrive spoiled, damaged or wrong, tell us within 24 hours and choose a refund or a fresh tray.",
+          "Seeds, trays and cocopeat can be cancelled until they are handed to the courier. After delivery they are replaced or refunded if they arrive damaged, defective or wrong, reported within 48 hours.",
+          "Racks are made to order and cannot be cancelled; they are replaced or refunded if they arrive damaged, defective or wrong.",
+          "Refunds go back to the way you paid, and usually arrive within 5 to 7 working days."
+        ]
+      },
+      "greens": {
+        "heading": "Fresh greens",
+        "body": [
+          "A greens order is sown for you after you pay, so it cannot be cancelled once paid.",
+          "If your greens arrive spoiled, damaged or not what you ordered, tell us within 24 hours of delivery with a photograph. You choose: a refund for the affected trays, or a replacement. A replacement is sown fresh the next morning and delivered on the day it is ready, with no delivery charge; we confirm the date with you on WhatsApp or by email.",
+          "Greens are natural produce, so a tray's weight and look vary. A tray within the range of weight shown before you paid is not a fault."
+        ]
+      },
+      "plans": {
+        "heading": "Weekly plans",
+        "body": [
+          "A plan is paid in advance for four Saturdays and cannot be cancelled once paid, and it is not refunded for boxes you no longer want.",
+          "Each box is covered exactly as fresh greens are: if a box arrives spoiled, damaged or wrong, tell us within 24 hours with a photograph and choose a refund for that box or a replacement."
+        ]
+      },
+      "supplies": {
+        "heading": "Seeds, trays and cocopeat",
+        "body": [
+          "You can cancel for a full refund until the order is handed to the courier. Message us on WhatsApp or email us with your order number as soon as you can; once it has been handed over it can no longer be cancelled.",
+          "If an item arrives damaged, defective or wrong, tell us within 48 hours of delivery and we will replace it or refund it. We do not take back items that are not damaged, defective or wrong, and seed packets cannot be returned once opened."
+        ]
+      },
+      "racks": {
+        "heading": "Racks",
+        "body": [
+          "Racks are made to order in the size you choose, so they cannot be cancelled once paid.",
+          "If a rack or any part arrives damaged, defective or wrong, tell us within 48 hours of delivery and we will replace the part or the rack, or refund it. We do not cover damage caused by incorrect assembly, by overloading, or by using a rack for something other than holding growing trays."
+        ]
+      },
+      "report": {
+        "heading": "How to report a problem",
+        "body": [
+          "Message us on WhatsApp at {phone} or email {email}, with your order number, what is wrong, and photographs — of the greens as they arrived, or of the item and its packaging. Please keep the item and packaging until we reply.",
+          "We reply within 48 hours. If we need the item back, we arrange and pay for the return."
+        ]
+      },
+      "cannot-fulfil": {
+        "heading": "If we cannot fulfil your order",
+        "body": [
+          "If we cannot deliver something you paid for — a crop fails, an item is out of stock, or events beyond our control stop us — we tell you as soon as we know and refund the part we cannot fulfil in full.",
+          "If a price on the website was plainly wrong because of an error, we may cancel an order at that price and refund you in full."
+        ]
+      },
+      "failed-delivery": {
+        "heading": "If a greens delivery fails",
+        "body": [
+          "If nobody could receive your greens or the address was wrong, we try to contact you. If you ask, we deliver once more on a later run and you pay the delivery charge again. Greens that could not be delivered are not refunded, because they were grown and cut for you."
+        ]
+      },
+      "returned-parcel": {
+        "heading": "If a courier parcel comes back",
+        "body": [
+          "If a parcel is returned to us because it was refused, nobody could be reached, or the address was wrong, we refund the price of the items minus the shipping charges both ways."
+        ]
+      },
+      "delivery-charge": {
+        "heading": "The delivery charge",
+        "body": [
+          "When we refund your whole order because of a problem on our side — it arrived spoiled, damaged or wrong, or we could not fulfil it — we also refund the delivery charge. When we refund only some items, the delivery charge is not refunded, because the delivery still took place. A replacement is always delivered free."
+        ]
+      },
+      "payment": {
+        "heading": "How refunds are paid",
+        "body": [
+          "Refunds are paid to the method you paid with — the same UPI account, card or bank account — through our payment partner. We do not refund in cash or to a different account.",
+          "We start a refund within 2 working days of agreeing it. It usually reaches you within 5 to 7 working days after that, depending on your bank. If it has not arrived after 10 working days, write to us and we will send you the payment partner's reference to give your bank."
+        ]
+      },
+      "contact": {
+        "heading": "Questions and complaints",
+        "body": [
+          "Write to {email} or message {phone} on WhatsApp. If you are not satisfied with our answer, you can contact our grievance officer, {grievanceOfficer}, at the same address; the Terms and conditions explain the complaints process.",
+          "This policy is also published in Kannada. If the two versions differ, the English version applies."
+        ]
+      }
+    }
+  },
+  "kn": {
+    "intro": [
+      "{tradingName} ಯಾವಾಗ ಆರ್ಡರ್ ಅನ್ನು ರದ್ದುಮಾಡುತ್ತದೆ, ಬದಲಿಸುತ್ತದೆ ಅಥವಾ ಹಣ ಹಿಂದಿರುಗಿಸುತ್ತದೆ, ಮತ್ತು ಹಣ ನಿಮ್ಮನ್ನು ಹೇಗೆ ತಲುಪುತ್ತದೆ ಎಂಬುದನ್ನು ಈ ನೀತಿ ವಿವರಿಸುತ್ತದೆ. ಇದು ನಮ್ಮ ನಿಯಮಗಳು ಮತ್ತು ಷರತ್ತುಗಳ ಭಾಗ; ಇಲ್ಲಿರುವುದು ಅವುಗಳಿಗಿಂತ ಭಿನ್ನವಾಗಿ ಕಂಡರೆ, {email} ಗೆ ಬರೆಯಿರಿ — ನಿಮಗೆ ಯಾವುದು ಉತ್ತಮವೋ ಅದನ್ನು ಅನ್ವಯಿಸುತ್ತೇವೆ."
+    ],
+    "sections": {
+      "summary": {
+        "heading": "ಒಂದು ನೋಟದಲ್ಲಿ",
+        "body": [
+          "ತಾಜಾ ಸೊಪ್ಪು ಮತ್ತು ವಾರದ ಯೋಜನೆಗಳನ್ನು ನಿಮಗಾಗಿ ಬೆಳೆಸಲಾಗುತ್ತದೆ, ಹಾಗಾಗಿ ಪಾವತಿಸಿದ ನಂತರ ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ — ಆದರೆ ಅವು ಕೆಟ್ಟು, ಹಾನಿಯಾಗಿ ಅಥವಾ ತಪ್ಪಾಗಿ ಬಂದರೆ, 24 ಗಂಟೆಗಳೊಳಗೆ ತಿಳಿಸಿ, ಹಣ ಹಿಂದಿರುಗಿಸುವುದು ಅಥವಾ ತಾಜಾ ಟ್ರೇ — ಆರಿಸಿ.",
+          "ಬೀಜಗಳು, ಟ್ರೇಗಳು ಮತ್ತು ಕೊಕೊಪೀಟ್ ಅನ್ನು ಕೊರಿಯರ್‌ಗೆ ಹಸ್ತಾಂತರಿಸುವವರೆಗೆ ರದ್ದುಮಾಡಬಹುದು. ಡೆಲಿವರಿಯ ನಂತರ, ಅವು ಹಾನಿಯಾಗಿ, ದೋಷಪೂರಿತವಾಗಿ ಅಥವಾ ತಪ್ಪಾಗಿ ಬಂದು 48 ಗಂಟೆಗಳೊಳಗೆ ತಿಳಿಸಿದರೆ ಬದಲಿಸುತ್ತೇವೆ ಅಥವಾ ಹಣ ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ.",
+          "ರ್ಯಾಕ್‌ಗಳನ್ನು ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ತಯಾರಿಸಲಾಗುತ್ತದೆ, ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ; ಅವು ಹಾನಿಯಾಗಿ, ದೋಷಪೂರಿತವಾಗಿ ಅಥವಾ ತಪ್ಪಾಗಿ ಬಂದರೆ ಬದಲಿಸುತ್ತೇವೆ ಅಥವಾ ಹಣ ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ.",
+          "ಹಣವನ್ನು ನೀವು ಪಾವತಿಸಿದ ವಿಧಾನಕ್ಕೇ ಹಿಂದಿರುಗಿಸಲಾಗುತ್ತದೆ, ಸಾಮಾನ್ಯವಾಗಿ 5 ರಿಂದ 7 ಕೆಲಸದ ದಿನಗಳಲ್ಲಿ ತಲುಪುತ್ತದೆ."
+        ]
+      },
+      "greens": {
+        "heading": "ತಾಜಾ ಸೊಪ್ಪು",
+        "body": [
+          "ಸೊಪ್ಪಿನ ಆರ್ಡರ್ ಅನ್ನು ನೀವು ಪಾವತಿಸಿದ ನಂತರ ನಿಮಗಾಗಿ ಬಿತ್ತಲಾಗುತ್ತದೆ, ಹಾಗಾಗಿ ಪಾವತಿಸಿದ ನಂತರ ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ.",
+          "ನಿಮ್ಮ ಸೊಪ್ಪು ಕೆಟ್ಟು, ಹಾನಿಯಾಗಿ ಅಥವಾ ನೀವು ಆರ್ಡರ್ ಮಾಡಿದ್ದಲ್ಲದೆ ಬಂದರೆ, ಡೆಲಿವರಿಯಾದ 24 ಗಂಟೆಗಳೊಳಗೆ ಫೋಟೋದೊಂದಿಗೆ ತಿಳಿಸಿ. ನೀವು ಆರಿಸಬಹುದು: ಬಾಧಿತ ಟ್ರೇಗಳಿಗೆ ಹಣ ಹಿಂದಿರುಗಿಸುವುದು, ಅಥವಾ ಬದಲಿ. ಬದಲಿಯನ್ನು ಮರುದಿನ ಬೆಳಿಗ್ಗೆ ಹೊಸದಾಗಿ ಬಿತ್ತಿ, ಸಿದ್ಧವಾದ ದಿನ ಡೆಲಿವರಿ ಶುಲ್ಕವಿಲ್ಲದೆ ತಲುಪಿಸುತ್ತೇವೆ; ದಿನಾಂಕವನ್ನು ವಾಟ್ಸ್‌ಆ್ಯಪ್ ಅಥವಾ ಇಮೇಲ್‌ನಲ್ಲಿ ನಿಮ್ಮೊಂದಿಗೆ ಖಚಿತಪಡಿಸುತ್ತೇವೆ.",
+          "ಸೊಪ್ಪು ನೈಸರ್ಗಿಕ ಉತ್ಪನ್ನ, ಹಾಗಾಗಿ ಟ್ರೇಯ ತೂಕ ಮತ್ತು ನೋಟ ಬದಲಾಗುತ್ತದೆ. ನೀವು ಪಾವತಿಸುವ ಮೊದಲು ತೋರಿಸಿದ ತೂಕದ ಶ್ರೇಣಿಯೊಳಗಿನ ಟ್ರೇ ದೋಷವಲ್ಲ."
+        ]
+      },
+      "plans": {
+        "heading": "ವಾರದ ಯೋಜನೆಗಳು",
+        "body": [
+          "ಯೋಜನೆಗೆ ನಾಲ್ಕು ಶನಿವಾರಗಳಿಗಾಗಿ ಮುಂಚಿತವಾಗಿ ಪಾವತಿಸಲಾಗುತ್ತದೆ; ಪಾವತಿಸಿದ ನಂತರ ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ, ಮತ್ತು ನಿಮಗೆ ಇನ್ನು ಬೇಡವಾದ ಡಬ್ಬಗಳಿಗೆ ಹಣ ಹಿಂದಿರುಗಿಸುವುದಿಲ್ಲ.",
+          "ಪ್ರತಿ ಡಬ್ಬಕ್ಕೂ ತಾಜಾ ಸೊಪ್ಪಿನಂತೆಯೇ ರಕ್ಷಣೆ ಇದೆ: ಡಬ್ಬ ಕೆಟ್ಟು, ಹಾನಿಯಾಗಿ ಅಥವಾ ತಪ್ಪಾಗಿ ಬಂದರೆ, 24 ಗಂಟೆಗಳೊಳಗೆ ಫೋಟೋದೊಂದಿಗೆ ತಿಳಿಸಿ, ಆ ಡಬ್ಬಕ್ಕೆ ಹಣ ಹಿಂದಿರುಗಿಸುವುದು ಅಥವಾ ಬದಲಿ — ಆರಿಸಿ."
+        ]
+      },
+      "supplies": {
+        "heading": "ಬೀಜಗಳು, ಟ್ರೇಗಳು ಮತ್ತು ಕೊಕೊಪೀಟ್",
+        "body": [
+          "ಆರ್ಡರ್ ಅನ್ನು ಕೊರಿಯರ್‌ಗೆ ಹಸ್ತಾಂತರಿಸುವವರೆಗೆ ಪೂರ್ತಿ ಹಣ ಹಿಂದಿರುಗಿಸಿ ರದ್ದುಮಾಡಬಹುದು. ಆದಷ್ಟು ಬೇಗ ನಿಮ್ಮ ಆರ್ಡರ್ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಂದೇಶ ಕಳುಹಿಸಿ ಅಥವಾ ಇಮೇಲ್ ಮಾಡಿ; ಹಸ್ತಾಂತರವಾದ ನಂತರ ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ.",
+          "ವಸ್ತು ಹಾನಿಯಾಗಿ, ದೋಷಪೂರಿತವಾಗಿ ಅಥವಾ ತಪ್ಪಾಗಿ ಬಂದರೆ, ಡೆಲಿವರಿಯಾದ 48 ಗಂಟೆಗಳೊಳಗೆ ತಿಳಿಸಿ, ನಾವು ಅದನ್ನು ಬದಲಿಸುತ್ತೇವೆ ಅಥವಾ ಹಣ ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ. ಹಾನಿಯಾಗದ, ದೋಷವಿಲ್ಲದ ಅಥವಾ ಸರಿಯಾದ ವಸ್ತುಗಳನ್ನು ವಾಪಸ್ ಪಡೆಯುವುದಿಲ್ಲ, ಮತ್ತು ತೆರೆದ ಬೀಜದ ಪ್ಯಾಕೆಟ್‌ಗಳನ್ನು ಹಿಂದಿರುಗಿಸಲಾಗುವುದಿಲ್ಲ."
+        ]
+      },
+      "racks": {
+        "heading": "ರ್ಯಾಕ್‌ಗಳು",
+        "body": [
+          "ರ್ಯಾಕ್‌ಗಳನ್ನು ನೀವು ಆರಿಸುವ ಗಾತ್ರದಲ್ಲಿ ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ತಯಾರಿಸಲಾಗುತ್ತದೆ, ಹಾಗಾಗಿ ಪಾವತಿಸಿದ ನಂತರ ರದ್ದುಮಾಡಲಾಗುವುದಿಲ್ಲ.",
+          "ರ್ಯಾಕ್ ಅಥವಾ ಅದರ ಯಾವುದೇ ಭಾಗ ಹಾನಿಯಾಗಿ, ದೋಷಪೂರಿತವಾಗಿ ಅಥವಾ ತಪ್ಪಾಗಿ ಬಂದರೆ, ಡೆಲಿವರಿಯಾದ 48 ಗಂಟೆಗಳೊಳಗೆ ತಿಳಿಸಿ, ನಾವು ಆ ಭಾಗವನ್ನು ಅಥವಾ ರ್ಯಾಕ್ ಅನ್ನು ಬದಲಿಸುತ್ತೇವೆ, ಅಥವಾ ಹಣ ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ. ತಪ್ಪು ಜೋಡಣೆ, ಅತಿಯಾದ ಭಾರ, ಅಥವಾ ಬೆಳೆಸುವ ಟ್ರೇಗಳನ್ನು ಇಡುವುದನ್ನು ಬಿಟ್ಟು ಬೇರೆ ಬಳಕೆಯಿಂದಾದ ಹಾನಿಗೆ ನಾವು ಹೊಣೆಯಲ್ಲ."
+        ]
+      },
+      "report": {
+        "heading": "ಸಮಸ್ಯೆಯನ್ನು ಹೇಗೆ ತಿಳಿಸುವುದು",
+        "body": [
+          "ನಿಮ್ಮ ಆರ್ಡರ್ ಸಂಖ್ಯೆ, ಏನು ತಪ್ಪಾಗಿದೆ, ಮತ್ತು ಫೋಟೋಗಳೊಂದಿಗೆ — ಬಂದಂತೆಯೇ ಸೊಪ್ಪಿನದು, ಅಥವಾ ವಸ್ತು ಮತ್ತು ಅದರ ಪ್ಯಾಕಿಂಗ್‌ನದು — {phone} ಗೆ ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಂದೇಶ ಕಳುಹಿಸಿ ಅಥವಾ {email} ಗೆ ಇಮೇಲ್ ಮಾಡಿ. ನಾವು ಉತ್ತರಿಸುವವರೆಗೆ ದಯವಿಟ್ಟು ವಸ್ತು ಮತ್ತು ಪ್ಯಾಕಿಂಗ್ ಅನ್ನು ಇಟ್ಟುಕೊಳ್ಳಿ.",
+          "ನಾವು 48 ಗಂಟೆಗಳೊಳಗೆ ಉತ್ತರಿಸುತ್ತೇವೆ. ವಸ್ತು ನಮಗೆ ವಾಪಸ್ ಬೇಕಿದ್ದರೆ, ಅದರ ಸಾಗಣೆಯನ್ನು ನಾವೇ ಏರ್ಪಡಿಸಿ ಪಾವತಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "cannot-fulfil": {
+        "heading": "ನಾವು ನಿಮ್ಮ ಆರ್ಡರ್ ಪೂರೈಸಲಾಗದಿದ್ದರೆ",
+        "body": [
+          "ನೀವು ಪಾವತಿಸಿದ್ದನ್ನು ನಾವು ತಲುಪಿಸಲಾಗದಿದ್ದರೆ — ಬೆಳೆ ವಿಫಲವಾದರೆ, ವಸ್ತು ದಾಸ್ತಾನಿನಲ್ಲಿ ಇಲ್ಲದಿದ್ದರೆ, ಅಥವಾ ನಮ್ಮ ನಿಯಂತ್ರಣ ಮೀರಿದ ಘಟನೆಗಳು ತಡೆದರೆ — ತಿಳಿದ ಕೂಡಲೇ ನಿಮಗೆ ತಿಳಿಸಿ, ಪೂರೈಸಲಾಗದ ಭಾಗದ ಪೂರ್ತಿ ಹಣ ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ.",
+          "ದೋಷದಿಂದ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿನ ಬೆಲೆ ಸ್ಪಷ್ಟವಾಗಿ ತಪ್ಪಾಗಿದ್ದರೆ, ಆ ಬೆಲೆಯ ಆರ್ಡರ್ ಅನ್ನು ನಾವು ರದ್ದುಮಾಡಿ ಪೂರ್ತಿ ಹಣ ಹಿಂದಿರುಗಿಸಬಹುದು."
+        ]
+      },
+      "failed-delivery": {
+        "heading": "ಸೊಪ್ಪಿನ ಡೆಲಿವರಿ ವಿಫಲವಾದರೆ",
+        "body": [
+          "ನಿಮ್ಮ ಸೊಪ್ಪನ್ನು ಯಾರೂ ಸ್ವೀಕರಿಸಲಾಗದಿದ್ದರೆ ಅಥವಾ ವಿಳಾಸ ತಪ್ಪಾಗಿದ್ದರೆ, ನಾವು ನಿಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತೇವೆ. ನೀವು ಕೇಳಿದರೆ ಮುಂದಿನ ಸುತ್ತಿನಲ್ಲಿ ಇನ್ನೊಮ್ಮೆ ತಲುಪಿಸುತ್ತೇವೆ, ಅದಕ್ಕೆ ನೀವು ಡೆಲಿವರಿ ಶುಲ್ಕವನ್ನು ಮತ್ತೆ ಪಾವತಿಸುತ್ತೀರಿ. ತಲುಪಿಸಲಾಗದ ಸೊಪ್ಪಿಗೆ ಹಣ ಹಿಂದಿರುಗಿಸುವುದಿಲ್ಲ, ಏಕೆಂದರೆ ಅದನ್ನು ನಿಮಗಾಗಿಯೇ ಬೆಳೆಸಿ ಕತ್ತರಿಸಲಾಗಿತ್ತು."
+        ]
+      },
+      "returned-parcel": {
+        "heading": "ಕೊರಿಯರ್ ಪಾರ್ಸೆಲ್ ವಾಪಸ್ ಬಂದರೆ",
+        "body": [
+          "ಪಾರ್ಸೆಲ್ ಅನ್ನು ನಿರಾಕರಿಸಿದ್ದರಿಂದ, ಯಾರೂ ಸಿಗದ್ದರಿಂದ ಅಥವಾ ವಿಳಾಸ ತಪ್ಪಾಗಿದ್ದರಿಂದ ಅದು ನಮಗೆ ವಾಪಸ್ ಬಂದರೆ, ಎರಡೂ ಕಡೆಯ ಸಾಗಣೆ ಶುಲ್ಕ ಕಳೆದು ವಸ್ತುಗಳ ಬೆಲೆಯನ್ನು ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "delivery-charge": {
+        "heading": "ಡೆಲಿವರಿ ಶುಲ್ಕ",
+        "body": [
+          "ನಮ್ಮ ಕಡೆಯ ಸಮಸ್ಯೆಯಿಂದ — ಕೆಟ್ಟು, ಹಾನಿಯಾಗಿ ಅಥವಾ ತಪ್ಪಾಗಿ ಬಂದರೆ, ಅಥವಾ ನಾವು ಪೂರೈಸಲಾಗದಿದ್ದರೆ — ನಿಮ್ಮ ಪೂರ್ತಿ ಆರ್ಡರ್‌ನ ಹಣ ಹಿಂದಿರುಗಿಸಿದಾಗ, ಡೆಲಿವರಿ ಶುಲ್ಕವನ್ನೂ ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ. ಕೆಲವು ವಸ್ತುಗಳ ಹಣವನ್ನು ಮಾತ್ರ ಹಿಂದಿರುಗಿಸಿದಾಗ, ಡೆಲಿವರಿ ನಡೆದಿರುವುದರಿಂದ ಡೆಲಿವರಿ ಶುಲ್ಕ ಹಿಂದಿರುಗಿಸುವುದಿಲ್ಲ. ಬದಲಿಯನ್ನು ಯಾವಾಗಲೂ ಉಚಿತವಾಗಿ ತಲುಪಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "payment": {
+        "heading": "ಹಣವನ್ನು ಹೇಗೆ ಹಿಂದಿರುಗಿಸಲಾಗುತ್ತದೆ",
+        "body": [
+          "ಹಣವನ್ನು ನೀವು ಪಾವತಿಸಿದ ಅದೇ ವಿಧಾನಕ್ಕೆ — ಅದೇ ಯುಪಿಐ ಖಾತೆ, ಕಾರ್ಡ್ ಅಥವಾ ಬ್ಯಾಂಕ್ ಖಾತೆಗೆ — ನಮ್ಮ ಪಾವತಿ ಪಾಲುದಾರರ ಮೂಲಕ ಹಿಂದಿರುಗಿಸಲಾಗುತ್ತದೆ. ನಗದಾಗಿ ಅಥವಾ ಬೇರೆ ಖಾತೆಗೆ ಹಿಂದಿರುಗಿಸುವುದಿಲ್ಲ.",
+          "ಒಪ್ಪಿದ 2 ಕೆಲಸದ ದಿನಗಳೊಳಗೆ ಹಣ ಹಿಂದಿರುಗಿಸುವಿಕೆಯನ್ನು ಆರಂಭಿಸುತ್ತೇವೆ. ನಿಮ್ಮ ಬ್ಯಾಂಕ್ ಅನ್ನು ಅವಲಂಬಿಸಿ, ಅದರ ನಂತರ ಸಾಮಾನ್ಯವಾಗಿ 5 ರಿಂದ 7 ಕೆಲಸದ ದಿನಗಳಲ್ಲಿ ತಲುಪುತ್ತದೆ. 10 ಕೆಲಸದ ದಿನಗಳ ನಂತರವೂ ಬರದಿದ್ದರೆ, ನಮಗೆ ಬರೆಯಿರಿ — ನಿಮ್ಮ ಬ್ಯಾಂಕ್‌ಗೆ ನೀಡಲು ಪಾವತಿ ಪಾಲುದಾರರ ಉಲ್ಲೇಖ ಸಂಖ್ಯೆಯನ್ನು ಕಳುಹಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "contact": {
+        "heading": "ಪ್ರಶ್ನೆಗಳು ಮತ್ತು ದೂರುಗಳು",
+        "body": [
+          "{email} ಗೆ ಬರೆಯಿರಿ ಅಥವಾ ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ {phone} ಗೆ ಸಂದೇಶ ಕಳುಹಿಸಿ. ನಮ್ಮ ಉತ್ತರದಿಂದ ತೃಪ್ತಿಯಾಗದಿದ್ದರೆ, ನಮ್ಮ ಕುಂದುಕೊರತೆ ಅಧಿಕಾರಿ {grievanceOfficer} ಅವರನ್ನು ಅದೇ ವಿಳಾಸದಲ್ಲಿ ಸಂಪರ್ಕಿಸಬಹುದು; ದೂರು ಪ್ರಕ್ರಿಯೆಯನ್ನು ನಿಯಮಗಳು ಮತ್ತು ಷರತ್ತುಗಳು ವಿವರಿಸುತ್ತವೆ.",
+          "ಈ ನೀತಿ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲೂ ಪ್ರಕಟವಾಗಿದೆ. ಎರಡು ಆವೃತ್ತಿಗಳು ಭಿನ್ನವಾಗಿದ್ದರೆ, ಇಂಗ್ಲಿಷ್ ಆವೃತ್ತಿ ಅನ್ವಯಿಸುತ್ತದೆ."
+        ]
+      }
+    }
+  }
+}

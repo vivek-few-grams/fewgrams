@@ -1,0 +1,21 @@
+{
+  "contents": "Contents",
+  "updated": "Last updated {date}",
+  "fssaiPending": "registration in progress",
+  "terms": {
+    "title": "Terms and conditions",
+    "description": "The terms for buying from Fewgrams: orders, payment, delivery, weekly plans, cancellations, refunds and complaints."
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "description": "What personal data Fewgrams collects, why, who it is shared with, how long it is kept, and your rights over it."
+  },
+  "refunds": {
+    "title": "Refund policy",
+    "description": "When Fewgrams cancels, replaces or refunds an order — fresh greens, weekly plans, seeds, trays, cocopeat and racks — and how the money reaches you."
+  },
+  "shipping": {
+    "title": "Shipping policy",
+    "description": "How Fewgrams delivers: fresh greens by our own run, everything else by courier across India — dates, charges, tracking and what happens if a delivery fails."
+  }
+}

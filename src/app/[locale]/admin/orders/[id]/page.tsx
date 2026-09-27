@@ -5,6 +5,7 @@ import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { formatReceiptNo, isOrderId, type ShippingQuote } from "@/lib/orders/order";
 import { GATEWAY_LABEL } from "@/lib/payments/provider";
 import { getOrder, listPayments } from "@/lib/repo/orders";
+import { setTracking } from "../actions";
 import { OrderSteps } from "../OrderSteps";
 
 export const dynamic = "force-dynamic";
@@ -101,7 +102,7 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                 courier it was quoted on — what booking it needs. Orders
                 placed before parcels existed keep their single row. */}
             {order.shipments.length > 0
-              ? order.shipments.map((x) => (
+              ? order.shipments.map((x, i) => (
                   <tr key={x.origin.id} className="border-b border-forest/10 align-top">
                     <td className="py-2.5 font-body text-sm text-forest">
                       {t("shipmentLine", { name: x.origin.name, city: x.origin.city, pincode: x.origin.pincode })}
@@ -114,6 +115,29 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                           date: format.dateTime(new Date(`${x.deliveryDate}T00:00:00+05:30`), { dateStyle: "medium" }),
                         })}
                       </span>
+                      {x.method === "courier" && (
+                        <form action={setTracking} className="mt-2 flex flex-wrap items-center gap-2">
+                          <input type="hidden" name="id" value={order.id} />
+                          <input type="hidden" name="index" value={i} />
+                          <label className="flex items-center gap-2 text-xs text-stone">
+                            {t("tracking.label")}
+                            <input
+                              name="tracking"
+                              defaultValue={x.trackingNumber ?? ""}
+                              placeholder={t("tracking.placeholder")}
+                              pattern="[A-Za-z0-9\-]{6,40}"
+                              className="w-44 rounded-lg border border-forest/20 bg-cream px-2 py-1 font-mono text-xs text-forest"
+                            />
+                          </label>
+                          <button
+                            type="submit"
+                            className="rounded-full border border-forest/25 px-3 py-1 text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream"
+                          >
+                            {t("tracking.save")}
+                          </button>
+                          <span className="text-xs text-stone">{t("tracking.hint")}</span>
+                        </form>
+                      )}
                     </td>
                     <td className="py-2.5 font-body text-sm tabular-nums text-forest">
                       {x.quote && t("grams", { grams: x.quote.chargedGrams })}

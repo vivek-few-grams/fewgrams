@@ -1,0 +1,246 @@
+{
+  "updated": "2026-09-27",
+  "sections": [
+    "about",
+    "collect",
+    "not-collected",
+    "use",
+    "marketing",
+    "sharing",
+    "storage",
+    "cookies",
+    "retention",
+    "security",
+    "rights",
+    "children",
+    "grievance",
+    "changes"
+  ],
+  "en": {
+    "intro": [
+      "This policy explains what personal data {tradingName} collects when you use this website, why, who we share it with, how long we keep it, and the rights you have over it. It is written under the Information Technology Act, 2000 and its Reasonable Security Practices Rules, 2011, and the Digital Personal Data Protection Act, 2023."
+    ]
+    ,
+    "sections": {
+      "about": {
+        "heading": "Who is responsible for your data",
+        "body": [
+          "{tradingName}, a partnership of {partners}, at {address}, decides how your personal data is used. Under the Digital Personal Data Protection Act we are the Data Fiduciary.",
+          "For any question about your data, write to {email} or message {phone} on WhatsApp."
+        ]
+      },
+      "collect": {
+        "heading": "What we collect",
+        "body": [
+          "Your account: your email address. If you sign in with Google, Google also gives us the name and profile photo on your Google account.",
+          "Your profile: your name and phone number, if you add them.",
+          "Your addresses: the recipient's name and phone number, the address and PIN code, a landmark and any delivery notes you type. If you choose \"use my location\", we also save the map coordinates your browser gives us, so our driver can find you. We only ask for your location when you press that button.",
+          "Your orders and plans: what you bought, the prices, the delivery address and date, and the receipt. We keep a copy of the delivery address with each order, so a later change to your address book does not change a past order.",
+          "Your payments: the payment partner's reference, the amount, whether it succeeded, and the kind of method used (for example UPI or card). We never receive or store your card number, UPI PIN or bank details.",
+          "Your messages: what you send us on WhatsApp or by email, including any photographs, for example of an order that arrived damaged."
+        ]
+      },
+      "not-collected": {
+        "heading": "What we do not collect",
+        "body": [
+          "We do not use analytics, advertising or tracking tools. We do not record your IP address, follow you across other websites, or build a profile of your browsing. We do not ask for a password, because there is none."
+        ]
+      },
+      "use": {
+        "heading": "How we use it",
+        "body": [
+          "To sign you in and keep your account; to take payment and confirm it; to grow, pack and deliver your order on the date we promised; to check whether we can deliver fresh greens to your PIN code; to answer your messages and complaints; and to keep the records the law requires.",
+          "We use your data only for these purposes, which you agree to by creating an account and ordering. We do not sell your data, and we do not use it for anything you would not expect from a shop delivering your order."
+        ]
+      },
+      "marketing": {
+        "heading": "Offers and news",
+        "body": [
+          "We send offers or news only to customers who have chosen to receive them. We never assume your agreement from an order. Every such message tells you how to stop them, and you can withdraw at any time by replying or writing to {email}. Messages about an order you have placed are not marketing and are always sent."
+        ]
+      },
+      "sharing": {
+        "heading": "Who we share it with",
+        "body": [
+          "We share your data only with the services that do part of the job for us, and only what each one needs:",
+          "Payment partners (Razorpay or Cashfree): your name, email address and phone number, with the order amount, so they can take and confirm your payment. They process your card or UPI details under their own policies and the Reserve Bank of India's rules.",
+          "Courier partners (Delhivery, Ekart or Shiprocket and the carrier it books): when we send you a parcel, the recipient's name, phone number and address. To quote a price at checkout we send them only the PIN codes and the parcel's size and weight. Fresh greens are delivered by us, not by a courier.",
+          "Hosting (Amazon Web Services): our website and database run on AWS, which stores the data for us.",
+          "Email delivery: the service that sends your sign-in links receives your email address.",
+          "Google: only if you choose to sign in with Google.",
+          "India Post's PIN code directory (data.gov.in): only the PIN code you enter, never your name or address.",
+          "WhatsApp: if you message us there, the message is carried under WhatsApp's own policy.",
+          "Beyond these, we disclose personal data only when the law requires it, for example to a government agency with lawful authority."
+        ]
+      },
+      "storage": {
+        "heading": "Where it is stored",
+        "body": [
+          "Your account, addresses and orders are stored in India, in Amazon Web Services' Mumbai region. Our payment and courier partners may process data in their own systems under their own policies."
+        ]
+      },
+      "cookies": {
+        "heading": "Cookies",
+        "body": [
+          "We use only the cookies the website needs to work: one that keeps you signed in (for up to 30 days), one that holds your cart (for up to 30 days, only the items and quantities), one that remembers your language, and short-lived ones that protect sign-in. We also keep a note in your browser's session storage so the opening animation does not replay on every page.",
+          "None of these track you, and we use no advertising or analytics cookies. When you pay, the payment partner's secure screen may set its own cookies."
+        ]
+      },
+      "retention": {
+        "heading": "How long we keep it",
+        "body": [
+          "Your account, profile and addresses: until you delete them or ask us to delete your account. You can delete an address yourself at any time under Account → Addresses.",
+          "Orders, plans and payment records: 8 years after the order, because Indian tax and accounting law requires these records. They are kept for this period even if your account is deleted, and then erased.",
+          "Sign-in sessions end after 30 days. Messages and photographs you send us are used only to deal with what you wrote about."
+        ]
+      },
+      "security": {
+        "heading": "How we protect it",
+        "body": [
+          "The website is served only over an encrypted connection. Sign-in uses one-time links that expire after 15 minutes, and the sign-in cookie cannot be read by scripts on the page. Customer data can be seen only by the two partners who run {tradingName}, through a sign-in protected admin area.",
+          "No system is perfectly secure. If a breach affecting your personal data occurs, we will tell you and the Data Protection Board of India as the law requires."
+        ]
+      },
+      "rights": {
+        "heading": "Your rights",
+        "body": [
+          "Under the Digital Personal Data Protection Act, 2023 you may ask us for a summary of the personal data we hold about you and who we have shared it with; ask us to correct, complete or update it; ask us to erase it; withdraw your consent; and nominate someone to exercise these rights for you if you die or become unable to.",
+          "You can correct your profile and addresses yourself under Account. For anything else, write to {email} from the email address on your account. We will delete your account, profile and addresses within 30 days of your request, keeping only the order records described above. Withdrawing consent means we can no longer run your account or take new orders."
+        ]
+      },
+      "children": {
+        "heading": "Children",
+        "body": [
+          "This website is for adults. You must be at least 18 to create an account or order, and we do not knowingly collect personal data from children."
+        ]
+      },
+      "grievance": {
+        "heading": "Grievance officer",
+        "body": [
+          "If you have a concern about how we handle your data, contact our grievance officer, {grievanceOfficer}, at {email} or on {phone} (phone and WhatsApp), or write to {address}. We acknowledge every complaint within 48 hours and aim to resolve it within one month.",
+          "If you are not satisfied with our answer, you may complain to the Data Protection Board of India."
+        ]
+      },
+      "changes": {
+        "heading": "Changes to this policy",
+        "body": [
+          "We may update this policy, for example when we add a new service. The date at the top shows when it last changed. If a change affects how we use data you have already given us, we will tell you before it applies.",
+          "This policy is also published in Kannada. If the two versions differ, the English version applies."
+        ]
+      }
+    }
+  },
+  "kn": {
+    "intro": [
+      "ನೀವು ಈ ವೆಬ್‌ಸೈಟ್ ಬಳಸುವಾಗ {tradingName} ಯಾವ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ, ಏಕೆ, ಯಾರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ, ಎಷ್ಟು ಕಾಲ ಇಡುತ್ತದೆ, ಮತ್ತು ಅದರ ಮೇಲೆ ನಿಮಗಿರುವ ಹಕ್ಕುಗಳನ್ನು ಈ ನೀತಿ ವಿವರಿಸುತ್ತದೆ. ಇದನ್ನು ಮಾಹಿತಿ ತಂತ್ರಜ್ಞಾನ ಕಾಯ್ದೆ, 2000 ಮತ್ತು ಅದರ ಸಮಂಜಸ ಭದ್ರತಾ ಕ್ರಮಗಳ ನಿಯಮಗಳು, 2011, ಹಾಗೂ ಡಿಜಿಟಲ್ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಸಂರಕ್ಷಣಾ ಕಾಯ್ದೆ, 2023 ರ ಅಡಿಯಲ್ಲಿ ಬರೆಯಲಾಗಿದೆ."
+    ],
+    "sections": {
+      "about": {
+        "heading": "ನಿಮ್ಮ ಮಾಹಿತಿಗೆ ಯಾರು ಜವಾಬ್ದಾರರು",
+        "body": [
+          "{address} ನಲ್ಲಿರುವ, {partners} ಅವರ ಪಾಲುದಾರಿಕೆಯಾದ {tradingName}, ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಹೇಗೆ ಬಳಸಬೇಕೆಂದು ನಿರ್ಧರಿಸುತ್ತದೆ. ಡಿಜಿಟಲ್ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಸಂರಕ್ಷಣಾ ಕಾಯ್ದೆಯಡಿ ನಾವು ಡೇಟಾ ಫಿಡ್ಯೂಷಿಯರಿ.",
+          "ನಿಮ್ಮ ಮಾಹಿತಿಯ ಬಗ್ಗೆ ಯಾವುದೇ ಪ್ರಶ್ನೆಗೆ {email} ಗೆ ಬರೆಯಿರಿ ಅಥವಾ ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ {phone} ಗೆ ಸಂದೇಶ ಕಳುಹಿಸಿ."
+        ]
+      },
+      "collect": {
+        "heading": "ನಾವು ಏನನ್ನು ಸಂಗ್ರಹಿಸುತ್ತೇವೆ",
+        "body": [
+          "ನಿಮ್ಮ ಖಾತೆ: ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸ. ನೀವು ಗೂಗಲ್ ಮೂಲಕ ಸೈನ್ ಇನ್ ಆದರೆ, ನಿಮ್ಮ ಗೂಗಲ್ ಖಾತೆಯ ಹೆಸರು ಮತ್ತು ಪ್ರೊಫೈಲ್ ಫೋಟೋವನ್ನೂ ಗೂಗಲ್ ನಮಗೆ ನೀಡುತ್ತದೆ.",
+          "ನಿಮ್ಮ ಪ್ರೊಫೈಲ್: ನೀವು ಸೇರಿಸಿದರೆ, ನಿಮ್ಮ ಹೆಸರು ಮತ್ತು ಫೋನ್ ಸಂಖ್ಯೆ.",
+          "ನಿಮ್ಮ ವಿಳಾಸಗಳು: ಸ್ವೀಕರಿಸುವವರ ಹೆಸರು ಮತ್ತು ಫೋನ್ ಸಂಖ್ಯೆ, ವಿಳಾಸ ಮತ್ತು ಪಿನ್ ಕೋಡ್, ಹೆಗ್ಗುರುತು ಮತ್ತು ನೀವು ಬರೆಯುವ ಡೆಲಿವರಿ ಟಿಪ್ಪಣಿಗಳು. ನೀವು \"ನನ್ನ ಸ್ಥಳ ಬಳಸಿ\" ಆರಿಸಿದರೆ, ನಮ್ಮ ಡ್ರೈವರ್ ನಿಮ್ಮನ್ನು ಹುಡುಕಲು ನಿಮ್ಮ ಬ್ರೌಸರ್ ನೀಡುವ ನಕ್ಷೆ ನಿರ್ದೇಶಾಂಕಗಳನ್ನೂ ಉಳಿಸುತ್ತೇವೆ. ನೀವು ಆ ಬಟನ್ ಒತ್ತಿದಾಗ ಮಾತ್ರ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಕೇಳುತ್ತೇವೆ.",
+          "ನಿಮ್ಮ ಆರ್ಡರ್‌ಗಳು ಮತ್ತು ಯೋಜನೆಗಳು: ನೀವು ಏನು ಖರೀದಿಸಿದಿರಿ, ಬೆಲೆಗಳು, ಡೆಲಿವರಿ ವಿಳಾಸ ಮತ್ತು ದಿನಾಂಕ, ಮತ್ತು ರಸೀದಿ. ಪ್ರತಿ ಆರ್ಡರ್‌ನೊಂದಿಗೆ ಡೆಲಿವರಿ ವಿಳಾಸದ ಪ್ರತಿಯನ್ನು ಇಡುತ್ತೇವೆ, ಹಾಗಾಗಿ ನಂತರ ನಿಮ್ಮ ವಿಳಾಸ ಪುಸ್ತಕ ಬದಲಾದರೂ ಹಿಂದಿನ ಆರ್ಡರ್ ಬದಲಾಗುವುದಿಲ್ಲ.",
+          "ನಿಮ್ಮ ಪಾವತಿಗಳು: ಪಾವತಿ ಪಾಲುದಾರರ ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ, ಮೊತ್ತ, ಅದು ಯಶಸ್ವಿಯಾಯಿತೇ, ಮತ್ತು ಬಳಸಿದ ವಿಧಾನದ ಬಗೆ (ಉದಾಹರಣೆಗೆ ಯುಪಿಐ ಅಥವಾ ಕಾರ್ಡ್). ನಿಮ್ಮ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ, ಯುಪಿಐ ಪಿನ್ ಅಥವಾ ಬ್ಯಾಂಕ್ ವಿವರಗಳನ್ನು ನಾವು ಎಂದಿಗೂ ಪಡೆಯುವುದಿಲ್ಲ, ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ.",
+          "ನಿಮ್ಮ ಸಂದೇಶಗಳು: ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ ಅಥವಾ ಇಮೇಲ್ ಮೂಲಕ ನೀವು ಕಳುಹಿಸುವುದು, ಯಾವುದೇ ಫೋಟೋಗಳೂ ಸೇರಿ — ಉದಾಹರಣೆಗೆ ಹಾನಿಯಾಗಿ ಬಂದ ಆರ್ಡರ್‌ನದು."
+        ]
+      },
+      "not-collected": {
+        "heading": "ನಾವು ಏನನ್ನು ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ",
+        "body": [
+          "ನಾವು ಯಾವುದೇ ವಿಶ್ಲೇಷಣೆ, ಜಾಹೀರಾತು ಅಥವಾ ಟ್ರ್ಯಾಕಿಂಗ್ ಸಾಧನಗಳನ್ನು ಬಳಸುವುದಿಲ್ಲ. ನಿಮ್ಮ ಐಪಿ ವಿಳಾಸವನ್ನು ದಾಖಲಿಸುವುದಿಲ್ಲ, ಇತರ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮನ್ನು ಹಿಂಬಾಲಿಸುವುದಿಲ್ಲ, ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್‌ನ ಪ್ರೊಫೈಲ್ ಕಟ್ಟುವುದಿಲ್ಲ. ಪಾಸ್‌ವರ್ಡ್ ಇಲ್ಲದ್ದರಿಂದ ಅದನ್ನು ಕೇಳುವುದೂ ಇಲ್ಲ."
+        ]
+      },
+      "use": {
+        "heading": "ನಾವು ಅದನ್ನು ಹೇಗೆ ಬಳಸುತ್ತೇವೆ",
+        "body": [
+          "ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಮಾಡಿಸಲು ಮತ್ತು ನಿಮ್ಮ ಖಾತೆ ನಡೆಸಲು; ಪಾವತಿ ಪಡೆದು ದೃಢೀಕರಿಸಲು; ನಾವು ಭರವಸೆ ನೀಡಿದ ದಿನಾಂಕದಂದು ನಿಮ್ಮ ಆರ್ಡರ್ ಅನ್ನು ಬೆಳೆಸಿ, ಪ್ಯಾಕ್ ಮಾಡಿ ತಲುಪಿಸಲು; ನಿಮ್ಮ ಪಿನ್ ಕೋಡ್‌ಗೆ ತಾಜಾ ಸೊಪ್ಪು ತಲುಪಿಸಬಹುದೇ ಎಂದು ಪರಿಶೀಲಿಸಲು; ನಿಮ್ಮ ಸಂದೇಶಗಳು ಮತ್ತು ದೂರುಗಳಿಗೆ ಉತ್ತರಿಸಲು; ಮತ್ತು ಕಾನೂನು ಬಯಸುವ ದಾಖಲೆಗಳನ್ನು ಇಡಲು.",
+          "ಖಾತೆ ರಚಿಸಿ ಆರ್ಡರ್ ಮಾಡುವ ಮೂಲಕ ನೀವು ಒಪ್ಪುವ ಈ ಉದ್ದೇಶಗಳಿಗೆ ಮಾತ್ರ ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಬಳಸುತ್ತೇವೆ. ನಾವು ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಮಾರುವುದಿಲ್ಲ, ಮತ್ತು ನಿಮ್ಮ ಆರ್ಡರ್ ತಲುಪಿಸುವ ಅಂಗಡಿಯಿಂದ ನೀವು ನಿರೀಕ್ಷಿಸದ ಯಾವುದಕ್ಕೂ ಬಳಸುವುದಿಲ್ಲ."
+        ]
+      },
+      "marketing": {
+        "heading": "ಆಫರ್‌ಗಳು ಮತ್ತು ಸುದ್ದಿ",
+        "body": [
+          "ಅವನ್ನು ಪಡೆಯಲು ಆರಿಸಿಕೊಂಡ ಗ್ರಾಹಕರಿಗೆ ಮಾತ್ರ ನಾವು ಆಫರ್‌ಗಳು ಅಥವಾ ಸುದ್ದಿ ಕಳುಹಿಸುತ್ತೇವೆ. ಒಂದು ಆರ್ಡರ್‌ನಿಂದಲೇ ನಿಮ್ಮ ಒಪ್ಪಿಗೆಯನ್ನು ಊಹಿಸಿಕೊಳ್ಳುವುದಿಲ್ಲ. ಅಂಥ ಪ್ರತಿ ಸಂದೇಶವೂ ಅವನ್ನು ನಿಲ್ಲಿಸುವುದು ಹೇಗೆಂದು ತಿಳಿಸುತ್ತದೆ, ಮತ್ತು ಉತ್ತರಿಸುವ ಮೂಲಕ ಅಥವಾ {email} ಗೆ ಬರೆಯುವ ಮೂಲಕ ಯಾವಾಗ ಬೇಕಾದರೂ ಹಿಂಪಡೆಯಬಹುದು. ನೀವು ಮಾಡಿದ ಆರ್ಡರ್ ಕುರಿತ ಸಂದೇಶಗಳು ಮಾರ್ಕೆಟಿಂಗ್ ಅಲ್ಲ, ಅವು ಯಾವಾಗಲೂ ಬರುತ್ತವೆ."
+        ]
+      },
+      "sharing": {
+        "heading": "ನಾವು ಯಾರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತೇವೆ",
+        "body": [
+          "ನಮಗಾಗಿ ಕೆಲಸದ ಒಂದು ಭಾಗ ಮಾಡುವ ಸೇವೆಗಳೊಂದಿಗೆ ಮಾತ್ರ, ಪ್ರತಿಯೊಂದಕ್ಕೂ ಬೇಕಾದಷ್ಟನ್ನು ಮಾತ್ರ ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತೇವೆ:",
+          "ಪಾವತಿ ಪಾಲುದಾರರು (ರೇಜರ್‌ಪೇ ಅಥವಾ ಕ್ಯಾಶ್‌ಫ್ರೀ): ನಿಮ್ಮ ಪಾವತಿ ಪಡೆದು ದೃಢೀಕರಿಸಲು, ಆರ್ಡರ್ ಮೊತ್ತದೊಂದಿಗೆ ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್ ವಿಳಾಸ ಮತ್ತು ಫೋನ್ ಸಂಖ್ಯೆ. ನಿಮ್ಮ ಕಾರ್ಡ್ ಅಥವಾ ಯುಪಿಐ ವಿವರಗಳನ್ನು ಅವರು ತಮ್ಮದೇ ನೀತಿಗಳು ಮತ್ತು ಭಾರತೀಯ ರಿಸರ್ವ್ ಬ್ಯಾಂಕ್‌ನ ನಿಯಮಗಳಡಿ ನಿರ್ವಹಿಸುತ್ತಾರೆ.",
+          "ಕೊರಿಯರ್ ಪಾಲುದಾರರು (ಡೆಲ್ಹಿವರಿ, ಎಕಾರ್ಟ್ ಅಥವಾ ಶಿಪ್‌ರಾಕೆಟ್ ಮತ್ತು ಅದು ಬುಕ್ ಮಾಡುವ ಕ್ಯಾರಿಯರ್): ನಿಮಗೆ ಪಾರ್ಸೆಲ್ ಕಳುಹಿಸುವಾಗ, ಸ್ವೀಕರಿಸುವವರ ಹೆಸರು, ಫೋನ್ ಸಂಖ್ಯೆ ಮತ್ತು ವಿಳಾಸ. ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ಬೆಲೆ ತಿಳಿಸಲು ಅವರಿಗೆ ಪಿನ್ ಕೋಡ್‌ಗಳು ಮತ್ತು ಪಾರ್ಸೆಲ್‌ನ ಗಾತ್ರ ಹಾಗೂ ತೂಕವನ್ನು ಮಾತ್ರ ಕಳುಹಿಸುತ್ತೇವೆ. ತಾಜಾ ಸೊಪ್ಪನ್ನು ಕೊರಿಯರ್ ಅಲ್ಲ, ನಾವೇ ತಲುಪಿಸುತ್ತೇವೆ.",
+          "ಹೋಸ್ಟಿಂಗ್ (ಅಮೆಜಾನ್ ವೆಬ್ ಸರ್ವಿಸಸ್): ನಮ್ಮ ವೆಬ್‌ಸೈಟ್ ಮತ್ತು ಡೇಟಾಬೇಸ್ ಎಡಬ್ಲ್ಯೂಎಸ್‌ನಲ್ಲಿ ನಡೆಯುತ್ತವೆ, ಅದು ನಮಗಾಗಿ ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ.",
+          "ಇಮೇಲ್ ವಿತರಣೆ: ನಿಮ್ಮ ಸೈನ್-ಇನ್ ಲಿಂಕ್‌ಗಳನ್ನು ಕಳುಹಿಸುವ ಸೇವೆಗೆ ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸ ಸಿಗುತ್ತದೆ.",
+          "ಗೂಗಲ್: ನೀವು ಗೂಗಲ್ ಮೂಲಕ ಸೈನ್ ಇನ್ ಆಗಲು ಆರಿಸಿದರೆ ಮಾತ್ರ.",
+          "ಭಾರತೀಯ ಅಂಚೆಯ ಪಿನ್ ಕೋಡ್ ಡೈರೆಕ್ಟರಿ (data.gov.in): ನೀವು ನಮೂದಿಸುವ ಪಿನ್ ಕೋಡ್ ಮಾತ್ರ, ನಿಮ್ಮ ಹೆಸರು ಅಥವಾ ವಿಳಾಸ ಎಂದಿಗೂ ಅಲ್ಲ.",
+          "ವಾಟ್ಸ್‌ಆ್ಯಪ್: ನೀವು ಅಲ್ಲಿ ನಮಗೆ ಸಂದೇಶ ಕಳುಹಿಸಿದರೆ, ಅದು ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನ ಸ್ವಂತ ನೀತಿಯಡಿ ಸಾಗುತ್ತದೆ.",
+          "ಇವುಗಳ ಹೊರತಾಗಿ, ಕಾನೂನು ಬಯಸಿದಾಗ ಮಾತ್ರ — ಉದಾಹರಣೆಗೆ ಕಾನೂನುಬದ್ಧ ಅಧಿಕಾರವಿರುವ ಸರ್ಕಾರಿ ಸಂಸ್ಥೆಗೆ — ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಬಹಿರಂಗಪಡಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "storage": {
+        "heading": "ಅದನ್ನು ಎಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ",
+        "body": [
+          "ನಿಮ್ಮ ಖಾತೆ, ವಿಳಾಸಗಳು ಮತ್ತು ಆರ್ಡರ್‌ಗಳನ್ನು ಭಾರತದಲ್ಲಿ, ಅಮೆಜಾನ್ ವೆಬ್ ಸರ್ವಿಸಸ್‌ನ ಮುಂಬೈ ಪ್ರದೇಶದಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾಗುತ್ತದೆ. ನಮ್ಮ ಪಾವತಿ ಮತ್ತು ಕೊರಿಯರ್ ಪಾಲುದಾರರು ತಮ್ಮದೇ ನೀತಿಗಳಡಿ ತಮ್ಮ ವ್ಯವಸ್ಥೆಗಳಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಬಹುದು."
+        ]
+      },
+      "cookies": {
+        "heading": "ಕುಕೀಗಳು",
+        "body": [
+          "ವೆಬ್‌ಸೈಟ್ ಕೆಲಸ ಮಾಡಲು ಬೇಕಾದ ಕುಕೀಗಳನ್ನು ಮಾತ್ರ ಬಳಸುತ್ತೇವೆ: ನಿಮ್ಮನ್ನು ಸೈನ್ ಇನ್ ಆಗಿಯೇ ಇಡುವ ಒಂದು (30 ದಿನಗಳವರೆಗೆ), ನಿಮ್ಮ ಕಾರ್ಟ್ ಹಿಡಿದಿಡುವ ಒಂದು (30 ದಿನಗಳವರೆಗೆ, ವಸ್ತುಗಳು ಮತ್ತು ಪ್ರಮಾಣ ಮಾತ್ರ), ನಿಮ್ಮ ಭಾಷೆಯನ್ನು ನೆನಪಿಡುವ ಒಂದು, ಮತ್ತು ಸೈನ್-ಇನ್ ಅನ್ನು ರಕ್ಷಿಸುವ ಅಲ್ಪಾವಧಿಯವು. ಆರಂಭಿಕ ಅನಿಮೇಶನ್ ಪ್ರತಿ ಪುಟದಲ್ಲೂ ಮರುಕಳಿಸದಂತೆ ನಿಮ್ಮ ಬ್ರೌಸರ್‌ನ ಸೆಷನ್ ಸಂಗ್ರಹದಲ್ಲಿ ಒಂದು ಟಿಪ್ಪಣಿಯನ್ನೂ ಇಡುತ್ತೇವೆ.",
+          "ಇವುಗಳಲ್ಲಿ ಯಾವುದೂ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುವುದಿಲ್ಲ, ಮತ್ತು ನಾವು ಜಾಹೀರಾತು ಅಥವಾ ವಿಶ್ಲೇಷಣೆ ಕುಕೀಗಳನ್ನು ಬಳಸುವುದಿಲ್ಲ. ನೀವು ಪಾವತಿಸುವಾಗ, ಪಾವತಿ ಪಾಲುದಾರರ ಸುರಕ್ಷಿತ ಪರದೆ ತನ್ನದೇ ಕುಕೀಗಳನ್ನು ಇಡಬಹುದು."
+        ]
+      },
+      "retention": {
+        "heading": "ಎಷ್ಟು ಕಾಲ ಇಡುತ್ತೇವೆ",
+        "body": [
+          "ನಿಮ್ಮ ಖಾತೆ, ಪ್ರೊಫೈಲ್ ಮತ್ತು ವಿಳಾಸಗಳು: ನೀವು ಅವನ್ನು ಅಳಿಸುವವರೆಗೆ ಅಥವಾ ನಿಮ್ಮ ಖಾತೆ ಅಳಿಸಲು ಕೇಳುವವರೆಗೆ. ಖಾತೆ → ವಿಳಾಸಗಳು ಅಡಿಯಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ನೀವೇ ವಿಳಾಸವನ್ನು ಅಳಿಸಬಹುದು.",
+          "ಆರ್ಡರ್‌ಗಳು, ಯೋಜನೆಗಳು ಮತ್ತು ಪಾವತಿ ದಾಖಲೆಗಳು: ಭಾರತೀಯ ತೆರಿಗೆ ಮತ್ತು ಲೆಕ್ಕಪತ್ರ ಕಾನೂನು ಈ ದಾಖಲೆಗಳನ್ನು ಬಯಸುವುದರಿಂದ, ಆರ್ಡರ್‌ನ ನಂತರ 8 ವರ್ಷ. ನಿಮ್ಮ ಖಾತೆ ಅಳಿಸಿದರೂ ಇವನ್ನು ಈ ಅವಧಿಗೆ ಇಟ್ಟು, ನಂತರ ಅಳಿಸಲಾಗುತ್ತದೆ.",
+          "ಸೈನ್-ಇನ್ ಸೆಷನ್‌ಗಳು 30 ದಿನಗಳ ನಂತರ ಕೊನೆಗೊಳ್ಳುತ್ತವೆ. ನೀವು ಕಳುಹಿಸುವ ಸಂದೇಶಗಳು ಮತ್ತು ಫೋಟೋಗಳನ್ನು ನೀವು ಬರೆದ ವಿಷಯವನ್ನು ಬಗೆಹರಿಸಲು ಮಾತ್ರ ಬಳಸುತ್ತೇವೆ."
+        ]
+      },
+      "security": {
+        "heading": "ನಾವು ಅದನ್ನು ಹೇಗೆ ರಕ್ಷಿಸುತ್ತೇವೆ",
+        "body": [
+          "ವೆಬ್‌ಸೈಟ್ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಸಂಪರ್ಕದ ಮೂಲಕ ಮಾತ್ರ ಸಿಗುತ್ತದೆ. ಸೈನ್-ಇನ್ 15 ನಿಮಿಷಗಳಲ್ಲಿ ಅವಧಿ ಮುಗಿಯುವ ಒಂದು ಬಾರಿಯ ಲಿಂಕ್‌ಗಳನ್ನು ಬಳಸುತ್ತದೆ, ಮತ್ತು ಸೈನ್-ಇನ್ ಕುಕೀಯನ್ನು ಪುಟದಲ್ಲಿನ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳು ಓದಲಾಗುವುದಿಲ್ಲ. ಗ್ರಾಹಕರ ಮಾಹಿತಿಯನ್ನು {tradingName} ನಡೆಸುವ ಇಬ್ಬರು ಪಾಲುದಾರರು ಮಾತ್ರ, ಸೈನ್-ಇನ್ ರಕ್ಷಿತ ಆಡಳಿತ ವಿಭಾಗದ ಮೂಲಕ ನೋಡಬಹುದು.",
+          "ಯಾವ ವ್ಯವಸ್ಥೆಯೂ ಸಂಪೂರ್ಣ ಸುರಕ್ಷಿತವಲ್ಲ. ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಗೆ ಧಕ್ಕೆಯಾಗುವ ಉಲ್ಲಂಘನೆ ಸಂಭವಿಸಿದರೆ, ಕಾನೂನು ಬಯಸುವಂತೆ ನಿಮಗೂ ಭಾರತದ ಡೇಟಾ ಸಂರಕ್ಷಣಾ ಮಂಡಳಿಗೂ ತಿಳಿಸುತ್ತೇವೆ."
+        ]
+      },
+      "rights": {
+        "heading": "ನಿಮ್ಮ ಹಕ್ಕುಗಳು",
+        "body": [
+          "ಡಿಜಿಟಲ್ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಸಂರಕ್ಷಣಾ ಕಾಯ್ದೆ, 2023 ರ ಅಡಿಯಲ್ಲಿ ನೀವು: ನಾವು ನಿಮ್ಮ ಬಗ್ಗೆ ಹೊಂದಿರುವ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ ಮತ್ತು ಅದನ್ನು ಯಾರೊಂದಿಗೆ ಹಂಚಿಕೊಂಡಿದ್ದೇವೆ ಎಂಬುದರ ಸಾರಾಂಶ ಕೇಳಬಹುದು; ಅದನ್ನು ಸರಿಪಡಿಸಲು, ಪೂರ್ಣಗೊಳಿಸಲು ಅಥವಾ ನವೀಕರಿಸಲು ಕೇಳಬಹುದು; ಅದನ್ನು ಅಳಿಸಲು ಕೇಳಬಹುದು; ನಿಮ್ಮ ಒಪ್ಪಿಗೆಯನ್ನು ಹಿಂಪಡೆಯಬಹುದು; ಮತ್ತು ನೀವು ಮರಣ ಹೊಂದಿದರೆ ಅಥವಾ ಅಸಮರ್ಥರಾದರೆ ಈ ಹಕ್ಕುಗಳನ್ನು ಬಳಸಲು ಒಬ್ಬರನ್ನು ನಾಮನಿರ್ದೇಶನ ಮಾಡಬಹುದು.",
+          "ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಖಾತೆ ಅಡಿಯಲ್ಲಿ ನೀವೇ ಸರಿಪಡಿಸಬಹುದು. ಉಳಿದ ಯಾವುದಕ್ಕೂ, ನಿಮ್ಮ ಖಾತೆಯ ಇಮೇಲ್ ವಿಳಾಸದಿಂದ {email} ಗೆ ಬರೆಯಿರಿ. ನಿಮ್ಮ ವಿನಂತಿಯ 30 ದಿನಗಳೊಳಗೆ ನಿಮ್ಮ ಖಾತೆ, ಪ್ರೊಫೈಲ್ ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಅಳಿಸುತ್ತೇವೆ, ಮೇಲೆ ವಿವರಿಸಿದ ಆರ್ಡರ್ ದಾಖಲೆಗಳನ್ನು ಮಾತ್ರ ಉಳಿಸಿಕೊಳ್ಳುತ್ತೇವೆ. ಒಪ್ಪಿಗೆ ಹಿಂಪಡೆದರೆ, ನಾವು ನಿಮ್ಮ ಖಾತೆಯನ್ನು ನಡೆಸಲು ಅಥವಾ ಹೊಸ ಆರ್ಡರ್‌ಗಳನ್ನು ಪಡೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ."
+        ]
+      },
+      "children": {
+        "heading": "ಮಕ್ಕಳು",
+        "body": [
+          "ಈ ವೆಬ್‌ಸೈಟ್ ವಯಸ್ಕರಿಗಾಗಿ. ಖಾತೆ ರಚಿಸಲು ಅಥವಾ ಆರ್ಡರ್ ಮಾಡಲು ನಿಮಗೆ ಕನಿಷ್ಠ 18 ವರ್ಷ ಆಗಿರಬೇಕು, ಮತ್ತು ನಾವು ತಿಳಿದೂ ಮಕ್ಕಳಿಂದ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ."
+        ]
+      },
+      "grievance": {
+        "heading": "ಕುಂದುಕೊರತೆ ಅಧಿಕಾರಿ",
+        "body": [
+          "ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ನಾವು ನಿರ್ವಹಿಸುವ ರೀತಿಯ ಬಗ್ಗೆ ಕಾಳಜಿ ಇದ್ದರೆ, ನಮ್ಮ ಕುಂದುಕೊರತೆ ಅಧಿಕಾರಿ {grievanceOfficer} ಅವರನ್ನು {email} ನಲ್ಲಿ ಅಥವಾ {phone} (ಫೋನ್ ಮತ್ತು ವಾಟ್ಸ್‌ಆ್ಯಪ್) ನಲ್ಲಿ ಸಂಪರ್ಕಿಸಿ, ಅಥವಾ {address} ಗೆ ಬರೆಯಿರಿ. ಪ್ರತಿ ದೂರನ್ನೂ 48 ಗಂಟೆಗಳೊಳಗೆ ಸ್ವೀಕರಿಸಿದ್ದೇವೆಂದು ತಿಳಿಸಿ, ಒಂದು ತಿಂಗಳೊಳಗೆ ಬಗೆಹರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತೇವೆ.",
+          "ನಮ್ಮ ಉತ್ತರದಿಂದ ನಿಮಗೆ ತೃಪ್ತಿಯಾಗದಿದ್ದರೆ, ಭಾರತದ ಡೇಟಾ ಸಂರಕ್ಷಣಾ ಮಂಡಳಿಗೆ ದೂರು ನೀಡಬಹುದು."
+        ]
+      },
+      "changes": {
+        "heading": "ಈ ನೀತಿಯಲ್ಲಿ ಬದಲಾವಣೆಗಳು",
+        "body": [
+          "ನಾವು ಈ ನೀತಿಯನ್ನು ನವೀಕರಿಸಬಹುದು — ಉದಾಹರಣೆಗೆ ಹೊಸ ಸೇವೆ ಸೇರಿಸಿದಾಗ. ಅದು ಕೊನೆಯದಾಗಿ ಯಾವಾಗ ಬದಲಾಯಿತು ಎಂಬುದನ್ನು ಮೇಲ್ಭಾಗದ ದಿನಾಂಕ ತೋರಿಸುತ್ತದೆ. ನೀವು ಈಗಾಗಲೇ ನೀಡಿರುವ ಮಾಹಿತಿಯನ್ನು ನಾವು ಬಳಸುವ ರೀತಿಯ ಮೇಲೆ ಬದಲಾವಣೆ ಪರಿಣಾಮ ಬೀರಿದರೆ, ಅದು ಅನ್ವಯವಾಗುವ ಮೊದಲು ನಿಮಗೆ ತಿಳಿಸುತ್ತೇವೆ.",
+          "ಈ ನೀತಿ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲೂ ಪ್ರಕಟವಾಗಿದೆ. ಎರಡು ಆವೃತ್ತಿಗಳು ಭಿನ್ನವಾಗಿದ್ದರೆ, ಇಂಗ್ಲಿಷ್ ಆವೃತ್ತಿ ಅನ್ವಯಿಸುತ್ತದೆ."
+        ]
+      }
+    }
+  }
+}

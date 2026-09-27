@@ -1163,6 +1163,9 @@ export const OrderEntity = new Entity(
               },
             },
             deliveryDate: { type: "string", required: true },
+            /** The courier's tracking number (AWB), typed on the admin order
+             *  page once the parcel is booked; shown on the customer's order. */
+            trackingNumber: { type: "string" },
           },
         },
       },
