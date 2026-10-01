@@ -1123,7 +1123,7 @@ export const OrderEntity = new Entity(
       shippingQuote: {
         type: "map",
         properties: {
-          courier: { type: ["delhivery", "ekart", "shiprocket"] as const, required: true },
+          courier: { type: ["delhivery", "ekart", "shiprocket", "velocity"] as const, required: true },
           carrier: { type: "string" },
           serviceId: { type: "string" },
           quotedTotal: { type: "number", required: true },
@@ -1154,7 +1154,7 @@ export const OrderEntity = new Entity(
             quote: {
               type: "map",
               properties: {
-                courier: { type: ["delhivery", "ekart", "shiprocket"] as const, required: true },
+                courier: { type: ["delhivery", "ekart", "shiprocket", "velocity"] as const, required: true },
                 carrier: { type: "string" },
                 serviceId: { type: "string" },
                 quotedTotal: { type: "number", required: true },

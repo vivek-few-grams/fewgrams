@@ -84,12 +84,12 @@ export default async function DeliveryAdmin() {
         )
       : [];
 
-  /* Ekart and Shiprocket, asked the same 500 g question. Delhivery keeps its
-     own line above because it also answers whether it collects from the
-     pickup PIN; these two are only asked for a price. */
+  /* Ekart, Shiprocket and Velocity, asked the same 500 g question. Delhivery
+     keeps its own line above because it also answers whether it collects
+     from the pickup PIN; these are only asked for a price. */
   const connected = new Map(shippingProviders().map((p) => [p.name, p]));
   const others = await Promise.all(
-    (["ekart", "shiprocket"] as const satisfies readonly CourierName[]).map(async (name) => {
+    (["ekart", "shiprocket", "velocity"] as const satisfies readonly CourierName[]).map(async (name) => {
       const p = connected.get(name);
       if (!p) return { name, state: "off" as const };
       if (!settings) return { name, state: "noSettings" as const };

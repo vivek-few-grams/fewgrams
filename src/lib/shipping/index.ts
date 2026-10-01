@@ -1,6 +1,7 @@
 import { DelhiveryProvider } from "./delhivery";
 import { EkartProvider } from "./ekart";
 import { ShiprocketProvider } from "./shiprocket";
+import { VelocityProvider } from "./velocity";
 import type { ShippingProvider } from "./provider";
 
 export type {
@@ -40,6 +41,7 @@ export function shippingProvider(): DelhiveryProvider | null {
 /* One instance per process, so each keeps its sign-in token between quotes. */
 let ekart: EkartProvider | null = null;
 let shiprocket: ShiprocketProvider | null = null;
+let velocity: VelocityProvider | null = null;
 
 /**
  * Every courier with credentials set, in a fixed order, for checkout to ask
@@ -61,6 +63,12 @@ export function shippingProviders(): ShippingProvider[] {
   if (SHIPROCKET_EMAIL && SHIPROCKET_PASSWORD) {
     shiprocket ??= new ShiprocketProvider(SHIPROCKET_EMAIL, SHIPROCKET_PASSWORD);
     out.push(shiprocket);
+  }
+
+  const { VELOCITY_API_KEY } = process.env;
+  if (VELOCITY_API_KEY) {
+    velocity ??= new VelocityProvider(VELOCITY_API_KEY);
+    out.push(velocity);
   }
   return out;
 }

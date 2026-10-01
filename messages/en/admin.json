@@ -690,7 +690,8 @@
     "courier": {
       "delhivery": "Delhivery",
       "ekart": "Ekart",
-      "shiprocket": "Shiprocket"
+      "shiprocket": "Shiprocket",
+      "velocity": "Velocity"
     },
     "total": "Total",
     "deliverTo": "Deliver to",
@@ -835,11 +836,13 @@
     "sizeFootprint": "{depth, number} × {length, number} ft",
     "courierName": {
       "ekart": "Ekart",
-      "shiprocket": "Shiprocket"
+      "shiprocket": "Shiprocket",
+      "velocity": "Velocity"
     },
     "statusOtherOff": {
       "ekart": "Ekart is not connected. Set EKART_CLIENT_ID, EKART_USERNAME and EKART_PASSWORD to add it to the checkout comparison.",
-      "shiprocket": "Shiprocket is not connected. Set SHIPROCKET_EMAIL and SHIPROCKET_PASSWORD (the API user, not the account login) to add it to the checkout comparison."
+      "shiprocket": "Shiprocket is not connected. Set SHIPROCKET_EMAIL and SHIPROCKET_PASSWORD (the API user, not the account login) to add it to the checkout comparison.",
+      "velocity": "Velocity is not connected. Set VELOCITY_API_KEY (dashboard → Settings → API Keys) to add it to the checkout comparison. Booking also needs VELOCITY_WAREHOUSES: each pickup's name mapped to its Velocity warehouse id."
     },
     "statusOtherNoSettings": "{courier} is connected. Save the pickup address below to start quoting.",
     "statusOtherOk": "{courier} is working: 500 g within {pincode} quotes from ₹{price, number} ({count, plural, one {# option} other {# options}}).",
@@ -847,7 +850,7 @@
     "anglePacking": "slotted angle width and stacking, in the angle rates on Shelf racks",
     "pipePacking": "pipe outer diameter, in the pipe rates",
     "originsHeading": "Vendor pickup addresses",
-    "originsHint": "Vendors who hand our customer's parcel straight to the courier — today only the shelf-rack maker, chosen on admin → racks. Never shown to customers. Register each address as a pickup location in your Delhivery, Ekart and Shiprocket accounts before booking from it.",
+    "originsHint": "Vendors who hand our customer's parcel straight to the courier — today only the shelf-rack maker, chosen on admin → racks. Never shown to customers. Register each address as a pickup location in your Delhivery, Ekart and Shiprocket accounts, and as a warehouse in Velocity (its id goes in VELOCITY_WAREHOUSES), before booking from it.",
     "addOrigin": "Add a vendor",
     "removeOrigin": "Remove this vendor",
     "statusOrigin": "Delhivery collects from {name} ({pincode}).",
@@ -855,7 +858,7 @@
   },
   "checkoutDelivery": {
     "notConfigured": "Only you see this. No delivery fee is saved yet, so checkout can't price delivery. Customers see \"not available right now\" and can't pay.",
-    "noCourier": "Only you see this. Nothing in this cart is microgreens, so it goes by courier — and no courier is connected (set DELHIVERY_API_TOKEN, the EKART_ variables or the SHIPROCKET_ variables). Customers see \"not available right now\" and can't pay.",
+    "noCourier": "Only you see this. Nothing in this cart is microgreens, so it goes by courier — and no courier is connected (set DELHIVERY_API_TOKEN, the EKART_ variables, the SHIPROCKET_ variables or VELOCITY_API_KEY). Customers see \"not available right now\" and can't pay.",
     "notMeasured": "Only you see this. An item in this cart has no packing measurements, so the courier can't price the parcel. Delivery settings lists which item and where to add them.",
     "cta": "Open delivery settings"
   },

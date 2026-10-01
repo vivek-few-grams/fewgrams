@@ -498,7 +498,7 @@ payload.
   payments are captured by `fetchOrder` itself, for exactly the order's amount, so the
   dashboard's auto-capture setting does not matter.
 - **The couriers sit behind `ShippingProvider`** (`src/lib/shipping/`), the same way —
-  Delhivery, Ekart and Shiprocket, all asked at once by `deliveryOptions` in `charge.ts`,
+  Delhivery, Ekart, Shiprocket and Velocity, all asked at once by `deliveryOptions` in `charge.ts`,
   and the customer picks. Business code never imports a courier file directly, and quotes
   the **chargeable** weight from `chargeableGrams`, never the dead weight — a courier bills
   a long light box by its size. Charge only the options the customer chose

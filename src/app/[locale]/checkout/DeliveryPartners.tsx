@@ -8,7 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
 import type { DeliveryScan, ScanOption } from "./state";
 
-export type PartnerName = "delhivery" | "ekart" | "shiprocket";
+export type PartnerName = "delhivery" | "ekart" | "shiprocket" | "velocity";
 
 /**
  * The delivery-partner step — SPEC §7 (the owner, 24 Sep 2026): once an
@@ -280,17 +280,18 @@ function OptionList({
  * text beside it, so the icon is decorative and `alt` is empty. Each is shown
  * as the square it is, not cropped to a circle.
  *
- * Built from each courier's own artwork (`public/couriers/README.md`). A
- * Shiprocket row names the carrier it books ("Delhivery via Shiprocket") but
- * shows Shiprocket's icon, since Shiprocket is who is booked. Used on the
- * scan's "checking" rows too, so each courier looks the same while it is asked
- * and once it has answered. A `Record`, so a fourth courier is a type error
- * until it has one.
+ * Built from each courier's own artwork (`public/couriers/README.md`). An
+ * aggregator's row names the carrier it books ("Xpressbees via Velocity") but
+ * shows the aggregator's icon, since the aggregator is who is booked. Used on
+ * the scan's "checking" rows too, so each courier looks the same while it is
+ * asked and once it has answered. A `Record`, so another courier is a type
+ * error until it has one.
  */
 const COURIER_ICON: Record<PartnerName, string> = {
   delhivery: "/couriers/delhivery-icon.png",
   ekart: "/couriers/ekart-icon.png",
   shiprocket: "/couriers/shiprocket-icon.png",
+  velocity: "/couriers/velocity-icon.png",
 };
 
 function CourierLogo({ courier }: { courier: PartnerName }) {

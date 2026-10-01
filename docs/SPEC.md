@@ -1077,7 +1077,8 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
     Saturday run: a courier's hub-and-spoke overnight has no cold chain.
 - **Checkout compares couriers, and the customer picks** (the owner, 24 Sep 2026). Once an
   address is accepted, `scanDelivery` asks every connected courier at once — Delhivery direct,
-  Ekart direct (Flat plan) and Shiprocket, which answers with its **one cheapest carrier** — and
+  Ekart direct (Flat plan), and two aggregators that each answer with their **one cheapest
+  carrier** — Shiprocket and Velocity (added 1 Oct 2026) — and
   the "Delivery partner" step shows each being checked, then lists every price with the cheapest
   picked. The customer may choose another; `startCheckout` charges the option posted back,
   looked up again in the scan, and refuses (`deliveryChanged`) if it is no longer offered rather
@@ -1087,7 +1088,7 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
     pack** ("minimum 24 hours needed to pack it" — seed ordered on the 24th is ready on the 25th
     and collected on the 26th; `courierPickup`), plus that courier's days on the road — Delhivery's `expected_tat`, Ekart's `tat.max` from
     `/data/v3/serviceability` (which also prices, so it replaced the estimate call), and
-    Shiprocket's `estimated_delivery_days`. The pickup day is stated above the options, and
+    Shiprocket's `estimated_delivery_days`, Velocity's pickup-to-delivery span. The pickup day is stated above the options, and
     each row shows its arrival in bold in its own column beside the price — as prominent as
     the price, by the owner's instruction. The order summary's date follows the partner
     chosen ("Handed to the courier …" until one is), and the order
@@ -1095,14 +1096,21 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
     offered, dated by the ready date alone. The own run (greens) is unchanged.
   - A scan is cached ten minutes per origin, destination and weight, so the price shown is the
     price charged a minute later. Each courier is sent the same chargeable grams, with a cube
-    whose volume weighs no more (`boxForGrams`), so all three price the same weight.
-  - The order stores which courier and, for Shiprocket, the carrier and its id — booking the
+    whose volume weighs no more (`boxForGrams`), so every courier prices the same weight.
+  - The order stores which courier and, for Shiprocket or Velocity, the carrier and its id — booking the
     shipment has to go through the same account and carrier.
   - Why: no single courier wins. In 85 live quotes from Bengaluru (24 Sep 2026) Ekart's flat
     ₹106 beat Delhivery on a 2 kg tray pack in every city and lost on a 500 g seed packet in
     every one; for 10–12 kg Ekart wins far away and Delhivery in the metros and nearby.
   - Shiprocket's `rate` is taken as GST-inclusive (no tax field; its Delhivery rate lands within
     2% of Delhivery's own inclusive quote). Confirm against the first invoice.
+  - **Velocity** (the owner, 1 Oct 2026): road carriers only, and its price is taken as
+    **before GST, with 18% added** — neither its rates response nor its docs say, and
+    over-charging GST is the recoverable mistake. Confirm against the first wallet debit
+    (`GST_INCLUSIVE` in `velocity.ts`). Why it was added: 380 live quotes (19 items × 20 cities,
+    1 Oct) found it cheapest in 346 even with GST added, mostly through Xpressbees, often a day
+    or two slower than the next option. Booking needs each pickup's Velocity warehouse id,
+    set by pickup name in `VELOCITY_WAREHOUSES` (Velocity has no call that lists them).
 - **Where an order is collected from** (the owner, 24–25 Sep 2026). **Everything ships from our
   Bengaluru pickup, except shelf racks, which always ship from their maker** (`lineOrigin`,
   `src/lib/shipping/origin.ts`).
@@ -1123,7 +1131,7 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
     order's `deliveryDate` is the last arrival. The order stores `shipments` (pickup snapshot,
     line ids, charge, quote, date), and admin → the order shows a row per parcel.
   - Each vendor address must be registered as a pickup location on the Delhivery, Ekart and
-    Shiprocket accounts before a parcel can be booked from it. Admin → delivery checks that
+    Shiprocket accounts, and as a warehouse on Velocity, before a parcel can be booked from it. Admin → delivery checks that
     Delhivery collects from each vendor PIN.
   - A per-order price comparison (our pickup vs each item's vendor, cheapest charged) and an
     order-page pickup planner were built the same day and removed on the owner's decision above.

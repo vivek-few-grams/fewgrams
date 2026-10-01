@@ -9,5 +9,6 @@ used only to identify whose service the customer is choosing.
 | `delhivery-icon.png` | Delhivery's favicon (`delhivery.com/favicon.png`) — their red and black mark |
 | `ekart-icon.png` | The yellow "e" from Ekart's logo (Wikipedia, `Ekart_logo.svg`) on the logo's blue `#0062a9` |
 | `shiprocket-icon.png` | The play mark from Shiprocket's own vector logo (`sr-website-01.shiprocket.in/sr-website/shiprocket_logo-1-TWLqUy.svg`), purple turned white, on its purple `#46237A` |
+| `velocity-icon.png` | Velocity's own 512 px site icon (`assets-ve.s3.us-east-2.amazonaws.com/v-fav.png`), the white "V" on its blue square, scaled to 128 |
 
 If a courier sends an official app icon, replace the file with it at the same size.

@@ -65,7 +65,8 @@
   "partners": {
     "delhivery": "ಡೆಲ್ಹಿವರಿ",
     "ekart": "ಇಕಾರ್ಟ್",
-    "shiprocket": "ಶಿಪ್‌ರಾಕೆಟ್"
+    "shiprocket": "ಶಿಪ್‌ರಾಕೆಟ್",
+    "velocity": "ವೆಲಾಸಿಟಿ"
   },
   "showOthers": "{count, plural, one {ಇನ್ನೊಬ್ಬ ಪಾಲುದಾರರನ್ನು ನೋಡಿ} other {ಇನ್ನೂ # ಪಾಲುದಾರರನ್ನು ನೋಡಿ}}",
   "hideOthers": "ಇತರ ಪಾಲುದಾರರನ್ನು ಮರೆಮಾಡಿ",

@@ -65,7 +65,8 @@
   "partners": {
     "delhivery": "Delhivery",
     "ekart": "Ekart",
-    "shiprocket": "Shiprocket"
+    "shiprocket": "Shiprocket",
+    "velocity": "Velocity"
   },
   "showOthers": "{count, plural, one {See # other partner} other {See # other partners}}",
   "hideOthers": "Hide other partners",

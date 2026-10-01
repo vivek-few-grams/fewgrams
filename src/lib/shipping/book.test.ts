@@ -6,6 +6,7 @@ import { DelhiveryProvider } from "./delhivery";
 import { EkartProvider } from "./ekart";
 import type { BookingInput } from "./provider";
 import { ShiprocketProvider } from "./shiprocket";
+import { VelocityProvider } from "./velocity";
 
 /*
  * Booking — 27 Sep 2026. Every courier call is a stubbed `fetch`: these tests
@@ -240,5 +241,71 @@ describe("Shiprocket book", () => {
     expect(r.trackingNumber).toBe("SR123456789");
     expect(calls[2].url).toContain("search=FG0000000001");
     expect(calls.filter((c) => c.url.includes("create/adhoc"))).toHaveLength(1);
+  });
+});
+
+describe("Velocity book", () => {
+  const input = { ...INPUT, serviceId: "CARADCBTZMQMM" };
+  const warehouses = () => vi.stubEnv("VELOCITY_WAREHOUSES", '{"Fewgrams Home":"WH66DU"}');
+
+  it("books in one call with the chosen carrier and the pickup's warehouse", async () => {
+    warehouses();
+    const calls = stubFetch({
+      body: {
+        status: 1,
+        payload: {
+          order_created: 1,
+          awb_generated: 1,
+          pickup_generated: 1,
+          shipment_id: "SHIHB0BMT4DYM",
+          awb_code: "34812010700125",
+          label_url: "https://example.test/label.pdf",
+        },
+      },
+    });
+    const r = await new VelocityProvider("key").book(input);
+    expect(r).toEqual({
+      trackingNumber: "34812010700125",
+      courierRef: "SHIHB0BMT4DYM",
+      pickupRequested: true,
+      pickupError: null,
+      labelUrl: "https://example.test/label.pdf",
+    });
+    expect(calls).toHaveLength(1);
+    expect(calls[0].url).toBe("https://shazam.velocity.in/custom/api/v1/forward-order-orchestration");
+    expect(JSON.parse(calls[0].body)).toMatchObject({
+      order_id: "FG0000000001",
+      carrier_id: "CARADCBTZMQMM",
+      payment_method: "PREPAID",
+      cod_collectible: 0,
+      weight: 1.8,
+      pickup_location: "Fewgrams Home",
+      warehouse_id: "WH66DU",
+    });
+  });
+
+  it("refuses before calling Velocity when the pickup has no warehouse id", async () => {
+    vi.stubEnv("VELOCITY_WAREHOUSES", "");
+    const calls = stubFetch();
+    await expect(new VelocityProvider("key").book(input)).rejects.toThrow(/VELOCITY_WAREHOUSES/);
+    expect(calls).toHaveLength(0);
+  });
+
+  it("throws when the order is refused and no earlier attempt shipped it", async () => {
+    warehouses();
+    stubFetch({ status: 422, body: { status: "ERROR", message: "Insufficient wallet balance" } }, { body: { data: [] } });
+    await expect(new VelocityProvider("key").book(input)).rejects.toThrow(/wallet/);
+  });
+
+  it("on a retry, returns the AWB the first attempt got instead of booking again", async () => {
+    warehouses();
+    const calls = stubFetch(
+      { status: 422, body: { status: "ERROR", message: "Order id already exists" } },
+      { body: { data: [{ attributes: { tracking_number: "34812010700125", order: { external_id: "FG0000000001" } } }] } },
+    );
+    const r = await new VelocityProvider("key").book(input);
+    expect(r.trackingNumber).toBe("34812010700125");
+    expect(JSON.parse(calls[1].body)).toMatchObject({ search: "FG0000000001" });
+    expect(calls.filter((c) => c.url.includes("orchestration"))).toHaveLength(1);
   });
 });

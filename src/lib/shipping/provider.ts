@@ -3,12 +3,12 @@ import type { BoxCm } from "./weight";
 /**
  * The courier seam — SPEC §7.
  *
- * Business code talks to this interface and never to a courier. Three
- * adapters, all asked at once at checkout (the owner, 24 Sep 2026): Delhivery
- * direct (`delhivery.ts`), Ekart direct (`ekart.ts`) and Shiprocket
- * (`shiprocket.ts`), an aggregator that answers with several carriers of its
- * own. A fourth courier is a fourth file implementing `options`, not a change
- * to checkout.
+ * Business code talks to this interface and never to a courier. Four
+ * adapters, all asked at once at checkout (the owner, 24 Sep and 1 Oct 2026):
+ * Delhivery direct (`delhivery.ts`), Ekart direct (`ekart.ts`), and two
+ * aggregators that answer with several carriers of their own, Shiprocket
+ * (`shiprocket.ts`) and Velocity (`velocity.ts`). Another courier is another
+ * file implementing `options`, not a change to checkout.
  *
  * Everything crossing the seam is normalised: rupees as a number, grams as an
  * integer, PIN codes as six-digit strings, and our own two-value speed. A
@@ -49,7 +49,7 @@ export type QuoteInput = {
 };
 
 /** Who the shipment is booked with — the account the wallet money leaves. */
-export type CourierName = "delhivery" | "ekart" | "shiprocket";
+export type CourierName = "delhivery" | "ekart" | "shiprocket" | "velocity";
 
 /**
  * One way to send the parcel, normalised across couriers. Delhivery and Ekart
@@ -57,11 +57,12 @@ export type CourierName = "delhivery" | "ekart" | "shiprocket";
  */
 export type CourierOption = {
   /** Unique within one scan, and the same on the next scan for the same
-   *  service: `delhivery`, `ekart`, `shiprocket:55`. Checkout posts it back. */
+   *  service: `delhivery`, `ekart`, `shiprocket:55`, `velocity:CARADCBTZMQMM`.
+   *  Checkout posts it back. */
   id: string;
   courier: CourierName;
-  /** The carrier Shiprocket hands the parcel to (`Xpressbees`), or null when
-   *  the courier carries it itself. Data from the courier, not copy. */
+  /** The carrier an aggregator hands the parcel to (`Xpressbees`), or null
+   *  when the courier carries it itself. Data from the courier, not copy. */
   carrier: string | null;
   /** The aggregator's own id for that carrier, needed to book it later. */
   serviceId: string | null;
@@ -123,7 +124,8 @@ export type BookingInput = {
   grams: number;
   box: BoxCm;
   speed: ShippingSpeed;
-  /** Shiprocket's carrier id from the quote; null for the others. */
+  /** The aggregator's carrier id from the quote (Shiprocket, Velocity);
+   *  null for the others. */
   serviceId: string | null;
   /** `YYYY-MM-DD`, IST: the day the courier should collect. */
   pickupDate: string;

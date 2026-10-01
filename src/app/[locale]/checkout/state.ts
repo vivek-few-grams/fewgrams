@@ -19,7 +19,7 @@ export const CHECKOUT_IDLE: CheckoutState = { status: "idle" };
  *  for that parcel; rupees are already rounded up. */
 export type ScanOption = {
   id: string;
-  courier: "delhivery" | "ekart" | "shiprocket";
+  courier: "delhivery" | "ekart" | "shiprocket" | "velocity";
   carrier: string | null;
   amount: number;
   /** `YYYY-MM-DD` IST: the pickup day plus this courier's days on the road,
