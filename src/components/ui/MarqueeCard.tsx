@@ -1,5 +1,6 @@
-import Link from "next/link";
+import Image from "next/image";
 import type { ReactNode } from "react";
+import { Link } from "@/i18n/navigation";
 import { ScatterMarquee } from "./ScatterMarquee";
 
 /**
@@ -24,6 +25,8 @@ export function MarqueeCard({
   marqueeClass,
   labelClass = "text-forest",
   media,
+  photo,
+  className = "",
   mediaClass = "aspect-square w-[70%]",
   cursorLabel = "Order",
 }: {
@@ -53,6 +56,21 @@ export function MarqueeCard({
   labelClass?: string;
   media: ReactNode;
   /**
+   * A full-bleed styled photograph that covers the card at rest and fades
+   * out on hover to reveal the cut-out and marquee underneath (the owner,
+   * 1 Oct 2026: the bare cut-out on a tint read as a thumbnail). Absent, the
+   * card shows the cut-out at rest as before.
+   *
+   * A touch device has no hover, so it only ever sees the photograph — which
+   * is the intended default, not a degraded state. `alt=""` for the same
+   * reason the cut-out has none: the link's `aria-label` already names the
+   * card.
+   */
+  photo?: string;
+  /** Grid placement on the card's root, e.g. a lead tile spanning two
+   *  columns on a phone. */
+  className?: string;
+  /**
    * The media box's shape and size. Square at 70% of the width by default,
    * which is the reference's own figure and right for a `Sprout` mark or a
    * punnet.
@@ -80,7 +98,10 @@ export function MarqueeCard({
   );
 
   return (
-    <Link href={href} className="group block" aria-label={`${label}${note ? ` — ${note}` : ""}`}>
+    <Link
+      href={href}
+      className={`group block ${className}`}
+      aria-label={`${label}${note ? ` — ${note}` : ""}`}>
       <div
         className={`mcard flex aspect-[580/660] items-center justify-center ${panelClass}`}
         data-cursor={cursorLabel}
@@ -98,6 +119,17 @@ export function MarqueeCard({
         <div className={`mcard__media flex items-center justify-center ${mediaClass}`}>
           {media}
         </div>
+        {photo && (
+          <div className="mcard__photo" aria-hidden="true">
+            <Image
+              src={photo}
+              alt=""
+              fill
+              sizes="(min-width: 768px) 20vw, 50vw"
+              className="object-cover"
+            />
+          </div>
+        )}
       </div>
 
       <div className="mt-4 flex items-baseline justify-between gap-3">

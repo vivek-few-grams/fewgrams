@@ -9,6 +9,7 @@ import { Footer } from "@/components/chrome/Footer";
 import { LeafBackdrop } from "@/components/chrome/LeafBackdrop";
 import { PageLoader } from "@/components/chrome/PageLoader";
 import { TitleTicker } from "@/components/chrome/TitleTicker";
+import { GardenBadge } from "@/components/chrome/GardenBadge";
 import { loaderInitScript } from "@/components/chrome/loader-init";
 import { currentActor } from "@/lib/auth/guard";
 import { routing } from "@/i18n/routing";
@@ -119,6 +120,9 @@ export default async function LocaleLayout({
             {children}
           </main>
           <Footer />
+          {/* The way into the play garden from any customer page; it hides
+              itself on the garden, admin, cart and checkout (SPEC §25). */}
+          <GardenBadge />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Hero } from "@/components/home/Hero";
 import { Process } from "@/components/home/Process";
+import { TrayPlay } from "@/components/home/TrayPlay";
 import { WhyMicrogreens } from "@/components/home/WhyMicrogreens";
 import { Bundles } from "@/components/home/Bundles";
 import { OtherProducts } from "@/components/home/OtherProducts";
@@ -36,6 +37,9 @@ import { currentActor } from "@/lib/auth/guard";
  *   5  Bundles       #plans — the conversion surface, read from DynamoDB
  *   6  Other products racks · trays · seeds · snacks, with live counts
  *   7  Top seeds     five best sellers, arrow to /seeds
+ *   7½ Tray play     a grown tray to run a hand over (three.js), and the
+ *                    door to the play garden — at the bottom so it adds no
+ *                    scroll before the plans (the owner, 1 Oct 2026)
  *   8  Trust tags    the closing note, just above the footer
  *   9  Footer        (in layout.tsx)
  *
@@ -171,6 +175,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         mediumNames={mediumNames}
       />
       <TopSeeds seeds={topSeeds} ranked={seedsRanked} />
+      <TrayPlay />
       <TrustTags />
     </>
   );

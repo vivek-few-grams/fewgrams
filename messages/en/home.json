@@ -69,6 +69,13 @@
       }
     }
   },
+  "trayPlay": {
+    "heading": "Go on, run your hand over it.",
+    "body": "This is a tray the morning we cut it: dense, upright, and springy enough to stand straight back up.",
+    "alt": "Three black trays of microgreens on a pale panel: red amaranth with pink stems, radish with heart-shaped leaves, and tall sunflower shoots.",
+    "journey": "Want more fun? Let's build a virtual microgreen tray",
+    "journeyNote": "We'll take you through the whole journey, from an empty tray to harvest."
+  },
   "why": {
     "heading": "Why microgreens, not grown‑up greens?",
     "lede": "Same plant, cut young. Here is everything that changes.",

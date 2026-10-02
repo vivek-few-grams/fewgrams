@@ -4,6 +4,7 @@ import { ScrollRow } from "@/components/ui/ScrollRow";
 import {
   CategoryMedia,
   categoryMediaClass,
+  categoryPhoto,
 } from "@/components/catalogue/CategoryMedia";
 import { getTranslations } from "next-intl/server";
 import type { Category } from "@/lib/types";
@@ -94,6 +95,7 @@ export async function OtherProducts({
             scatter
             panelClass="bg-mint/40"
             marqueeClass="text-forest/25"
+            photo={categoryPhoto("microgreens")}
             media={
               <Image
                 src="/shop/microgreens-cutout.webp"
@@ -126,6 +128,7 @@ export async function OtherProducts({
               scatter={c !== "snacks"}
               panelClass={CATEGORY_PANELS[c].panelClass}
               marqueeClass={CATEGORY_PANELS[c].marqueeClass}
+              photo={categoryPhoto(c)}
               media={<CategoryMedia category={c} index={i} />}
               mediaClass={categoryMediaClass(c)}
             />

@@ -1,0 +1,144 @@
+{
+  "meta": {
+    "title": "Play garden",
+    "description": "Grow a virtual tray of microgreens, from an empty tray to harvest, and meet what we use at every step."
+  },
+  "badge": {
+    "label": "Play garden",
+    "aria": "Open the play garden and grow a virtual tray of microgreens"
+  },
+  "title": "Play garden",
+  "nav": {
+    "steps": "Steps of the play garden",
+    "goTo": "Go to step {number, number}: {name}",
+    "next": "Next step",
+    "auto": "Do it for me",
+    "restart": "Start again",
+    "progress": "How far along this step is",
+    "count": "{current, number} / {total, number}"
+  },
+  "steps": {
+    "touch": {
+      "label": "Touch",
+      "title": "Run your hand over a grown tray",
+      "order": "Order these microgreens",
+      "start": "Want more fun? Let's build a virtual microgreen tray"
+    },
+    "pick": {
+      "label": "Tray",
+      "title": "Pick your tray",
+      "hint": "Pick one tray",
+      "done": "Well done! Now let's clean it."
+    },
+    "clean": {
+      "label": "Clean",
+      "title": "Clean the tray",
+      "done": "Clean and ready. Next, the coco peat.",
+      "solution": "Food-grade hydrogen peroxide solution",
+      "soaking": "Soaking…"
+    },
+    "soak": {
+      "label": "Soak",
+      "title": "Soak the coco peat",
+      "done": "That's your growing medium. Into the tray with it.",
+      "can": "Purified water"
+    },
+    "fill": {
+      "label": "Fill",
+      "title": "Fill and level",
+      "done": "A flat, even bed. Time to sow."
+    },
+    "sow": {
+      "label": "Sow",
+      "title": "Sow the seed",
+      "done": "Sown. Now it needs the dark."
+    },
+    "dark": {
+      "label": "Dark",
+      "title": "Into the dark",
+      "done": "Pale and tall. They're ready for light.",
+      "keep": "Keep the tray in the dark room for <b>{days, number} days</b>",
+      "stages": {
+        "seed": "Seed",
+        "sprout": "Sprout",
+        "leaves": "Seed leaves"
+      },
+      "door": "Dark room",
+      "drop": "Drop it here, in the light"
+    },
+    "light": {
+      "label": "Light",
+      "title": "Light and water",
+      "done": "A full, green tray. Harvest time.",
+      "tag": "Racks that hold the lights"
+    },
+    "harvest": {
+      "label": "Harvest",
+      "title": "Harvest",
+      "done": "You grew a tray of microgreens."
+    }
+  },
+  "looks": {
+    "amaranth": "Red amaranth",
+    "radish": "Radish",
+    "sunflower": "Sunflower",
+    "mustard": "Mustard"
+  },
+  "product": {
+    "pricePack": "₹{price, number} a pack",
+    "priceBlock": "₹{price, number} a block",
+    "priceSeed": "₹{price, number} for 50 g",
+    "view": "View in the shop",
+    "added": "In your basket",
+    "recommended": "Recommended by Fewgrams",
+    "failed": "That couldn't be added just now.",
+    "priceTray": "₹{price, number} a tray",
+    "forSale": "Available to buy",
+    "newTab": "opens in a new tab",
+    "allSeeds": "See all our seeds",
+    "orderFresh": "Order fresh",
+    "buyHere": "Buy here"
+  },
+  "kit": {
+    "title": "Grow one for real",
+    "body": "Everything you used in this tray, ready to go in your basket.",
+    "add": "Add everything you used",
+    "adding": "Adding to your basket…",
+    "added": "All in your basket",
+    "viewCart": "Go to your basket",
+    "fresh": "Or order {name} fresh",
+    "freshAny": "Or order microgreens fresh"
+  },
+  "still": {
+    "pick": "Two microgreen tray pairs on a wooden bench: one black, and one white grow tray in a green water tray.",
+    "clean": "An empty tray on a wooden bench beside a blue tray of food-grade hydrogen peroxide solution, with a folded cotton cloth.",
+    "soak": "A grey tub beside the tray, with a block of coco peat swollen and loosened by water.",
+    "fill": "The tray filled level with dark, damp coco peat.",
+    "sow": "Seed scattered evenly over the coco peat in the tray.",
+    "dark": "A tray covered by an upturned tray, lifted by pale shoots underneath.",
+    "light": "A full tray of green microgreens under a grow light on a steel rack.",
+    "harvest": "A harvested tray with short cut stems, beside a white bowl heaped with microgreens."
+  },
+  "targets": {
+    "wipe": "Wipe the tray clean",
+    "cloth": "Pick up the cloth",
+    "can": "Pick up the can",
+    "pour": "Bring the can to the bowl",
+    "bowl": "Pick up the bowl",
+    "fill": "Tip it over the tray",
+    "packet": "Pick a seed",
+    "sow": "Sweep across to sow",
+    "uncover": "Lift the cover",
+    "lamp": "Switch on the light",
+    "water": "Water it",
+    "cutter": "Pick up the cutter",
+    "cut": "Slice across the tray",
+    "tray-pair": "Black pair",
+    "tray-pair-food-grade": "Green and white pair",
+    "trayUp": "Pick up the tray",
+    "dip": "Drop it in the solution",
+    "liftOut": "Lift it out onto the bench",
+    "toLight": "Drag the tray into the light",
+    "pickPair": "Pick the {name}"
+  }
+}

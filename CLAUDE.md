@@ -37,6 +37,7 @@ checkout and a translator can be handed a single file:
 | `account.json` | `/account` and its profile, addresses and orders screens |
 | `help.json` | `/faq` and `/contact` — **chrome only**; the questions and answers are editorial copy in `content/faq.json` (one ordered file, like the book; `faq-contract.ts` refuses a price, a day count or the city) |
 | `legal.json` | `/terms` (and the privacy, refund and shipping pages to come) — **chrome only**; the clauses are `content/legal/<doc>.json`, with names and address as tokens from `content/legal/business.json` |
+| `garden.json` | `/garden` — the play garden and its floating badge (SPEC §25) |
 | `admin.json` | Admin shell and screens — **English only by design** (SPEC §4.4 scopes Kannada to customer-facing pages) |
 
 This covers **UI chrome**. Editorial copy belongs in `content/` instead, per

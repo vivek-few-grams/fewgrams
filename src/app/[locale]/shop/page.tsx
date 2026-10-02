@@ -6,6 +6,7 @@ import { MarqueeCard } from "@/components/ui/MarqueeCard";
 import {
   CategoryMedia,
   categoryMediaClass,
+  categoryPhoto,
 } from "@/components/catalogue/CategoryMedia";
 import { categoryCounts } from "@/lib/catalogue/counts";
 import { enabledCategories, isProductTypeEnabled } from "@/lib/catalogue/visibility";
@@ -113,7 +114,11 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
       </h1>
       <p className="mt-4 max-w-xl font-body text-sm text-stone">{t("body")}</p>
 
-      <div className="mt-12 grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-5">
+      {/* All five categories in one row from `lg` (1 Oct 2026): five in a
+          four-column grid left a row of one. On a phone, microgreens — the
+          thing we grow — leads at full width so the 2-up grid below it is
+          even. A sixth category (snacks) would need this revisited. */}
+      <div className="mt-12 grid grid-cols-2 gap-5 lg:grid-cols-5">
         {microgreensOn && (
           <MarqueeCard
             href="/microgreens"
@@ -121,14 +126,16 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
             note={counted("varieties", { count: varieties.length })}
             words={microgreenNames}
             scatter
+            className="col-span-2 lg:col-span-1"
             panelClass="bg-mint/40"
             marqueeClass="text-forest/25"
+            photo={categoryPhoto("microgreens")}
             media={
               <Image
                 src="/shop/microgreens-cutout.webp"
                 alt=""
                 fill
-                sizes="(min-width: 768px) 22vw, 42vw"
+                sizes="(min-width: 1024px) 18vw, 84vw"
                 className="object-contain"
               />
             }
@@ -155,6 +162,7 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
               scatter={c !== "snacks"}
               panelClass={CATEGORY_PANELS[c].panelClass}
               marqueeClass={CATEGORY_PANELS[c].marqueeClass}
+              photo={categoryPhoto(c)}
               media={<CategoryMedia category={c} index={i} />}
               mediaClass={categoryMediaClass(c)}
             />

@@ -1556,6 +1556,7 @@ real blocker is Meta Business verification and per-template approval, not the mo
 | `/how-it-works` | Cutoff, sowing Sunday, Saturday delivery, the 4-week rotation, explained visually |
 | `/recipes`, `/recipes/[slug]` | Usage ideas, cross-linked from variety pages |
 | `/faq`, `/contact` | |
+| `/garden` | **Play garden** — built 1 Oct 2026, §25. A virtual tray grown from empty to harvest in nine steps, each step's product on sale beside it. `?step=&tray=&greens=` in the URL |
 | `/terms`, `/privacy`, `/refund-policy`, `/shipping-policy` | **Required by the payment gateway for merchant approval** — not optional |
 
 ### Customer account
@@ -2292,6 +2293,8 @@ next-day delivery before they reach a product page.
 | 4 | **Why microgreens** — a head-to-head, with an **"Honestly grown"** badge under the microgreens name and both drawings animated (the field's sprayer sweeps and its plants shiver; the tray's sprouts sway happily as light falls from the lamp onto them; all still under reduced motion): grown-up greens on a sand card (each problem marked with a warning triangle) against microgreens on a forest card (each answer ✓), a drawing heading each column and a topic label between them — grow time & sprays (one row: the short time indoors is why nothing is sprayed) · soil (the same field soil crop after crop, against fresh coco peat every sow on a sterilised tray; not water — a customer cannot verify ours either — and no named contaminant) · nutrition · on your plate (one row: freshness, washing and how much you need). On a phone each topic sits above its two sides. The grow time is the min–max `growDays` of the varieties on sale, never written into copy. The nutrition row is attributed in the copy to a published USDA study (Xiao et al., J. Agric. Food Chem., 2012; no link shown) — never a nutrient claim about our own greens, and no "healthy" | Answers "why this at all" before the plans ask for a subscription. Added 26 Sep 2026 |
 | 5 | **Bundles** (`#plans`, §18.4) | The conversion surface |
 | 6 | **Other products** — racks · trays · seeds · snacks, four tiles | One-off revenue, clearly secondary. Same card motion as §17.4 |
+| 6½ | **Top seeds** — five best sellers, arrow to `/seeds` | The five that sell the most grams, filled out from the `/seeds` grid order while nothing has sold (the owner, 25 Sep 2026) |
+| 6¾ | **Tray play** — three trays of greens (amaranth, radish, sunflower) to run a hand over, drawn live with three.js over a still of the same scene, with **"Want more fun? Let's build a virtual microgreen tray"** into the play garden (§25) | Built 1 Oct 2026 between Our process and Why microgreens; **moved to the bottom the same day** (the owner) because it added a screen of scroll before the plans. Play is the last thing a buyer should have to scroll past |
 | 7 | **Trust tags** — organically grown · no chemicals · trusted seed sources · fresh, never frozen · we eat what you eat (the same trays feed our family). Five small badges (26 Sep 2026) | Icon badges, `sage` on `forest` |
 | 8 | **Footer** | Org details, legal, contact, FSSAI number |
 
@@ -4936,4 +4939,135 @@ behind it, and explain on the detail page why low-EC cocopeat matters to a plant
   often on water alone. A mechanism, not a promise: no yield figure, no day count, and nothing
   about the food. A heading field rather than a fixed label, so a future medium explains its own
   grade.
+
+---
+
+## 25. Play garden — built 1 Oct 2026
+
+A playful page, `/garden`, where a visitor grows a virtual tray of microgreens from an empty tray
+to a harvest, and meets each thing we sell at the moment they would need it (the owner, 1 Oct
+2026). The plan it was built from, with the ideas still open, is `docs/GROW_JOURNEY_PLAN.md`.
+
+### 25.1 Ways in
+
+| Where | What |
+|---|---|
+| Every customer page | `GardenBadge` — a floating "Play garden" badge, bottom-right. **Hidden on `/garden`, `/admin/*`, `/cart` and `/checkout`** (the owner: nothing playful while someone is paying) |
+| Home page, bottom | Tray play (§18.3) with the journey button, which opens `/garden?step=pick` — the visitor has just done step 1 |
+
+### 25.1½ The screen (the owner, 1 Oct 2026, second pass)
+
+**The stage is the page.** It fills the screen under the header; there is no side panel and no
+paragraph of instructions. On top of it, thinly: the step's name (top left), the product of the
+moment (top right under the wall shelf, where the eye goes — bottom left on the light step, whose
+rack fills the top right, and top left at harvest, whose bowl is on the right; above the buttons
+on a phone; the owner, 2 Oct 2026), the step dots (bottom centre from `lg`; top on smaller screens, where the
+bottom holds the card and buttons), Back / Next (bottom right), and a thin progress line along
+the top edge.
+
+**Step 1 shows, then asks** (the owner, 1 Oct 2026). The first time the trays are half on screen
+a pale **ghost hand** sweeps across the row and back (`DEMO_TIME` in `tray-play/scene.ts`), the
+leaves parting under it. There is no written hint (the owner, 2 Oct 2026: "let ghost hand handle
+it"). The sweep plays again after `DEMO_AGAIN_AFTER` seconds, up to `DEMO_REPLAYS` more times,
+while nobody has touched the trays; any real pointer ends it for good. The same applies to the home page's tray play. Each tray carries its variety's name in the
+bench the row leaves bare — beside the back-left corner for amaranth, centred over radish, beside
+the back-right corner for sunflower (`TRAY_TAGS`) — with a short dotted arrow that ends just off
+the leaves and links to that variety's page. Each arrow is one curve from the label's edge, its
+head drawn on the direction it arrives from. The scene projects the anchor points (`onAnchors`);
+a label stays inside the panel and clear of the title and button, and on a phone every name
+hangs over its own tray. The trays are
+framed tightly here (`snug`), larger than on the home page — then drawn a tenth smaller on a screen
+640px or wider, for room round them (the owner, 2 Oct 2026). The photograph of the row was taken at the
+old framing, so here it stays hidden while the scene loads (as the bench stills do) rather than
+showing larger trays that shrink. Each name carries a second line that asks for the order —
+"Order fresh", static words with no price and nothing read from a record (the owner, 2 Oct
+2026); the names are the garden's own messages (`looks.*`). "Build a tray" sits top right. Without the live scene there are no labels, and an
+"Order these microgreens" pill takes their place.
+
+**Pick up, then use.** Each phase names what to reach for next (`targetsFor` in
+`garden/targets.ts`). That object gets a pulsing green ring, a bob and a short label ("Pick up
+the spray"); clicking it puts it in the hand, where it follows the pointer and does the work on
+the tray. The labels are real buttons, so the keyboard does the same thing. A product card
+slides in by itself when a product is picked or used (the tray pair, the block, the seed, the
+rack), with the cart's own quick add.
+
+**A ghost hand when the visitor is stuck** (the owner, 2 Oct 2026). Once the bench is at rest
+and nothing has moved for `GHOST_IDLE_SECONDS`, a pale pointing hand (`tray-play/ghost.ts`,
+`GhostHand`) shows the move on top of the scene without making it: it taps the thing to pick up,
+carries a held tool to where it goes (the tray to the solution, the can to the bowl), sweeps the
+tray for wipe, sow, fill and cut, and pulls the covered tray across the seam into the light. It
+plays every few seconds until a real pointer, a label or "Do it for me" puts it away. It is
+decorative and hidden from screen readers; the labels remain the instructions.
+
+**Say plainly that it is for sale** (the owner, 2 Oct 2026: "wherever it is possible we need to
+clearly show that this product can be purchased", with "a small image… which shows the actual
+product"). Every card (`BuyCard`, and the harvest kit) leads with a forest "Available to buy"
+chip, shows the product's own photograph (a narrow column card from `md`, so it covers little of the scene across; a row above the buttons on a phone) with two slow glows as it lands, and prints
+the price large beside the quick add. The rack has sizes and a colour to choose, so its card
+shows the plated shelf range's cut-out and its from-price (cheapest published model) and links
+to the range with "Choose your size" instead of a quick add. Every shop link in the scene's tags
+carries a shopping bag, not an arrow. A guide character was considered and turned down the same
+day: it clashes with the realistic scene, is dismissed after a step or two, and covers the stage
+on a phone.
+
+**A finished step leads into the next by itself** (the owner, 1 Oct 2026): "well done" appears large in the
+middle of the screen, the next step begins after `AUTO_NEXT_MS`, and the message stays until its
+tools have landed — the camera eases over and its tools drop onto the
+bench — with no button to press. Next still skips the wait; the harvest step stays put, because
+the kit is the point of it.
+
+**The ordinary cursor.** A drawn hand cursor was tried and removed the same day (the owner: "let
+it be cursor"); the pointer simply turns to the hand cursor over anything that can be picked up.
+
+**A kitchen behind the bench** (the owner, 2 Oct 2026: "the table looks boring"). The camera sits
+low enough (`elevation`, `TOP` in `garden/scene.ts`) that the top third of the stage is a room:
+a sage wall with a window onto sky, hills, a swaying branch and a bird that crosses every few
+seconds, a herb shelf with a jar, a framed leaf print, and pots at the ends of the counter
+(`garden/kitchen.ts`). The window is a hole in the wall with the outside built behind it, so the
+bird and branch are hidden by the wall with no clipping. Light comes from the window, so shadows
+fall forward. The step title sits on a cream card so it reads over the room.
+
+**Portrait is laid out differently**: on a phone held upright the props sit in front of the
+tray, near the thumb, rather than beside it.
+
+### 25.2 The steps
+
+One array, `STEPS` in `src/components/garden/steps.ts`, is the order. The step, the tray and the
+seed are in the URL, so Back, links and reloads work. The stage has no Back or Skip button (the
+owner, 2 Oct 2026): Next appears once a step is done, "Do it for me" finishes it, and the step dots
+jump anywhere.
+
+| # | Step | Interaction | Sold at this step |
+|---|---|---|---|
+| 1 | touch | The home page's three trays, which sweep once on their own to show what they do | Each tray's name → its variety page (`/microgreens` from the still) |
+| 2 | pick | Tap a tray pair; it drops onto the bench and bounces. One "Pick one tray" line under the trays | Both pairs: a product card beside each tray (`PairCard`; left of the left pair and right of the right, as a column — over the back tray and under the front one on a phone, where the pair is stacked) with the pack's photo and the pair's name and price linking to its page, "Available to buy", the cart's quick add and "See all trays" → `/shop/trays`; clicking the tray picks it, and a focus-only "Pick the …" button is the keyboard's way. The grow floors carry the moulded diamond ribs and a drainage hole in each diamond (`growFloorTextures` in `tray-play/tray.ts`) |
+| 3 | clean | The tray arrives clean and moves left; a blue tray of **food-grade hydrogen peroxide solution** (its name printed on the tub's front wall, translated; the owner, 2 Oct 2026, replacing the spray bottle) comes in beside it with a cotton cloth to its right, each set apart with a clear gap. Pick up the tray, drop it in the solution, and a sped-up soak clock runs (`STEEP_SECONDS`, no time stated); lift it out onto the bench and wipe off the beads of solution with the cloth | The tray pair just picked |
+| 4 | soak | Bring the can to the bowl and it pours by itself (holding also pours); the block drinks, swells and slumps into loose peat on its own — no rubbing (the owner, 2 Oct 2026). Tray, bowl and can stand in one row with wide gaps; the bowl is drawn at 1.4× and the can at 2× (1.3× on a phone, where 2× would shrink the tray), the owner, 2 Oct 2026. The can is printed "Purified water" (`steps.soak.can`) and pours from where it stands, spout to the bowl, never turned across the tray. The coco peat tag stands above the bowl | The coco peat block, "Recommended by Fewgrams", a tag on the block that adds it to the basket |
+| 5 | fill | Pick up the bowl and tip it over the tray: it tips by itself while its rim is over the tray and the peat lands where the rim pours (the owner, 2 Oct 2026, in place of a scoop); once full the bowl goes back empty and the peat settles flat on its own — no levelling by hand. Framed closer than other steps | The coco peat block again — it is what fills the tray |
+| 6 | sow | Choose amaranth, radish, sunflower or mustard — white Fewgrams pouches with the logo and a window onto the seed, in a row, two each side of the tray (mustard is sown here only; the home page and touch step grow the other three, `HOME_ROW`), each named above with its price and a bag that opens the seeds page, not the one seed's (the owner, 2 Oct 2026); move across to scatter | That seed, **only if in stock** (`seedMaxUnits > 0`); a tag on the packet adds 50 g |
+| 7 | dark | **Watched, not played** (the owner, 2 Oct 2026). The white tray is lifted, its green water tray slid out from under it and upturned over it as a solid cover; the camera turns left to a door in the kitchen wall, which opens onto a real, ventilated dark room (a fan turns in its vent — a room, not a box, because the tray needs air); the tray is carried in, and the camera closes in on the door as it shuts while the kitchen dims to black. The dark room fades up out of that black on its own — the covered tray close up, pale shoots lifting the cover, and under it a seed → sprout → seed leaves strip, one stage a day for `DARK_DAYS` days, all of them passing in a single day-and-night cycle (`DARK_SECONDS`), with the kitchen caption "Keep the tray in the dark room for **3 days**" carrying the count (printed from the constant). Then the kitchen slides in beside it (below it on a tall screen), turning through day and night — sun and moon across the window, the lamp on at night — while the days run. When the days are done the visitor **drags the tray out of the dark room into the light** ("Drag the tray into the light"; the kitchen half turns to the lit rack and becomes the drop zone); the kitchen then grows to fill the screen and the light step opens on that same view. "Do it for me" and the tray's label do the drop for a keyboard or a hurry. "Do it for me" runs the days faster. The water tray goes back under on Uncover | — |
+| 8 | light | **The rack we sell** (the owner, 2 Oct 2026): a 4 ft rack of three white plates on orange slotted-angle legs (`shelfRack`, `SHELF_RACK`), standing in the kitchen against the wall just left of the dark room's door and as tall as it (the owner, 2 Oct 2026) — so it is in view on the trip to the dark room and is plainly where the tray goes back to — the other shelves already growing under their lights. While the dark days end, the kitchen half turns to it; the visitor drags the tray over the seam (it is drawn over both halves, brightening as it crosses, with an arrow at the seam) and it flies onto its shelf. The covered tray slides onto the second shelf, then the camera comes in close on that shelf. The room and floor drop by the shelf's height rather than the tray rising (`RACK_DROP`), so everything aimed at the tray stays put. Lift the cover (slid out of the rack's open side, turned over beside it, back under as the water tray), switch on that shelf's light with the switch on the rack's front leg (the rocker glows until pressed; the tube flickers on), water from below, once — the white tray is lifted, the can's spout reaches in under it and pours into the green tray, then the white tray goes back down | Shelf racks: photograph, from-price, "Choose your size" → `/shop/racks/shelf` |
+| 9 | harvest | A snap-off cutter (the owner, 2 Oct 2026, in place of scissors), its blade held across the tray: a slice cuts the stems along the whole blade; cut greens heap in a bowl | **Starter kit**: tray + block + seed added in one press (`setCartQuantity` per line), and "or order it fresh" — the variety's photograph, price per tray and its own quick add |
+
+### 25.3 Rules
+
+- **Time is a dial, not days.** No step states a duration; the dark days are passed by holding a
+  button. Grow days stay in `growDays`.
+- **Every product is the shop's.** `page.tsx` reads the same repos and content files as the
+  shop and prices from DynamoDB; anything not sellable arrives as `null` and is not drawn. Adding
+  goes through `setCartQuantity`, which re-checks it.
+- **Shop links open in a new tab** (the owner, 2 Oct 2026). Every way from the garden to a
+  product, a range or a catalogue page (`ShopLink` in `GardenJourney.tsx`) opens beside it, so
+  the tray in play is not lost; a screen reader is told. The basket link stays in the same tab.
+- **The still is the fallback, not a placeholder.** Each bench step has a still of its end state
+  in `public/garden/<step>.webp` and `<step>-narrow.webp`. With no WebGL, no JavaScript or
+  reduced motion the visitor walks the stills with Next. With motion allowed the still stays
+  hidden while the scene loads (the owner, 1 Oct 2026): it was taken at one screen shape and the
+  scene frames itself to the visitor's, so showing it first made the trays jump on every reload.
+- **"Do it for me"** plays the step through the same input handlers as a hand, so the keyboard
+  route is the real garden. Every phase also has a button beside the stage (spray, hold to pour,
+  cover, lift, switch on, water).
+- three.js loads only on approach, by dynamic `import()`, and never in a shared bundle. Shared
+  modules: `tray-play/tray.ts` (trays), `tray-play/plants.ts` (greens, with `uGrow`, `uGreen` and
+  the sow/cut mask), `tray-play/kinds.ts` (names, no three.js).
 

@@ -65,9 +65,10 @@ const CUTOUTS: Partial<Record<Category, string>> = {
  * takes its bounding box to 284 x 223 — inside the tile on both axes.
  */
 const MEDIA_CLASS: Partial<Record<Category, string>> = {
-  /* 90% since 25 Sep 2026 ("bit bigger"): measured with the hover transform
-     applied, the rack still has ~30px spare across and ~2px top and bottom. */
-  racks: "aspect-[4/5] h-[90%]",
+  /* 78% since 1 Oct 2026 (the owner: "reduce size"), down from 90%. At 90%
+     the hovered rack reached the clip top and bottom, which read as cramped
+     once the tile opened on a full photograph rather than on the cut-out. */
+  racks: "aspect-[4/5] h-[78%]",
   /* Landscape, matching the 3:2 frame the cut-out was built to. Wider than
      90% before; 93% since 25 Sep 2026 (the owner's second "bit bigger").
      That is the ceiling: measured with the hover transform applied it is as
@@ -86,6 +87,28 @@ const MEDIA_CLASS: Partial<Record<Category, string>> = {
      measured. */
   media: "aspect-square w-[92%]",
 };
+
+/**
+ * The styled full-card photograph each tile shows at rest, handing over to
+ * the cut-out on hover — `MarqueeCard`'s `photo` (1 Oct 2026). Generated
+ * from the cut-outs as reference, portrait 4:5 against the card's 580:660,
+ * so `object-cover` trims a sliver top and bottom and nothing at the sides.
+ *
+ * Keyed beside `Category` with `microgreens`, which is a tile but not a
+ * category (SPEC §18.6). Its own filenames rather than over the cut-outs,
+ * so the image optimiser can never serve one for the other.
+ */
+const PHOTOS: Partial<Record<Category | "microgreens", string>> = {
+  microgreens: "/shop/microgreens-photo.webp",
+  racks: "/shop/racks-photo.webp",
+  seeds: "/shop/seeds-photo.webp",
+  trays: "/shop/trays-photo.webp",
+  media: "/shop/grow-media-photo.webp",
+};
+
+export function categoryPhoto(key: Category | "microgreens"): string | undefined {
+  return PHOTOS[key];
+}
 
 export function categoryMediaClass(category: Category): string | undefined {
   return MEDIA_CLASS[category];
