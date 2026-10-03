@@ -51,8 +51,9 @@ import type {
  *
  * ## Why it is one function over three ranges
  *
- * All three are priced from an overlapping rate card: the markup, the
- * rounding, the heights and the corner leg count are shared by every range,
+ * All three are priced from an overlapping rate card: the heights and the
+ * corner leg count are shared by every range (markup and rounding are not —
+ * each range has its own since 3 Oct 2026),
  * and the angle rate prices both steel ranges' legs. So a single edit on
  * `/admin/racks` can move prices on all three screens, and a cascade that
  * covered only the screen it was triggered from would leave the other two
@@ -113,17 +114,17 @@ export async function repriceAllRacks(): Promise<RepriceSummary> {
   const platedRows = repricedRows(
     plated,
     (c: RackConfig) => rackCost(c, card),
-    card.settings,
+    card.margins.plated,
   );
   const angleRows = repricedRows(
     angle,
     (c: AngleRackConfig) => angleRackCost(c, card),
-    card.settings,
+    card.margins.angle,
   );
   const pipeRows = repricedRows(
     pipe,
     (c: PipeRackConfig) => pipeRackCost(c, card),
-    card.settings,
+    card.margins.pipe,
   );
 
   /* One timestamp for the whole cascade, so every row it touched carries the
@@ -169,7 +170,7 @@ function countUnpriceable(
  * Revalidates **all three** rack screens.
  *
  * A rate edit on any one of them can move prices on the other two — the
- * markup, rounding, heights and corner leg count are shared — so refreshing
+ * heights and corner leg count are shared — so refreshing
  * only the screen the form was submitted from would leave the other two
  * showing prices that are no longer what the database holds. Every action that
  * calls `repriceAllRacks` calls this too.

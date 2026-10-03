@@ -1,11 +1,12 @@
 import { getTranslations } from "next-intl/server";
-import { rackCost, retailPrice, type RateCard } from "@/lib/racks/pricing";
+import { rackCost, rackGrams, retailPrice, type RateCard } from "@/lib/racks/pricing";
 import { listRackModels, loadRateCard, priceable } from "@/lib/repo/racks";
 import type { RackModel } from "@/lib/types";
 import { AngleTable } from "./AngleTable";
 import { ModelTable, type RackModelView } from "./ModelTable";
 import { PlateTable } from "./PlateTable";
 import { RatesForm } from "./RatesForm";
+import { MarginForm } from "./MarginForm";
 import { SeedButton } from "./SeedButton";
 import { VendorPickupSection } from "../vendor-pickup/VendorPickupSection";
 import { SHELF_RACK_ITEM } from "@/lib/shipping/origin";
@@ -91,6 +92,12 @@ export default async function RacksAdmin() {
       </section>
 
       <section className="rounded-2xl border border-forest/15 p-6">
+        <h2 className="font-display text-lg font-semibold text-forest">{t("marginTitle")}</h2>
+        <p className="mt-2 font-body text-sm text-stone">{t("marginHint.plated")}</p>
+        <MarginForm range="plated" margin={stored.margins.plated} />
+      </section>
+
+      <section className="rounded-2xl border border-forest/15 p-6">
         <h2 className="font-display text-lg font-semibold text-forest">{t("platesTitle")}</h2>
         <p className="mt-2 font-body text-sm text-stone">{t("platesHint")}</p>
         <PlateTable plates={stored.plates} />
@@ -133,7 +140,8 @@ function view(model: RackModel, card: RateCard | null): RackModelView {
   return {
     model,
     costNow: cost?.total ?? null,
-    suggestedPrice: cost && card ? retailPrice(cost.total, card.settings) : null,
+    suggestedPrice: cost && card ? retailPrice(cost.total, card.margins.plated) : null,
+    grams: card ? rackGrams(model.config, card) : null,
     depthFt: plate?.depthFt ?? null,
     lengthFt: plate?.lengthFt ?? null,
     thicknessMm: angle?.thicknessMm ?? null,

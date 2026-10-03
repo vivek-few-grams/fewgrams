@@ -31,7 +31,7 @@ import { CheckField, NumberField } from "../fields";
  * are empty where a row's hold buttons, which drifts every heading right.
  */
 const COLUMNS =
-  "minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) minmax(5rem, 1fr) minmax(6rem, 1.3fr) 6rem 5.5rem 4rem";
+  "minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) minmax(6rem, 1.3fr) 6rem 5.5rem 4rem";
 
 /** Below this the rows scroll sideways inside their own box rather than
  *  widening the page.
@@ -71,7 +71,6 @@ export function FrameTable({ frames }: { frames: FrameSize[] }) {
             >
               <span>{t("colDepth")}</span>
               <span>{t("colLength")}</span>
-              <span>{t("colGramsPerShelf")}</span>
               <span>{t("colFrameFeet")}</span>
               <span />
               <span />
@@ -111,7 +110,6 @@ function FrameRow({ frame }: { frame: FrameSize }) {
 
         <NumberField compact label={t("colDepth")} name="depthFt" min={0} defaultValue={frame.depthFt} error={errorFor("depthFt")} />
         <NumberField compact label={t("colLength")} name="lengthFt" min={0} defaultValue={frame.lengthFt} error={errorFor("lengthFt")} />
-        <NumberField compact label={t("colGramsPerShelf")} name="gramsPerShelf" min={0} defaultValue={frame.gramsPerShelf} error={errorFor("gramsPerShelf") ?? (frame.gramsPerShelf === undefined ? t("gramsMissing") : undefined)} />
 
         {/* Derived from what is **stored**, not from the inputs beside it. An
             unsaved edit showing its own consequence would state a figure the
@@ -219,7 +217,6 @@ function AddFrameForm() {
           onChange={(e) => setLengthFt(e.target.value)}
           error={errorFor("lengthFt")}
         />
-        <NumberField label={t("colGramsPerShelf")} name="gramsPerShelf" min={0} error={errorFor("gramsPerShelf")} />
         {/* Read-only and posts nothing — the server derives it. No `hint`
             here: a hint under one field in an `items-end` row sits on the
             baseline and rides that field's input up. */}

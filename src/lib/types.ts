@@ -505,8 +505,11 @@ export type ShelfPlate = {
   /** Cost of one plate, in rupees. */
   price: number;
   active: boolean;
-  /** Packed weight per shelf, legs and fixings shared in — SPEC §7. Absent
-   *  until weighed; a courier order for a rack on it is then refused. */
+  /** Weight of **the plate alone**, grams (3 Oct 2026). It used to be a
+   *  per-shelf figure with the legs and fixings shared in, which could be
+   *  right for one height only; the legs are now weighed from the angle's
+   *  `gramsPerFt` (`rackGrams`). Absent until weighed; a courier order for a
+   *  rack on it is then refused. The stored name is kept so no row moves. */
   gramsPerShelf?: number;
   /** Height one plate adds when the plates are stacked flat in the box, cm —
    *  a plate's folded edge, not its steel gauge (`thicknessMm`). Sets the
@@ -533,6 +536,11 @@ export type AngleGrade = {
   colours: string[];
   /** Cost per running foot, in rupees. */
   ratePerFt: number;
+  /** Weight per running foot, grams — the owner weighed 1.4 mm at 230 g on
+   *  3 Oct 2026. Every rack's angle weight is feet × this (`rackGrams`,
+   *  `angleRackGrams`). Absent until weighed; a courier order for a rack on
+   *  this grade is then refused. */
+  gramsPerFt?: number;
   active: boolean;
 };
 
@@ -554,9 +562,13 @@ export type RackSettings = {
      ceiling — so a 6 ft rack could be published with 2 shelves. The vendor's
      rule is an identity: shelves are `height − 1`, derived by
      `shelvesForHeight`, so there is no setting and no field. */
-  /** Applied to material cost to reach the retail price. Starts at 0 so the
-   *  screen never shows a margin nobody chose. */
-  markupPercent: number;
+  /** **Legacy — read, never written.** The one markup all three ranges shared
+   *  until 3 Oct 2026, when each range got its own `RackMargin` row. Kept
+   *  only as the starting value for a range that has no margin row yet;
+   *  `saveSettings` writes those rows before it drops these two fields. */
+  legacyMarkupPercent?: number;
+  /** Legacy — see `legacyMarkupPercent`. */
+  legacyRoundUpToNearest?: number;
   /** How an open-frame rack packs for the courier — SPEC §7 (the owner,
    *  24 Sep 2026). It ships as a bundle of slotted angle, not a box of
    *  shelves: each L-shaped piece is this wide (2 in ≈ 5 cm), and each one
@@ -564,6 +576,25 @@ export type RackSettings = {
    *  measured; a courier order for an angle rack is then refused. */
   angleWidthCm?: number;
   angleStackCm?: number;
+  /** Weight of one bolt and its nut, and of one bush, grams — the fixings in
+   *  a rack's weight. Absent counts as nothing: a few hundred grams on a rack
+   *  of several kilos should not stop a courier quote. */
+  boltSetGrams?: number;
+  bushGrams?: number;
+};
+
+/**
+ * The three rack ranges, each with its own margin (the owner, 3 Oct 2026:
+ * changing one must not move the others' prices). `plated` is the shelf rack.
+ */
+export const RACK_RANGES = ["plated", "angle", "pipe"] as const;
+export type RackRange = (typeof RACK_RANGES)[number];
+
+/** How one range turns material cost into a selling price — `retailPrice`. */
+export type RackMargin = {
+  /** Applied to material cost to reach the retail price. Starts at 0 so the
+   *  screen never shows a margin nobody chose. */
+  markupPercent: number;
   /** Retail prices are rounded **up** to this multiple, never down — rounding
    *  down would quietly eat the margin the markup just added. 1 disables it. */
   roundUpToNearest: number;
@@ -695,8 +726,9 @@ export type FrameSize = {
   depthFt: number;
   lengthFt: number;
   active: boolean;
-  /** Packed weight per shelf — see `ShelfPlate.gramsPerShelf`. */
-  gramsPerShelf?: number;
+  /* No weight (3 Oct 2026). An open frame is nothing but angle, so its weight
+     is its feet × the grade's `gramsPerFt` — a typed figure could only
+     disagree with that. */
 };
 
 /** Same shape as `RackConfig` with a frame footprint in place of a plate.

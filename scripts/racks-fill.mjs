@@ -22,7 +22,7 @@
  * survives every run. Running it twice changes nothing; running it after adding
  * a footprint or a height adds only the new rows.
  *
- * Each new rack is written at the current markup, with `costAtPublish`
+ * Each new rack is written at its own range's current markup, with `costAtPublish`
  * recording the cost it was priced against — the same contract the admin
  * screens write under. Note that the screens now **reprice on every rate
  * edit** (SPEC §19.3.1), so a row this script writes is not frozen: the next
@@ -50,10 +50,28 @@ export function shelvesForHeight(heightFt) {
 
 /** Retail rounds **up**. Rounding to nearest would put a ₹2,310 rack at ₹2,300
  *  — below cost. */
-export function retailPrice(cost, settings) {
-  const marked = cost * (1 + settings.markupPercent / 100);
-  const step = settings.roundUpToNearest;
+export function retailPrice(cost, margin) {
+  const marked = cost * (1 + margin.markupPercent / 100);
+  const step = margin.roundUpToNearest;
   return step > 1 ? Math.ceil(marked / step) * step : Math.ceil(marked);
+}
+
+/** Each range's markup and rounding, from raw DynamoDB items: its own
+ *  `MARGIN#<range>` row, else the legacy shared figures still stored on the
+ *  `SETTINGS` row as `markupPercent` / `roundUpToNearest`, else cost to the
+ *  rupee. Mirrors `resolveMargins` in pricing.ts. */
+export function resolveMargins(settingsItem, marginItems) {
+  const legacy = {
+    markupPercent: settingsItem?.markupPercent ?? 0,
+    roundUpToNearest: settingsItem?.roundUpToNearest ?? 1,
+  };
+  const pick = (range) => {
+    const row = marginItems.find((r) => r.range === range);
+    return row
+      ? { markupPercent: row.markupPercent, roundUpToNearest: row.roundUpToNearest }
+      : legacy;
+  };
+  return { plated: pick("plated"), angle: pick("angle"), pipe: pick("pipe") };
 }
 
 /** Legs + plates + bolts + bushes. Bushes are per **rack**, not per shelf. */
@@ -238,6 +256,7 @@ async function main() {
        match another's prefix. */
     pipeSettings: Items.find((i) => i.SK === "PIPESETTINGS") ?? null,
   };
+  card.margins = resolveMargins(card.settings, under("MARGIN#"));
 
   if (!card.settings) {
     console.error(
@@ -258,6 +277,7 @@ async function main() {
       existing: under("MODEL#"),
       wanted: allRackConfigs(card),
       cost: (c) => rackCost(c, card),
+      margin: card.margins.plated,
       describe: (c) => `${c.heightFt} ft · ${c.shelves} shelves · ${c.plateId}`,
     },
     {
@@ -267,6 +287,7 @@ async function main() {
       existing: under("AMODEL#"),
       wanted: allAngleRackConfigs(card),
       cost: (c) => angleRackCost(c, card),
+      margin: card.margins.angle,
       describe: (c) => `${c.heightFt} ft · ${c.shelves} shelves · ${c.frameId}`,
     },
     {
@@ -278,6 +299,7 @@ async function main() {
          two steel ranges still fill. */
       wanted: allPipeRackConfigs(card),
       cost: (c) => pipeRackCost(c, card),
+      margin: card.margins.pipe,
       describe: (c) => `${c.heightFt} ft · ${c.shelves} shelves · ${c.pipeSizeId}`,
     },
   ];
@@ -302,7 +324,7 @@ async function main() {
         console.log(`  skip (unpriceable)  ${range.describe(config)}`);
         continue;
       }
-      const price = retailPrice(cost, card.settings);
+      const price = retailPrice(cost, range.margin);
       console.log(
         `  ${dry ? "would add" : "add     "}  ${range.describe(config)}  ` +
           `cost ₹${cost} → ₹${price}`,

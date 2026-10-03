@@ -8,6 +8,8 @@ import type {
   PipeSize,
   RackConfig,
   RackCost,
+  RackMargin,
+  RackRange,
   RackSettings,
   ShelfPlate,
 } from "@/lib/types";
@@ -47,7 +49,8 @@ import type {
  * footprint list, no bolts at all — but it still belongs here, for the two
  * things it *does* share: `shelvesForHeight` and `retailPrice`. Those are the
  * rules that must never be allowed to differ between ranges, and a second file
- * is where they would start to.
+ * is where they would start to. The *formula* is shared; the markup and
+ * rounding it is fed are each range's own (`RateCard.margins`, 3 Oct 2026).
  *
  * All three are pinned against the owner's own figures, and all three round
  * retail the same way. Every one of them is cheapest at the *plated* end,
@@ -57,6 +60,9 @@ import type {
 /** The rate card, as one object, so a caller cannot pass three-quarters of it. */
 export type RateCard = {
   settings: RackSettings;
+  /** Each range's markup and rounding, always all three — `resolveMargins`
+   *  fills a range that has no row of its own. */
+  margins: Record<RackRange, RackMargin>;
   plates: ShelfPlate[];
   angles: AngleGrade[];
   /** Footprints for the open-frame range (SPEC §20). On the same card because
@@ -106,10 +112,40 @@ export function rackCost(config: RackConfig, card: RateCard): RackCost | null {
  * cosmetic choice. `Math.ceil` on the un-rounded value too, because a rack
  * priced at ₹2,310.40 should not invoice at ₹2,310.
  */
-export function retailPrice(cost: number, settings: RackSettings): number {
-  const marked = cost * (1 + settings.markupPercent / 100);
-  const step = settings.roundUpToNearest;
+export function retailPrice(cost: number, margin: RackMargin): number {
+  const marked = cost * (1 + margin.markupPercent / 100);
+  const step = margin.roundUpToNearest;
   return step > 1 ? Math.ceil(marked / step) * step : Math.ceil(marked);
+}
+
+/** What a range prices at before anyone has set a margin: cost, to the rupee.
+ *  Zero for the reason on `RackMargin.markupPercent`. */
+export const NO_MARGIN: RackMargin = { markupPercent: 0, roundUpToNearest: 1 };
+
+/**
+ * Every range's margin, from the rows that exist.
+ *
+ * A range with no row of its own takes the **legacy shared markup** off the
+ * settings row — what all three priced at before they were split (3 Oct
+ * 2026) — so the split itself moves no price. That fallback is frozen: no
+ * form writes the legacy fields any more, so changing one range's margin can
+ * never reach a range still reading them. With neither, `NO_MARGIN`.
+ */
+export function resolveMargins(
+  settings: Pick<RackSettings, "legacyMarkupPercent" | "legacyRoundUpToNearest"> | null,
+  rows: readonly ({ range: RackRange } & RackMargin)[],
+): Record<RackRange, RackMargin> {
+  const legacy: RackMargin = {
+    markupPercent: settings?.legacyMarkupPercent ?? NO_MARGIN.markupPercent,
+    roundUpToNearest: settings?.legacyRoundUpToNearest ?? NO_MARGIN.roundUpToNearest,
+  };
+  const pick = (range: RackRange): RackMargin => {
+    const row = rows.find((r) => r.range === range);
+    return row
+      ? { markupPercent: row.markupPercent, roundUpToNearest: row.roundUpToNearest }
+      : legacy;
+  };
+  return { plated: pick("plated"), angle: pick("angle"), pipe: pick("pipe") };
 }
 
 /**
@@ -530,6 +566,54 @@ export function pipeRackSku(config: PipeRackConfig, size: PipeSize): string {
   ].join("-");
 }
 
+/* ──────────────────────── weight: for the courier ──────────────────── */
+
+/**
+ * What a rack weighs, in grams — SPEC §7, rebuilt 3 Oct 2026.
+ *
+ * It was a typed "grams per shelf" with the legs shared in, which can only be
+ * right for one height: a 3 ft and a 6 ft rack spread four legs over two
+ * shelves and five. Now each part is weighed once and the rack is the sum:
+ *
+ * ```
+ * angle   = every foot of angle in the rack × the grade's gramsPerFt
+ * plates  = shelves × the plate's own weight              (shelf racks only)
+ * fixings = shelves × bolt pairs per shelf × boltSetGrams
+ *         + bushes per rack × bushGrams
+ * ```
+ *
+ * The owner's measurements behind the figures: 1.4 mm slotted angle at 230 g
+ * a foot, and a 1¼ × 3 ft plate (14½ × 35½ in folded) at 1.5 kg.
+ *
+ * `null` when the angle or the plate has not been weighed — a courier cannot
+ * price the rack, and a missing weight must never read as a light one. The
+ * fixings default to nothing instead, for the reason on `boltSetGrams`.
+ */
+function fixingsGrams(shelves: number, s: RackSettings): number {
+  return (
+    shelves * s.boltSetsPerShelf * (s.boltSetGrams ?? 0) +
+    s.bushesPerRack * (s.bushGrams ?? 0)
+  );
+}
+
+export function rackGrams(config: RackConfig, card: RateCard): number | null {
+  const plate = card.plates.find((p) => p.id === config.plateId);
+  const angle = card.angles.find((a) => a.id === config.angleId);
+  if (!plate || !angle) return null;
+  if (angle.gramsPerFt === undefined || plate.gramsPerShelf === undefined) return null;
+
+  const s = card.settings;
+  const legs = s.legsPerRack * config.heightFt * angle.gramsPerFt;
+  return Math.round(legs + config.shelves * plate.gramsPerShelf + fixingsGrams(config.shelves, s));
+}
+
+export function angleRackGrams(config: AngleRackConfig, card: RateCard): number | null {
+  const angle = card.angles.find((a) => a.id === config.angleId);
+  const feet = angleRackFeet(config, card);
+  if (!angle || feet === null || angle.gramsPerFt === undefined) return null;
+  return Math.round(feet * angle.gramsPerFt + fixingsGrams(config.shelves, card.settings));
+}
+
 /* ─────────────────── repricing: rates cascade to prices ────────────── */
 
 /** One row to write: the model, and the price and cost baseline it should
@@ -577,7 +661,7 @@ export function repricedRows<
 >(
   models: M[],
   cost: (config: C) => { total: number } | null,
-  settings: RackSettings,
+  margin: RackMargin,
 ): Repriced<M>[] {
   const out: Repriced<M>[] = [];
 
@@ -585,7 +669,7 @@ export function repricedRows<
     const now = cost(model.config);
     if (!now) continue;
 
-    const price = retailPrice(now.total, settings);
+    const price = retailPrice(now.total, margin);
     if (price === model.price && now.total === model.costAtPublish) continue;
 
     out.push({ model, price, costAtPublish: now.total });
@@ -610,8 +694,11 @@ export const VENDOR_SEED: RateCard = {
     boltSetsPerShelf: 8,
     bushesPerRack: 4,
     heightsFt: [3, 4, 5, 6],
-    markupPercent: 0,
-    roundUpToNearest: 50,
+  },
+  margins: {
+    plated: { markupPercent: 0, roundUpToNearest: 50 },
+    angle: { markupPercent: 0, roundUpToNearest: 50 },
+    pipe: { markupPercent: 0, roundUpToNearest: 50 },
   },
   plates: [
     { id: "p-1x3", depthFt: 1, lengthFt: 3, thicknessMm: 0.4, capacityKg: 10, price: 200, active: true },

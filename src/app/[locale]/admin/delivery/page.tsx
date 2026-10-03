@@ -41,9 +41,11 @@ export default async function DeliveryAdmin() {
     ...card.plates
       .filter((x) => x.active && (x.gramsPerShelf === undefined || x.packedCm === undefined))
       .map((x) => ({ screen: "plates", label: t("sizePlate", { depth: x.depthFt, length: x.lengthFt, thickness: x.thicknessMm }), href: "/admin/racks" })),
-    ...card.frames
-      .filter((x) => x.active && x.gramsPerShelf === undefined)
-      .map((x) => ({ screen: "frames", label: t("sizeFootprint", { depth: x.depthFt, length: x.lengthFt }), href: "/admin/angle-racks" })),
+    /* Angle is weighed per foot on its grade, which both steel ranges use;
+       a footprint has no weight of its own (3 Oct 2026). */
+    ...card.angles
+      .filter((x) => x.active && x.gramsPerFt === undefined)
+      .map((x) => ({ screen: "frames", label: t("angleGrade", { thickness: x.thicknessMm }), href: "/admin/angle-racks" })),
     ...card.pipes
       .filter((x) => x.active && x.gramsPerShelf === undefined)
       .map((x) => ({ screen: "pipes", label: t("sizeFootprint", { depth: x.depthFt, length: x.lengthFt }), href: "/admin/pipe-racks" })),

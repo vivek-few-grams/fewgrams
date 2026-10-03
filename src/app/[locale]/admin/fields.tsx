@@ -24,11 +24,17 @@ export function NumberField({
   /** Row variant: a bare input with the label as its accessible name only. */
   compact?: boolean;
 } & React.InputHTMLAttributes<HTMLInputElement>) {
+  /* Text, not `type="number"`: a number input steps its value on a mouse
+     wheel while focused, so scrolling the page past a focused field silently
+     rewrote a markup or a price. `inputMode` keeps the numeric keypad on a
+     phone; the server parsers in `src/lib/forms.ts` already reject anything
+     that is not a number, so the browser check was never the real one. */
   const field = (
     <input
-      type="number"
+      type="text"
+      inputMode="decimal"
+      autoComplete="off"
       name={name}
-      step="any"
       aria-label={compact ? label : undefined}
       aria-invalid={error ? true : undefined}
       className={`w-full rounded-lg border bg-cream px-3 py-2 font-body text-sm tabular-nums outline-none focus:border-forest ${

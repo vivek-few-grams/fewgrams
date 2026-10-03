@@ -116,16 +116,16 @@ function trayPacking(t: Tray | GrowMedium | undefined): TrayPacking | null {
 }
 
 /** A rack's packing, or null until every figure it needs is measured —
- *  grams per shelf, and either its plate's thickness or the angle or pipe
+ *  its weight, and either its plate's thickness or the angle or pipe
  *  bundle's section (SPEC §7). */
 function rackPacking(r: SellableRack): RackPacking | null {
-  if (r.gramsPerShelf === null) return null;
+  if (r.grams === null) return null;
   const base = {
     heightFt: r.heightFt,
     shelves: r.shelves,
     depthFt: r.depthFt,
     lengthFt: r.lengthFt,
-    gramsPerShelf: r.gramsPerShelf,
+    grams: r.grams,
   };
   const p = r.packing;
   if (p.kind === "plates") {

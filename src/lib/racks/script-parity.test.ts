@@ -13,6 +13,7 @@ import {
   pipeRackCost,
   pipeRackLegs,
   rackCost,
+  resolveMargins,
   retailPrice,
   shelvesForHeight,
 } from "./pricing";
@@ -63,8 +64,8 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
     for (const config of allRackConfigs(card)) {
       const total = rackCost(config, card)!.total;
       expect(script.rackCost(config, card)).toBe(total);
-      expect(script.retailPrice(total, card.settings)).toBe(
-        retailPrice(total, card.settings),
+      expect(script.retailPrice(total, card.margins.plated)).toBe(
+        retailPrice(total, card.margins.plated),
       );
     }
   });
@@ -73,8 +74,8 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
     for (const config of allAngleRackConfigs(card)) {
       const total = angleRackCost(config, card)!.total;
       expect(script.angleRackCost(config, card)).toBe(total);
-      expect(script.retailPrice(total, card.settings)).toBe(
-        retailPrice(total, card.settings),
+      expect(script.retailPrice(total, card.margins.angle)).toBe(
+        retailPrice(total, card.margins.angle),
       );
     }
   });
@@ -113,8 +114,8 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
     for (const config of allPipeRackConfigs(card)) {
       const total = pipeRackCost(config, card)!.total;
       expect(script.pipeRackCost(config, card)).toBe(total);
-      expect(script.retailPrice(total, card.settings)).toBe(
-        retailPrice(total, card.settings),
+      expect(script.retailPrice(total, card.margins.pipe)).toBe(
+        retailPrice(total, card.margins.pipe),
       );
     }
   });
@@ -142,9 +143,28 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
     /* Rounding is where two implementations of "the same" formula usually
        part company, so it gets its own sweep. */
     for (const markupPercent of [0, 7.5, 33, 80, 100]) {
-      const settings = { ...card.settings, markupPercent };
+      const margin = { ...card.margins.plated, markupPercent };
       for (const cost of [676, 816, 1960, 2310, 3860, 3861, 3965, 5760])
-        expect(script.retailPrice(cost, settings)).toBe(retailPrice(cost, settings));
+        expect(script.retailPrice(cost, margin)).toBe(retailPrice(cost, margin));
+    }
+  });
+
+  it("resolves each range's margin the same way", () => {
+    /* The script reads raw items, so the legacy figures arrive under their
+       stored names; pricing.ts reads them through the entity's renamed ones. */
+    const rows = [
+      { range: "angle" as const, markupPercent: 35, roundUpToNearest: 100 },
+    ];
+    for (const legacy of [null, { markupPercent: 20, roundUpToNearest: 50 }]) {
+      expect(script.resolveMargins(legacy, rows)).toEqual(
+        resolveMargins(
+          legacy && {
+            legacyMarkupPercent: legacy.markupPercent,
+            legacyRoundUpToNearest: legacy.roundUpToNearest,
+          },
+          rows,
+        ),
+      );
     }
   });
 });

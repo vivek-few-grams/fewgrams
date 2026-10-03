@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import {
   angleRackCost,
   angleRackFeet,
+  angleRackGrams,
   retailPrice,
   type RateCard,
 } from "@/lib/racks/pricing";
@@ -10,6 +11,7 @@ import type { AngleRackModel } from "@/lib/types";
 import { AngleRackTable, type AngleRackView } from "./AngleRackTable";
 import { FrameTable } from "./FrameTable";
 import { SharedRates } from "./SharedRates";
+import { MarginForm } from "../racks/MarginForm";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +54,7 @@ export const dynamic = "force-dynamic";
  */
 export default async function AngleRacksAdmin() {
   const t = await getTranslations("admin.angleRacks");
+  const tm = await getTranslations("admin.racks");
 
   const [stored, models] = await Promise.all([loadRateCard(), listAngleRackModels()]);
   const card = priceable(stored);
@@ -71,6 +74,12 @@ export default async function AngleRacksAdmin() {
         <h2 className="font-display text-lg font-semibold text-forest">{t("ratesTitle")}</h2>
         <p className="mt-2 font-body text-sm text-stone">{t("ratesHint")}</p>
         <SharedRates settings={stored.settings} angles={stored.angles} />
+      </section>
+
+      <section className="rounded-2xl border border-forest/15 p-6">
+        <h2 className="font-display text-lg font-semibold text-forest">{tm("marginTitle")}</h2>
+        <p className="mt-2 font-body text-sm text-stone">{tm("marginHint.angle")}</p>
+        <MarginForm range="angle" margin={stored.margins.angle} />
       </section>
 
       <section className="rounded-2xl border border-forest/15 p-6">
@@ -106,7 +115,8 @@ function view(model: AngleRackModel, card: RateCard | null): AngleRackView {
   return {
     model,
     costNow: cost?.total ?? null,
-    suggestedPrice: cost && card ? retailPrice(cost.total, card.settings) : null,
+    suggestedPrice: cost && card ? retailPrice(cost.total, card.margins.angle) : null,
+    grams: card ? angleRackGrams(model.config, card) : null,
     depthFt: frame?.depthFt ?? null,
     lengthFt: frame?.lengthFt ?? null,
     thicknessMm: angle?.thicknessMm ?? null,

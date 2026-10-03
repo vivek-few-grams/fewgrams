@@ -233,7 +233,7 @@ export async function addPipeRack(_prev: FormState, fd: FormData): Promise<FormS
   await putPipeRackModel({
     id: crypto.randomUUID(),
     config: read.value,
-    price: retailPrice(cost.total, card.settings),
+    price: retailPrice(cost.total, card.margins.pipe),
     costAtPublish: cost.total,
     publishedAt: new Date().toISOString(),
     active: fd.get("active") === "on",
@@ -287,7 +287,7 @@ async function republish(models: PipeRackModel[]): Promise<void> {
       if (!cost || cost.total === m.costAtPublish) return;
       await putPipeRackModel({
         ...m,
-        price: retailPrice(cost.total, card.settings),
+        price: retailPrice(cost.total, card.margins.pipe),
         costAtPublish: cost.total,
         publishedAt: new Date().toISOString(),
       });

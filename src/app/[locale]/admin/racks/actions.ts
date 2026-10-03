@@ -13,6 +13,7 @@ import {
   deleteAngleGrade,
   deleteRackModel,
   deleteShelfPlate,
+  ensureRackMargins,
   getRackModel,
   listAngleGrades,
   listRackModels,
@@ -20,6 +21,7 @@ import {
   loadRateCard,
   priceable,
   putAngleGrade,
+  putRackMargin,
   putRackModel,
   putRackSettings,
   putShelfPlate,
@@ -27,7 +29,15 @@ import {
 } from "@/lib/repo/racks";
 import { repriceAllRacks, revalidateRackScreens } from "@/lib/racks/reprice";
 import { count, csv, err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
-import type { AngleGrade, RackConfig, RackModel, RackSettings, ShelfPlate } from "@/lib/types";
+import {
+  RACK_RANGES,
+  type AngleGrade,
+  type RackConfig,
+  type RackModel,
+  type RackRange,
+  type RackSettings,
+  type ShelfPlate,
+} from "@/lib/types";
 
 /**
  * Rack rate card mutations — SPEC §19.
@@ -40,8 +50,7 @@ import type { AngleGrade, RackConfig, RackModel, RackSettings, ShelfPlate } from
  * all variants as soon as primary raw material cost is updated, No need of
  * approval."* So `saveSettings`, `savePlate`, `saveAngle` and `seedRates` all
  * end in `repriceAllRacks`, and they reprice **all three ranges** rather than
- * just this screen's — the markup, rounding, heights and corner leg count are
- * shared, and the angle rate prices the legs of both steel ranges. Full
+ * just this screen's — the heights and corner leg count are shared, and the angle rate prices the legs of both steel ranges. Full
  * reasoning, and what it gives up, in `src/lib/racks/reprice.ts`.
  *
  * `addPlate`, `addAngle` and the toggles and deletes do **not** cascade, and
@@ -103,17 +112,17 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
   if (heightsFt.some((h) => shelvesForHeight(h) < 1))
     return err("heightTooShort", "heightsFt");
 
-  const markupPercent = zeroOrMore(fd, "markupPercent");
-  if (markupPercent === null) return err("zeroOrMore", "markupPercent");
-  const roundUpToNearest = count(fd, "roundUpToNearest");
-  if (roundUpToNearest === null) return err("countInvalid", "roundUpToNearest");
-
   /* Optional, like a plate's grams: flagged while blank, and an angle rack
      cannot go by courier until both are set (SPEC §7). */
   const angleWidthCm = optionalPositive(fd, "angleWidthCm");
   if (angleWidthCm === "invalid") return err("packedInvalid", "angleWidthCm");
   const angleStackCm = optionalPositive(fd, "angleStackCm");
   if (angleStackCm === "invalid") return err("packedInvalid", "angleStackCm");
+  /* Fixings' weight, optional: blank counts as nothing (`RackSettings`). */
+  const boltSetGrams = optionalPositive(fd, "boltSetGrams");
+  if (boltSetGrams === "invalid") return err("gramsInvalid", "boltSetGrams");
+  const bushGrams = optionalPositive(fd, "bushGrams");
+  if (bushGrams === "invalid") return err("gramsInvalid", "bushGrams");
 
   const settings: RackSettings = {
     boltSetPrice,
@@ -122,16 +131,45 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
     boltSetsPerShelf,
     bushesPerRack,
     heightsFt,
-    markupPercent,
-    roundUpToNearest,
     ...(angleWidthCm !== undefined ? { angleWidthCm } : {}),
     ...(angleStackCm !== undefined ? { angleStackCm } : {}),
+    ...(boltSetGrams !== undefined ? { boltSetGrams } : {}),
+    ...(bushGrams !== undefined ? { bushGrams } : {}),
   };
+  /* This put drops the legacy shared markup, so first give any range still
+     reading it a margin row of its own — see `ensureRackMargins`. */
+  await ensureRackMargins();
   await putRackSettings(settings);
-  /* Markup and rounding live on this row, so this save can move every price
-     in all three ranges without a single material rate changing. */
   await cascade();
   return { status: "saved" };
+}
+
+/* ─────────────────────────── margin, per range ─────────────────────── */
+
+/**
+ * One range's markup and rounding. Each range has its own row (the owner,
+ * 3 Oct 2026: changing one must not affect the others), and this writes only
+ * the one named in the form. The cascade still runs over all three, but the
+ * other two price exactly as before, so `repricedRows` writes none of them.
+ */
+export async function saveRackMargin(_prev: FormState, fd: FormData): Promise<FormState> {
+  await assertRole("admin");
+
+  const range = String(fd.get("range") ?? "");
+  if (!isRackRange(range)) return err("rangeInvalid");
+
+  const markupPercent = zeroOrMore(fd, "markupPercent");
+  if (markupPercent === null) return err("zeroOrMore", "markupPercent");
+  const roundUpToNearest = count(fd, "roundUpToNearest");
+  if (roundUpToNearest === null) return err("countInvalid", "roundUpToNearest");
+
+  await putRackMargin(range, { markupPercent, roundUpToNearest });
+  await cascade();
+  return { status: "saved" };
+}
+
+function isRackRange(value: string): value is RackRange {
+  return (RACK_RANGES as readonly string[]).includes(value);
 }
 
 /* ──────────────────────────── shelf plates ─────────────────────────── */
@@ -222,6 +260,10 @@ function readAngle(fd: FormData): { ok: true; value: Omit<AngleGrade, "id"> } | 
   if (thicknessMm === null) return { ok: false, state: err("dimensionInvalid", "thicknessMm") };
   const ratePerFt = money(fd, "ratePerFt");
   if (ratePerFt === null) return { ok: false, state: err("priceInvalid", "ratePerFt") };
+  /* Optional until weighed — a rack on an unweighed grade cannot go by
+     courier, but it can still be priced and sold for pickup. */
+  const gramsPerFt = optionalPositive(fd, "gramsPerFt");
+  if (gramsPerFt === "invalid") return { ok: false, state: err("gramsInvalid", "gramsPerFt") };
   /* `ColourSelect` posts one hidden input per picked slug, so the value
      arrives as repeated fields rather than a joined string. Deduplicated
      because the form should never send a slug twice and a grade listing
@@ -236,7 +278,16 @@ function readAngle(fd: FormData): { ok: true; value: Omit<AngleGrade, "id"> } | 
 
   /* No `finish`: every rack is powder-coated (17 Sep 2026), so the field was
      removed rather than left as a select with one right answer. */
-  return { ok: true, value: { thicknessMm, colours, ratePerFt, active: fd.get("active") === "on" } };
+  return {
+    ok: true,
+    value: {
+      thicknessMm,
+      colours,
+      ratePerFt,
+      ...(gramsPerFt !== undefined ? { gramsPerFt } : {}),
+      active: fd.get("active") === "on",
+    },
+  };
 }
 
 /** Keyed by gauge, for the same reason plates are keyed by footprint: `a-1.4`
@@ -247,7 +298,8 @@ export async function addAngle(_prev: FormState, fd: FormData): Promise<FormStat
   const read = readAngle(fd);
   if (!read.ok) return read.state;
   await putAngleGrade({ id: `a-${read.value.thicknessMm}`, ...read.value });
-  refresh();
+  /* The grades table is on Angle racks too, so refresh every rack screen. */
+  revalidateRackScreens();
   return { status: "saved" };
 }
 
@@ -270,13 +322,15 @@ export async function toggleAngle(fd: FormData): Promise<void> {
   const current = (await listAngleGrades()).find((a) => a.id === id);
   if (!current) throw new Error("Angle grade not found");
   await putAngleGrade({ ...current, active: !current.active });
-  refresh();
+  /* The grades table is on Angle racks too, so refresh every rack screen. */
+  revalidateRackScreens();
 }
 
 export async function removeAngle(fd: FormData): Promise<void> {
   await assertRole("admin");
   await deleteAngleGrade(String(fd.get("id")));
-  refresh();
+  /* The grades table is on Angle racks too, so refresh every rack screen. */
+  revalidateRackScreens();
 }
 
 /* ───────────────────────── racks on sale ───────────────────────────── */
@@ -356,7 +410,7 @@ export async function addModel(_prev: FormState, fd: FormData): Promise<FormStat
   await putRackModel({
     id: crypto.randomUUID(),
     config: read.value,
-    price: retailPrice(cost.total, card.settings),
+    price: retailPrice(cost.total, card.margins.plated),
     costAtPublish: cost.total,
     publishedAt: new Date().toISOString(),
     active: fd.get("active") === "on",
@@ -430,7 +484,7 @@ async function republish(models: RackModel[]): Promise<void> {
       if (!cost || cost.total === m.costAtPublish) return;
       await putRackModel({
         ...m,
-        price: retailPrice(cost.total, card.settings),
+        price: retailPrice(cost.total, card.margins.plated),
         costAtPublish: cost.total,
         publishedAt: new Date().toISOString(),
       });

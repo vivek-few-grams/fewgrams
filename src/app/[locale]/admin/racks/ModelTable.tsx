@@ -75,6 +75,9 @@ export type RackModelView = {
   /** Vendor capacity × shelf count. There is no companion "trays per shelf"
    *  figure: see the note in `PlateTable`. */
   loadKg: number | null;
+  /** What the whole rack weighs for the courier, grams — `null` until its
+   *  angle grade (and plate) have been weighed. */
+  grams: number | null;
 };
 
 /**
@@ -83,7 +86,7 @@ export type RackModelView = {
  * `PlateTable` for what `auto` did to the alignment.
  */
 /**
- * Twelve tracks in about 990px, which is what the admin shell's 1100px
+ * Thirteen tracks in about 1,040px (Weight added 3 Oct 2026; was twelve in 990px), which is what the admin shell's 1100px
  * measure leaves inside a padded card.
  *
  * Sized deliberately tight. A first pass at comfortable widths with `gap-x-3`
@@ -95,12 +98,12 @@ export type RackModelView = {
  * thousands separator is the widest thing on the row.
  */
 const COLUMNS =
-  "3.5rem 3.5rem 5rem 3.5rem 6rem 4rem 5rem 5.5rem 6rem 5rem 4.5rem 3.5rem";
+  "3.5rem 3.5rem 5rem 3.5rem 4.5rem 4rem 4rem 5rem 5.5rem 6rem 5rem 4.5rem 3.5rem";
 
 /** Below this the table scrolls rather than compressing. Matches the track sum
  *  plus gaps and padding, so at the shell's full width there is nothing to
  *  scroll. */
-const MIN_WIDTH = "min-w-[62rem]";
+const MIN_WIDTH = "min-w-[66rem]";
 
 export function ModelTable({
   views,
@@ -138,6 +141,7 @@ export function ModelTable({
               <span>{t("colAngle")}</span>
               <span>{t("colColour")}</span>
               <span>{t("colLoad")}</span>
+              <span>{t("colWeight")}</span>
               <span>{t("colCostNow")}</span>
               <span>{t("colPrice")}</span>
               <span>{t("colMargin")}</span>
@@ -238,6 +242,7 @@ function ModelRow({ view }: { view: RackModelView }) {
       </span>
 
       <Cell>{view.loadKg}</Cell>
+      <Cell>{view.grams === null ? null : t("weightKg", { kg: Math.round(view.grams / 100) / 10 })}</Cell>
       <Cell>{costNow === null ? null : t("rupees", { amount: costNow })}</Cell>
 
       <form action={action} className="contents">

@@ -59,19 +59,22 @@ export type AngleRackView = {
   colours: string[];
   /** Total running feet of angle — legs plus framing. */
   angleFt: number | null;
+  /** What the whole rack weighs for the courier, grams — `null` until its
+   *  angle grade (and plate) have been weighed. */
+  grams: number | null;
 };
 
 /**
- * Twelve tracks in about 990px, matching `ModelTable` so the two rack screens
+ * Thirteen tracks in about 1,040px (Weight added 3 Oct 2026; was twelve in 990px), matching `ModelTable` so the two rack screens
  * read as one system. Every track explicit, none `auto` — the header and the
  * rows are separate grids and only line up if both resolve to the same widths.
  */
 const COLUMNS =
-  "3.5rem 3.5rem 5rem 3.5rem 6rem 4rem 5rem 5.5rem 6rem 5rem 4.5rem 3.5rem";
+  "3.5rem 3.5rem 5rem 3.5rem 4.5rem 4rem 4rem 5rem 5.5rem 6rem 5rem 4.5rem 3.5rem";
 
 /** Below this the table scrolls rather than compressing: a squeezed price
  *  column is worse than a scrollbar. */
-const MIN_WIDTH = "min-w-[62rem]";
+const MIN_WIDTH = "min-w-[66rem]";
 
 export function AngleRackTable({
   views,
@@ -109,6 +112,7 @@ export function AngleRackTable({
               <span>{t("colAngle")}</span>
               <span>{t("colColour")}</span>
               <span>{t("colAngleFt")}</span>
+              <span>{t("colWeight")}</span>
               <span>{t("colCostNow")}</span>
               <span>{t("colPrice")}</span>
               <span>{t("colMargin")}</span>
@@ -209,6 +213,7 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
       </span>
 
       <Cell>{view.angleFt}</Cell>
+      <Cell>{view.grams === null ? null : t("weightKg", { kg: Math.round(view.grams / 100) / 10 })}</Cell>
       <Cell>{costNow === null ? null : t("rupees", { amount: costNow })}</Cell>
 
       <form action={action} className="contents">

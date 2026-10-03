@@ -20,7 +20,7 @@ import {
   putFrameSize,
 } from "@/lib/repo/racks";
 import { repriceAllRacks, revalidateRackScreens } from "@/lib/racks/reprice";
-import { err, money, optionalPositive, type FormState } from "@/lib/forms";
+import { err, money, type FormState } from "@/lib/forms";
 import type { AngleRackConfig, AngleRackModel, FrameSize } from "@/lib/types";
 
 /**
@@ -75,17 +75,14 @@ function readFrame(
 
   /* No price and no capacity to read — see `FrameSize`. A frame costs
      `3 × length + 2 × depth` feet of angle at the grade's rate, and it has no
-     deck to carry a load rating. Grams per shelf is optional — see
-     `ShelfPlate.gramsPerShelf`. */
-  const gramsPerShelf = optionalPositive(fd, "gramsPerShelf");
-  if (gramsPerShelf === "invalid") return { ok: false, state: err("gramsInvalid", "gramsPerShelf") };
+     deck to carry a load rating. No weight either: it is the frame's feet
+     × the angle's grams per foot (`angleRackGrams`). */
   return {
     ok: true,
     value: {
       depthFt,
       lengthFt,
       active: fd.get("active") === "on",
-      ...(gramsPerShelf !== undefined ? { gramsPerShelf } : {}),
     },
   };
 }
@@ -198,7 +195,7 @@ export async function addAngleRack(_prev: FormState, fd: FormData): Promise<Form
   await putAngleRackModel({
     id: crypto.randomUUID(),
     config: read.value,
-    price: retailPrice(cost.total, card.settings),
+    price: retailPrice(cost.total, card.margins.angle),
     costAtPublish: cost.total,
     publishedAt: new Date().toISOString(),
     active: fd.get("active") === "on",
@@ -252,7 +249,7 @@ async function republish(models: AngleRackModel[]): Promise<void> {
       if (!cost || cost.total === m.costAtPublish) return;
       await putAngleRackModel({
         ...m,
-        price: retailPrice(cost.total, card.settings),
+        price: retailPrice(cost.total, card.margins.angle),
         costAtPublish: cost.total,
         publishedAt: new Date().toISOString(),
       });

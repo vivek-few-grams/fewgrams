@@ -44,7 +44,7 @@ import { CheckField, NumberField } from "../fields";
  * `varieties/VarietyTable.tsx` declares its widths.
  */
 const COLUMNS =
-  "minmax(5rem,0.8fr) minmax(9rem,1.6fr) minmax(5rem,0.8fr) 6rem 5.5rem 4rem";
+  "minmax(5rem,0.8fr) minmax(9rem,1.6fr) minmax(5rem,0.8fr) minmax(5rem,0.8fr) 6rem 5.5rem 4rem";
 /** Below this the rows scroll sideways inside their own box rather than
  *  widening the page.
  *
@@ -77,6 +77,7 @@ export function AngleTable({ angles }: { angles: AngleGrade[] }) {
               <span>{t("colThickness")}</span>
               <span>{t("colColours")}</span>
               <span>{t("colRatePerFt")}</span>
+              <span>{t("colGramsPerFt")}</span>
               <span />
               <span />
               <span />
@@ -136,6 +137,7 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
           texts={colourTexts(t)}
         />
         <NumberField compact label={t("colRatePerFt")} name="ratePerFt" min={0} defaultValue={angle.ratePerFt} error={errorFor("ratePerFt")} />
+        <NumberField compact label={t("colGramsPerFt")} name="gramsPerFt" defaultValue={angle.gramsPerFt} error={errorFor("gramsPerFt") ?? (angle.gramsPerFt === undefined ? t("gramsPerFtMissing") : undefined)} />
 
         <button
           type="submit"
@@ -211,6 +213,7 @@ function AddAngleForm() {
             three. The swatches carry the meaning anyway. */}
         <ColourSelect label={t("colColours")} initial={[]} texts={colourTexts(t)} />
         <NumberField label={t("colRatePerFt")} name="ratePerFt" min={0} error={errorFor("ratePerFt")} />
+        <NumberField label={t("colGramsPerFt")} name="gramsPerFt" error={errorFor("gramsPerFt")} />
         <button
           type="submit"
           disabled={pending}

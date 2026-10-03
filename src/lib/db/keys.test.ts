@@ -19,6 +19,7 @@ import {
   PipeSettingsEntity,
   PipeSizeEntity,
   RackModelEntity,
+  RackMarginEntity,
   RackSettingsEntity,
   SeedEntity,
   PinPlaceEntity,
@@ -487,8 +488,8 @@ describe("rack rate card keys — SPEC §19", () => {
     boltSetsPerShelf: 8,
     bushesPerRack: 4,
     heightsFt: [3, 4, 5, 6],
-    markupPercent: 0,
-    roundUpToNearest: 50,
+    legacyMarkupPercent: 20,
+    legacyRoundUpToNearest: 50,
   };
   const rackModel = {
     id: "m1",
@@ -507,6 +508,26 @@ describe("rack rate card keys — SPEC §19", () => {
       RackModelEntity.put(rackModel).params(),
     ]) {
       expect(params.Item.PK).toBe("RACKSPEC");
+      expect(params.TableName).toBe(TABLES.catalogue);
+    }
+  });
+
+  it("keeps the legacy shared markup under its stored names", () => {
+    /* Rows written before the per-range split (3 Oct 2026) hold the shared
+       markup as `markupPercent` / `roundUpToNearest`. Renaming the attribute
+       without mapping the field would read those as absent and reprice every
+       range still falling back to them at zero markup. */
+    const item = RackSettingsEntity.put(settings).params().Item;
+    expect(item.markupPercent).toBe(20);
+    expect(item.roundUpToNearest).toBe(50);
+    expect(item.legacyMarkupPercent).toBeUndefined();
+  });
+
+  it("gives each range's margin its own row in the same partition", () => {
+    for (const range of ["plated", "angle", "pipe"] as const) {
+      const params = RackMarginEntity.put({ range, markupPercent: 20, roundUpToNearest: 50 }).params();
+      expect(params.Item.PK).toBe("RACKSPEC");
+      expect(params.Item.SK).toBe(`MARGIN#${range}`);
       expect(params.TableName).toBe(TABLES.catalogue);
     }
   });
@@ -593,7 +614,7 @@ describe("rack rate card keys — SPEC §19", () => {
     expect(PipeRackModelEntity.put(pipeRackModel).params().Item.SK).toBe("PMODEL#p1");
   });
 
-  it("keeps all nine prefixes on this partition mutually unmatchable", () => {
+  it("keeps all ten prefixes on this partition mutually unmatchable", () => {
     /* Every key this partition holds, against every prefix anything queries
        it with. A `begins_with` that matched the wrong one would not error —
        it would quietly serve one rack range's rows to another range's screen,
@@ -615,6 +636,7 @@ describe("rack rate card keys — SPEC §19", () => {
       "PIPESETTINGS",
       "PIPESIZE#pp-1x3",
       "PMODEL#p1",
+      "MARGIN#plated",
     ];
     const prefixes = [
       "PLATE#",
@@ -624,6 +646,7 @@ describe("rack rate card keys — SPEC §19", () => {
       "AMODEL#",
       "PIPESIZE#",
       "PMODEL#",
+      "MARGIN#",
     ];
 
     for (const prefix of prefixes) {

@@ -3293,8 +3293,8 @@ rack whose parts have been retired keeps its last good price instead of reading
 as ₹0; and `costAtPublish` remains as the record of which cost the stored price
 came from, which is what the margin column and the integrity flag are built on.
 
-**All three ranges, from any one screen.** The markup, the rounding, the heights
-and the corner leg count are shared by every range, and the angle rate prices
+**All three ranges, from any one screen.** The heights and the corner leg count
+are shared by every range, and the angle rate prices
 the legs of both steel ranges — so an edit on `/admin/racks` can move prices on
 `/admin/pipe-racks`. A cascade covering only the screen it was triggered from
 would leave the other two quietly wrong, so there is one cascade and every
@@ -3304,7 +3304,8 @@ rate-writing action calls it. It also revalidates all three routes.
 
 | Action | Cascades | Why |
 |---|---|---|
-| Save settings (incl. markup, rounding) | yes | can move every price with no material rate changing |
+| Save settings | yes | heights and leg count move every range |
+| Save one range's margin | yes | moves that range only — the other two price as before, so nothing of theirs is written |
 | Save a plate, an angle grade, the pipe rates | yes | a material cost moved |
 | Save a footprint (frame or pipe size) | yes | dimensions move the running feet, which moves the cost |
 | Seed the vendor sheet | yes | it writes rates |
@@ -3446,6 +3447,45 @@ What it did that nothing else now does: show what an *unlisted* combination
 would cost, before adding it. That question is answerable by adding the rack
 and reading its row, then deleting it if the figure is wrong — one more step,
 for a decision taken once per rack rather than daily.
+
+### 19.3.4 Each range has its own margin
+
+The owner, 3 Oct 2026: *shelf, angle and pipe racks should each hold their own
+margin setting; changing one should not affect the others.* Markup and rounding
+moved off the shared `SETTINGS` row into one row per range — `RACKSPEC` /
+`MARGIN#plated|angle|pipe` (`RackMarginEntity`) — edited by `MarginForm` on each
+range's own screen. `retailPrice` is still one function; only what it is fed
+differs.
+
+- **The split moved no price.** A range with no row of its own falls back to
+  the old shared figures, still stored on `SETTINGS` as `markupPercent` /
+  `roundUpToNearest` and read in code as `legacyMarkupPercent` /
+  `legacyRoundUpToNearest` (`resolveMargins`). No form writes them, so that
+  fallback is frozen and cannot carry one range's edit to another.
+- **Saving the settings row writes the missing margin rows first**
+  (`ensureRackMargins`), because the put drops the legacy fields. After that
+  first save every range has its own row and the fallback is never read again.
+
+### 19.3.5 What a rack weighs
+
+For the courier quote (§7). Each part is weighed once and the rack is the sum
+(`rackGrams`, `angleRackGrams` in `src/lib/racks/pricing.ts`; the owner,
+3 Oct 2026):
+
+```
+angle   = every foot of angle in the rack × AngleGrade.gramsPerFt
+plates  = shelves × ShelfPlate.gramsPerShelf (the plate alone)   shelf racks only
+fixings = shelves × bolt pairs × boltSetGrams + bushes × bushGrams
+```
+
+It replaced a typed "grams per shelf, legs shared in" on every plate and
+footprint, which could be right for one height only. Footprints have no
+weight field any more. Pipe racks still use their size's typed grams per
+shelf. Measured: 1.4 mm angle at **230 g/ft**, and the 1¼ × 3 ft plate
+(14½ × 35½ in folded, 0.6 mm) at **1.5 kg**. The other plates were scaled
+from it by folded area and thickness. Bolt pairs (8 g) and bushes (10 g) are
+estimates. An unweighed grade or plate leaves the rack unweighable, so a
+courier order for it is refused; unweighed fixings count as nothing.
 
 ### 19.4 No "trays per shelf" figure
 
@@ -3639,11 +3679,10 @@ dropped by the parser.
   Identical to the gap trays have (§23.9) and now with a bigger number attached.
 - **No delivery charge.** §7 sets racks at a flat ₹500 and the cart charges
   nothing yet, so a ₹6,900 rack currently quotes free delivery by omission.
-- **The markup is a test value.** `RackSettings.markupPercent` is 80 in the dev
-  database and every price on the site is computed from it. Confirm it before
-  these pages are public.
-- **No per-rack markup override.** One global figure until there is a reason for
-  two.
+- **The markup is a test value.** Each range's `MARGIN#<range>` row (§19.3.4)
+  prices every rack in it. Confirm all three before these pages are public.
+- **No per-rack markup override.** One figure per range until there is a
+  reason for more.
 - **One photograph per range, not per model.** A 4 ft and a 6 ft rack of one
   range show the same picture, which is honest — it is the same object at two
   heights — but a cart line for a 2 ft rack shows a photograph of a taller one.
@@ -3780,7 +3819,8 @@ table.
 |---|---|---|
 | Legs | 4 × height × ₹/ft | the same |
 | Bolts, bushes | 8 pairs a shelf, 4 bushes a rack | the same |
-| Markup, rounding, heights | shared `RackSettings` row | the same row |
+| Heights | shared `RackSettings` row | the same row |
+| Markup, rounding | `MARGIN#plated` | `MARGIN#angle` — its own (§19.3.4) |
 | Angle grade | `ANGLE#<id>` | the same list |
 | A shelf | a bought plate: own price, own load rating | `3 × length + 2 × depth` ft of angle |
 
@@ -3889,8 +3929,8 @@ Worked example — 6 ft, 5 shelves, 1½ × 3 ft:
 Shelves are still `height − 1` and retail still rounds **up** — the two rules
 every range shares, which is why all three go through
 `src/lib/racks/pricing.ts`. And like the other two, a pipe rack reprices itself
-the moment a rate it depends on changes (§19.3) — including the shared markup,
-which is edited on `/admin/racks`.
+the moment a rate it depends on changes (§19.3) — including its own margin,
+`MARGIN#pipe`, edited on this screen (§19.3.4).
 
 ### 21.2 Three findings worth knowing before quoting
 
@@ -3946,7 +3986,8 @@ a pair. At 6 ft on a 2 × 4 ft footprint it is the difference between ₹5,760 a
 | | Shared with §19/§20 | This range's own |
 |---|---|---|
 | Corner legs | 4, from `RackSettings.legsPerRack` | — |
-| Heights, markup, rounding | the same `SETTINGS` row | — |
+| Heights | the same `SETTINGS` row | — |
+| Markup, rounding | — | its own `MARGIN#pipe` row (§19.3.4) |
 | `shelvesForHeight`, `retailPrice` | the same functions | — |
 | Material rates | — | pipe, connector, bush — `PIPESETTINGS` |
 | Footprints | — | `PIPESIZE#` |

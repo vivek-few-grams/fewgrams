@@ -603,15 +603,44 @@ export const RackSettingsEntity = new Entity(
       boltSetsPerShelf: { type: "number", required: true },
       bushesPerRack: { type: "number", required: true },
       heightsFt: { type: "list", required: true, items: { type: "number" } },
-      markupPercent: { type: "number", required: true },
-      roundUpToNearest: { type: "number", required: true },
+      /* Stored as `markupPercent` / `roundUpToNearest`, the names they had
+         while every range shared them; renamed in code so nothing reads them
+         as current. See `RackSettings.legacyMarkupPercent`. */
+      legacyMarkupPercent: { type: "number", field: "markupPercent" },
+      legacyRoundUpToNearest: { type: "number", field: "roundUpToNearest" },
       angleWidthCm: { type: "number" },
       angleStackCm: { type: "number" },
+      boltSetGrams: { type: "number" },
+      bushGrams: { type: "number" },
     },
     indexes: {
       single: {
         pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
         sk: { field: "SK", composite: [], template: "SETTINGS", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * One range's markup and rounding — `MARGIN#plated`, `MARGIN#angle`,
+ * `MARGIN#pipe`. A row each so that saving one range's margin cannot touch
+ * another's (the owner, 3 Oct 2026). Same partition, so `loadRateCard` still
+ * reads the whole card in one go.
+ */
+export const RackMarginEntity = new Entity(
+  {
+    model: { ...model, entity: "rackMargin" },
+    attributes: {
+      range: { type: ["plated", "angle", "pipe"] as const, required: true },
+      markupPercent: { type: "number", required: true },
+      roundUpToNearest: { type: "number", required: true },
+    },
+    indexes: {
+      byRange: {
+        pk: { field: "PK", composite: [], template: RACKSPEC, casing: "none" },
+        sk: { field: "SK", composite: ["range"], template: "MARGIN#${range}", casing: "none" },
       },
     },
   },
@@ -659,6 +688,7 @@ export const AngleGradeEntity = new Entity(
       thicknessMm: { type: "number", required: true },
       colours: { type: "list", required: true, items: { type: "string" } },
       ratePerFt: { type: "number", required: true },
+      gramsPerFt: { type: "number" },
       active: { type: "boolean", required: true },
     },
     indexes: {
@@ -742,7 +772,6 @@ export const FrameSizeEntity = new Entity(
       depthFt: { type: "number", required: true },
       lengthFt: { type: "number", required: true },
       active: { type: "boolean", required: true },
-      gramsPerShelf: { type: "number" },
     },
     indexes: {
       byId: {

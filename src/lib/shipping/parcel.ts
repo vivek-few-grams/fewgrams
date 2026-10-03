@@ -46,7 +46,8 @@ export type RackPacking = {
   shelves: number;
   depthFt: number;
   lengthFt: number;
-  gramsPerShelf: number;
+  /** The whole rack — `SellableRack.grams`. */
+  grams: number;
   /** How the box is built — see `SellableRack.packing`. Every figure here is
    *  measured; an unmeasured rack has no `RackPacking` at all. */
   stack:
@@ -106,7 +107,7 @@ export function trayStack(p: TrayPacking, packs: number): { grams: number; box: 
  */
 export function rackBox(p: RackPacking): { grams: number; box: BoxCm } {
   const length = Math.max(p.heightFt, p.lengthFt) * CM_PER_FT;
-  const grams = p.shelves * p.gramsPerShelf;
+  const grams = p.grams;
   if (p.stack.kind === "plates") {
     return { grams, box: { length, width: p.depthFt * CM_PER_FT, height: p.shelves * p.stack.shelfCm } };
   }

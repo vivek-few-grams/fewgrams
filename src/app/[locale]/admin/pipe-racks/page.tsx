@@ -13,6 +13,7 @@ import { listPipeRackModels, loadRateCard, priceable } from "@/lib/repo/racks";
 import type { PipeRackModel } from "@/lib/types";
 import { PipeRackTable, type PipeRackView } from "./PipeRackTable";
 import { PipeRates } from "./PipeRates";
+import { MarginForm } from "../racks/MarginForm";
 import { PipeSizeTable } from "./PipeSizeTable";
 
 export const dynamic = "force-dynamic";
@@ -61,6 +62,7 @@ export const dynamic = "force-dynamic";
  */
 export default async function PipeRacksAdmin() {
   const t = await getTranslations("admin.pipeRacks");
+  const tm = await getTranslations("admin.racks");
 
   const [stored, models] = await Promise.all([loadRateCard(), listPipeRackModels()]);
   const card = priceable(stored);
@@ -85,6 +87,12 @@ export default async function PipeRacksAdmin() {
           settings={stored.settings}
           maxHeightFt={PIPE_MAX_HEIGHT_FT}
         />
+      </section>
+
+      <section className="rounded-2xl border border-forest/15 p-6">
+        <h2 className="font-display text-lg font-semibold text-forest">{tm("marginTitle")}</h2>
+        <p className="mt-2 font-body text-sm text-stone">{tm("marginHint.pipe")}</p>
+        <MarginForm range="pipe" margin={stored.margins.pipe} />
       </section>
 
       <section className="rounded-2xl border border-forest/15 p-6">
@@ -130,7 +138,7 @@ function view(model: PipeRackModel, card: RateCard | null): PipeRackView {
   return {
     model,
     costNow: cost?.total ?? null,
-    suggestedPrice: cost && card ? retailPrice(cost.total, card.settings) : null,
+    suggestedPrice: cost && card ? retailPrice(cost.total, card.margins.pipe) : null,
     depthFt: size?.depthFt ?? null,
     lengthFt: size?.lengthFt ?? null,
     /* The two figures that check against a vendor invoice. No load figure and

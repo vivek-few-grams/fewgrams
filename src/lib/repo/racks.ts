@@ -6,11 +6,13 @@ import {
   PipeRackModelEntity,
   PipeSettingsEntity,
   PipeSizeEntity,
+  RackMarginEntity,
   RackModelEntity,
   RackSettingsEntity,
   ShelfPlateEntity,
 } from "@/lib/db/entities";
-import { VENDOR_SEED, type RateCard } from "@/lib/racks/pricing";
+import { resolveMargins, VENDOR_SEED, type RateCard } from "@/lib/racks/pricing";
+import { RACK_RANGES } from "@/lib/types";
 import type {
   AngleGrade,
   AngleRackModel,
@@ -18,7 +20,9 @@ import type {
   PipeRackModel,
   PipeSettings,
   PipeSize,
+  RackMargin,
   RackModel,
+  RackRange,
   RackSettings,
   ShelfPlate,
 } from "@/lib/types";
@@ -31,8 +35,9 @@ import type {
  * six small Queries rather than a Scan, run in parallel — settings, plates,
  * angles, the open-frame footprints, and the pipe range's rates and
  * footprints. One load serves all three rack screens, which is the point of
- * keeping them in one partition: they share `shelvesForHeight`, the markup and
- * the rounding, and every screen shows the rates it prices from.
+ * keeping them in one partition: they share `shelvesForHeight` and most of the
+ * rates, and every screen shows the rates it prices from. Markup and rounding
+ * are **not** shared — one `MARGIN#<range>` row each (3 Oct 2026).
  *
  * **Either settings row may be absent**, which is the honest state of a fresh
  * install and not an error. `loadRateCard` reports `null` for it and the admin
@@ -52,18 +57,49 @@ export type StoredRateCard = {
   frames: FrameSize[];
   pipes: PipeSize[];
   pipeSettings: PipeSettings | null;
+  /** Resolved for every range — see `resolveMargins`. */
+  margins: Record<RackRange, RackMargin>;
 };
 
 export async function loadRateCard(): Promise<StoredRateCard> {
-  const [settings, plates, angles, frames, pipes, pipeSettings] = await Promise.all([
-    getRackSettings(),
-    listShelfPlates(),
-    listAngleGrades(),
-    listFrameSizes(),
-    listPipeSizes(),
-    getPipeSettings(),
-  ]);
-  return { settings, plates, angles, frames, pipes, pipeSettings };
+  const [settings, plates, angles, frames, pipes, pipeSettings, marginRows] =
+    await Promise.all([
+      getRackSettings(),
+      listShelfPlates(),
+      listAngleGrades(),
+      listFrameSizes(),
+      listPipeSizes(),
+      getPipeSettings(),
+      listRackMargins(),
+    ]);
+  const margins = resolveMargins(settings, marginRows);
+  return { settings, plates, angles, frames, pipes, pipeSettings, margins };
+}
+
+async function listRackMargins() {
+  const { data } = await RackMarginEntity.query.byRange({}).go(LIST_OPTS);
+  return data;
+}
+
+export async function putRackMargin(range: RackRange, margin: RackMargin): Promise<void> {
+  await RackMarginEntity.put({ range, ...margin }).go();
+}
+
+/**
+ * Gives every range a margin row of its own, at the margin it prices at now.
+ *
+ * Called before the settings row is rewritten, because that rewrite drops the
+ * legacy shared markup that a range without a row still falls back to — so
+ * without this, saving a bolt price would quietly reprice such a range at
+ * zero markup. A no-op once all three rows exist.
+ */
+export async function ensureRackMargins(): Promise<void> {
+  const [settings, rows] = await Promise.all([getRackSettings(), listRackMargins()]);
+  const margins = resolveMargins(settings, rows);
+  const have = new Set(rows.map((r) => r.range));
+  await Promise.all(
+    RACK_RANGES.filter((r) => !have.has(r)).map((r) => putRackMargin(r, margins[r])),
+  );
 }
 
 /** Narrows a stored card to the shape the pure pricing functions take, or
@@ -137,7 +173,15 @@ export async function seedRateCard(): Promise<void> {
   const pipeIds = new Set(current.pipes.map((p) => p.id));
 
   await Promise.all([
-    ...(current.settings ? [] : [putRackSettings(VENDOR_SEED.settings)]),
+    /* Margins only with the settings: a card that already has settings may
+       be pricing from the legacy shared markup, and seeding a 0% row over it
+       would cut every price in that range. */
+    ...(current.settings
+      ? []
+      : [
+          putRackSettings(VENDOR_SEED.settings),
+          ...RACK_RANGES.map((r) => putRackMargin(r, VENDOR_SEED.margins[r])),
+        ]),
     ...VENDOR_SEED.plates.filter((p) => !plateIds.has(p.id)).map(putShelfPlate),
     ...VENDOR_SEED.angles.filter((a) => !angleIds.has(a.id)).map(putAngleGrade),
     ...VENDOR_SEED.frames.filter((f) => !frameIds.has(f.id)).map(putFrameSize),

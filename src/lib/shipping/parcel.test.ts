@@ -30,7 +30,7 @@ const rack: RackPacking = {
   shelves: 5,
   depthFt: 1.25,
   lengthFt: 3,
-  gramsPerShelf: 2500,
+  grams: 12500,
   stack: { kind: "plates", shelfCm: 2 },
 };
 

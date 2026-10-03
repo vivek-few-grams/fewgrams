@@ -8,10 +8,12 @@ import {
 } from "@/lib/repo/racks";
 import {
   ANGLE_PIECES_PER_SHELF,
+  angleRackGrams,
   angleRackSku,
   pipeRackPiecesFt,
   pipeRackSku,
   rackCapacityKg,
+  rackGrams,
   rackSku,
 } from "./pricing";
 import { isRackColour, type RackColour } from "./colours";
@@ -83,9 +85,12 @@ export type SellableRack = {
   colours: RackColour[];
   /** ₹, as published. See the note above on why it is not recomputed. */
   price: number;
-  /** Packed grams per shelf, from the plate, frame or pipe size — or null
-   *  until the owner has weighed one, when a courier cannot price it. */
-  gramsPerShelf: number | null;
+  /** What the whole rack weighs, grams — or null until the parts have been
+   *  weighed, when a courier cannot price it. Steel racks are worked out from
+   *  the angle's grams per foot and the plate's own weight (`rackGrams`,
+   *  `angleRackGrams`); a pipe rack is still shelves × its size's typed
+   *  grams per shelf. */
+  grams: number | null;
   /**
    * How it packs for the courier — SPEC §7 (the owner, 24 Sep 2026).
    *
@@ -154,7 +159,7 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       capacityKg: rackCapacityKg(m.config, card),
       colours,
       price: m.price,
-      gramsPerShelf: plate.gramsPerShelf ?? null,
+      grams: rackGrams(m.config, card),
       packing: { kind: "plates", shelfCm: plate.packedCm ?? null },
     });
   }
@@ -176,7 +181,7 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       capacityKg: null,
       colours,
       price: m.price,
-      gramsPerShelf: frame.gramsPerShelf ?? null,
+      grams: angleRackGrams(m.config, card),
       packing: {
         kind: "bundle",
         pieces: card.settings.legsPerRack + m.config.shelves * ANGLE_PIECES_PER_SHELF,
@@ -200,7 +205,7 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       capacityKg: null,
       colours: [],
       price: m.price,
-      gramsPerShelf: size.gramsPerShelf ?? null,
+      grams: size.gramsPerShelf === undefined ? null : m.config.shelves * size.gramsPerShelf,
       packing: {
         kind: "pipes",
         piecesFt: pipeRackPiecesFt(m.config, size, card.settings),

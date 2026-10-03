@@ -121,13 +121,20 @@ function Row({
   const tc = useTranslations("admin.common");
   const [state, action, pending] = useActionState<FormState, FormData>(actions.update, IDLE);
   /* Live, so the line under the name follows the figure being typed. */
-  const [stock, setStock] = useState(item.stockPacks);
+  const [typed, setTyped] = useState(String(item.stockPacks));
+  /* The raw text is the state, so the box shows exactly what was typed; a
+     blank must not read as 0, hence the empty check before `Number`. */
+  const stock = typed.trim() === "" ? NaN : Number(typed);
   const formId = `stock-${item.id}`;
 
   const invalid = (field: string) => state.status === "error" && state.field === field;
   const input = (field: string, extra: React.InputHTMLAttributes<HTMLInputElement>) => (
+    /* Text, not `type="number"` — see `NumberField` in fields.tsx: a wheel
+       over a focused number input changes its value. */
     <input
-      type="number"
+      type="text"
+      inputMode="decimal"
+      autoComplete="off"
       form={formId}
       name={field}
       aria-invalid={invalid(field) || undefined}
@@ -163,8 +170,8 @@ function Row({
             "aria-label": t("colStock"),
             min: 0,
             step: 1,
-            value: Number.isFinite(stock) ? stock : "",
-            onChange: (e) => setStock(Number(e.target.value)),
+            value: typed,
+            onChange: (e) => setTyped(e.target.value),
           })}
         </td>
         {PACKING_FIELDS.map((f) => (

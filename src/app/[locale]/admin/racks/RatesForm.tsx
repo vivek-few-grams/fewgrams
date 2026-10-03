@@ -24,8 +24,44 @@ import { NumberField, TextField } from "../fields";
  * ("clear height per tier") whose effect is a concrete number of shelves per
  * height, and nobody should have to divide by 14 in their head to check they
  * typed the right thing.
+ *
+ * **One form on all three rack screens** (the owner, 3 Oct 2026: the angle and
+ * pipe screens showed these read-only behind a link, and the inconsistency
+ * read as a form that needed unlocking). It is still one `SETTINGS` row — every
+ * screen writes the same record through the same `saveSettings`, so there is
+ * no second copy of a bolt price to forget. `show` picks the fields a screen
+ * displays; the rest ride along as hidden inputs at their stored value, which
+ * is what lets the pipe screen offer only the two fields pipe uses without the
+ * action learning about partial saves.
  */
-export function RatesForm({ settings }: { settings: RackSettings | null }) {
+export type SettingsField =
+  | "boltSetPrice"
+  | "bushPrice"
+  | "legsPerRack"
+  | "boltSetsPerShelf"
+  | "bushesPerRack"
+  | "heightsFt"
+  | "anglePack"
+  | "fixingWeights";
+
+const ALL_FIELDS: readonly SettingsField[] = [
+  "boltSetPrice",
+  "bushPrice",
+  "legsPerRack",
+  "boltSetsPerShelf",
+  "bushesPerRack",
+  "heightsFt",
+  "anglePack",
+  "fixingWeights",
+];
+
+export function RatesForm({
+  settings,
+  show = ALL_FIELDS,
+}: {
+  settings: RackSettings | null;
+  show?: readonly SettingsField[];
+}) {
   const t = useTranslations("admin.racks");
   const [state, action, pending] = useActionState<FormState, FormData>(saveSettings, IDLE);
 
@@ -33,6 +69,39 @@ export function RatesForm({ settings }: { settings: RackSettings | null }) {
     state.status === "error" && state.field === field
       ? t(`errors.${state.code}`, state.values ?? {})
       : undefined;
+
+  const shown = (f: SettingsField) => show.includes(f);
+  /* An error on a field this screen hides has nowhere inline to go, so it
+     joins the form-level message rather than vanishing. */
+  const hiddenField = (field: string) =>
+    !shown(
+      (field === "angleWidthCm" || field === "angleStackCm"
+        ? "anglePack"
+        : field === "boltSetGrams" || field === "bushGrams"
+          ? "fixingWeights"
+          : field) as SettingsField,
+    );
+  const formError =
+    state.status === "error" && (!state.field || hiddenField(state.field))
+      ? t(`errors.${state.code}`, state.values ?? {})
+      : null;
+
+  /* The stored value of every field this screen does not show, so a save here
+     writes them back unchanged. */
+  const carried: Record<string, string | number | undefined> = {
+    ...(shown("boltSetPrice") ? {} : { boltSetPrice: settings?.boltSetPrice }),
+    ...(shown("bushPrice") ? {} : { bushPrice: settings?.bushPrice }),
+    ...(shown("legsPerRack") ? {} : { legsPerRack: settings?.legsPerRack }),
+    ...(shown("boltSetsPerShelf") ? {} : { boltSetsPerShelf: settings?.boltSetsPerShelf }),
+    ...(shown("bushesPerRack") ? {} : { bushesPerRack: settings?.bushesPerRack }),
+    ...(shown("heightsFt") ? {} : { heightsFt: settings?.heightsFt.join(", ") }),
+    ...(shown("anglePack")
+      ? {}
+      : { angleWidthCm: settings?.angleWidthCm, angleStackCm: settings?.angleStackCm }),
+    ...(shown("fixingWeights")
+      ? {}
+      : { boltSetGrams: settings?.boltSetGrams, bushGrams: settings?.bushGrams }),
+  };
 
   /* Heights are echoed from the saved settings rather than from the input, so
      the readout below always describes what is stored. An unsaved edit showing
@@ -45,101 +114,126 @@ export function RatesForm({ settings }: { settings: RackSettings | null }) {
     ? settings.heightsFt.map((h) => ({ h, shelves: shelvesForHeight(h) }))
     : [];
 
+  const partsRow = shown("boltSetPrice") || shown("bushPrice") || shown("fixingWeights");
+  const buildRow =
+    shown("legsPerRack") || shown("boltSetsPerShelf") || shown("bushesPerRack") || shown("heightsFt");
+
   return (
     <form action={action} className="mt-5 space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <NumberField
-          label={t("boltSetPrice")}
-          hint={t("boltSetPriceHint")}
-          name="boltSetPrice"
-          min={0}
-          defaultValue={settings?.boltSetPrice ?? ""}
-          error={errorFor("boltSetPrice")}
-        />
-        <NumberField
-          label={t("bushPrice")}
-          hint={t("bushPriceHint")}
-          name="bushPrice"
-          min={0}
-          defaultValue={settings?.bushPrice ?? ""}
-          error={errorFor("bushPrice")}
-        />
-        <NumberField
-          label={t("markupPercent")}
-          hint={t("markupPercentHint")}
-          name="markupPercent"
-          min={0}
-          defaultValue={settings?.markupPercent ?? 0}
-          error={errorFor("markupPercent")}
-        />
-        <NumberField
-          label={t("roundUpToNearest")}
-          hint={t("roundUpToNearestHint")}
-          name="roundUpToNearest"
-          min={1}
-          defaultValue={settings?.roundUpToNearest ?? 1}
-          error={errorFor("roundUpToNearest")}
-        />
-      </div>
+      {Object.entries(carried).map(([name, value]) => (
+        <input key={name} type="hidden" name={name} value={value ?? ""} />
+      ))}
 
-      <div className="grid gap-4 border-t border-forest/12 pt-6 sm:grid-cols-2 lg:grid-cols-4">
-        <NumberField
-          label={t("legsPerRack")}
-          hint={t("legsPerRackHint")}
-          name="legsPerRack"
-          min={1}
-          defaultValue={settings?.legsPerRack ?? 4}
-          error={errorFor("legsPerRack")}
-        />
-        <NumberField
-          label={t("boltSetsPerShelf")}
-          hint={t("boltSetsPerShelfHint")}
-          name="boltSetsPerShelf"
-          min={1}
-          defaultValue={settings?.boltSetsPerShelf ?? 8}
-          error={errorFor("boltSetsPerShelf")}
-        />
-        <NumberField
-          label={t("bushesPerRack")}
-          hint={t("bushesPerRackHint")}
-          name="bushesPerRack"
-          min={1}
-          defaultValue={settings?.bushesPerRack ?? 4}
-          error={errorFor("bushesPerRack")}
-        />
-        <TextField
-          label={t("heightsFt")}
-          hint={t("heightsFtHint")}
-          name="heightsFt"
-          defaultValue={settings?.heightsFt.join(", ") ?? ""}
-          error={errorFor("heightsFt")}
-        />
-      </div>
-
-      <div className="border-t border-forest/12 pt-6">
-        <h3 className="font-display text-sm font-semibold text-forest">{t("anglePackHeading")}</h3>
-        <p className="mt-1 max-w-3xl font-body text-xs leading-relaxed text-stone">{t("anglePackHint")}</p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <NumberField
-            label={t("angleWidthCm")}
-            name="angleWidthCm"
-            min={0}
-            step="any"
-            defaultValue={settings?.angleWidthCm ?? ""}
-            error={errorFor("angleWidthCm") ?? (settings && settings.angleWidthCm === undefined ? t("packMissing") : undefined)}
-          />
-          <NumberField
-            label={t("angleStackCm")}
-            name="angleStackCm"
-            min={0}
-            step="any"
-            defaultValue={settings?.angleStackCm ?? ""}
-            error={errorFor("angleStackCm") ?? (settings && settings.angleStackCm === undefined ? t("packMissing") : undefined)}
-          />
+      {partsRow && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {shown("boltSetPrice") && (
+            <NumberField
+              label={t("boltSetPrice")}
+              hint={t("boltSetPriceHint")}
+              name="boltSetPrice"
+              defaultValue={settings?.boltSetPrice ?? ""}
+              error={errorFor("boltSetPrice")}
+            />
+          )}
+          {shown("bushPrice") && (
+            <NumberField
+              label={t("bushPrice")}
+              hint={t("bushPriceHint")}
+              name="bushPrice"
+              defaultValue={settings?.bushPrice ?? ""}
+              error={errorFor("bushPrice")}
+            />
+          )}
+          {/* What the same two parts weigh, beside what they cost — the
+              fixings in every steel rack's courier weight (`rackGrams`). */}
+          {shown("fixingWeights") && (
+            <>
+              <NumberField
+                label={t("boltSetGrams")}
+                hint={t("boltSetGramsHint")}
+                name="boltSetGrams"
+                defaultValue={settings?.boltSetGrams ?? ""}
+                error={errorFor("boltSetGrams")}
+              />
+              <NumberField
+                label={t("bushGrams")}
+                hint={t("bushGramsHint")}
+                name="bushGrams"
+                defaultValue={settings?.bushGrams ?? ""}
+                error={errorFor("bushGrams")}
+              />
+            </>
+          )}
         </div>
-      </div>
+      )}
 
-      {caps.length > 0 && (
+      {buildRow && (
+        <div
+          className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-4 ${
+            partsRow ? "border-t border-forest/12 pt-6" : ""
+          }`}
+        >
+          {shown("legsPerRack") && (
+            <NumberField
+              label={t("legsPerRack")}
+              hint={t("legsPerRackHint")}
+              name="legsPerRack"
+              defaultValue={settings?.legsPerRack ?? 4}
+              error={errorFor("legsPerRack")}
+            />
+          )}
+          {shown("boltSetsPerShelf") && (
+            <NumberField
+              label={t("boltSetsPerShelf")}
+              hint={t("boltSetsPerShelfHint")}
+              name="boltSetsPerShelf"
+              defaultValue={settings?.boltSetsPerShelf ?? 8}
+              error={errorFor("boltSetsPerShelf")}
+            />
+          )}
+          {shown("bushesPerRack") && (
+            <NumberField
+              label={t("bushesPerRack")}
+              hint={t("bushesPerRackHint")}
+              name="bushesPerRack"
+              defaultValue={settings?.bushesPerRack ?? 4}
+              error={errorFor("bushesPerRack")}
+            />
+          )}
+          {shown("heightsFt") && (
+            <TextField
+              label={t("heightsFt")}
+              hint={t("heightsFtHint")}
+              name="heightsFt"
+              defaultValue={settings?.heightsFt.join(", ") ?? ""}
+              error={errorFor("heightsFt")}
+            />
+          )}
+        </div>
+      )}
+
+      {shown("anglePack") && (
+        <div className="border-t border-forest/12 pt-6">
+          <h3 className="font-display text-sm font-semibold text-forest">{t("anglePackHeading")}</h3>
+          <p className="mt-1 max-w-3xl font-body text-xs leading-relaxed text-stone">{t("anglePackHint")}</p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <NumberField
+              label={t("angleWidthCm")}
+              name="angleWidthCm"
+              defaultValue={settings?.angleWidthCm ?? ""}
+              error={errorFor("angleWidthCm") ?? (settings && settings.angleWidthCm === undefined ? t("packMissing") : undefined)}
+            />
+            <NumberField
+              label={t("angleStackCm")}
+              name="angleStackCm"
+              defaultValue={settings?.angleStackCm ?? ""}
+              error={errorFor("angleStackCm") ?? (settings && settings.angleStackCm === undefined ? t("packMissing") : undefined)}
+            />
+          </div>
+        </div>
+      )}
+
+      {shown("heightsFt") && caps.length > 0 && (
         <ul className="flex flex-wrap gap-2">
           {caps.map(({ h, shelves }) => (
             <li
@@ -161,11 +255,7 @@ export function RatesForm({ settings }: { settings: RackSettings | null }) {
           {state.status === "saved" && !pending && <Check size={14} strokeWidth={2.5} />}
           {t("save")}
         </button>
-        {state.status === "error" && !state.field && (
-          <p className="font-body text-xs text-terracotta">
-            {t(`errors.${state.code}`, state.values ?? {})}
-          </p>
-        )}
+        {formError && <p className="font-body text-xs text-terracotta">{formError}</p>}
       </div>
     </form>
   );

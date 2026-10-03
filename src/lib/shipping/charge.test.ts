@@ -22,7 +22,7 @@ vi.mock("@/lib/repo/grow-media", () => ({ listGrowMedia: async () => [] }));
    16,723 g by size. */
 vi.mock("@/lib/racks/catalogue", () => ({
   findSellableRack: async () => ({
-    rack: { range: "shelf", heightFt: 6, shelves: 5, depthFt: 1, lengthFt: 2, gramsPerShelf: 500, packing: { kind: "plates", shelfCm: 3 } },
+    rack: { range: "shelf", heightFt: 6, shelves: 5, depthFt: 1, lengthFt: 2, grams: 2500, packing: { kind: "plates", shelfCm: 3 } },
     colour: "orange",
   }),
 }));

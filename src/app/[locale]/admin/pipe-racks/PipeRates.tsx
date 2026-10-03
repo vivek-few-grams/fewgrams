@@ -2,12 +2,12 @@
 
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, ExternalLink } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Check } from "lucide-react";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { PipeSettings, RackSettings } from "@/lib/types";
 import { savePipeRates } from "./actions";
 import { NumberField } from "../fields";
+import { RatesForm } from "../racks/RatesForm";
 
 /**
  * The rates this range prices from: **three of them editable here, the rest
@@ -19,11 +19,11 @@ import { NumberField } from "../fields";
  *   bush. No other range buys any of them, so this screen is their only home.
  *   The angle screen has no rates form for exactly the opposite reason: every
  *   rate it uses belongs to the plated range too.
- * - **Read-only, edited on `/admin/racks`** — the corner leg count, the
- *   heights on sale, markup and rounding. Those are frame geometry and
- *   commercial policy, the same for all three ranges, and a second form
- *   writing them would be a second place to change the markup and one of them
- *   to forget.
+ * - **Shared, editable here too** — the corner leg count and the heights on
+ *   sale. Frame geometry, the same for all three ranges: one `SETTINGS` row,
+ *   written through the same `RatesForm` as on `/admin/racks` (3 Oct 2026 —
+ *   read-only behind a link was inconsistent with the shelf screen). (Markup and rounding were here too until 3 Oct
+ *   2026; each range now sets its own, in `MarginForm`.)
  *
  * An operator still has to *see* the shared figures, or the cost column on the
  * table below is unexplained — so they are stated, not hidden.
@@ -123,18 +123,10 @@ export function PipeRates({
           </p>
         ) : (
           <>
-            <dl className="mt-3 grid gap-x-6 gap-y-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Fact label={t("legsPerRack")} value={String(settings.legsPerRack)} />
-              <Fact
-                label={t("markupPercent")}
-                value={t("percent", { value: settings.markupPercent })}
-              />
-              <Fact
-                label={t("roundUpToNearest")}
-                value={t("rupees", { amount: settings.roundUpToNearest })}
-              />
-              <Fact label={t("heightsFt")} value={settings.heightsFt.join(", ")} />
-            </dl>
+            {/* The same form and the same shared row as Shelf racks, showing
+                only the two fields pipe uses — the rest are carried through
+                unchanged. A save here reprices all three ranges. */}
+            <RatesForm settings={settings} show={["legsPerRack", "heightsFt"]} />
             {/* Stated whenever the shared list reaches past what pipe can
                 carry, because that is the moment the two ranges visibly
                 disagree and an operator would otherwise read the cap as a
@@ -146,26 +138,7 @@ export function PipeRates({
             )}
           </>
         )}
-
-        <Link
-          href="/admin/racks"
-          className="mt-4 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-forest underline underline-offset-2 transition-colors hover:text-stone"
-        >
-          {t("editShared")}
-          <ExternalLink size={13} strokeWidth={2} />
-        </Link>
       </div>
-    </div>
-  );
-}
-
-function Fact({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="font-body text-[10px] font-medium uppercase tracking-widest text-stone">
-        {label}
-      </dt>
-      <dd className="mt-0.5 font-body text-sm tabular-nums text-forest">{value}</dd>
     </div>
   );
 }

@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  NO_MARGIN,
   PIPE_MAX_HEIGHT_FT,
   VENDOR_SEED,
+  resolveMargins,
   allAngleRackConfigs,
   allPipeRackConfigs,
   allRackConfigs,
   angleRackCost,
   angleRackFeet,
+  angleRackGrams,
   angleRackSku,
   frameFeetPerShelf,
   pipeFeetPerShelf,
@@ -17,6 +20,7 @@ import {
   pipeRackSku,
   rackCapacityKg,
   rackCost,
+  rackGrams,
   rackSku,
   repricedRows,
   retailPrice,
@@ -93,7 +97,7 @@ describe("rackCost", () => {
 });
 
 describe("retailPrice", () => {
-  const s = VENDOR_SEED.settings;
+  const s = VENDOR_SEED.margins.plated;
 
   it("rounds up, never down", () => {
     /* ₹2,310 at the nearest 50 would be ₹2,300 — under cost. */
@@ -106,6 +110,32 @@ describe("retailPrice", () => {
 
   it("still rounds a fraction up when rounding is disabled", () => {
     expect(retailPrice(2310, { ...s, markupPercent: 1, roundUpToNearest: 1 })).toBe(2334);
+  });
+});
+
+describe("resolveMargins", () => {
+  const legacy = { legacyMarkupPercent: 20, legacyRoundUpToNearest: 50 };
+
+  it("gives a range with its own row that row, and leaves the others alone", () => {
+    /* The owner, 3 Oct 2026: changing one range's margin must not move the
+       other two. An angle row is the angle range's and nobody else's. */
+    const m = resolveMargins(legacy, [
+      { range: "angle", markupPercent: 35, roundUpToNearest: 100 },
+    ]);
+    expect(m.angle).toEqual({ markupPercent: 35, roundUpToNearest: 100 });
+    expect(m.plated).toEqual({ markupPercent: 20, roundUpToNearest: 50 });
+    expect(m.pipe).toEqual({ markupPercent: 20, roundUpToNearest: 50 });
+  });
+
+  it("starts every range at the old shared markup, so the split moves no price", () => {
+    const m = resolveMargins(legacy, []);
+    for (const range of ["plated", "angle", "pipe"] as const)
+      expect(m[range]).toEqual({ markupPercent: 20, roundUpToNearest: 50 });
+  });
+
+  it("prices at cost when there is neither a row nor a legacy figure", () => {
+    expect(resolveMargins(null, []).plated).toEqual(NO_MARGIN);
+    expect(resolveMargins({}, []).pipe).toEqual(NO_MARGIN);
   });
 });
 
@@ -623,11 +653,57 @@ describe("the pipe seed", () => {
   });
 });
 
+/* ──────────────────────── weight: for the courier ──────────────────── */
+
+describe("rack weight", () => {
+  /* The owner's measurements, 3 Oct 2026: 1.4 mm angle at 230 g a foot, and
+     the 1¼ × 3 ft plate at 1.5 kg. Fixings at 8 g a bolt pair, 10 g a bush. */
+  const card = {
+    ...VENDOR_SEED,
+    settings: { ...VENDOR_SEED.settings, boltSetGrams: 8, bushGrams: 10 },
+    angles: VENDOR_SEED.angles.map((a) => ({ ...a, gramsPerFt: 230 })),
+    plates: VENDOR_SEED.plates.map((p) =>
+      p.id === "p-1.25x3" ? { ...p, gramsPerShelf: 1500 } : p,
+    ),
+  };
+
+  it("weighs a shelf rack as legs by the foot, plates, and fixings", () => {
+    /* 4 × 6 ft × 230 = 5,520 g of legs; 5 plates × 1,500 = 7,500;
+       5 × 8 pairs × 8 g = 320 and 4 bushes × 10 g = 40. */
+    expect(rackGrams(OWNERS_RACK, card)).toBe(5520 + 7500 + 320 + 40);
+  });
+
+  it("gives every height its own leg weight, rather than one figure per shelf", () => {
+    /* The bug in the old per-shelf figure: a 3 ft and a 6 ft rack shared
+       their legs out over different shelf counts. */
+    const short = rackGrams({ ...OWNERS_RACK, heightFt: 3, shelves: 2 }, card)!;
+    expect(short).toBe(4 * 3 * 230 + 2 * 1500 + 2 * 8 * 8 + 40);
+  });
+
+  it("weighs an angle rack as every foot of angle in it", () => {
+    /* 24 ft of legs + 5 × 14 ft of frame = 94 ft × 230 g, plus fixings. */
+    expect(angleRackGrams(OWNERS_FRAME, card)).toBe(94 * 230 + 320 + 40);
+  });
+
+  it("refuses to weigh what has not been weighed, rather than reading it as light", () => {
+    const unweighed = { ...card, angles: VENDOR_SEED.angles };
+    expect(rackGrams(OWNERS_RACK, unweighed)).toBeNull();
+    expect(angleRackGrams(OWNERS_FRAME, unweighed)).toBeNull();
+    /* A plate with no weight of its own. */
+    expect(rackGrams({ ...OWNERS_RACK, plateId: "p-2x3" }, card)).toBeNull();
+  });
+
+  it("counts unweighed fixings as nothing", () => {
+    const bare = { ...card, settings: VENDOR_SEED.settings };
+    expect(rackGrams(OWNERS_RACK, bare)).toBe(5520 + 7500);
+  });
+});
+
 /* ─────────────────── repricing: rates cascade to prices ────────────── */
 
 describe("repricedRows", () => {
-  const settings = { ...VENDOR_SEED.settings, markupPercent: 0, roundUpToNearest: 1 };
-  const card = { ...VENDOR_SEED, settings };
+  const margin = { markupPercent: 0, roundUpToNearest: 1 };
+  const card = VENDOR_SEED;
   const cost = (c: RackConfig) => rackCost(c, card);
 
   /** A published rack, priced consistently with the card above. */
@@ -647,16 +723,16 @@ describe("repricedRows", () => {
   it("returns nothing when no rate has moved", () => {
     /* The common case, and the one that matters most: a save that changes
        nothing must not write a hundred rows or restamp their dates. */
-    expect(repricedRows([published(OWNERS_RACK)], cost, settings)).toEqual([]);
+    expect(repricedRows([published(OWNERS_RACK)], cost, margin)).toEqual([]);
   });
 
   it("moves a price when a material rate moves", () => {
     const model = published(OWNERS_RACK);
-    const dearer = { ...card, settings: { ...settings, boltSetPrice: 10 } };
+    const dearer = { ...card, settings: { ...card.settings, boltSetPrice: 10 } };
     const rows = repricedRows(
       [model],
       (c: RackConfig) => rackCost(c, dearer),
-      dearer.settings,
+      margin,
     );
     expect(rows).toHaveLength(1);
     /* 5 shelves × 8 pairs × (₹10 − ₹2) = ₹320 more. */
@@ -668,7 +744,7 @@ describe("repricedRows", () => {
     /* The case a cost-only comparison would miss: the rack costs exactly what
        it did, and sells for 80% more. */
     const model = published(OWNERS_RACK);
-    const marked = { ...settings, markupPercent: 80 };
+    const marked = { ...margin, markupPercent: 80 };
     const rows = repricedRows([model], cost, marked);
     expect(rows).toHaveLength(1);
     expect(rows[0].costAtPublish).toBe(model.costAtPublish);
@@ -680,18 +756,18 @@ describe("repricedRows", () => {
        would put a free rack on sale. */
     const orphan = published(OWNERS_RACK, { price: 2310, costAtPublish: 2310 });
     orphan.config = { ...OWNERS_RACK, plateId: "gone" };
-    expect(repricedRows([orphan], cost, settings)).toEqual([]);
+    expect(repricedRows([orphan], cost, margin)).toEqual([]);
   });
 
   it("still writes a row whose cost moved but whose rounded price did not", () => {
     /* The baseline has to follow the cost even when the price stands still,
        or the row reads as stale for ever. */
-    const rounded = { ...settings, roundUpToNearest: 500 };
+    const rounded = { ...margin, roundUpToNearest: 500 };
     const model = published(OWNERS_RACK, { price: 2500 });
-    const dearer = { ...card, settings: rounded };
+    const dearer = { ...card, settings: { ...card.settings, boltSetPrice: 3 } };
     const rows = repricedRows(
       [model],
-      (c: RackConfig) => rackCost(c, { ...dearer, settings: { ...rounded, boltSetPrice: 3 } }),
+      (c: RackConfig) => rackCost(c, dearer),
       rounded,
     );
     expect(rows).toHaveLength(1);
@@ -704,7 +780,7 @@ describe("repricedRows", () => {
        passes only its own cost function. */
     const angle: AngleRackConfig = { heightFt: 6, shelves: 5, frameId: "f-1x4", angleId: "a-1.4" };
     const pipe: PipeRackConfig = { heightFt: 6, shelves: 5, pipeSizeId: "pp-1.5x3" };
-    const dear = { ...settings, markupPercent: 100 };
+    const dear = { ...margin, markupPercent: 100 };
 
     const angleRows = repricedRows(
       [{ config: angle, price: 3860, costAtPublish: 3860 }],
