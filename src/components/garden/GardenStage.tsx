@@ -39,6 +39,7 @@ export function GardenStage({
   tubLabel,
   canLabel,
   doorLabel,
+  trayTags,
   sceneRef,
   onLive,
   onStills,
@@ -59,6 +60,8 @@ export function GardenStage({
   canLabel: string;
   /** The dark room's name, printed on its door. */
   doorLabel: string;
+  /** What each tray pair is made of, printed on its front. */
+  trayTags: Record<TrayFinish, string>;
   sceneRef: React.RefObject<GardenScene | null>;
   onLive: (live: boolean) => void;
   /** The scene will not run here (reduced motion, no WebGL, or its chunk
@@ -85,6 +88,7 @@ export function GardenStage({
     tubLabel,
     canLabel,
     doorLabel,
+    trayTags,
     onProgress,
     onPick,
     onLook,
@@ -101,6 +105,7 @@ export function GardenStage({
       tubLabel,
       canLabel,
       doorLabel,
+      trayTags,
       onProgress,
       onPick,
       onLook,
@@ -135,6 +140,7 @@ export function GardenStage({
               tubLabel: now.tubLabel,
               canLabel: now.canLabel,
               doorLabel: now.doorLabel,
+              trayTags: now.trayTags,
               font: getComputedStyle(canvas).fontFamily,
               events: {
                 onFirstFrame: () => {

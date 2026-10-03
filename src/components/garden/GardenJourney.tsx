@@ -19,6 +19,7 @@ import {
   ChevronsRight,
   Sprout,
   Sun,
+  Plus,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { QuickAdd } from "@/components/catalogue/QuickAdd";
@@ -201,7 +202,6 @@ export function GardenJourney({
 
   const bench = step === "touch" ? null : step;
   const done = step === "touch" || !live || state.progress >= 1;
-  const index = STEPS.indexOf(step);
   const following = nextStep(step);
   const phase = state.phase;
 
@@ -259,34 +259,50 @@ export function GardenJourney({
     target: Target,
     name: string,
     product: GardenProduct | null | undefined,
-  ) => (
-    <span className="flex items-center gap-1 rounded-full bg-cream/95 p-1 shadow-[0_6px_18px_rgba(3,39,24,0.18)] ring-1 ring-forest/10">
-      <button
-        type="button"
-        onClick={() => select(target)}
-        className="flex flex-col items-start whitespace-nowrap rounded-full py-1 pl-3 pr-2 font-body text-sm font-semibold leading-tight text-forest transition-colors hover:bg-forest/10"
-      >
-        {name}
-        {product && (
-          <span className="text-[11px] font-medium text-forest/70">
-            {product.price}
-          </span>
-        )}
-      </button>
-      {product && (
+  ) =>
+    product ? (
+      /* The whole tag goes to the seeds page, not this one seed's (the
+         owner, 2–3 Oct 2026); the packet itself is picked on the bench,
+         and from the keyboard by the button that shows on focus. */
+      <span className="flex flex-col items-center gap-1">
         <ShopLink
           newTab={t("product.newTab")}
-          /* To the seeds page, not this one seed's (the owner, 2 Oct 2026):
-             a packet on the bench opens the whole seed range. */
           href="/seeds"
-          aria-label={`${t("product.allSeeds")} (${t("product.newTab")})`}
-          className="pointer-events-auto grid size-8 place-items-center rounded-full bg-forest text-cream transition-colors hover:bg-forest-deep"
+          aria-label={`${t("product.allSeeds")}: ${name}, ${product.price} (${t("product.newTab")})`}
+          className="group/seed pointer-events-auto flex items-center gap-1 rounded-full bg-cream/95 p-1 font-body shadow-[0_6px_18px_rgba(3,39,24,0.18)] ring-1 ring-forest/10 transition-colors hover:bg-cream"
         >
-          <ShoppingBag size={15} aria-hidden />
+          <span className="flex flex-col items-start whitespace-nowrap py-1 pl-3 pr-2 text-sm font-semibold leading-tight text-forest">
+            {name}
+            <span className="text-[11px] font-medium text-forest/70">
+              {product.price}
+            </span>
+          </span>
+          <span
+            aria-hidden
+            className="grid size-8 place-items-center rounded-full bg-forest text-cream transition-colors group-hover/seed:bg-forest-deep"
+          >
+            <ShoppingBag size={15} />
+          </span>
         </ShopLink>
-      )}
-    </span>
-  );
+        <button
+          type="button"
+          onClick={() => select(target)}
+          className="sr-only rounded-full bg-forest px-3 py-1.5 font-body text-xs font-semibold text-cream focus:not-sr-only"
+        >
+          {name}
+        </button>
+      </span>
+    ) : (
+      <span className="flex items-center rounded-full bg-cream/95 p-1 shadow-[0_6px_18px_rgba(3,39,24,0.18)] ring-1 ring-forest/10">
+        <button
+          type="button"
+          onClick={() => select(target)}
+          className="whitespace-nowrap rounded-full px-3 py-1 font-body text-sm font-semibold leading-tight text-forest transition-colors hover:bg-forest/10"
+        >
+          {name}
+        </button>
+      </span>
+    );
   const gestureLabel: Partial<Record<Phase, string>> = {
     wipe: t("targets.wipe"),
     pour: t("targets.pour"),
@@ -320,6 +336,35 @@ export function GardenJourney({
     );
     if (shelf.medium)
       labels.medium = <MediumTag product={shelf.medium} t={t} />;
+    /* The light step's rack card, bottom left, with a dotted arrow to it
+       from the shelf it sells (the owner, 3 Oct 2026); the scene draws
+       the line between the two (`placeRackArrow`). */
+    if (bench === "light" && shelf.rack)
+      labels.rackArrow = (
+        <svg
+          aria-hidden
+          width="1"
+          height="1"
+          className="absolute left-0 top-0 overflow-visible text-forest/80"
+        >
+          <path
+            data-arrow-line
+            stroke="currentColor"
+            strokeWidth="2.2"
+            strokeDasharray="1 6"
+            strokeLinecap="round"
+            fill="none"
+          />
+          <path
+            data-arrow-head
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        </svg>
+      );
     labels.lid = pill("lid", t("targets.uncover"));
     labels.lamp = pill("lamp", t("targets.lamp"));
     labels.cutter = pill("cutter", t("targets.cutter"));
@@ -363,7 +408,9 @@ export function GardenJourney({
     if (s === "sow" && seed && (any || p === "sow" || p === "done"))
       return { p: seed };
     if (s === "light" && shelf.rack) return { p: shelf.rack };
-    if (s === "harvest" && (any || p === "done")) return "kit";
+    /* From the moment the harvest opens, not once it is cut (the owner,
+       3 Oct 2026). */
+    if (s === "harvest") return "kit";
     return null;
   }
   const ad = bench ? adFor(bench, phase) : null;
@@ -421,6 +468,10 @@ export function GardenJourney({
           tubLabel={t("steps.clean.solution")}
           canLabel={t("steps.soak.can")}
           doorLabel={t("steps.dark.door")}
+          trayTags={{
+            "tray-pair": t("trayTags.tray-pair"),
+            "tray-pair-food-grade": t("trayTags.tray-pair-food-grade"),
+          }}
           sceneRef={sceneRef}
           onLive={setLive}
           onStills={() => setStills(true)}
@@ -432,8 +483,9 @@ export function GardenJourney({
         />
       ) : (
         /* The trays fit the box they are drawn in, so the box stops short of
-           the title above and of the steps below. */
-        <div className="absolute inset-x-0 bottom-16 top-28 md:bottom-12 md:top-28">
+           the card below; its height is the one the trays were sized for
+           (the owner, 2 Oct 2026), moved up when the title went down. */
+        <div className="absolute inset-x-0 bottom-28 top-16 md:bottom-24 md:top-16">
           <TrayPlayStage
             alt={home("alt")}
             onLive={() => setTraysLive(true)}
@@ -498,51 +550,6 @@ export function GardenJourney({
         </div>
       )}
 
-      {/* ---- top: where you are ---- */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-30 flex flex-col gap-3 p-4 md:flex-row md:items-start md:justify-between md:p-6">
-        {/* A cream card, so the title reads over the room behind it. */}
-        <div className="pointer-events-auto self-start rounded-2xl bg-cream/85 px-4 py-2.5 shadow-sm backdrop-blur-sm">
-          <p className="font-body text-[11px] font-semibold uppercase tracking-[0.18em] text-forest/70">
-            {t("title")} ·{" "}
-            {t("nav.count", { current: index + 1, total: STEPS.length })}
-          </p>
-          <h1 className="font-display text-xl font-bold leading-tight text-forest md:text-[1.9rem]">
-            {t(`steps.${step}.title`)}
-          </h1>
-          {/* What to do, while a tray is still to be chosen — here rather
-              than under the trays, so the trays can have that room. */}
-          {step === "pick" &&
-            live &&
-            state.step === "pick" &&
-            state.phase === "choose" && (
-              <p className="garden-card-in mt-1 flex items-center gap-1.5 font-body text-sm font-semibold text-forest/80">
-                <span
-                  className="garden-label-dot size-2 rounded-full bg-sage"
-                  aria-hidden
-                />
-                {t("steps.pick.hint")}
-              </p>
-            )}
-        </div>
-        {step === "touch" ? (
-          <button
-            type="button"
-            onClick={() => go("pick")}
-            /* A slow breath and a nudge of the arrow: the one thing on this
-               screen that leads on, so it asks to be pressed. */
-            className={`garden-nudge pointer-events-auto self-start ${primaryClass}`}
-          >
-            <Sprout size={18} aria-hidden />
-            <span className="max-w-[15rem] text-left leading-snug sm:max-w-none">
-              {t("steps.touch.start")}
-            </span>
-            <ArrowRight size={16} aria-hidden className="garden-nudge-arrow" />
-          </button>
-        ) : (
-          <div className="pointer-events-auto lg:hidden">{dots}</div>
-        )}
-      </div>
-
       {/* ---- well done, in the middle ---- */}
       {cheer && (
         <div className="pointer-events-none absolute inset-x-0 top-[22%] z-30 flex justify-center px-4">
@@ -557,54 +564,98 @@ export function GardenJourney({
         </div>
       )}
 
-      {/* ---- the steps, bottom centre where there is room for them ---- */}
-      <div
-        className={`pointer-events-none absolute inset-x-0 bottom-0 z-30 justify-center p-4 md:p-6 ${
-          step === "touch" ? "flex" : "hidden lg:flex"
-        }`}
-      >
-        <div className="pointer-events-auto">{dots}</div>
-      </div>
-
       {/* ---- the product: top right, under the wall shelf, where the eye
-          goes (the owner, 2 Oct 2026) — bottom left on the light step; on
-          a phone, whose top holds the title and the steps, above the
-          buttons at the bottom ---- */}
+          goes (the owner, 2 Oct 2026) — bottom left on the light step,
+          above the card that says where you are; on a phone, above that
+          card ---- */}
       {card && (
         <div
-          className={`pointer-events-none absolute inset-x-0 bottom-[4.75rem] z-30 flex px-4 md:inset-x-auto md:px-0 ${framed ? "md:hidden" : ""} ${
+          className={`pointer-events-none absolute inset-x-0 bottom-[11rem] z-30 flex px-4 md:inset-x-auto md:px-0 ${framed ? "md:hidden" : ""} ${
             /* The light step's rack fills the top right, and leaves the
                bottom left bare (the owner, same day). */
             bench === "light"
-              ? "md:bottom-6 md:left-6"
+              ? "md:bottom-40 md:left-6"
               : /* The harvest's bowl is on the right; the left is bare. */
                 bench === "harvest"
-                ? "md:bottom-auto md:left-6 md:top-[19%]"
+                ? /* Centred down the left (the owner, 3 Oct 2026), on the
+                     bare bench the harvest's framing leaves there. */
+                  "md:bottom-auto md:left-6 md:top-1/2 md:-translate-y-1/2"
                 : "md:bottom-auto md:right-6 md:top-[19%]"
           }`}
         >
-          <div className="pointer-events-auto w-full min-w-0 md:w-auto">
+          <div
+            data-garden-card={bench ?? undefined}
+            className="pointer-events-auto w-full min-w-0 md:w-auto"
+          >
             {card}
           </div>
         </div>
       )}
 
-      {/* ---- bottom: on ---- */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex flex-col gap-3 p-4 md:flex-row md:items-end md:justify-end md:p-6">
-        <div className="pointer-events-auto flex flex-col items-end gap-2">
-          <div className="flex flex-wrap items-center justify-end gap-2">
+      {/* ---- where you are, and on: one card, bottom centre (the owner,
+          3 Oct 2026) — the steps and the title on the left, the step's
+          buttons on the right; stacked on a phone ---- */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex justify-center p-4 md:p-6">
+        {/* Cream, so the title reads over the room behind it. */}
+        <div className="pointer-events-auto flex w-full flex-col gap-3 rounded-2xl bg-cream/90 px-4 py-3 shadow-[0_10px_30px_rgba(3,39,24,0.16)] ring-1 ring-forest/10 backdrop-blur-sm md:w-auto md:flex-row md:items-center md:gap-8 md:py-2.5 md:pr-3">
+          <div className="min-w-0">
+            {/* The steps sit on the eyebrow line: one card says where you
+              are. */}
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+              <p className="font-body text-[11px] font-semibold uppercase tracking-[0.18em] text-forest/70">
+                {t("title")}
+              </p>
+              {dots}
+            </div>
+            {/* The step's title says what to do; while a tray is still to
+                be chosen it carries a pulsing dot, rather than saying it
+                twice in a second line (the owner, 3 Oct 2026). */}
+            <h1 className="flex items-center gap-2.5 font-display text-xl font-bold leading-tight text-forest md:text-[1.9rem]">
+              {step === "pick" &&
+                live &&
+                state.step === "pick" &&
+                state.phase === "choose" && (
+                  <span
+                    className="garden-label-dot size-2.5 shrink-0 rounded-full bg-sage md:size-3"
+                    aria-hidden
+                  />
+                )}
+              {t(`steps.${step}.title`)}
+            </h1>
+          </div>
+          <div className="flex flex-wrap items-center justify-end gap-2 md:shrink-0">
             {step === "touch" ? (
-              /* Without the live scene there are no tray labels, so the
-                 photograph keeps one way to the shop. */
-              !traysLive && (
-                <ShopLink
-                  newTab={t("product.newTab")}
-                  href="/microgreens"
-                  className={pillClass}
+              <>
+                {/* Without the live scene there are no tray labels, so the
+                    photograph keeps one way to the shop. */}
+                {!traysLive && (
+                  <ShopLink
+                    newTab={t("product.newTab")}
+                    href="/microgreens"
+                    className={pillClass}
+                  >
+                    {t("steps.touch.order")}
+                  </ShopLink>
+                )}
+                {/* Where the journey's Next sits on every other step. A
+                    slow breath and a nudge of the arrow: the one thing on
+                    this screen that leads on, so it asks to be pressed. */}
+                <button
+                  type="button"
+                  onClick={() => go("pick")}
+                  className={`garden-nudge ${primaryClass}`}
                 >
-                  {t("steps.touch.order")}
-                </ShopLink>
-              )
+                  <Sprout size={18} aria-hidden />
+                  <span className="max-w-[15rem] text-left leading-snug sm:max-w-none">
+                    {t("steps.touch.start")}
+                  </span>
+                  <ArrowRight
+                    size={16}
+                    aria-hidden
+                    className="garden-nudge-arrow"
+                  />
+                </button>
+              </>
             ) : (
               <>
                 {live && !done && bench !== "pick" && (
@@ -1095,7 +1146,13 @@ function MediumTag({ product, t }: { product: GardenProduct; t: T }) {
           fill="none"
         />
       </svg>
-      <span className="flex items-center gap-2.5 rounded-2xl bg-cream/95 p-1.5 pr-2 shadow-[0_10px_30px_rgba(3,39,24,0.2)] ring-1 ring-forest/10">
+      {/* The whole card is the way to the product (the owner, 3 Oct
+          2026), not only its bag. */}
+      <ShopLink
+        newTab={t("product.newTab")}
+        href={product.href}
+        className="group/medium pointer-events-auto flex items-center gap-2.5 rounded-2xl bg-cream/95 p-1.5 pr-2 shadow-[0_10px_30px_rgba(3,39,24,0.2)] ring-1 ring-forest/10 transition-colors hover:bg-cream"
+      >
         {product.image && (
           <span className="relative size-12 shrink-0 overflow-hidden rounded-xl bg-sand">
             <Image
@@ -1116,15 +1173,13 @@ function MediumTag({ product, t }: { product: GardenProduct; t: T }) {
           </span>
           <span className="text-[11px] text-stone">{product.price}</span>
         </span>
-        <ShopLink
-          newTab={t("product.newTab")}
-          href={product.href}
-          aria-label={`${t("product.view")}: ${product.name} (${t("product.newTab")})`}
-          className="pointer-events-auto grid size-8 shrink-0 place-items-center rounded-full bg-forest text-cream transition-colors hover:bg-forest-deep"
+        <span
+          aria-hidden
+          className="grid size-8 shrink-0 place-items-center rounded-full bg-forest text-cream transition-colors group-hover/medium:bg-forest-deep"
         >
-          <ShoppingBag size={15} aria-hidden />
-        </ShopLink>
-      </span>
+          <ShoppingBag size={15} />
+        </span>
+      </ShopLink>
     </span>
   );
 }
@@ -1345,47 +1400,43 @@ function StepDots({
 }) {
   const at = STEPS.indexOf(step);
   return (
-    <nav
-      aria-label={t("nav.steps")}
-      className="inline-block rounded-full bg-cream/80 p-1 shadow-sm ring-1 ring-forest/10 backdrop-blur-sm"
-    >
+    <nav aria-label={t("nav.steps")}>
       <ol className="flex items-center gap-1">
-        {STEPS.map((s, i) => (
-          <li key={s} className="flex items-center gap-1">
-            {i > 0 && (
-              <span
-                aria-hidden
-                className={`hidden h-px w-2 sm:block ${i <= at ? "bg-forest" : "bg-forest/20"}`}
-              />
-            )}
-            <button
-              type="button"
-              onClick={() => onGo(s)}
-              aria-current={s === step ? "step" : undefined}
-              aria-label={t("nav.goTo", { number: i + 1, name: labels(s) })}
-              className={`flex h-7 items-center gap-1.5 rounded-full font-body text-xs font-semibold transition-colors sm:h-8 ${
-                s === step
-                  ? "bg-forest pl-1 pr-3 text-cream"
-                  : i < at
-                    ? "w-7 justify-center bg-forest/85 text-cream hover:bg-forest sm:w-8"
-                    : "w-7 justify-center text-forest ring-1 ring-forest/20 hover:bg-forest/10 sm:w-8"
-              }`}
-            >
-              {s === step ? (
-                <>
-                  <span className="grid size-5 place-items-center rounded-full bg-forest-deep text-cream sm:size-6">
-                    {i + 1}
-                  </span>
-                  {labels(s)}
-                </>
-              ) : i < at ? (
-                <Check size={13} strokeWidth={2.5} aria-hidden />
-              ) : (
-                i + 1
+        {STEPS.map((s, i) => {
+          const name = t("nav.goTo", { number: i + 1, name: labels(s) });
+          return (
+            <li key={s} className="flex items-center gap-1">
+              {i > 0 && (
+                <span
+                  aria-hidden
+                  className={`hidden h-px w-2 sm:block ${i <= at ? "bg-forest" : "bg-forest/20"}`}
+                />
               )}
-            </button>
-          </li>
-        ))}
+              <button
+                type="button"
+                onClick={() => onGo(s)}
+                aria-current={s === step ? "step" : undefined}
+                aria-label={name}
+                title={name}
+                className={`grid size-6 place-items-center rounded-full font-body text-[11px] font-semibold transition-colors ${
+                  s === step
+                    ? /* Where you are: filled, with a ring that keeps
+                         pulsing out from it. */
+                      "garden-step-now bg-forest text-cream outline-2 outline-offset-2 outline-sage"
+                    : i < at
+                      ? "bg-forest/85 text-cream hover:bg-forest"
+                      : "text-forest ring-1 ring-forest/25 hover:bg-forest/10"
+                }`}
+              >
+                {i < at ? (
+                  <Check size={12} strokeWidth={3} aria-hidden />
+                ) : (
+                  i + 1
+                )}
+              </button>
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );
@@ -1499,7 +1550,10 @@ function WallFrame({ p, recommended = false, t }: Ad & { t: T }) {
       <span className="block size-full -rotate-1 overflow-hidden rounded-[3px] border-[6px] border-[#9a6b43] bg-[#f6f1e7] font-body shadow-[0_14px_28px_rgba(40,25,10,0.32),inset_0_0_0_1px_rgba(0,0,0,0.08)] [border-style:ridge] [container-type:size]">
         <span
           className="flex size-full items-center"
-          style={{ padding: u(10, 4), gap: u(8, 4) }}
+          /* A slim margin above and below, a wider one at the sides:
+             the frame is cut to its contents' height (kitchen.ts,
+             `AD_ASPECT`). */
+          style={{ padding: `${u(6, 2.5)} ${u(10, 4)}`, gap: u(8, 4) }}
         >
           {p.image && (
             <ShopLink
@@ -1588,6 +1642,8 @@ function Kit({
   look: Look;
   t: T;
 }) {
+  /* What was used, and the rack it grew on (the owner, 3 Oct 2026); the
+     fresh greens are not offered here any more. */
   const items = [shelf.trays[finish], shelf.medium, shelf.seeds[look]].filter(
     (p): p is GardenProduct => !!p,
   );
@@ -1611,7 +1667,7 @@ function Kit({
       }
       setResult(ok ? "added" : "failed");
     });
-  const green = shelf.greens[look];
+  const rack = shelf.rack;
   return (
     <div className="garden-card-in w-full max-w-sm rounded-2xl bg-cream/95 p-4 md:w-96 shadow-[0_10px_30px_rgba(3,39,24,0.18)] ring-1 ring-forest/10 backdrop-blur-sm">
       {items.length > 0 && (
@@ -1640,16 +1696,55 @@ function Kit({
                     />
                   </span>
                 )}
-                <ShopLink
-                  newTab={t("product.newTab")}
-                  href={p.href}
-                  className="min-w-0 flex-1 truncate font-semibold text-forest hover:underline"
-                >
-                  {p.name}
-                </ShopLink>
-                <span className="shrink-0 text-xs text-stone">{p.price}</span>
+                {/* The name with its price under it, and a button for each
+                    (the owner, 3 Oct 2026). */}
+                <span className="min-w-0 flex-1">
+                  <ShopLink
+                    newTab={t("product.newTab")}
+                    href={p.href}
+                    className="block truncate font-semibold text-forest hover:underline"
+                  >
+                    {p.name}
+                  </ShopLink>
+                  <span className="text-xs text-stone">{p.price}</span>
+                </span>
+                <QuickAdd {...p.quickAdd} className="shrink-0" />
               </li>
             ))}
+            {/* The rack it stood on: sizes and a colour to choose, so a
+                way to its range rather than an Add. */}
+            {rack && (
+              <li className="flex items-center gap-3 py-1.5 font-body text-sm">
+                <span className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-sand">
+                  <Image
+                    src={rack.image.src}
+                    alt=""
+                    fill
+                    sizes="48px"
+                    className="object-contain p-0.5"
+                  />
+                </span>
+                <ShopLink
+                  newTab={t("product.newTab")}
+                  href={rack.href}
+                  className="min-w-0 flex-1 truncate font-semibold text-forest hover:underline"
+                >
+                  {rack.name}
+                </ShopLink>
+                {/* "Add", like the rows above (the owner, 3 Oct 2026), but
+                    to the range: a rack's size and colour are chosen there
+                    before it can go in the basket. */}
+                <ShopLink
+                  newTab={t("product.newTab")}
+                  href={rack.href}
+                  aria-label={`${t("product.add")}: ${rack.name} (${t("product.newTab")})`}
+                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-forest px-3 py-1.5 text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-cream"
+                >
+                  <Plus size={15} aria-hidden />
+                  {t("product.add")}
+                </ShopLink>
+              </li>
+            )}
           </ul>
           {result === "added" ? (
             <Link
@@ -1676,50 +1771,6 @@ function Kit({
             </p>
           )}
         </>
-      )}
-      {green ? (
-        <div className="mt-3 border-t border-forest/10 pt-3">
-          <p className="font-body text-xs font-semibold text-forest/70">
-            {t("kit.fresh", { name: green.name })}
-          </p>
-          <div className="mt-1.5 flex items-center gap-3 font-body text-sm">
-            {green.image && (
-              <ShopLink
-                newTab={t("product.newTab")}
-                href={green.href}
-                className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-sand"
-              >
-                <Image
-                  src={green.image.src}
-                  alt={green.image.alt}
-                  fill
-                  sizes="48px"
-                  className="object-contain p-0.5"
-                />
-              </ShopLink>
-            )}
-            <span className="min-w-0 flex-1">
-              <ShopLink
-                newTab={t("product.newTab")}
-                href={green.href}
-                className="block truncate font-semibold text-forest hover:underline"
-              >
-                {green.name}
-              </ShopLink>
-              <span className="text-xs text-stone">{green.price}</span>
-            </span>
-            <QuickAdd {...green.quickAdd} className="shrink-0" />
-          </div>
-        </div>
-      ) : (
-        <ShopLink
-          newTab={t("product.newTab")}
-          href="/microgreens"
-          className="mt-3 inline-flex items-center gap-1.5 font-body text-sm font-semibold text-forest underline-offset-4 transition-colors hover:underline"
-        >
-          {t("kit.freshAny")}
-          <ArrowRight size={15} aria-hidden />
-        </ShopLink>
       )}
     </div>
   );

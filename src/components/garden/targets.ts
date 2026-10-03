@@ -65,10 +65,18 @@ export const TARGETS: readonly Target[] = [
 /** A label pinned in the scene: every target, plus three that point at
  *  something without it being a thing to pick up — `medium`, the coco peat
  *  product's tag, `timer`, the soak clock, and `ad`, the framed product of
- *  the moment on the wall under the herb shelf. (The solution's name is
- *  printed on its tub, `dipTub`, not pinned.) */
-export type Anchor = Target | "medium" | "timer" | "ad";
-export const ANCHORS: readonly Anchor[] = [...TARGETS, "medium", "timer", "ad"];
+ *  the moment on the wall under the herb shelf — and `rackArrow`, the
+ *  light step's arrow from the rack to its card. (The solution's name is
+ *  printed on its tub, `dipTub`, and what a tray pair is made of on its
+ *  front, `trayPrint` — not pinned.) */
+export type Anchor = Target | "medium" | "timer" | "ad" | "rackArrow";
+export const ANCHORS: readonly Anchor[] = [
+  ...TARGETS,
+  "medium",
+  "timer",
+  "ad",
+  "rackArrow",
+];
 
 /** How long the clean step's soak clock runs, in real seconds — a sped-up
  *  clock, not the soak time itself, which the copy does not state. */

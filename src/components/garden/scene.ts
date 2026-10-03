@@ -69,6 +69,7 @@ import {
   rippleWater,
   DIP,
   wateringCan,
+  trayPrint,
 } from "./props";
 import type { BenchStep } from "./steps";
 import {
@@ -236,7 +237,9 @@ const WIDE: Layout = {
   },
   lid: [2.45, 0],
   bowl: [2.05, 0.45],
-  cutter: [-1.6, 0.95],
+  /* Right of the bowl, so the left of the bench is the kit card's (the
+     owner, 3 Oct 2026). */
+  cutter: [3.75, 0.7],
   canScale: 2,
 };
 /** The bench kept clear beside each end tray of the pick step, on a wide
@@ -339,6 +342,7 @@ export function mountGardenScene(
     tubLabel,
     canLabel,
     doorLabel,
+    trayTags,
     font,
   }: {
     events: GardenEvents;
@@ -350,6 +354,8 @@ export function mountGardenScene(
     canLabel: string;
     /** The dark room's name, translated, printed on its door. */
     doorLabel: string;
+    /** What each pair is made of, translated, printed on its front. */
+    trayTags: Record<TrayFinish, string>;
     /** The page's font stack, to print them in. */
     font: string;
   },
@@ -417,6 +423,7 @@ export function mountGardenScene(
     bin.add({ dispose: () => disposeTrayMaterials(mats) });
     const group = bin.geometries(trayPair(0, mats)) as THREE.Group;
     group.userData.target = f;
+    group.getObjectByName("water")?.add(trayPrint(bin, trayTags[f], font));
     scene.add(group);
     const shadowMat = bin.add(
       new THREE.MeshBasicMaterial({
@@ -3111,6 +3118,9 @@ export function mountGardenScene(
       case "harvest":
         add(L.bowl, 0.7);
         add(L.cutter, 0.55);
+        /* Bare bench on the left for the kit card, so it stands clear of
+           the tray (the owner, 3 Oct 2026). */
+        if (L === WIDE) box[0] -= 2.6;
         break;
     }
     return box;
@@ -3156,16 +3166,25 @@ export function mountGardenScene(
    *  the page puts its step dots and buttons — and centre it. */
   function frameFor(s: BenchStep) {
     const box = focusFor(s);
-    const [x0, x1, z0, z1, top, bottom = 0] = box;
     /* The rack is seen straight on, nearly level; everything else from
        above the bench. */
-    fitElev = s === "light" ? (rackClose < 0.5 ? 0.06 : 0.1) : elevation;
-    wantTarget.set(
-      (x0 + x1) / 2,
-      bottom + (top - bottom) * 0.35,
-      (z0 + z1) / 2,
-    );
-    const MX = 0.97;
+    /* The pick looks further down, so the bench takes the room the wall
+       had and the trays rise clear of the card at the bottom (the owner,
+       3 Oct 2026), and so do the other kitchen steps. */
+    const tilted = L === WIDE && s !== "light" && !(s === "dark" && trip);
+    /* The kitchen steps tilt less, and only as far as keeps the shelf and
+       the frame under it whole (the owner, same day): the steepest of
+       these that does. The pick has no frame. */
+    const tilts =
+      s === "light"
+        ? [rackClose < 0.5 ? 0.06 : 0.1]
+        : !tilted
+          ? [elevation]
+          : s === "pick"
+            ? [elevation + 0.16]
+            : s === "dark"
+              ? [elevation + 0.08]
+              : [elevation + 0.08, elevation + 0.04, elevation];
     /* The top third is the room — window, shelf, print — so the work sits
        below it. */
     /* Soaking and filling are low work on the bench — a bowl, a can, the
@@ -3174,9 +3193,67 @@ export function mountGardenScene(
     const close = s === "soak" || s === "fill" || s === "sow";
     /* The rack stands up into the room, where the other steps leave it
        for the window. */
-    const TOP = s === "light" ? 0.72 : close ? 0.42 : 0.3;
-    /* The pick step has nothing under its trays but the step dots. */
-    const BOTTOM = s === "pick" || close ? -0.8 : -0.7;
+    const TOP = s === "light" ? 0.72 : close ? 0.42 : s === "pick" ? 0.45 : 0.3;
+    /* Under the work is the card that says where you are, so on a wide
+       stage the work stops above it (the owner, 3 Oct 2026). */
+    const BOTTOM =
+      s === "light"
+        ? -0.7
+        : L === WIDE
+          ? -0.56
+          : /* A phone's card is taller, stacked; the front pair's card
+               hangs under its tray, above that. */
+            s === "pick"
+            ? -0.3
+            : -0.5;
+    /* Where a frame can hang, its nail stays in view; of the
+       tilts, the one that keeps the work largest. */
+    const keep = tilts.length > 1 ? shelfTop() : null;
+    let best = -1;
+    let bestDist = Infinity;
+    for (let i = 0; i < tilts.length; i++) {
+      fitElev = tilts[i];
+      const d = fitTo(box, TOP, BOTTOM, keep);
+      if (d < bestDist - 1e-3) {
+        bestDist = d;
+        best = i;
+      }
+    }
+    if (best !== tilts.length - 1) {
+      fitElev = tilts[best];
+      fitTo(box, TOP, BOTTOM, keep);
+    }
+  }
+  const shelfAbove = new THREE.Vector3();
+  const keepAt = new THREE.Vector3();
+  /** The nail under the wall shelf, in the world: the frame hangs from
+   *  it. What is on the shelf may crop off the top (the owner, 3 Oct
+   *  2026); the nail and the frame may not. */
+  function shelfTop() {
+    return room.group.localToWorld(
+      shelfAbove.set(
+        (WALL_AD.x0 + WALL_AD.x1) / 2,
+        WALL_AD.shelfBottom - 0.04,
+        WALL_AD.z,
+      ),
+    );
+  }
+  /** Fit `box` between `top` and `bottom` (and the side margins) from
+   *  `fitElev`, with `keep` (if any) under the top edge, leaving the pose
+   *  in `wantTarget` and `wantPos`; returns its distance. */
+  function fitTo(
+    box: number[],
+    TOP: number,
+    BOTTOM: number,
+    keep: THREE.Vector3 | null,
+  ) {
+    const [x0, x1, z0, z1, top, bottom = 0] = box;
+    const MX = 0.97;
+    wantTarget.set(
+      (x0 + x1) / 2,
+      bottom + (top - bottom) * 0.35,
+      (z0 + z1) / 2,
+    );
     let dist = 6;
     for (let pass = 0; pass < 2; pass++) {
       let lo = 1;
@@ -3184,7 +3261,14 @@ export function mountGardenScene(
       for (let k = 0; k < 22; k++) {
         const mid = (lo + hi) / 2;
         const e = extent(wantTarget, mid, box);
-        if (e.minX > -MX && e.maxX < MX && e.minY > BOTTOM && e.maxY < TOP)
+        /* `extent` leaves `fitCam` at this pose. */
+        if (
+          e.minX > -MX &&
+          e.maxX < MX &&
+          e.minY > BOTTOM &&
+          e.maxY < TOP &&
+          (!keep || keepAt.copy(keep).project(fitCam).y < 0.97)
+        )
           hi = mid;
         else lo = mid;
       }
@@ -3200,6 +3284,7 @@ export function mountGardenScene(
     wantPos
       .set(0, Math.sin(fitElev) * dist, Math.cos(fitElev) * dist)
       .add(wantTarget);
+    return dist;
   }
   const doorAt = new THREE.Vector3();
   const doorView = new THREE.Vector3();
@@ -3502,6 +3587,147 @@ export function mountGardenScene(
       : (lift[t] ?? 0.5) * o.scale.x;
     return anchorPoint;
   }
+  const cutPoint = new THREE.Vector3();
+  const cutHull: [number, number][] = [];
+  /** Clip the wall frame (`el`'s box, whose top left is at `left, top` on
+   *  the stage) around every tray and tool standing in front of it: each
+   *  one's outline — the hull of its parts' boxes, as the camera sees
+   *  them — is a hole in the frame, so it is seen in front. */
+  function cutFrame(el: HTMLElement, left: number, top: number, box: DOMRect) {
+    const frame = el.firstElementChild as HTMLElement | null;
+    if (!frame) return;
+    const w = frame.offsetWidth;
+    const h = frame.offsetHeight;
+    const holes: string[] = [];
+    const seen = new Set<THREE.Object3D>();
+    for (const t of TARGETS) {
+      const o = targetObject(t);
+      if (!o || !o.visible || seen.has(o)) continue;
+      seen.add(o);
+      const pts: [number, number][] = [];
+      o.traverseVisible((m) => {
+        const geo = (m as THREE.Mesh).geometry as
+          THREE.BufferGeometry | undefined;
+        if (!geo) return;
+        if (!geo.boundingBox) geo.computeBoundingBox();
+        const b = geo.boundingBox!;
+        for (let i = 0; i < 8; i++) {
+          cutPoint
+            .set(
+              i & 1 ? b.max.x : b.min.x,
+              i & 2 ? b.max.y : b.min.y,
+              i & 4 ? b.max.z : b.min.z,
+            )
+            .applyMatrix4(m.matrixWorld)
+            .project(camera);
+          pts.push([
+            ((cutPoint.x + 1) / 2) * box.width - left,
+            ((1 - cutPoint.y) / 2) * box.height - top,
+          ]);
+        }
+      });
+      if (pts.length < 3) continue;
+      /* Nothing of it over the frame (and its cord, above): no hole. */
+      if (
+        pts.every(([x]) => x < 0) ||
+        pts.every(([x]) => x > w) ||
+        pts.every(([, y]) => y > h) ||
+        pts.every(([, y]) => y < -80)
+      )
+        continue;
+      hull(pts);
+      holes.push(
+        "M" +
+          cutHull.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L") +
+          "Z",
+      );
+    }
+    frame.style.clipPath = holes.length
+      ? /* Everything round the frame — its cord, nail and shadow — and
+           then the holes, cut by the even-odd rule. */
+        `path(evenodd, "M-400 -400H${w + 400}V${h + 400}H-400Z${holes.join("")}")`
+      : "";
+  }
+  /** The convex hull of `pts`, into `cutHull` (monotone chain). */
+  function hull(pts: [number, number][]) {
+    pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    const cross = (
+      o: [number, number],
+      a: [number, number],
+      b: [number, number],
+    ) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    cutHull.length = 0;
+    for (const p of pts) {
+      while (
+        cutHull.length >= 2 &&
+        cross(cutHull[cutHull.length - 2], cutHull[cutHull.length - 1], p) <= 0
+      )
+        cutHull.pop();
+      cutHull.push(p);
+    }
+    const lower = cutHull.length + 1;
+    for (let i = pts.length - 2; i >= 0; i--) {
+      const p = pts[i];
+      while (
+        cutHull.length >= lower &&
+        cross(cutHull[cutHull.length - 2], cutHull[cutHull.length - 1], p) <= 0
+      )
+        cutHull.pop();
+      cutHull.push(p);
+    }
+    cutHull.pop();
+  }
+  const rackPoint = new THREE.Vector3();
+  /** The light step's arrow: a dotted curve from the front edge of our
+   *  shelf on the rack (in from the leg, which the card can cover when
+   *  the view closes in) to the rack's card, bottom left, ending in a head
+   *  at the card's edge. Drawn only where the card stands clear of the
+   *  rack, to its left. */
+  function placeRackArrow(el: HTMLElement, box: DOMRect) {
+    const card = document
+      .querySelector('[data-garden-card="light"]')
+      ?.getBoundingClientRect();
+    const line = el.querySelector("[data-arrow-line]");
+    const head = el.querySelector("[data-arrow-head]");
+    if (step !== "light" || !card || !card.width || !line || !head) {
+      el.dataset.show = "false";
+      return;
+    }
+    const { w, d, shelves } = SHELF_RACK;
+    rack.group.localToWorld(
+      rackPoint.set(-w / 2 + 1.1, shelves[OUR_SHELF] + 0.05, d / 2),
+    );
+    rackPoint.project(camera);
+    const sx = ((rackPoint.x + 1) / 2) * box.width;
+    const sy = ((1 - rackPoint.y) / 2) * box.height;
+    const ex = card.right - box.left + 10;
+    const ey = card.top - box.top + card.height / 2;
+    if (rackPoint.z > 1 || sx < ex + 40) {
+      el.dataset.show = "false";
+      return;
+    }
+    /* Out of the shelf level, then down and round into the card's side. */
+    const c1x = sx - (sx - ex) * 0.15;
+    const c1y = sy + (ey - sy) * 0.6;
+    const c2x = ex + (sx - ex) * 0.55;
+    const c2y = ey;
+    line.setAttribute(
+      "d",
+      `M${sx.toFixed(1)} ${sy.toFixed(1)}C${c1x.toFixed(1)} ${c1y.toFixed(1)} ${c2x.toFixed(1)} ${c2y.toFixed(1)} ${ex.toFixed(1)} ${ey.toFixed(1)}`,
+    );
+    /* The head points along the curve's last stretch: leftward. */
+    const ang = Math.atan2(ey - c2y, ex - c2x);
+    const L = 9;
+    const p = (a: number) =>
+      `${(ex - L * Math.cos(ang + a)).toFixed(1)} ${(ey - L * Math.sin(ang + a)).toFixed(1)}`;
+    head.setAttribute(
+      "d",
+      `M${p(0.5)}L${ex.toFixed(1)} ${ey.toFixed(1)}L${p(-0.5)}`,
+    );
+    el.style.transform = "translate(0px, 0px)";
+    el.dataset.place = "frame";
+    el.dataset.show = "true";
+  }
   /** The framed product on the wall: sized to the wall under the herb
    *  shelf as the camera sees it, and only while all of it is in view —
    *  the page shows its card instead otherwise (`onWall`). The rack hides
@@ -3549,6 +3775,11 @@ export function mountGardenScene(
         );
         el.style.transform = `translate(${Math.round(cx)}px, ${Math.round(y0)}px)`;
         el.dataset.place = "frame";
+        /* The frame is drawn over the scene, so a tray lifted in front
+           of that wall would pass behind it. Instead the frame is cut
+           where anything stands in front of it, so the tray covers it as
+           it would a real frame on the wall (the owner, 3 Oct 2026). */
+        cutFrame(el, cx - (vx1 - vx0) / 2, y0, box);
       }
     }
     if (el) el.dataset.show = fits ? "true" : "false";
@@ -3574,6 +3805,10 @@ export function mountGardenScene(
     placeWallAd(box);
     for (const [name, el] of anchors) {
       if (name === "ad") continue;
+      if (name === "rackArrow") {
+        placeRackArrow(el, box);
+        continue;
+      }
       const at =
         name === "medium" || name === "timer"
           ? infoAnchor(name)

@@ -1,6 +1,13 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
-import { roundedRect, trayGeometry } from "@/components/tray-play/tray";
+import {
+  TRAY_D,
+  TRAY_H,
+  TRAY_W,
+  WATER_MARGIN,
+  roundedRect,
+  trayGeometry,
+} from "@/components/tray-play/tray";
 
 /**
  * Everything on the play garden's bench that is not the tray or the greens:
@@ -459,6 +466,21 @@ function printed(bin: Bin, text: string, font: string, w: number, h: number) {
   );
 }
 
+/** What a tray pair is made of, printed into the front wall of its water
+ *  tray as a maker moulds it (the owner, 3 Oct 2026: "like it is embedded
+ *  on the tray"), leaning with the wall like the tub's print. A child of
+ *  the water tray, so it goes when that tray does. */
+export function trayPrint(bin: Bin, text: string, font: string) {
+  const print = printed(bin, text, font, TRAY_W * 0.85, 0.17);
+  print.rotation.x = Math.atan2(0.04, TRAY_H);
+  print.position.set(
+    0,
+    TRAY_H * 0.47,
+    (TRAY_D + 2 * WATER_MARGIN) / 2 - 0.075 + 0.02 + 0.006,
+  );
+  return print;
+}
+
 export function dipTub(bin: Bin, label: string, font: string) {
   const g = new THREE.Group();
   const plastic = bin.add(
@@ -842,7 +864,9 @@ export const SPOUT = new THREE.Vector3(0.79, 0.655, 0);
 /** A kraft paper packet with a band in the plant's own leaf colour, so
  *  three packets on the bench tell apart at a glance. */
 /** The packet's size: a stand-up pouch, taller than wide. */
-export const PACKET = { w: 0.6, h: 0.8, d: 0.12 };
+/** A third larger than first drawn, so the packet and its logo read on
+ *  the bench (the owner, 3 Oct 2026). */
+export const PACKET = { w: 0.8, h: 1.06, d: 0.14 };
 
 /**
  * A Fewgrams seed pouch, as the packs are printed: white kraft-lined film,
@@ -871,7 +895,7 @@ export function seedPacket(bin: Bin, rand: () => number, seed: string) {
       `#${c.getHexString()}`,
     ]);
   }
-  let logo: HTMLImageElement | null = null;
+  let logo: HTMLCanvasElement | null = null;
   const paint = () => {
     g.fillStyle = "#fbfbf8";
     g.fillRect(0, 0, W, H);
@@ -880,9 +904,9 @@ export function seedPacket(bin: Bin, rand: () => number, seed: string) {
     g.fillRect(0, H * 0.035, W, 3);
     g.fillRect(0, H * 0.075, W, 2);
     if (logo) {
-      const lw = W * 0.62;
+      const lw = W * 0.7;
       const lh = (lw * 1788) / 2112;
-      g.drawImage(logo, (W - lw) / 2, H * 0.12, lw, lh);
+      g.drawImage(logo, (W - lw) / 2, H * 0.1, lw, lh);
     }
     /* The window. */
     const wx = W * 0.12;
@@ -914,7 +938,19 @@ export function seedPacket(bin: Bin, rand: () => number, seed: string) {
   tex.anisotropy = 4;
   const img = new Image();
   img.onload = () => {
-    logo = img;
+    /* The brand's light green and tan wash out on white film under the
+       room's light, so the logo is printed a shade deeper: drawn once,
+       then tinted toward forest over its own shape (`source-atop`), which
+       keeps its two colours apart. */
+    const ink = document.createElement("canvas");
+    ink.width = 1056;
+    ink.height = 894;
+    const c = ink.getContext("2d")!;
+    c.drawImage(img, 0, 0, ink.width, ink.height);
+    c.globalCompositeOperation = "source-atop";
+    c.fillStyle = "rgba(20, 52, 32, 0.38)";
+    c.fillRect(0, 0, ink.width, ink.height);
+    logo = ink;
     paint();
     tex.needsUpdate = true;
   };
@@ -956,6 +992,55 @@ export const SHELF_RACK = {
  * starts off (`diffuserMat`, `beamMat`) for the visitor to switch on, and
  * `batten` is what they click. Every other light is already on.
  */
+/** The open sides of a wedge of light, `h` tall: a `tw` by `td`
+ *  half-size rectangle at the top widening to `bw` by `bd` at the foot.
+ *  Its texture runs bright at the top (v = 1) to nothing at the foot. */
+function lightWedge(tw: number, td: number, bw: number, bd: number, h: number) {
+  const top = h / 2;
+  const foot = -h / 2;
+  /* Each side: top left, top right, foot left, foot right. */
+  const sides: [number, number, number][][] = [
+    [
+      [-tw, top, td],
+      [tw, top, td],
+      [-bw, foot, bd],
+      [bw, foot, bd],
+    ],
+    [
+      [tw, top, -td],
+      [-tw, top, -td],
+      [bw, foot, -bd],
+      [-bw, foot, -bd],
+    ],
+    [
+      [-tw, top, -td],
+      [-tw, top, td],
+      [-bw, foot, -bd],
+      [-bw, foot, bd],
+    ],
+    [
+      [tw, top, td],
+      [tw, top, -td],
+      [bw, foot, bd],
+      [bw, foot, -bd],
+    ],
+  ];
+  const pos: number[] = [];
+  const uv: number[] = [];
+  const index: number[] = [];
+  sides.forEach((q, k) => {
+    for (const v of q) pos.push(...v);
+    uv.push(0, 1, 1, 1, 0, 0, 1, 0);
+    const o = k * 4;
+    index.push(o, o + 2, o + 1, o + 1, o + 2, o + 3);
+  });
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  geo.setIndex(index);
+  return geo;
+}
+
 export function shelfRack(bin: Bin, ours: number) {
   const { w, d, shelves, h } = SHELF_RACK;
   const g = new THREE.Group();
@@ -1098,11 +1183,11 @@ export function shelfRack(bin: Bin, ours: number) {
     light.position.set(0, top, 0);
     g.add(light);
     const beamH = top - shelves[i] - 0.06;
+    /* From the whole length of the tube, not a point under its middle
+       (the owner, 3 Oct 2026), spreading to the shelf. */
     const beamGeo = bin.add(
-      new THREE.CylinderGeometry(0.06, 1, beamH, 4, 1, true),
+      lightWedge(TUBE / 2, 0.06, w * 0.46, d * 0.4, beamH),
     );
-    beamGeo.rotateY(Math.PI / 4);
-    beamGeo.scale(w * 0.6, 1, d * 0.55);
     const beam = new THREE.Mesh(beamGeo, mine ? beamMat : litBeam);
     beam.position.y = top - 0.06 - beamH / 2;
     g.add(beam);

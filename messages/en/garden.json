@@ -14,8 +14,7 @@
     "next": "Next step",
     "auto": "Do it for me",
     "restart": "Start again",
-    "progress": "How far along this step is",
-    "count": "{current, number} / {total, number}"
+    "progress": "How far along this step is"
   },
   "steps": {
     "touch": {
@@ -27,7 +26,6 @@
     "pick": {
       "label": "Tray",
       "title": "Pick your tray",
-      "hint": "Pick one tray",
       "done": "Well done! Now let's clean it."
     },
     "clean": {
@@ -97,7 +95,8 @@
     "newTab": "opens in a new tab",
     "allSeeds": "See all our seeds",
     "orderFresh": "Order fresh",
-    "buyHere": "Buy here"
+    "buyHere": "Buy here",
+    "add": "Add"
   },
   "kit": {
     "title": "Grow one for real",
@@ -105,9 +104,7 @@
     "add": "Add everything you used",
     "adding": "Adding to your basket…",
     "added": "All in your basket",
-    "viewCart": "Go to your basket",
-    "fresh": "Or order {name} fresh",
-    "freshAny": "Or order microgreens fresh"
+    "viewCart": "Go to your basket"
   },
   "still": {
     "pick": "Two microgreen tray pairs on a wooden bench: one black, and one white grow tray in a green water tray.",
@@ -140,5 +137,9 @@
     "liftOut": "Lift it out onto the bench",
     "toLight": "Drag the tray into the light",
     "pickPair": "Pick the {name}"
+  },
+  "trayTags": {
+    "tray-pair": "Recycled plastic",
+    "tray-pair-food-grade": "Food-grade plastic"
   }
 }

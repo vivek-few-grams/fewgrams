@@ -27,9 +27,24 @@ const WIN = { x0: -2.3, x1: 3.3, y0: 0.42, y1: 3.9 };
 /** The doorway into the dark room, left along the same wall, wide enough to
  *  carry a covered tray through. */
 export const DOOR = { x0: -10.4, x1: -7.6, h: 5.25 };
-/** The herb shelf, right of the window, on the wall. */
-const SHELF = { x: WIN.x1 + 2.6, y: 2.35 };
-const SHELF_W = 3.2;
+/** The herb shelf, right of the window, on the wall, and the frame hung
+ *  under it. The shelf is wide, so the frame is big enough to read (the
+ *  owner, 3 Oct 2026); the frame is only as tall as what it holds plus a
+ *  slim margin, and the shelf sits just above it, so the herbs' tops still
+ *  show. Its left end stays clear of the curtain. */
+const SHELF_W = 4;
+/** The frame's height for its width: the photograph and a slim margin
+ *  above and below it (`WallFrame`). */
+const AD_ASPECT = 0.43;
+/** The frame's foot, just above the strip of white tiles (0.4 high) — it
+ *  keeps to the green wall (the owner, 2 Oct 2026). */
+const AD_BOTTOM = 0.52;
+/** From the shelf's top down to the frame's: the board and the cord. */
+const AD_DROP = 0.3;
+const SHELF = {
+  x: WIN.x1 + 1 + SHELF_W / 2,
+  y: AD_BOTTOM + SHELF_W * AD_ASPECT + AD_DROP,
+};
 /** Where the product of the moment hangs, framed, on the wall under the
  *  herb shelf (the owner, 2 Oct 2026: "keep width of the frame same as
  *  width of the upper shelf… it should not overlap on anything else"): as
@@ -38,13 +53,11 @@ const SHELF_W = 3.2;
 export const WALL_AD = {
   x0: SHELF.x - SHELF_W / 2,
   x1: SHELF.x + SHELF_W / 2,
-  top: SHELF.y - 0.36,
+  top: SHELF.y - AD_DROP,
   /** The shelf board's underside: the nail goes in the wall between it
    *  and the frame's top. */
   shelfBottom: SHELF.y - 0.045,
-  /** Just above the strip of white tiles (0.4 high) — the frame keeps to
-   *  the green wall (the owner, 2 Oct 2026). */
-  bottom: 0.52,
+  bottom: AD_BOTTOM,
   z: WALL_Z + 0.02,
 };
 /** The dark room behind it: a real room, not a box — floor to ceiling,
@@ -855,8 +868,8 @@ export function kitchen(
     p.rotation.y = rand() * Math.PI * 2;
     g.add(p);
   };
-  pot(WIN.x1 + 1.6, 2.4, WALL_Z + 0.25, 1.0, "basil");
-  pot(WIN.x1 + 2.5, 2.4, WALL_Z + 0.25, 1.05, "pothos");
+  pot(SHELF.x - 1.3, SHELF.y + 0.05, WALL_Z + 0.25, 1.0, "basil");
+  pot(SHELF.x - 0.2, SHELF.y + 0.05, WALL_Z + 0.25, 1.05, "pothos");
   /* A glass jar of seed beside them. */
   const jar = new THREE.Mesh(
     bin.add(new THREE.CylinderGeometry(0.17, 0.17, 0.42, 20)),
@@ -868,19 +881,19 @@ export function kitchen(
       opacity: 0.45,
     }),
   );
-  jar.position.set(WIN.x1 + 3.4, 2.61, WALL_Z + 0.25);
+  jar.position.set(SHELF.x + 1, SHELF.y + 0.26, WALL_Z + 0.25);
   g.add(jar);
   const seedFill = new THREE.Mesh(
     bin.add(new THREE.CylinderGeometry(0.15, 0.15, 0.24, 20)),
     std({ color: "#b48a4a", roughness: 0.9 }),
   );
-  seedFill.position.set(WIN.x1 + 3.4, 2.53, WALL_Z + 0.25);
+  seedFill.position.set(SHELF.x + 1, SHELF.y + 0.18, WALL_Z + 0.25);
   g.add(seedFill);
   const lidMesh = new THREE.Mesh(
     bin.add(new THREE.CylinderGeometry(0.18, 0.18, 0.06, 20)),
     wood,
   );
-  lidMesh.position.set(WIN.x1 + 3.4, 2.85, WALL_Z + 0.25);
+  lidMesh.position.set(SHELF.x + 1, SHELF.y + 0.5, WALL_Z + 0.25);
   g.add(lidMesh);
 
   /* ---- a framed print, left of the window ---- */
@@ -941,7 +954,7 @@ export function kitchen(
   pot(-6.2, 0, WALL_Z + 0.7, 1.7, "snake");
   /* Right of the framed product under the shelf, clear of it (the owner,
      2 Oct 2026). */
-  pot(9.4, 0, WALL_Z + 0.8, 1.4, "pothos");
+  pot(SHELF.x + SHELF_W / 2 + 1.5, 0, WALL_Z + 0.8, 1.4, "pothos");
   pot(WIN.x0 + 0.6, WIN.y0, WALL_Z + 0.15, 0.75, "basil");
 
   /* ---- a lamp on the counter, right of the window, lit at night ---- */
