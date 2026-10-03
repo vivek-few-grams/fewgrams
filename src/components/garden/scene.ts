@@ -3066,6 +3066,8 @@ export function mountGardenScene(
         break;
       case "sow":
         for (const l of LOOK_KEYS) add(L.packets[l], 0.42);
+        /* Room in front for the front row's tags, hung under them. */
+        if (L === TALL) box[3] += 1.2;
         break;
       case "dark": {
         add(L.lid, 0);
@@ -3582,6 +3584,10 @@ export function mountGardenScene(
     }
     /* Measured on the props as modelled; one drawn larger (the can, the
        bowl) carries its label up with it. */
+    if (frontPacket(t)) {
+      anchorPoint.z += PACKET.d;
+      return anchorPoint;
+    }
     anchorPoint.y += t.startsWith("packet")
       ? PACKET.h + 0.08
       : (lift[t] ?? 0.5) * o.scale.x;
@@ -3791,7 +3797,15 @@ export function mountGardenScene(
   /** Where a label sits against its point: standing on it (`above`, the
    *  rule), hung under it, or beside it to the left or right. */
   type Place = "above" | "below" | "left" | "right";
+  /** On a phone the packets stand in two staggered rows; the front row's
+   *  tags hang under their packets, so the two rows' tags never meet. */
+  function frontPacket(name: Anchor) {
+    if (L !== TALL || !name.startsWith("packet-")) return false;
+    const [, z] = L.packets[name.slice(7) as Look];
+    return z > Math.min(...Object.values(L.packets).map(([, pz]) => pz));
+  }
   function anchorPlace(name: Anchor): Place {
+    if (frontPacket(name)) return "below";
     if (name !== "tray-pair" && name !== "tray-pair-food-grade") return "above";
     const first = name === TRAY_FINISH_KEYS[0];
     if (L === TALL) return first ? "above" : "below";
@@ -3803,6 +3817,11 @@ export function mountGardenScene(
       ? targetsFor(phase).filter((t) => t === "tray" || t === "basin")
       : targetsFor(phase);
     placeWallAd(box);
+    /* The seed tags of one row, to be spread apart where they meet. */
+    const rows: Record<
+      string,
+      { el: HTMLElement; x: number; y: number; tw: number }[]
+    > = {};
     for (const [name, el] of anchors) {
       if (name === "ad") continue;
       if (name === "rackArrow") {
@@ -3878,6 +3897,32 @@ export function mountGardenScene(
       }
       el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
       el.dataset.show = at.z < 1 ? "true" : "false";
+      if (name.startsWith("packet-") && at.z < 1)
+        (rows[place] ??= []).push({ el, x, y, tw });
+    }
+    /* On a narrow stage two seed tags in a row can meet (fixed-size words
+       over a scene that shrinks): push them apart, keeping the row's
+       middle and the stage's edges. */
+    for (const row of Object.values(rows)) {
+      if (row.length < 2) continue;
+      row.sort((a, b) => a.x - b.x);
+      const GAP = 6;
+      const W = box.width;
+      for (let pass = 0; pass < 4; pass++) {
+        for (let i = 1; i < row.length; i++) {
+          const a = row[i - 1];
+          const b = row[i];
+          const need = a.tw / 2 + b.tw / 2 + GAP - (b.x - a.x);
+          if (need > 0) {
+            a.x -= need / 2;
+            b.x += need / 2;
+          }
+        }
+        for (const t of row)
+          t.x = THREE.MathUtils.clamp(t.x, t.tw / 2 + 8, W - t.tw / 2 - 8);
+      }
+      for (const t of row)
+        t.el.style.transform = `translate(${Math.round(t.x)}px, ${Math.round(t.y)}px)`;
     }
   }
 

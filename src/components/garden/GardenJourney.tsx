@@ -269,19 +269,20 @@ export function GardenJourney({
           newTab={t("product.newTab")}
           href="/seeds"
           aria-label={`${t("product.allSeeds")}: ${name}, ${product.price} (${t("product.newTab")})`}
-          className="group/seed pointer-events-auto flex items-center gap-1 rounded-full bg-cream/95 p-1 font-body shadow-[0_6px_18px_rgba(3,39,24,0.18)] ring-1 ring-forest/10 transition-colors hover:bg-cream"
+          className="group/seed pointer-events-auto flex items-center gap-0.5 rounded-full bg-cream/95 p-0.5 font-body sm:gap-1 sm:p-1 shadow-[0_6px_18px_rgba(3,39,24,0.18)] ring-1 ring-forest/10 transition-colors hover:bg-cream"
         >
-          <span className="flex flex-col items-start whitespace-nowrap py-1 pl-3 pr-2 text-sm font-semibold leading-tight text-forest">
+          {/* Smaller on a phone, where four stand across the bench. */}
+          <span className="flex flex-col items-start whitespace-nowrap py-0.5 pl-2 pr-1 text-xs font-semibold leading-tight text-forest sm:py-1 sm:pl-3 sm:pr-2 sm:text-sm">
             {name}
-            <span className="text-[11px] font-medium text-forest/70">
+            <span className="text-[10px] font-medium text-forest/70 sm:text-[11px]">
               {product.price}
             </span>
           </span>
           <span
             aria-hidden
-            className="grid size-8 place-items-center rounded-full bg-forest text-cream transition-colors group-hover/seed:bg-forest-deep"
+            className="grid size-6 place-items-center rounded-full bg-forest text-cream transition-colors group-hover/seed:bg-forest-deep sm:size-8"
           >
-            <ShoppingBag size={15} />
+            <ShoppingBag className="size-3 sm:size-[15px]" />
           </span>
         </ShopLink>
         <button
