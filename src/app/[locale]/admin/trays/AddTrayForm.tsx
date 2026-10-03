@@ -83,11 +83,10 @@ export function AddTrayForm({ suggestions }: { suggestions: string[] }) {
       </label>
 
       <NumberField
-        label={t("price")}
-        name="price"
-        min={1}
-        hint={t("priceHint")}
-        error={errorFor("price")}
+        label={t("cost")}
+        name="cost"
+        hint={t("costHint")}
+        error={errorFor("cost")}
       />
       <NumberField
         label={t("stockPacks")}

@@ -8,7 +8,8 @@ import { addGrowMedium } from "./actions";
 import { NumberField } from "../fields";
 
 /**
- * Add a grow medium — a key, a block price and a lead time. The tray form
+ * Add a grow medium — a key, its cost and margin or a block price, and the
+ * blocks held. The tray form
  * (`../trays/AddTrayForm.tsx`) with this category's module; the reasons for
  * the datalist, the keystroke sanitiser and the pre-filled lead time are
  * written out there.
@@ -67,11 +68,22 @@ export function AddGrowMediumForm({ suggestions }: { suggestions: string[] }) {
       </label>
 
       <NumberField
-        label={t("price")}
-        name="price"
-        min={1}
-        hint={t("priceHint")}
-        error={errorFor("price")}
+        label={t("cost")}
+        name="cost"
+        hint={t("costHint")}
+        error={errorFor("cost")}
+      />
+      <NumberField
+        label={t("markupPercent")}
+        name="markupPercent"
+        hint={t("markupHint")}
+        error={errorFor("markupPercent")}
+      />
+      <NumberField
+        label={t("roundUpToNearest")}
+        name="roundUpToNearest"
+        hint={t("roundHint")}
+        error={errorFor("roundUpToNearest")}
       />
       <NumberField
         label={t("stockPacks")}

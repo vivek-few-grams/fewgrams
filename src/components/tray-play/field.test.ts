@@ -6,6 +6,8 @@ import {
   isSettled,
   packField,
   stepField,
+  wave,
+  WAVE_LIFE,
 } from "./field";
 
 const RECT = { minX: -2, minZ: -1, width: 4, depth: 2 };
@@ -83,6 +85,42 @@ describe("tray field", () => {
         1 + 1e-6,
       );
     }
+  });
+
+  it("runs a click's wave outward over a small patch, then settles", () => {
+    const f = createField(64, 32, RECT);
+    const near = cellAt(64, 32, 0.2, 0);
+    const far = cellAt(64, 32, 1.5, 0);
+    let nearPeak = 0;
+    let farPeak = 0;
+    let age = 0;
+    run(3, f, () => {
+      wave(f, 0, 0, age, DT);
+      age += DT;
+      nearPeak = Math.max(nearPeak, f.bend[near]);
+      farPeak = Math.max(farPeak, Math.abs(f.bend[far]));
+    });
+    /* Bowed outward (+x on the right of the click); far off, barely. */
+    expect(nearPeak).toBeGreaterThan(0.05);
+    expect(farPeak).toBeLessThan(nearPeak * 0.2);
+    expect(isSettled(f)).toBe(true);
+  });
+
+  it("keeps a wave inside the bounds it is given", () => {
+    const f = createField(64, 32, RECT);
+    const outside = cellAt(64, 32, 0.3, 0);
+    let age = 0;
+    for (let s = 0; s < WAVE_LIFE / DT; s++) {
+      wave(f, 0, 0, age, DT, { minX: -2, maxX: 0, minZ: -1, maxZ: 1 });
+      age += DT;
+    }
+    expect(f.vel[outside]).toBe(0);
+  });
+
+  it("does nothing once a wave has run its course", () => {
+    const f = createField(16, 8, RECT);
+    wave(f, 0, 0, WAVE_LIFE, DT);
+    expect(f.vel.every((v) => v === 0)).toBe(true);
   });
 
   it("ignores a hand outside the trays", () => {

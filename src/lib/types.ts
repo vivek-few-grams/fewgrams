@@ -131,15 +131,17 @@ export type Seed = {
    *  therefore cannot key a line on the content key alone; see
    *  `src/lib/cart/cart.ts`. */
   contentKey: string;
-  /** ₹ per 50 g — the smallest order and the cart's unit for a seed (the
-   *  owner, 25 Sep 2026; it was per 100 g until then). */
-  pricePer50g: number;
-  /** True while the row still holds only the old per-100 g price, halved
-   *  here to read as per 50 g — flagged on admin → seeds until saved. */
-  priceFromOld100g?: boolean;
+  /** ₹ per 100 g — the smallest order and the cart's unit for a seed (the
+   *  owner, 3 Oct 2026; it was per 50 g from 25 Sep). With a `costPer100g`
+   *  it is worked out — `retailPrice(cost, the seeds margin)` — and never
+   *  typed. */
+  pricePer100g: number;
+  /** ₹ we pay for 100 g — the vendor's per-kg invoice price ÷ 10. Absent
+   *  on a row not yet costed, which keeps its old price until it is. */
+  costPer100g?: number;
   /** Grams on the shelf, as the owner last counted them — **the limit**
    *  (the owner, 25 Sep 2026): no more than this can be ordered, and under
-   *  50 g the seed is sold out. A paid order draws it down (`takeFromShelf`).
+   *  100 g the seed is sold out. A paid order draws it down (`takeFromShelf`).
    *  Never shown to a customer. */
   stockGrams: number;
   active: boolean;
@@ -192,8 +194,13 @@ export type Tray = {
   contentKey: string;
   /** ₹ for the pack as sold, whole. Not per piece and not per kilo: a pack of
    *  five mats has one price, and dividing it by five would invite an order
-   *  for one mat that the supplier will not break a pack for. */
+   *  for one mat that the supplier will not break a pack for. With a `cost`
+   *  it is worked out — `retailPrice(cost, the trays margin)`, one margin for
+   *  every item on the screen (the owner, 3 Oct 2026) — and a price typed
+   *  over it holds until the next cost or margin change. */
   price: number;
+  /** ₹ we pay for one pack. Absent on a row priced by hand. */
+  cost?: number;
   /** Packs held in Bengaluru (the owner, 25 Sep 2026). Up to this ships
    *  next day; more still sells, a day later (`heldReadyDate`). Never shown
    *  to a customer. */
@@ -221,7 +228,7 @@ export type Tray = {
 /**
  * A grow medium — cocopeat first — **bought in from a supplier and resold**,
  * SPEC §24. Added 24 Sep 2026 with IFFCO Urban Gardens' Horti-Coir, in a 5 kg
- * and a 10 kg block.
+ * and a 10 kg block; the 10 kg became a 1 kg on 3 Oct 2026.
  *
  * Sold exactly the way a tray is (§23.1): nothing held, every order a purchase
  * order, one price per pack, a lead time per row and six packing figures for
@@ -239,12 +246,22 @@ export type Tray = {
  */
 export type GrowMedium = {
   id: string;
-  /** Kebab-case, e.g. `horti-coir-bulk`. Names the content file. Its own
+  /** Kebab-case, e.g. `horti-coir-small`. Names the content file. Its own
    *  namespace, like seeds and trays — `keys.test.ts` pins that. */
   contentKey: string;
   /** ₹ for one pack (one block) as sold, whole. Never per kilo: a buyer
-   *  cannot order 3 kg of a 5 kg block. */
+   *  cannot order 3 kg of a 5 kg block. With a `cost`, it is worked out —
+   *  `retailPrice(cost, this row's margin)` — and follows every cost or
+   *  margin edit; a price typed over it holds until then. */
   price: number;
+  /** ₹ we pay for one pack (3 Oct 2026: ₹300 for 5 kg, ₹70 for 1 kg).
+   *  Absent on a row priced by hand. */
+  cost?: number;
+  /** This pack's own markup and rounding on `cost` — each pack size has its
+   *  own (the owner, 3 Oct 2026: "keep separate margin for 5kg and 1 kg").
+   *  Blank prices at cost to the rupee (`NO_MARGIN`). */
+  markupPercent?: number;
+  roundUpToNearest?: number;
   /** Blocks held — the tray rule exactly (`heldReadyDate`). */
   stockPacks: number;
   active: boolean;
@@ -590,8 +607,9 @@ export type RackSettings = {
 export const RACK_RANGES = ["plated", "angle", "pipe"] as const;
 export type RackRange = (typeof RACK_RANGES)[number];
 
-/** How one range turns material cost into a selling price — `retailPrice`. */
-export type RackMargin = {
+/** How cost becomes a selling price — `retailPrice` in
+ *  `src/lib/pricing/margin.ts`. One rack range's, or grow media's. */
+export type Margin = {
   /** Applied to material cost to reach the retail price. Starts at 0 so the
    *  screen never shows a margin nobody chose. */
   markupPercent: number;
@@ -599,6 +617,9 @@ export type RackMargin = {
    *  down would quietly eat the margin the markup just added. 1 disables it. */
   roundUpToNearest: number;
 };
+
+/** A rack range's margin — see `Margin`. */
+export type RackMargin = Margin;
 
 /**
  * What a rack model is: a height, a shelf count, and which parts. Stored on
@@ -754,7 +775,7 @@ export type AngleRackModel = {
 /* ────────────────────────── UPVC pipe racks ─────────────────────────── */
 
 /**
- * The third rack category (17 Sep 2026): **a rack built from 1 inch UPVC
+ * The third rack category (17 Sep 2026): **a rack built from ¾ inch UPVC (1 inch until 3 Oct 2026)
  * pipe, joined with four-way connectors.**
  *
  * The owner's reason for it is not price: *"in this the stability is a bit
@@ -789,7 +810,8 @@ export type AngleRackModel = {
  *  three attributes the plated rates form does not render and does not write,
  *  which is the "unread schema field" the project rules say to cut. */
 export type PipeSettings = {
-  /** ₹ per running foot of 1 inch UPVC pipe. ₹25 as quoted. */
+  /** ₹ per running foot of ¾ inch UPVC pipe. The stored ₹25 is the 17 Sep
+   *  quote for **1 inch**, kept until a ¾ inch price is quoted. */
   ratePerFt: number;
   /** ₹ for one four-way connector. ₹110 as quoted — and it is the single
    *  largest line in the bill, not the pipe. */
@@ -803,6 +825,15 @@ export type PipeSettings = {
    *  pipe, each piece taking a diameter square (SPEC §7). Absent until
    *  measured; a courier order for a pipe rack is then refused. */
   pipeDiameterCm?: number;
+  /** Weight per running foot of pipe, grams — ¾ inch Schedule 40 UPVC is
+   *  about 92 g (3 Oct 2026). A pipe rack's weight is its feet × this, plus
+   *  its fittings (`pipeRackGrams`). Absent until set; a courier order for a
+   *  pipe rack is then refused. */
+  gramsPerFt?: number;
+  /** One connector and one bottom bush, grams. Absent counts as nothing, as
+   *  for the steel ranges' fixings. */
+  connectorGrams?: number;
+  bushGrams?: number;
 };
 
 /**
@@ -818,8 +849,8 @@ export type PipeSize = {
   depthFt: number;
   lengthFt: number;
   active: boolean;
-  /** Packed weight per shelf — see `ShelfPlate.gramsPerShelf`. */
-  gramsPerShelf?: number;
+  /* No weight (3 Oct 2026): it is the rack's feet of pipe × the pipe's
+     `gramsPerFt`, plus fittings — see `FrameSize`. */
 };
 
 /** A height and a footprint, and that is all there is to choose. No grade and

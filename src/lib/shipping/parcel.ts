@@ -103,7 +103,7 @@ export function trayStack(p: TrayPacking, packs: number): { grams: number; box: 
  * - **Pipes** do not nest (the owner, 24 Sep 2026): each takes its full
  *   diameter. So the pieces are laid into lines as long as the longest piece —
  *   two 2 ft rails end to end fill one 4 ft line — and the lines are grouped
- *   square: four lines of 1 in pipe are 2 × 2 in, nine are 3 × 3.
+ *   square: four lines are two pipes each way, nine are three.
  */
 export function rackBox(p: RackPacking): { grams: number; box: BoxCm } {
   const length = Math.max(p.heightFt, p.lengthFt) * CM_PER_FT;

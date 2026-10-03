@@ -172,6 +172,70 @@ export function brush(
   }
 }
 
+/** How fast a click's wave runs out, world units/s. */
+export const WAVE_SPEED = 2.2;
+/** How long a wave travels before it has faded to nothing, seconds — so it
+ *  reaches about 0.6 out: a patch of a tray, not the whole of it (the
+ *  owner, 3 Oct 2026). */
+export const WAVE_LIFE = 0.28;
+/** The width of the ring that is pushing at any moment, world units. */
+const WAVE_WIDTH = 0.25;
+/** How hard the ring pushes stems outward as it passes. */
+const WAVE_PUSH = 70;
+
+/**
+ * A click's wave (the owner, 3 Oct 2026): a small ring running out from
+ * (`x`, `z`), `age` seconds after the click, that pushes the stems it
+ * passes away from the centre, within the clicked tray only. The springs do the rest — each stem bows
+ * out and swings back behind the ring, so the canopy ripples like water.
+ * It weakens as it goes and is gone by {@link WAVE_LIFE}.
+ */
+export function wave(
+  field: Field,
+  x: number,
+  z: number,
+  age: number,
+  dt: number,
+  /** The clicked tray's bed: the wave stays within it. */
+  bounds?: { minX: number; maxX: number; minZ: number; maxZ: number },
+) {
+  if (age < 0 || age >= WAVE_LIFE) return;
+  const { nx, nz, rect, vel } = field;
+  const r = age * WAVE_SPEED;
+  const fade = 1 - age / WAVE_LIFE;
+  const reach = r + WAVE_WIDTH;
+  const cellW = rect.width / nx;
+  const cellD = rect.depth / nz;
+  const i0 = Math.max(0, Math.floor((x - reach - rect.minX) / cellW));
+  const i1 = Math.min(nx - 1, Math.ceil((x + reach - rect.minX) / cellW));
+  const j0 = Math.max(0, Math.floor((z - reach - rect.minZ) / cellD));
+  const j1 = Math.min(nz - 1, Math.ceil((z + reach - rect.minZ) / cellD));
+  for (let j = j0; j <= j1; j++) {
+    const cz = rect.minZ + (j + 0.5) * cellD;
+    for (let i = i0; i <= i1; i++) {
+      const cx = rect.minX + (i + 0.5) * cellW;
+      if (
+        bounds &&
+        (cx < bounds.minX ||
+          cx > bounds.maxX ||
+          cz < bounds.minZ ||
+          cz > bounds.maxZ)
+      )
+        continue;
+      const dx = cx - x;
+      const dz = cz - z;
+      const dist = Math.hypot(dx, dz);
+      const off = Math.abs(dist - r) / WAVE_WIDTH;
+      if (off >= 1 || dist < 1e-6) continue;
+      /* Smooth across the ring's width, strongest on its line. */
+      const k = (1 - off * off) * fade * WAVE_PUSH * dt;
+      const c = (j * nx + i) * 2;
+      vel[c] += (dx / dist) * k;
+      vel[c + 1] += (dz / dist) * k;
+    }
+  }
+}
+
 /** True once every stem is upright and still — the scene can stop uploading.
  *  Speed is divided by the angular frequency so both terms are in units of
  *  bend: a stem swinging at that speed would reach that far. */

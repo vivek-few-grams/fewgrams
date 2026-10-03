@@ -46,9 +46,11 @@ export default async function DeliveryAdmin() {
     ...card.angles
       .filter((x) => x.active && x.gramsPerFt === undefined)
       .map((x) => ({ screen: "frames", label: t("angleGrade", { thickness: x.thicknessMm }), href: "/admin/angle-racks" })),
-    ...card.pipes
-      .filter((x) => x.active && x.gramsPerShelf === undefined)
-      .map((x) => ({ screen: "pipes", label: t("sizeFootprint", { depth: x.depthFt, length: x.lengthFt }), href: "/admin/pipe-racks" })),
+    /* Pipe is weighed per foot in the pipe rates; a size has no weight of its
+       own (3 Oct 2026). */
+    ...(card.pipeSettings && card.pipeSettings.gramsPerFt === undefined
+      ? [{ screen: "pipes", label: t("pipeWeight"), href: "/admin/pipe-racks" }]
+      : []),
     /* The bundle figures are range-wide, so one entry each rather than one
        per size: every angle or pipe rack waits on the same two numbers. */
     ...(card.settings && (card.settings.angleWidthCm === undefined || card.settings.angleStackCm === undefined)

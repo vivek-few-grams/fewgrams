@@ -2067,8 +2067,9 @@ under 100ms. If it ever needs to be faster the lever is `--curtain-enter` (and `
 not releasing the route early, which is the bug.
 
 **Constraints, because loaders are usually a net loss:**
-- **Never gated on the network.** It retracts when the route commits *or* at `FAILSAFE_MS` (3s),
-  whichever comes first. A navigation that never arrives cannot leave the page covered — and one
+- **Never gated on the network.** It retracts when the route commits *or* at `FAILSAFE_MS` (10s,
+  raised from 3s on 3 Oct 2026 — a 6s home page outlived the curtain, which lifted onto the page
+  just left, so the logo seemed to do nothing), whichever comes first. A navigation that never arrives cannot leave the page covered — and one
   can: clicking HOW WE GROW today lands on the global 404, which is outside `[locale]` and runs
   neither the init script nor the component.
 - The handoff flag is **timestamped and expires** (`HANDOFF_MAX_AGE_MS`, 5s) precisely because
@@ -3326,11 +3327,11 @@ Every row a single cascade touches gets **one shared `publishedAt`**, so the
 sweep reads as one event in the data rather than a hundred near-simultaneous
 ones.
 
-Setting a price by hand still works and still re-baselines `costAtPublish`, but
-its meaning has narrowed: **a typed price holds until the next rate edit, which
-overwrites it.** The screens say so. If a permanent per-rack override is ever
-wanted, it needs a flag on the model for the cascade to respect — deliberately
-not added, because nothing asked for one.
+**A rack's price is never typed** (the owner, 3 Oct 2026: *"sell price is based on cost +
+margin"*, applied to every screen). It was: a typed price held until the next rate edit overwrote
+it. The row's price field, its Save button and `saveModel` / `saveAngleRack` / `savePipeRack` were
+removed, and one cascade was run so every stored rack sat at cost plus its range's margin. A rack
+priced differently means a different margin, not a different number on one row.
 
 The three row states survive, with the middle one changed from a workflow into
 an alarm:
@@ -3480,8 +3481,11 @@ fixings = shelves × bolt pairs × boltSetGrams + bushes × bushGrams
 
 It replaced a typed "grams per shelf, legs shared in" on every plate and
 footprint, which could be right for one height only. Footprints have no
-weight field any more. Pipe racks still use their size's typed grams per
-shelf. Measured: 1.4 mm angle at **230 g/ft**, and the 1¼ × 3 ft plate
+weight field any more. Pipe racks follow the same rule (`pipeRackGrams`): feet
+of pipe × `PipeSettings.gramsPerFt` (¾ inch Schedule 40 UPVC, about 92 g/ft
+from its dimensions), plus a connector at every junction (`connectorGrams`,
+45 g estimated) and a bush under every leg (`bushGrams`, 10 g estimated); pipe
+sizes no longer carry a weight. Measured: 1.4 mm angle at **230 g/ft**, and the 1¼ × 3 ft plate
 (14½ × 35½ in folded, 0.6 mm) at **1.5 kg**. The other plates were scaled
 from it by folded area and thickness. Bolt pairs (8 g) and bushes (10 g) are
 estimates. An unweighed grade or plate leaves the rack unweighable, so a
@@ -3895,8 +3899,13 @@ not more.
 
 ## 21. Pipe racks — the UPVC range
 
-The third rack category, added 17 Sep 2026: **a rack built from 1 inch UPVC
+The third rack category, added 17 Sep 2026: **a rack built from ¾ inch UPVC
 pipe, joined with four-way connectors.** Admin screen at `/admin/pipe-racks`.
+
+**¾ inch since 3 Oct 2026** (the owner; it was 1 inch). The connector is ₹66
+from a ¾ inch quote, and 3-way fittings are priced as 4-way, so the four-way
+count below stands. The pipe's ₹25 a foot is still the 1 inch quote until a
+¾ inch one arrives, and the packing diameter is 2.7 cm.
 
 The owner's reason is not price: *"in this the stability is a bit important."*
 Light to move, nothing to rust in a wet grow room, wipes clean. It is the
@@ -4013,7 +4022,8 @@ form asks two questions instead of three, and both tables are a column narrower.
 The range is a third smaller per footprint than the other two.
 
 **Six feet is the ceiling.** `PIPE_MAX_HEIGHT_FT`, the owner's figure — a 1 inch
-upright gets springy above it. A constant and not a setting, because the
+upright gets springy above it, and the ¾ inch pipe now used is thinner still, so
+the ceiling has not been revisited upward. A constant and not a setting, because the
 `heightsFt` list is shared with two steel ranges that have no such limit: if 8 ft
 is ever added there, this stops the pipe range following it into something that
 wobbles. Enforced in three places for the usual reason — the add form does not
@@ -4142,7 +4152,13 @@ of which the old `/admin/products` screen demonstrated:
 Trays and snacks stay on `Product` until they get screens of their own. Racks
 were pulled out for a different reason — computed pricing (§19).
 
-### 22.2 The stock rule: the shelf is the limit, in 50 g steps
+### 22.2 The stock rule: the shelf is the limit, in 100 g steps
+
+**Changed back to 100 g on 3 Oct 2026, by the owner:** *"seeds should be always purchasable in
+100 gm qty."* `SEED_MIN_ORDER_GRAMS` and `GRAMS_PER_UNIT` are 100, the price is `pricePer100g`, and
+under 100 g held a seed is sold out. A row saved in the 50 g week holds `pricePer50g`, read doubled
+until it is saved again. The 25 Sep text below describes the 50 g rule that this replaced.
+
 
 **Changed 25 Sep 2026, by the owner:** *"if its beyond my inventory, it will say sold out, if
 its fully 0 or dont allow to enter more than allowed and minimum order qty can be 50 gms. cost in
@@ -4452,6 +4468,16 @@ is in practice — confirm it against the supplier's own description.
 exactly two packs.** That is correct behaviour, not a bug, but it is worth
 knowing that the shelf is one two-pack order per seed away from sold out.
 
+**Priced from cost, 3 Oct 2026.** The owner forwarded AllThatGrows' (Seed Delivery LLP) invoice
+of 26 Aug 2026: 250 g each of fourteen seeds, priced per kg. Each seed now holds `costPer100g` (per
+kg ÷ 10) and its sell price is `retailPrice(cost, margin)` with one seeds markup and rounding
+(`SEEDSETTINGS`, the Margin form on `/admin/seeds`); the sell price is shown, never typed. A 50%
+markup rounded up to ₹10 reproduced every existing price exactly — the old 50 g list was cost plus
+half. Shipping (₹231 + GST over 3.5 kg, about ₹7.79 per 100 g) is not in the cost. Alfalfa, dill,
+kale and red amaranthus were not on the invoice; the owner gave their costs the same day per 250 g
+(₹200, ₹200, ₹375, ₹200 — ₹80, ₹80, ₹150, ₹80 per 100 g). At the same margin red amaranthus fell
+from ₹150 to ₹120; the other three kept their price.
+
 ### 22.8 Open
 
 - **Whether the supplier list is a sell price or a cost is unconfirmed** — see
@@ -4719,6 +4745,14 @@ on the website"* that needs no assumption about margin. If they are costs, the f
 A re-run keeps each row's `id`, `active` flag **and lead days**, and rewrites only the price. A lead
 time the owner has corrected by hand is better information than the figure the file launched with.
 
+**Priced from cost, 3 Oct 2026.** Each row may now hold our buying `cost`, and its price is then
+`retailPrice(cost, margin)` (`src/lib/pricing/margin.ts`) with **one** markup and rounding for the
+whole screen — `TRAYSETTINGS`, the Margin form on `/admin/trays` (the owner: *"same margin and round
+up needs to be added to trays and drainage … keep all under 1 margin"*). Saving it reprices every
+row with a cost. **The sell price is never typed**: the cost is required on save, and a row saved
+before costs existed keeps its old price, flagged, until its cost is entered. `trays-fill.mjs` keeps a row's cost and prices it from the margin rather than the list. No
+costs are loaded yet: the listed prices above are still the shelf prices until a cost is entered.
+
 ### 23.7 The cart learned a third kind
 
 Adding the buy box meant the cart had to hold a tray, which is the change with
@@ -4857,9 +4891,9 @@ and its own cart kind (`media`, cookie code `m`) anyway. A category is what a cu
 nobody looks under "Trays & drainage" for a block of coir; sharing the tray record would have meant
 relabelling that category or hiding a second one inside it.
 
-**Two pack sizes are two rows** — `horti-coir` (5 kg) and `horti-coir-bulk` (10 kg) — the same
-call §23.1 made for the two tray kits. Content keys ban digits, so the size is in the name and in
-the word *bulk*, never in the key.
+**Two pack sizes are two rows** — `horti-coir` (5 kg) and `horti-coir-small` (1 kg; until 3 Oct
+2026 `horti-coir-bulk`, 10 kg) — the same call §23.1 made for the two tray kits. Content keys ban
+digits, so the size is in the name and in the word *small*, never in the key.
 
 A block is **not weighed** in the cart (`isWeighed("media")` is false): a 5 kg block is one unit at
 one price, and the cart counts it in blocks (`linePriceBlock`, `lineBlocks`). For the courier it is
@@ -4907,6 +4941,16 @@ Loaded by `scripts/grow-media-fill.mjs` from IFFCO Urban Gardens' store on 24 Se
 The ₹399 / ₹699 figures are a "limited period offer" on the maker's own shop. **Whether that is our
 sell price or our cost is not settled** — the same open question as §23.6. `--markup=<percent>`
 re-prices both in one command. Unlike `trays-fill.mjs`, a re-run keeps a row's packing figures.
+
+**Settled 3 Oct 2026 — priced from cost.** The supplier quoted **₹300 for 5 kg and ₹70 for 1 kg**
+and no longer stocks 10 kg. The 10 kg row was deleted and its content file and photographs became
+the 1 kg `horti-coir-small` (the packs differ only in weight). Each row now holds our buying `cost`,
+and the price is `retailPrice(cost, margin)` — the racks' formula, moved to
+`src/lib/pricing/margin.ts` — with **that row's own** markup and rounding (the owner: "keep
+separate margin for 5kg and 1 kg"), typed on the row beside the cost; blank prices at cost to the
+rupee. Both started at 25% rounded up to ₹10: ₹380 and ₹90. Changing a row's cost or margin
+reprices it; the sell price is never typed, so the cost is required. `grow-media-fill.mjs` loads the quoted costs
+and prices each at its stored margin; its `--markup` flag is gone. The 1 kg block's packing (20 × 10 × 6 cm, 1,050 g) is an estimate.
 
 ### 24.7 Where the new kind had to be taught
 

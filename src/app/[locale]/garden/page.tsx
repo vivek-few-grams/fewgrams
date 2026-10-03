@@ -136,9 +136,12 @@ export default async function GardenPage({
       : null;
   }
 
-  /* The smaller block: one tray's worth, which is what this garden fills.
-     Rows come in key order, so `horti-coir` precedes `horti-coir-bulk`. */
-  const block = media.find((m) => m.content);
+  /* The smallest block: one tray's worth, which is what this garden fills.
+     Picked by price, not by key order — the 1 kg block (`horti-coir-small`,
+     3 Oct 2026) sorts after the 5 kg `horti-coir`. */
+  const block = media
+    .filter((m) => m.content)
+    .reduce<(typeof media)[number] | undefined>((min, m) => (!min || m.price < min.price ? m : min), undefined);
   const medium: GardenProduct | null = block?.content
     ? {
         kind: "media",
@@ -165,7 +168,7 @@ export default async function GardenPage({
             kind: "seed",
             key,
             name: seed.content.text.name,
-            price: t("priceSeed", { price: seed.pricePer50g }),
+            price: t("priceSeed", { price: seed.pricePer100g }),
             href: `/seeds/${key}`,
             image: seedCutout(seed.content),
             quickAdd: quickAdd("seed", key, seed.content.text.name, max),

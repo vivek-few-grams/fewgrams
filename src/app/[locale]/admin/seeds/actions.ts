@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
-import { deleteSeed, getSeed, listSeeds, putSeed } from "@/lib/repo/seeds";
+import { deleteSeed, getSeed, getSeedMargin, listSeeds, putSeed, putSeedMargin } from "@/lib/repo/seeds";
+import { retailPrice } from "@/lib/pricing/margin";
 import { isValidContentKey } from "@/lib/content/content-key";
-import { err, money, zeroOrMore, type FormState } from "@/lib/forms";
+import { count, err, money, zeroOrMore, type FormState } from "@/lib/forms";
 import type { Seed } from "@/lib/types";
 
 /**
@@ -45,13 +46,16 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
 }
 
-/** Price and stock — the only two things this screen sets, plus active. */
-type Ops = Pick<Seed, "pricePer50g" | "stockGrams" | "active">;
+/** Cost and stock — what this screen sets, plus active. The price follows. */
+type Ops = Pick<Seed, "costPer100g" | "pricePer100g" | "stockGrams" | "active">;
 
-function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
-  const pricePer50g = money(fd, "pricePer50g");
-  if (pricePer50g === null)
-    return { ok: false, state: err("priceInvalid", "pricePer50g") };
+/** The sell price is **worked out, never typed** (the owner, 3 Oct 2026: "sell
+ *  price is based on cost + margin"): the cost per 100 g and the seeds margin.
+ *  So the cost is required. */
+async function readOps(fd: FormData): Promise<{ ok: true; value: Ops } | { ok: false; state: FormState }> {
+  const costPer100g = money(fd, "costPer100g");
+  if (costPer100g === null) return { ok: false, state: err("costInvalid", "costPer100g") };
+  const pricePer100g = retailPrice(costPer100g, await getSeedMargin());
 
   /* `zeroOrMore`, not `money`: **zero is a legitimate stock figure** — the
      seed is sold out (SPEC §22.2, the owner, 25 Sep 2026). It also rejects an
@@ -62,7 +66,7 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
 
   return {
     ok: true,
-    value: { pricePer50g, stockGrams, active: fd.get("active") === "on" },
+    value: { costPer100g, pricePer100g, stockGrams, active: fd.get("active") === "on" },
   };
 }
 
@@ -100,7 +104,7 @@ export async function addSeed(_prev: FormState, fd: FormData): Promise<FormState
   if (existing.some((s) => s.contentKey === contentKey))
     return err("keyTaken", "contentKey", { key: contentKey });
 
-  const ops = readOps(fd);
+  const ops = await readOps(fd);
   if (!ops.ok) return ops.state;
 
   await putSeed({ id: crypto.randomUUID(), contentKey, ...ops.value });
@@ -118,7 +122,7 @@ export async function updateSeed(_prev: FormState, fd: FormData): Promise<FormSt
   const current = id ? await getSeed(id) : null;
   if (!current) return err("notFound");
 
-  const ops = readOps(fd);
+  const ops = await readOps(fd);
   if (!ops.ok) return ops.state;
 
   await putSeed({ ...current, ...ops.value });
@@ -138,6 +142,30 @@ export async function toggleSeedActive(fd: FormData): Promise<void> {
   if (!existing) throw new Error("Seed not found");
   await putSeed({ ...existing, active: !existing.active });
   refresh();
+}
+
+/**
+ * The seeds margin. Saving reprices **every seed with a cost**, straight away.
+ * A seed not yet costed keeps its old price until its cost is entered.
+ */
+export async function saveSeedMargin(_prev: FormState, fd: FormData): Promise<FormState> {
+  await assertRole("admin");
+
+  const markupPercent = zeroOrMore(fd, "markupPercent");
+  if (markupPercent === null) return err("zeroOrMore", "markupPercent");
+  const roundUpToNearest = count(fd, "roundUpToNearest");
+  if (roundUpToNearest === null) return err("countInvalid", "roundUpToNearest");
+
+  const margin = { markupPercent, roundUpToNearest };
+  await putSeedMargin(margin);
+  const rows = await listSeeds();
+  await Promise.all(
+    rows
+      .filter((r) => r.costPer100g !== undefined && retailPrice(r.costPer100g, margin) !== r.pricePer100g)
+      .map((r) => putSeed({ ...r, pricePer100g: retailPrice(r.costPer100g!, margin) })),
+  );
+  refresh();
+  return { status: "saved" };
 }
 
 export async function removeSeed(fd: FormData): Promise<void> {

@@ -3,6 +3,8 @@ import * as THREE from "three";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import {
   brush,
+  wave,
+  WAVE_LIFE,
   createField,
   isSettled,
   packField,
@@ -334,8 +336,37 @@ export function mountTrayScene(
   function onUp(e: PointerEvent) {
     if (e.pointerType !== "mouse") onLeave();
   }
+  /* A click (or tap) sends a wave out across the trays from where it
+     lands (the owner, 3 Oct 2026). A few may run at once. */
+  type Bed = { minX: number; maxX: number; minZ: number; maxZ: number };
+  const waves: { x: number; z: number; age: number; bed: Bed }[] = [];
+  /* Each tray's bed, so a wave stays in the tray clicked. */
+  const bedHalf = mediumHalf();
+  const beds: Bed[] = ROW.map((_, n) => {
+    const cx = (n - 1) * (TRAY_W + TRAY_GAP);
+    return {
+      minX: cx - bedHalf.hw,
+      maxX: cx + bedHalf.hw,
+      minZ: -bedHalf.hd,
+      maxZ: bedHalf.hd,
+    };
+  });
+  function onDown(e: PointerEvent) {
+    onMove(e);
+    if (!hand.on) return;
+    const bed = beds.find(
+      (b) =>
+        hand.x >= b.minX &&
+        hand.x <= b.maxX &&
+        hand.z >= b.minZ &&
+        hand.z <= b.maxZ,
+    );
+    if (!bed) return;
+    if (waves.length >= 4) waves.shift();
+    waves.push({ x: hand.x, z: hand.z, age: 0, bed });
+  }
   canvas.addEventListener("pointermove", onMove);
-  canvas.addEventListener("pointerdown", onMove);
+  canvas.addEventListener("pointerdown", onDown);
   canvas.addEventListener("pointerleave", onLeave);
   canvas.addEventListener("pointercancel", onLeave);
   canvas.addEventListener("pointerup", onUp);
@@ -455,6 +486,11 @@ export function mountTrayScene(
     let steps = 0;
     while (acc >= STEP && steps < MAX_STEPS) {
       if (hand.on) brush(field, hand.x, hand.z, hand.vx, hand.vz, STEP);
+      for (const w of waves) {
+        wave(field, w.x, w.z, w.age, STEP, w.bed);
+        w.age += STEP;
+      }
+      while (waves.length && waves[0].age >= WAVE_LIFE) waves.shift();
       stepField(field, STEP);
       acc -= STEP;
       steps++;
@@ -463,7 +499,7 @@ export function mountTrayScene(
 
     /* Skip the upload once everything is upright and still — the idle sway
        is in the shader and needs no texture change. */
-    const settled = !hand.on && isSettled(field);
+    const settled = !hand.on && waves.length === 0 && isSettled(field);
     if (!settled || fieldMoving) {
       packField(field, fieldBytes);
       fieldTex.needsUpdate = true;
@@ -508,7 +544,7 @@ export function mountTrayScene(
       resizer.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("pointermove", onMove);
-      canvas.removeEventListener("pointerdown", onMove);
+      canvas.removeEventListener("pointerdown", onDown);
       canvas.removeEventListener("pointerleave", onLeave);
       canvas.removeEventListener("pointercancel", onLeave);
       canvas.removeEventListener("pointerup", onUp);

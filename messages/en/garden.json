@@ -13,7 +13,7 @@
     "goTo": "Go to step {number, number}: {name}",
     "next": "Next step",
     "auto": "Do it for me",
-    "restart": "Start again",
+    "shop": "View the shop",
     "progress": "How far along this step is"
   },
   "steps": {
@@ -67,13 +67,14 @@
     "light": {
       "label": "Light",
       "title": "Light and water",
+      "twice": "Water it twice every day",
       "done": "A full, green tray. Harvest time.",
       "tag": "Racks that hold the lights"
     },
     "harvest": {
       "label": "Harvest",
       "title": "Harvest",
-      "done": "You grew a tray of microgreens."
+      "done": "You grew it here. Now grow it at home."
     }
   },
   "looks": {
@@ -85,7 +86,7 @@
   "product": {
     "pricePack": "₹{price, number} a pack",
     "priceBlock": "₹{price, number} a block",
-    "priceSeed": "₹{price, number} for 50 g",
+    "priceSeed": "₹{price, number} for 100 g",
     "view": "View in the shop",
     "added": "In your basket",
     "recommended": "Recommended by Fewgrams",
@@ -97,6 +98,15 @@
     "orderFresh": "Order fresh",
     "buyHere": "Buy here",
     "add": "Add"
+  },
+  "finale": {
+    "badge": "Well done",
+    "why": {
+      "eyes": "Grown in front of your eyes",
+      "fresh": "Cut fresh, just before you eat",
+      "choose": "Nothing sprayed — you choose what goes in",
+      "family": "A little garden the whole family grows"
+    }
   },
   "kit": {
     "title": "Grow one for real",

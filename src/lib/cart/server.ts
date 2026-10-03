@@ -76,7 +76,7 @@ export type CartItem = {
   image: { src: string; alt: string } | null;
   /**
    * The ceiling this line's stepper may reach — `MAX_UNITS_PER_LINE`, and
-   * for a seed the lower of that and what is on the shelf in 50 g units
+   * for a seed the lower of that and what is on the shelf in 100 g units
    * (the owner, 25 Sep 2026). **0 means sold out.** A line above it (the
    * shelf fell after it was added) is listed in `overStock` and checkout
    * refuses it until reduced.
@@ -273,13 +273,13 @@ export async function hydrateCart(
   for (const s of withSeedContent) {
     if (!s.content) continue;
     /* The shelf is the limit (the owner, 25 Sep 2026): `maxUnits` is what
-       is held, in 50 g units. A seed we hold none of stays a line — with a
+       is held, in 100 g units. A seed we hold none of stays a line — with a
        max of 0, so the cart says it is sold out rather than dropping it. */
     byId.set(lineId({ kind: "seed", key: s.contentKey }), {
       kind: "seed",
       key: s.contentKey,
       name: s.content.text.name,
-      unitPrice: s.pricePer50g,
+      unitPrice: s.pricePer100g,
       image: seedHero(s.content),
       maxUnits: seedMaxUnits(s.stockGrams),
       growDays: null,

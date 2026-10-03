@@ -1,20 +1,19 @@
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import type { EntityItem } from "electrodb";
-import { SeedEntity } from "@/lib/db/entities";
-import type { Seed } from "@/lib/types";
+import { SeedEntity, SeedSettingsEntity } from "@/lib/db/entities";
+import { NO_MARGIN } from "@/lib/pricing/margin";
+import type { Margin, Seed } from "@/lib/types";
 
 type Row = EntityItem<typeof SeedEntity>;
 
-/** A stored row as a `Seed`. A row saved before 25 Sep 2026 has only its
- *  per-100 g price, read as half — rounded up, so it never undersells — and
- *  flagged so admin → seeds asks for the real per-50 g figure. */
+/** A stored row as a `Seed`. A row saved between 25 Sep and 3 Oct 2026,
+ *  while the unit was 50 g, holds only its per-50 g price — read doubled. */
 function fromRow(r: Row): Seed {
-  const old = r.pricePer50g === undefined;
   return {
     id: r.id,
     contentKey: r.contentKey,
-    pricePer50g: r.pricePer50g ?? Math.ceil((r.pricePer100g ?? 0) / 2),
-    ...(old ? { priceFromOld100g: true } : {}),
+    pricePer100g: r.pricePer100g ?? (r.pricePer50g ?? 0) * 2,
+    ...(r.costPer100g !== undefined ? { costPer100g: r.costPer100g } : {}),
     stockGrams: r.stockGrams,
     active: r.active,
   };
@@ -72,11 +71,12 @@ export async function getSeed(id: string): Promise<Seed | null> {
  * a thing to verify. Checkout uses `takeFromShelf` instead.
  */
 export async function putSeed(s: Seed): Promise<void> {
-  /* A put replaces the row, so the retired per-100 g price goes with it. */
+  /* A put replaces the row, so the retired per-50 g price goes with it. */
   await SeedEntity.put({
     id: s.id,
     contentKey: s.contentKey,
-    pricePer50g: s.pricePer50g,
+    pricePer100g: s.pricePer100g,
+    ...(s.costPer100g !== undefined ? { costPer100g: s.costPer100g } : {}),
     stockGrams: s.stockGrams,
     active: s.active,
   }).go();
@@ -123,4 +123,15 @@ export async function returnToShelf(contentKey: string, grams: number): Promise<
   const seed = await getSeedByKey(contentKey);
   if (!seed) return;
   await SeedEntity.patch({ id: seed.id }).add({ stockGrams: grams }).go();
+}
+
+/** The seeds margin — `NO_MARGIN` (cost, to the rupee) until one is saved, so
+ *  a cost never prices at a markup nobody chose. */
+export async function getSeedMargin(): Promise<Margin> {
+  const { data } = await SeedSettingsEntity.get({}).go(READ_OPTS);
+  return data ? { markupPercent: data.markupPercent, roundUpToNearest: data.roundUpToNearest } : NO_MARGIN;
+}
+
+export async function putSeedMargin(m: Margin): Promise<void> {
+  await SeedSettingsEntity.put(m).go();
 }

@@ -104,23 +104,11 @@ export function rackCost(config: RackConfig, card: RateCard): RackCost | null {
   return { legs, shelves, bolts, bushes, total: legs + shelves + bolts + bushes };
 }
 
-/**
- * Material cost → what a customer pays.
- *
- * Rounds **up**. Rounding to the nearest multiple would put a ₹2,310 rack
- * with no markup at ₹2,300 — below cost — so the direction is not a
- * cosmetic choice. `Math.ceil` on the un-rounded value too, because a rack
- * priced at ₹2,310.40 should not invoice at ₹2,310.
- */
-export function retailPrice(cost: number, margin: RackMargin): number {
-  const marked = cost * (1 + margin.markupPercent / 100);
-  const step = margin.roundUpToNearest;
-  return step > 1 ? Math.ceil(marked / step) * step : Math.ceil(marked);
-}
-
-/** What a range prices at before anyone has set a margin: cost, to the rupee.
- *  Zero for the reason on `RackMargin.markupPercent`. */
-export const NO_MARGIN: RackMargin = { markupPercent: 0, roundUpToNearest: 1 };
+/* `retailPrice` and `NO_MARGIN` moved to `src/lib/pricing/margin.ts` on
+   3 Oct 2026, when cocopeat took a margin too; re-exported so every rack
+   caller and the script parity test still import them from here. */
+export { NO_MARGIN, retailPrice } from "@/lib/pricing/margin";
+import { NO_MARGIN, retailPrice } from "@/lib/pricing/margin";
 
 /**
  * Every range's margin, from the rows that exist.
@@ -359,7 +347,7 @@ export function angleRackSku(
  * The tallest pipe rack the owner builds: **6 ft**, their figure.
  *
  * A constant and not a setting, because it is not a commercial choice — a
- * 1 inch UPVC upright gets noticeably springy past about that, and the
+ * ¾ inch UPVC upright (1 inch when this was set) gets noticeably springy past about that, and the
  * `heightsFt` list is shared with two steel ranges that have no such limit.
  * If 8 ft is ever added there for steel, this stops the pipe range following
  * it into something that wobbles. Raise it here, deliberately, or not at all.
@@ -607,6 +595,25 @@ export function rackGrams(config: RackConfig, card: RateCard): number | null {
   return Math.round(legs + config.shelves * plate.gramsPerShelf + fixingsGrams(config.shelves, s));
 }
 
+/**
+ * A pipe rack: every foot of pipe × the pipe's grams per foot, plus a
+ * connector at every junction and a bush under every leg — the same counts
+ * `pipeRackCost` charges for. `null` until the pipe has been weighed.
+ */
+export function pipeRackGrams(config: PipeRackConfig, card: RateCard): number | null {
+  const size = card.pipes.find((p) => p.id === config.pipeSizeId);
+  const pipe = card.pipeSettings;
+  const feet = pipeRackFeet(config, card);
+  const connectors = pipeRackConnectors(config, card);
+  if (!size || !pipe || feet === null || connectors === null) return null;
+  if (pipe.gramsPerFt === undefined) return null;
+  return Math.round(
+    feet * pipe.gramsPerFt +
+      connectors * (pipe.connectorGrams ?? 0) +
+      pipeRackLegs(size, card.settings) * (pipe.bushGrams ?? 0),
+  );
+}
+
 export function angleRackGrams(config: AngleRackConfig, card: RateCard): number | null {
   const angle = card.angles.find((a) => a.id === config.angleId);
   const feet = angleRackFeet(config, card);
@@ -751,7 +758,9 @@ export const VENDOR_SEED: RateCard = {
     { id: "f-1x4", depthFt: 1, lengthFt: 4, active: true },
   ],
   /** The owner's quote, 17 Sep 2026: 1 inch UPVC pipe at ₹25 a foot, the
-   *  four-way connector at ₹110 a piece, the bottom bush at ₹10 a leg. */
+   *  four-way connector at ₹110 a piece, the bottom bush at ₹10 a leg. The
+   *  range moved to ¾ inch on 3 Oct 2026 (connector ₹66); this stays the
+   *  historical sheet a fresh install seeds from. */
   pipeSettings: { ratePerFt: 25, connectorPrice: 110, bushPrice: 10 },
   /**
    * The owner's own grid, and **a different one from the other two ranges**

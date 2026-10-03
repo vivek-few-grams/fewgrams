@@ -2,9 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
-import { deleteTray, getTray, listTrays, putTray } from "@/lib/repo/trays";
+import { deleteTray, getTray, getTrayMargin, listTrays, putTray, putTrayMargin } from "@/lib/repo/trays";
+import { retailPrice } from "@/lib/pricing/margin";
 import { isValidContentKey } from "@/lib/content/content-key";
-import { err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
+import { count, err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
 import { isValidStockPacks } from "@/lib/trays/lead-time";
 import type { Tray } from "@/lib/types";
 
@@ -38,13 +39,16 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
 }
 
-/** The price and the packs held — the only two things this screen sets,
- *  plus active. */
-type Ops = Pick<Tray, "price" | "stockPacks" | "active">;
+/** The cost, the price and the packs held, plus active. */
+type Ops = Pick<Tray, "price" | "stockPacks" | "active" | "cost">;
 
-function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
-  const price = money(fd, "price");
-  if (price === null) return { ok: false, state: err("priceInvalid", "price") };
+/** The selling price is **worked out, never typed** (the owner, 3 Oct 2026:
+ *  "sell price is based on cost + margin"): the cost and the screen's one
+ *  margin. So the cost is required. */
+async function readOps(fd: FormData): Promise<{ ok: true; value: Ops } | { ok: false; state: FormState }> {
+  const cost = money(fd, "cost");
+  if (cost === null) return { ok: false, state: err("costInvalid", "cost") };
+  const price = retailPrice(cost, await getTrayMargin());
 
   /* Zero is a real count — nothing held, every order a day later (the
      owner, 25 Sep 2026). An empty field is refused, not read as zero. */
@@ -53,7 +57,10 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
     return { ok: false, state: err("stockInvalid", "stockPacks") };
   }
 
-  return { ok: true, value: { price, stockPacks, active: fd.get("active") === "on" } };
+  return {
+    ok: true,
+    value: { cost, price, stockPacks, active: fd.get("active") === "on" },
+  };
 }
 
 /**
@@ -89,7 +96,7 @@ export async function addTray(_prev: FormState, fd: FormData): Promise<FormState
   if (existing.some((t) => t.contentKey === contentKey))
     return err("keyTaken", "contentKey", { key: contentKey });
 
-  const ops = readOps(fd);
+  const ops = await readOps(fd);
   if (!ops.ok) return ops.state;
 
   await putTray({ id: crypto.randomUUID(), contentKey, ...ops.value });
@@ -137,7 +144,7 @@ export async function updateTray(_prev: FormState, fd: FormData): Promise<FormSt
   const current = id ? await getTray(id) : null;
   if (!current) return err("notFound");
 
-  const ops = readOps(fd);
+  const ops = await readOps(fd);
   if (!ops.ok) return ops.state;
   const packing = readPacking(fd);
   if (!packing.ok) return packing.state;
@@ -161,6 +168,31 @@ export async function toggleTrayActive(fd: FormData): Promise<void> {
   if (!existing) throw new Error("Tray not found");
   await putTray({ ...existing, active: !existing.active });
   refresh();
+}
+
+/**
+ * The one trays-and-drainage margin. Saving reprices **every pack with a
+ * cost**, straight away. A pack saved before costs existed has none and
+ * keeps its old price until its cost is entered.
+ */
+export async function saveTrayMargin(_prev: FormState, fd: FormData): Promise<FormState> {
+  await assertRole("admin");
+
+  const markupPercent = zeroOrMore(fd, "markupPercent");
+  if (markupPercent === null) return err("zeroOrMore", "markupPercent");
+  const roundUpToNearest = count(fd, "roundUpToNearest");
+  if (roundUpToNearest === null) return err("countInvalid", "roundUpToNearest");
+
+  const margin = { markupPercent, roundUpToNearest };
+  await putTrayMargin(margin);
+  const rows = await listTrays();
+  await Promise.all(
+    rows
+      .filter((r) => r.cost !== undefined && retailPrice(r.cost, margin) !== r.price)
+      .map((r) => putTray({ ...r, price: retailPrice(r.cost!, margin) })),
+  );
+  refresh();
+  return { status: "saved" };
 }
 
 export async function removeTray(fd: FormData): Promise<void> {

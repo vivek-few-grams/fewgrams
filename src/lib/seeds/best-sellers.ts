@@ -5,7 +5,7 @@ import type { OrderStatus } from "@/lib/types";
  * seeds", ranked by what sells).
  *
  * Ranked by **grams sold**, not by order count: one customer buying 500 g of
- * sunflower is more seed than five buying a 50 g packet of basil each, and
+ * sunflower is more seed than five buying a 100 g packet of basil each, and
  * grams are what the shelf actually loses.
  *
  * Only orders that were paid count. `pending_payment` is an abandoned

@@ -27,14 +27,19 @@
  * ## What it does and does not overwrite
  *
  * A row is matched on `contentKey`. Matching rows keep their `id`, their
- * `active` flag **and their lead days**, so an item withdrawn from sale stays
+ * `active` flag, their stock **and their buying cost**, so an item withdrawn from sale stays
  * withdrawn across a re-run and a lead time the owner has corrected by hand is
- * not silently reset to the launch figure. The price is rewritten every run,
- * because the supplier's list is the source of truth for it.
+ * not silently reset to the launch figure. The price is rewritten every run
+ * from the list — **except on a row with a cost** (3 Oct 2026), whose price is
+ * the cost and the screen's one margin (`TRAYSETTINGS`), so a re-run cannot
+ * put a list price over it.
  */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { randomUUID } from "node:crypto";
+/* The one formula, shared with the racks; `racks-fill.mjs` guards its entry
+   point, so importing it runs nothing. */
+import { retailPrice } from "./racks-fill.mjs";
 
 /**
  * The three items, with the page each price was read from.
@@ -111,6 +116,15 @@ async function main() {
   });
   for (const item of Items) existing.set(item.contentKey, item);
 
+  const { Item: settings } = await ddb.get({
+    TableName: TABLE,
+    Key: { PK: "TRAYSETTINGS", SK: "SETTINGS" },
+  });
+  const margin = {
+    markupPercent: settings?.markupPercent ?? 0,
+    roundUpToNearest: settings?.roundUpToNearest ?? 1,
+  };
+
   let added = 0;
   let updated = 0;
 
@@ -119,7 +133,8 @@ async function main() {
     const row = {
       id: prior?.id ?? randomUUID(),
       contentKey: key,
-      price: shelfPrice(price, markup),
+      price: prior?.cost !== undefined ? retailPrice(prior.cost, margin) : shelfPrice(price, markup),
+      ...(prior?.cost !== undefined ? { cost: prior.cost } : {}),
       /* Kept, not reset: the count is what the owner last typed on admin. */
       stockPacks: prior?.stockPacks ?? 0,
       active: prior?.active ?? true,

@@ -36,13 +36,19 @@ import { NumberField } from "../fields";
  * ## The derived column is the limit — changed back 25 Sep 2026
  *
  * From 17 to 25 Sep 2026 any quantity could be ordered and the shelf only set
- * the speed. The owner reversed that: what is held, in whole 50 g packs, is
+ * the speed. The owner reversed that: what is held, in whole 100 g packs, is
  * the most a customer can order, and an empty shelf is **sold out** (SPEC
  * §22.2, `src/lib/seeds/stock.ts`). So the column reads as a limit again, and
  * an empty row is flagged.
+ *
+ * ## The price is worked out, not typed (3 Oct 2026)
+ *
+ * The row takes what we pay for 100 g; the sell price beside it is that cost
+ * plus the seeds margin, set above the table, and is shown rather than
+ * edited — the owner's rule for every screen.
  */
 const COLUMNS =
-  "minmax(10rem,1.5fr) minmax(5rem,0.8fr) minmax(5.5rem,0.9fr) minmax(6rem,1fr) 6rem 5.5rem 4rem";
+  "minmax(10rem,1.5fr) minmax(5rem,0.8fr) minmax(5rem,0.8fr) minmax(6rem,0.9fr) minmax(5.5rem,0.9fr) minmax(6rem,1fr) 6rem 5.5rem 4rem";
 
 /**
  * Below this the rows scroll sideways inside their own box rather than
@@ -57,7 +63,7 @@ const COLUMNS =
  * their label only as an `aria-label`, so it would leave an operator two
  * unlabelled boxes and no way to tell the price from the grams.
  */
-const MIN_WIDTH = "min-w-[48rem]";
+const MIN_WIDTH = "min-w-[64rem]";
 
 export function SeedTable({
   seeds,
@@ -144,7 +150,7 @@ export function SeedTable({
             style={{ gridTemplateColumns: COLUMNS }}
             className="hidden gap-x-3 px-4 lg:grid"
           >
-            {[t("colSeed"), t("colPrice"), t("colStock"), t("colPacks"), "", t("colActive"), ""].map(
+            {[t("colSeed"), t("colCost"), t("colPrice"), t("colMargin"), t("colStock"), t("colPacks"), "", t("colActive"), ""].map(
               (heading, i) => (
                 <span
                   key={i}
@@ -201,12 +207,25 @@ function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
 
         <NumberField
           compact
-          label={t("colPrice")}
-          name="pricePer50g"
-          min={1}
-          defaultValue={seed.pricePer50g}
-          error={errorFor("pricePer50g")}
+          label={t("colCost")}
+          name="costPer100g"
+          defaultValue={seed.costPer100g}
+          error={errorFor("costPer100g")}
         />
+        {/* Worked out from the cost and the margin on save, never typed. */}
+        <span className="font-body text-sm tabular-nums text-forest">
+          {t("priceValue", { amount: seed.pricePer100g })}
+        </span>
+        {/* From what is stored, not the cost being typed — the rack rows'
+            call. */}
+        <span className="font-body text-sm tabular-nums text-stone">
+          {seed.costPer100g === undefined
+            ? "—"
+            : t("marginValue", {
+                amount: seed.pricePer100g - seed.costPer100g,
+                percent: Math.round(((seed.pricePer100g - seed.costPer100g) / seed.costPer100g) * 100),
+              })}
+        </span>
         <NumberField
           compact
           label={t("colStock")}
@@ -258,12 +277,12 @@ function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
         />
       </form>
 
-      {/* A row saved before 25 Sep 2026 still holds its per-100 g price; the
-          field shows half of it until the owner saves a real per-50 g one. */}
-      {seed.priceFromOld100g && (
+      {/* Not costed yet: the price is whatever it was before 3 Oct 2026, and
+          moves to cost plus margin on the first save with a cost. */}
+      {seed.costPer100g === undefined && (
         <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">
           <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
-          {t("priceConvertedHint", { price: seed.pricePer50g })}
+          {t("costMissing")}
         </p>
       )}
 
@@ -289,8 +308,8 @@ function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
 }
 
 /**
- * What the grams in the field allow customers to order: whole 50 g packs,
- * rounded down — 120 g is two. That is also the cap on ordering (the owner,
+ * What the grams in the field allow customers to order: whole 100 g packs,
+ * rounded down — 250 g is two. That is also the cap on ordering (the owner,
  * 25 Sep 2026), so zero is **sold out**.
  */
 function PacksCell({ grams }: { grams: number }) {

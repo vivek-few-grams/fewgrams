@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Check } from "lucide-react";
 import { IDLE, type FormState } from "@/lib/forms";
-import type { RackMargin, RackRange } from "@/lib/types";
+import type { Margin, RackRange } from "@/lib/types";
 import { saveRackMargin } from "./actions";
 import { NumberField } from "../fields";
 
@@ -14,11 +14,21 @@ import { NumberField } from "../fields";
  * The same component on all three screens, each bound to its own `range`, so
  * a save writes that range's `MARGIN#<range>` row and nothing else (the owner,
  * 3 Oct 2026). Until then the two fields sat in the shelf-rack rates form and
- * moved every price in all three ranges.
+ * moved every price in all three ranges. Trays and drainage use it too, with
+ * their own `save` and no `range`.
  */
-export function MarginForm({ range, margin }: { range: RackRange; margin: RackMargin }) {
+export function MarginForm({
+  range,
+  margin,
+  save = saveRackMargin,
+}: {
+  /** The rack range this margin belongs to; absent off the rack screens. */
+  range?: RackRange;
+  margin: Margin;
+  save?: (prev: FormState, fd: FormData) => Promise<FormState>;
+}) {
   const t = useTranslations("admin.racks");
-  const [state, action, pending] = useActionState<FormState, FormData>(saveRackMargin, IDLE);
+  const [state, action, pending] = useActionState<FormState, FormData>(save, IDLE);
 
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field
@@ -27,7 +37,7 @@ export function MarginForm({ range, margin }: { range: RackRange; margin: RackMa
 
   return (
     <form action={action} className="mt-5 space-y-6">
-      <input type="hidden" name="range" value={range} />
+      {range && <input type="hidden" name="range" value={range} />}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <NumberField
           label={t("markupPercent")}

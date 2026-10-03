@@ -2,50 +2,52 @@
  * Loads the grow media into DynamoDB from the maker's own store — SPEC §24,
  * §24.6.
  *
- *   node --env-file=.env.local scripts/grow-media-fill.mjs --dry           # preview
- *   node --env-file=.env.local scripts/grow-media-fill.mjs                 # write
- *   node --env-file=.env.local scripts/grow-media-fill.mjs --markup=20     # +20% on the list
+ *   node --env-file=.env.local scripts/grow-media-fill.mjs --dry    # preview
+ *   node --env-file=.env.local scripts/grow-media-fill.mjs          # write
  *
  * `trays-fill.mjs` for the grow-media table, and a script rather than a
  * button for the same reason: transcribing a supplier's list is a data job.
  *
- * ## The prices are IFFCO Urban Gardens' own, as listed on 24 Sep 2026
+ * ## What we pay, from the supplier's quotation of 3 Oct 2026
  *
- * Their store showed Horti-Coir at **₹399 for 5 kg and ₹699 for 10 kg**,
- * marked down from an MRP of ₹750 and ₹1,500 as a "limited period offer". The
- * offer price is what a buyer can get from them today, so it is what is
- * loaded — a card priced above the maker's own shop would not sell. **Whether
- * we buy at that price or at a trade price is not settled** (SPEC §24.6); if
- * it is a cost, re-run with `--markup=<percent>`.
+ * **₹300 for 5 kg and ₹70 for 1 kg** — they no longer stock the 10 kg block.
+ * These are our buying costs, written to `cost`; the selling price is worked
+ * out from them with **that row's own** markup and rounding, set on the admin
+ * screen (one per pack size) — `retailPrice`, the racks' formula.
+ * Until 3 Oct this list held IFFCO's retail offer prices (₹399 for 5 kg, ₹699
+ * for 10 kg) and wrote them straight to `price`.
  *
  * ## What it does and does not overwrite
  *
  * Matched on `contentKey`. A matching row keeps its `id`, its `active` flag,
- * its lead days **and its packing figures** — the tray script rewrites the
+ * its stock, its margin **and its packing figures** — the tray script rewrites the
  * whole row and would clear a measured box, which this one must not. Only the
- * price is rewritten every run.
+ * cost and the price are rewritten every run.
  */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
 import { randomUUID } from "node:crypto";
+/* The one formula, shared with the racks; `racks-fill.mjs` guards its entry
+   point, so importing it runs nothing. */
+import { retailPrice } from "./racks-fill.mjs";
 
 /**
- * Both pack sizes, with the page each price was read from. `key` names
+ * Both pack sizes, with what we pay for each. `key` names
  * `content/grow-media/<key>.json`; `src/lib/grow-media/script-parity.test.ts`
  * fails if one exists without the other.
  */
 export const PRICE_LIST = [
   {
     key: "horti-coir",
-    listed: "Horti Coir - Coco Peat Grow Media (Low EC) — 5 kg (SKU COIR05)",
-    price: 399,
-    source: "iffcourbangardens.com/products/horti-coir?variant=46830464074016",
+    listed: "Horti-Coir cocopeat, low EC — 5 kg block",
+    cost: 300,
+    source: "supplier quotation, 3 Oct 2026",
   },
   {
-    key: "horti-coir-bulk",
-    listed: "Horti Coir - Coco Peat Grow Media (Low EC) — 10 kg (SKU COIR010)",
-    price: 699,
-    source: "iffcourbangardens.com/products/horti-coir?variant=46922775757088",
+    key: "horti-coir-small",
+    listed: "Horti-Coir cocopeat, low EC — 1 kg block",
+    cost: 70,
+    source: "supplier quotation, 3 Oct 2026",
   },
 ];
 
@@ -59,9 +61,13 @@ const PACKING = [
   "pieceGrams",
 ];
 
-/** List price → shelf price; a markup rounds up to the rupee. */
-export function shelfPrice(listed, markupPercent = 0) {
-  return Math.ceil(listed * (1 + markupPercent / 100));
+/** A row's own margin as stored, each half falling back to cost to the
+ *  rupee — the admin screen's rule for a blank field. */
+export function marginFrom(item) {
+  return {
+    markupPercent: item?.markupPercent ?? 0,
+    roundUpToNearest: item?.roundUpToNearest ?? 1,
+  };
 }
 
 function flag(name, fallback = null) {
@@ -73,10 +79,6 @@ function flag(name, fallback = null) {
 
 async function main() {
   const dry = flag("dry") !== null;
-  const markup = Number(flag("markup", 0));
-  if (!Number.isFinite(markup) || markup < 0) {
-    throw new Error(`--markup must be a non-negative number, got ${flag("markup")}`);
-  }
 
   const TABLE = `${process.env.DYNAMODB_TABLE_PREFIX ?? "fewgrams"}-catalogue`;
   const endpoint = process.env.DYNAMODB_ENDPOINT;
@@ -103,12 +105,16 @@ async function main() {
   let added = 0;
   let updated = 0;
 
-  for (const { key, listed, price, source } of PRICE_LIST) {
+  for (const { key, listed, cost, source } of PRICE_LIST) {
     const prior = existing.get(key);
+    const margin = marginFrom(prior);
     const row = {
       id: prior?.id ?? randomUUID(),
       contentKey: key,
-      price: shelfPrice(price, markup),
+      cost,
+      ...(prior?.markupPercent !== undefined ? { markupPercent: prior.markupPercent } : {}),
+      ...(prior?.roundUpToNearest !== undefined ? { roundUpToNearest: prior.roundUpToNearest } : {}),
+      price: retailPrice(cost, margin),
       /* Kept, not reset: the count is what the owner last typed on admin. */
       stockPacks: prior?.stockPacks ?? 0,
       active: prior?.active ?? true,
@@ -120,7 +126,10 @@ async function main() {
     const change = prior
       ? `update  ₹${prior.price} → ₹${row.price}, ${row.stockPacks} held`
       : `add     ₹${row.price}, ${row.stockPacks} held`;
-    console.log(`${key.padEnd(22)} ${change}   (list: ${listed} @ ₹${price})`);
+    console.log(
+      `${key.padEnd(22)} ${change}   (${listed}, cost ₹${cost}, ` +
+        `${margin.markupPercent}% rounded up to ₹${margin.roundUpToNearest})`,
+    );
     console.log(`${" ".repeat(22)}         ${source}`);
 
     if (!dry) {
@@ -141,10 +150,9 @@ async function main() {
     else added += 1;
   }
 
-  const note = markup ? ` at +${markup}% markup` : " at the maker's listed prices";
   console.log(
-    `\n${dry ? "would write" : "wrote"} ${PRICE_LIST.length} items${note} — ` +
-      `${added} new, ${updated} existing (lead days and packing kept)`,
+    `\n${dry ? "would write" : "wrote"} ${PRICE_LIST.length} items — ` +
+      `${added} new, ${updated} existing (stock, margin and packing kept)`,
   );
 }
 

@@ -124,7 +124,7 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
                 name={s.content.text.name}
                 /* Price only — see the note at the top of this file for why
                    the grams we hold are not on the card. */
-                meta={t("meta", { price: s.pricePer50g })}
+                meta={t("meta", { price: s.pricePer100g })}
                 index={i}
                 cutout={seedCutout(s.content)}
                 hero={seedHero(s.content)}

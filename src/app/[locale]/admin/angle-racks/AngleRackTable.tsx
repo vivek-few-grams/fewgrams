@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
-import { AlertTriangle, Check, RefreshCw } from "lucide-react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { AngleGrade, AngleRackModel, FrameSize, RackSettings } from "@/lib/types";
@@ -10,11 +10,10 @@ import {
   addAngleRack,
   removeAngleRack,
   republishAngleRack,
-  saveAngleRack,
   toggleAngleRack,
 } from "./actions";
 import { Swatch } from "../racks/ColourSelect";
-import { CheckField, NumberField, SelectField } from "../fields";
+import { CheckField, SelectField } from "../fields";
 
 /**
  * Open-frame racks on sale — the same frozen-price mechanism as the plated
@@ -70,11 +69,11 @@ export type AngleRackView = {
  * rows are separate grids and only line up if both resolve to the same widths.
  */
 const COLUMNS =
-  "3.5rem 3.5rem 5rem 3.5rem 4.5rem 4rem 4rem 5rem 5.5rem 6rem 5rem 4.5rem 3.5rem";
+  "3.5rem 3.5rem 5rem 3.5rem 4.5rem 4rem 4rem 5rem 5.5rem 6rem 4.5rem 3.5rem";
 
 /** Below this the table scrolls rather than compressing: a squeezed price
  *  column is worse than a scrollbar. */
-const MIN_WIDTH = "min-w-[66rem]";
+const MIN_WIDTH = "min-w-[61rem]";
 
 export function AngleRackTable({
   views,
@@ -118,7 +117,6 @@ export function AngleRackTable({
               <span>{t("colMargin")}</span>
               <span />
               <span />
-              <span />
             </div>
 
             {views.map((view) => (
@@ -154,13 +152,7 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
      of words, on `admin.racks`. Copying them would be ten strings kept in step
      by hand. */
   const tr = useTranslations("admin.racks");
-  const [state, action, pending] = useActionState<FormState, FormData>(saveAngleRack, IDLE);
   const { model, costNow, suggestedPrice } = view;
-
-  const errorFor = (field: string) =>
-    state.status === "error" && state.field === field
-      ? t(`errors.${state.code}`, state.values ?? {})
-      : undefined;
 
   /* Resolved from stored slugs. A slug that has left the palette has no
      message, so it falls back to itself rather than rendering a raw key. */
@@ -216,28 +208,12 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
       <Cell>{view.grams === null ? null : t("weightKg", { kg: Math.round(view.grams / 100) / 10 })}</Cell>
       <Cell>{costNow === null ? null : t("rupees", { amount: costNow })}</Cell>
 
-      <form action={action} className="contents">
-        <input type="hidden" name="id" value={model.id} />
-        <NumberField
-          compact
-          label={t("colPrice")}
-          name="price"
-          min={0}
-          defaultValue={model.price}
-          error={errorFor("price")}
-        />
-        <span className="font-body text-sm tabular-nums text-stone">
-          {margin === null ? "—" : t("marginValue", margin)}
-        </span>
-        <button
-          type="submit"
-          disabled={pending}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
-        >
-          {state.status === "saved" && !pending && <Check size={13} strokeWidth={2.5} />}
-          {state.status === "saved" && !pending ? t("savedRow") : t("save")}
-        </button>
-      </form>
+      {/* Worked out, never typed (the owner, 3 Oct 2026: "sell price is
+          based on cost + margin") — every rate and margin edit reprices it. */}
+      <Cell>{t("rupees", { amount: model.price })}</Cell>
+      <span className="font-body text-sm tabular-nums text-stone">
+        {margin === null ? "—" : t("marginValue", margin)}
+      </span>
 
       <form action={toggleAngleRack} className="contents">
         <input type="hidden" name="id" value={model.id} />
@@ -298,11 +274,6 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
         </div>
       )}
 
-      {state.status === "error" && !state.field && (
-        <p className="col-span-full font-body text-[11px] text-terracotta">
-          {t(`errors.${state.code}`, state.values ?? {})}
-        </p>
-      )}
     </div>
   );
 }

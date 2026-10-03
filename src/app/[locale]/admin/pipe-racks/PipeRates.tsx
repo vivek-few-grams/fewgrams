@@ -89,6 +89,32 @@ export function PipeRates({
           />
         </div>
 
+        {/* What the same three parts weigh — the rack's courier weight is
+            worked out from these (`pipeRackGrams`), not typed per size. */}
+        <div className="grid gap-4 border-t border-forest/12 pt-4 sm:grid-cols-2 lg:grid-cols-3">
+          <NumberField
+            label={t("gramsPerFt")}
+            hint={t("gramsPerFtHint")}
+            name="gramsPerFt"
+            defaultValue={pipeSettings?.gramsPerFt ?? ""}
+            error={errorFor("gramsPerFt") ?? (pipeSettings && pipeSettings.gramsPerFt === undefined ? t("weightMissing") : undefined)}
+          />
+          <NumberField
+            label={t("connectorGrams")}
+            hint={t("connectorGramsHint")}
+            name="connectorGrams"
+            defaultValue={pipeSettings?.connectorGrams ?? ""}
+            error={errorFor("connectorGrams")}
+          />
+          <NumberField
+            label={t("bushGrams")}
+            hint={t("bushGramsHint")}
+            name="bushGrams"
+            defaultValue={pipeSettings?.bushGrams ?? ""}
+            error={errorFor("bushGrams")}
+          />
+        </div>
+
         <div className="flex items-center gap-3">
           <button
             type="submit"

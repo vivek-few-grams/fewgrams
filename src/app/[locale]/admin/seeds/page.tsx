@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
-import { listSeeds } from "@/lib/repo/seeds";
+import { getSeedMargin, listSeeds } from "@/lib/repo/seeds";
+import { MarginForm } from "../racks/MarginForm";
+import { saveSeedMargin } from "./actions";
 import { attachSeedContent, listSeedContent } from "@/lib/content/seeds";
 import { routing } from "@/i18n/routing";
 import { AddSeedForm } from "./AddSeedForm";
@@ -40,9 +42,10 @@ export const dynamic = "force-dynamic";
 export default async function SeedsAdmin() {
   const t = await getTranslations("admin.seeds");
 
-  const [rows, content] = await Promise.all([
+  const [rows, content, margin] = await Promise.all([
     listSeeds(),
     listSeedContent(routing.defaultLocale),
+    getSeedMargin(),
   ]);
 
   const withContent = await attachSeedContent(rows, routing.defaultLocale);
@@ -65,6 +68,14 @@ export default async function SeedsAdmin() {
         </div>
       </section>
 
+      {/* One markup and rounding for every seed (3 Oct 2026) — the rack
+          screens' form. */}
+      <section className="rounded-2xl border border-forest/15 p-6">
+        <h2 className="font-display text-lg font-semibold text-forest">{t("marginTitle")}</h2>
+        <p className="mt-2 font-body text-sm text-stone">{t("marginHint")}</p>
+        <MarginForm margin={margin} save={saveSeedMargin} />
+      </section>
+
       <section className="rounded-2xl border border-forest/15 p-6">
         <h2 className="font-display text-lg font-semibold text-forest">{t("addTitle")}</h2>
 
@@ -77,8 +88,8 @@ export default async function SeedsAdmin() {
           seed: {
             id: s.id,
             contentKey: s.contentKey,
-            pricePer50g: s.pricePer50g,
-            ...(s.priceFromOld100g ? { priceFromOld100g: true } : {}),
+            pricePer100g: s.pricePer100g,
+            ...(s.costPer100g !== undefined ? { costPer100g: s.costPer100g } : {}),
             stockGrams: s.stockGrams,
             active: s.active,
           },

@@ -10,7 +10,8 @@ Contract: `src/lib/content/grow-media-contract.ts`. SPEC §24.
 ## What this category holds
 
 Cocopeat for now — IFFCO Urban Gardens' **Horti-Coir**, low-EC, in a 5 kg and
-a 10 kg compressed block. The category is labelled **"Grow media"** so perlite,
+a 1 kg compressed block (the 10 kg block went on 3 Oct 2026: the supplier
+stocks 5 kg and 1 kg only). The category is labelled **"Grow media"** so perlite,
 vermiculite or coco pellets can join as a file and an admin row without a
 rename. Everything here is sold the way a tray is (`content/trays/README.md`):
 nothing held, every order placed with the maker when it arrives.
@@ -24,7 +25,7 @@ content/grow-media/horti-coir.json   →   /shop/grow-media/horti-coir
 ```
 
 Lowercase kebab-case, **no digits** — so a pack size goes in words
-(`horti-coir-bulk` is the 10 kg block), never `horti-coir-10kg`. Files
+(`horti-coir-small` is the 1 kg block), never `horti-coir-1kg`. Files
 beginning with `_` are ignored.
 
 ## The template

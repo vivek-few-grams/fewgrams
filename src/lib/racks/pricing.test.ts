@@ -16,6 +16,7 @@ import {
   pipeRackConnectors,
   pipeRackCost,
   pipeRackFeet,
+  pipeRackGrams,
   pipeRackLegs,
   pipeRackSku,
   rackCapacityKg,
@@ -691,6 +692,18 @@ describe("rack weight", () => {
     expect(angleRackGrams(OWNERS_FRAME, unweighed)).toBeNull();
     /* A plate with no weight of its own. */
     expect(rackGrams({ ...OWNERS_RACK, plateId: "p-2x3" }, card)).toBeNull();
+  });
+
+  it("weighs a pipe rack as its feet of pipe plus its fittings", () => {
+    /* 6 ft, 5 shelves, 1½ × 3 ft: 24 ft of legs + 5 × 9 ft of rails = 69 ft,
+       20 connectors and 4 bushes. At 92 g/ft, 45 g a connector, 10 g a bush. */
+    const pipeCard = {
+      ...card,
+      pipeSettings: { ...VENDOR_SEED.pipeSettings!, gramsPerFt: 92, connectorGrams: 45, bushGrams: 10 },
+    };
+    expect(pipeRackGrams(OWNERS_PIPE_RACK, pipeCard)).toBe(69 * 92 + 20 * 45 + 4 * 10);
+    /* Unweighed pipe is unweighable, not light. */
+    expect(pipeRackGrams(OWNERS_PIPE_RACK, card)).toBeNull();
   });
 
   it("counts unweighed fixings as nothing", () => {

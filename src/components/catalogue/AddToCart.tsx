@@ -50,7 +50,7 @@ import { setCartQuantity } from "@/app/[locale]/cart/actions";
  * ## `max` is the cap, and 0 is sold out
  *
  * `max` is the per-line wholesale ceiling (`MAX_UNITS_PER_LINE`) for a
- * green, and for a seed the lower of that and what is on the shelf in 50 g
+ * green, and for a seed the lower of that and what is on the shelf in 100 g
  * units (the owner, 25 Sep 2026 — from 17 Sep a seed could be ordered past
  * the shelf and was bought in). A seed with nothing on the shelf has `max`
  * 0, and the panel says it is sold out instead of offering a stepper.

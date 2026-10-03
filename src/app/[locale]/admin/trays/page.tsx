@@ -1,9 +1,11 @@
 import { getTranslations } from "next-intl/server";
-import { listTrays } from "@/lib/repo/trays";
+import { getTrayMargin, listTrays } from "@/lib/repo/trays";
 import { attachTrayContent, listTrayContent } from "@/lib/content/trays";
 import { routing } from "@/i18n/routing";
 import { AddTrayForm } from "./AddTrayForm";
 import { TrayTable } from "./TrayTable";
+import { MarginForm } from "../racks/MarginForm";
+import { saveTrayMargin } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -44,9 +46,10 @@ export const dynamic = "force-dynamic";
 export default async function TraysAdmin() {
   const t = await getTranslations("admin.trays");
 
-  const [rows, content] = await Promise.all([
+  const [rows, content, margin] = await Promise.all([
     listTrays(),
     listTrayContent(routing.defaultLocale),
+    getTrayMargin(),
   ]);
 
   const withContent = await attachTrayContent(rows, routing.defaultLocale);
@@ -67,6 +70,14 @@ export default async function TraysAdmin() {
           <p className="font-body text-sm text-stone">{t("intro")}</p>
           <p className="font-body text-sm text-stone">{t("introOps")}</p>
         </div>
+      </section>
+
+      {/* One markup and rounding for every item here (the owner, 3 Oct 2026:
+          "keep all under 1 margin") — the rack screens' form. */}
+      <section className="rounded-2xl border border-forest/15 p-6">
+        <h2 className="font-display text-lg font-semibold text-forest">{t("marginTitle")}</h2>
+        <p className="mt-2 font-body text-sm text-stone">{t("marginHint")}</p>
+        <MarginForm margin={margin} save={saveTrayMargin} />
       </section>
 
       <section className="rounded-2xl border border-forest/15 p-6">

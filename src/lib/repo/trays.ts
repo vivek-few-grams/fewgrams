@@ -1,7 +1,8 @@
 import type { EntityItem } from "electrodb";
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
-import { TrayEntity } from "@/lib/db/entities";
-import type { Tray } from "@/lib/types";
+import { TrayEntity, TraySettingsEntity } from "@/lib/db/entities";
+import { NO_MARGIN } from "@/lib/pricing/margin";
+import type { Margin, Tray } from "@/lib/types";
 
 type Row = EntityItem<typeof TrayEntity>;
 
@@ -99,4 +100,15 @@ export async function returnToStock(contentKey: string, units: number): Promise<
   const row = data[0];
   if (!row) return;
   await TrayEntity.patch({ id: row.id }).add({ stockPacks: units }).go();
+}
+
+/** The trays-and-drainage margin — `NO_MARGIN` (cost, to the rupee) until one
+ *  is saved, so a cost never prices at a markup nobody chose. */
+export async function getTrayMargin(): Promise<Margin> {
+  const { data } = await TraySettingsEntity.get({}).go(READ_OPTS);
+  return data ? { markupPercent: data.markupPercent, roundUpToNearest: data.roundUpToNearest } : NO_MARGIN;
+}
+
+export async function putTrayMargin(m: Margin): Promise<void> {
+  await TraySettingsEntity.put(m).go();
 }

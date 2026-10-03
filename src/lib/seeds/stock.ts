@@ -18,16 +18,19 @@ import { nextDay } from "@/lib/delivery-date";
  *
  * | Shelf | Customer can order |
  * |---|---|
- * | under 50 g | nothing — **sold out** |
- * | 50 g or more | 50 g steps, up to what is held (and the per-line cap) |
+ * | under 100 g | nothing — **sold out** |
+ * | 100 g or more | 100 g steps, up to what is held (and the per-line cap) |
+ *
+ * The step was 50 g from 25 Sep to 3 Oct 2026; the owner moved it back to
+ * 100 g: *"seeds should be always purchasable in 100 gm qty"*.
  *
  * Every seed order goes out **next day**, off our shelf. There is no vendor
  * route and no ten-day promise any more; `SeedSourcing` survives only because
  * orders placed before the change carry it.
  *
- * ## The minimum and the cart unit are the same 50 g
+ * ## The minimum and the cart unit are the same 100 g
  *
- * The cart counts a seed in 50 g units (`GRAMS_PER_UNIT`), so one unit is the
+ * The cart counts a seed in 100 g units (`GRAMS_PER_UNIT`), so one unit is the
  * minimum and "at least one unit" already enforces it everywhere a quantity is
  * read. `stock.test.ts` asserts the two are equal: if a minimum ever differs
  * from the unit, the cart has to learn a per-line minimum first.
@@ -37,14 +40,14 @@ import { nextDay } from "@/lib/delivery-date";
  */
 
 /** The smallest quantity of one seed that can be ordered, in grams. */
-export const SEED_MIN_ORDER_GRAMS = 50;
+export const SEED_MIN_ORDER_GRAMS = 100;
 
 /** Where a seed line came from. Always `shelf` from 25 Sep 2026; `vendor` is
  *  on orders placed while seed could be bought in. */
 export type SeedSourcing = "shelf" | "vendor";
 
 /**
- * How many 50 g units of a seed can be ordered from this much on the shelf:
+ * How many 100 g units of a seed can be ordered from this much on the shelf:
  * whole units only, never below zero, never past the per-line cap. A
  * nonsense stock figure reads as none — refusing an order we could have
  * filled costs less than selling seed we do not have.
@@ -54,7 +57,7 @@ export function seedMaxUnits(stockGrams: number): number {
   return Math.min(Math.floor(stockGrams / GRAMS_PER_UNIT), MAX_UNITS_PER_LINE);
 }
 
-/** Under one 50 g unit on the shelf. */
+/** Under one 100 g unit on the shelf. */
 export function seedSoldOut(stockGrams: number): boolean {
   return seedMaxUnits(stockGrams) === 0;
 }
@@ -68,8 +71,8 @@ export function seedReadyDate(now: Date = new Date()): Date {
 }
 
 /**
- * Whole 50 g packs on the shelf — the admin table's derived column. Rounds
- * down: 120 g is two packs, and the odd 20 g cannot fill one.
+ * Whole 100 g packs on the shelf — the admin table's derived column. Rounds
+ * down: 250 g is two packs, and the odd 50 g cannot fill one.
  */
 export function shelfPacks(stockGrams: number): number {
   if (!Number.isFinite(stockGrams) || stockGrams <= 0) return 0;

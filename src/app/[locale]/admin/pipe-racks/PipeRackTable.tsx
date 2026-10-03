@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
-import { AlertTriangle, Check, RefreshCw } from "lucide-react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { PipeRackModel, PipeSize, RackSettings } from "@/lib/types";
@@ -10,10 +10,9 @@ import {
   addPipeRack,
   removePipeRack,
   republishPipeRack,
-  savePipeRack,
   togglePipeRack,
 } from "./actions";
-import { CheckField, NumberField, SelectField } from "../fields";
+import { CheckField, SelectField } from "../fields";
 
 /**
  * Pipe racks on sale — the same frozen-price mechanism as the other two
@@ -59,6 +58,9 @@ export type PipeRackView = {
   pipeFt: number | null;
   /** Four-way connectors: one per leg, per shelf level. */
   connectors: number | null;
+  /** What the whole rack weighs for the courier, grams — `null` until the
+   *  pipe's grams per foot is set. */
+  grams: number | null;
 };
 
 /**
@@ -68,11 +70,11 @@ export type PipeRackView = {
  * both resolve to the same widths.
  */
 const COLUMNS =
-  "3.5rem 3.5rem 5rem 4.5rem 4.5rem 5rem 5.5rem 6rem 5rem 4.5rem 3.5rem";
+  "3.5rem 3.5rem 5rem 4.5rem 4.5rem 4rem 5rem 5.5rem 6rem 4.5rem 3.5rem";
 
 /** Below this the table scrolls rather than compressing: a squeezed price
  *  column is worse than a scrollbar. */
-const MIN_WIDTH = "min-w-[58rem]";
+const MIN_WIDTH = "min-w-[57rem]";
 
 export function PipeRackTable({
   views,
@@ -117,10 +119,10 @@ export function PipeRackTable({
               <span>{t("colShelfSize")}</span>
               <span>{t("colPipeFt")}</span>
               <span>{t("colConnectors")}</span>
+              <span>{t("colWeight")}</span>
               <span>{t("colCostNow")}</span>
               <span>{t("colPrice")}</span>
               <span>{t("colMargin")}</span>
-              <span />
               <span />
               <span />
             </div>
@@ -160,16 +162,7 @@ function Cell({ children }: { children: React.ReactNode }) {
 function PipeRackRow({ view }: { view: PipeRackView }) {
   const t = useTranslations("admin.pipeRacks");
   const tc = useTranslations("admin.common");
-  const [state, action, pending] = useActionState<FormState, FormData>(
-    savePipeRack,
-    IDLE,
-  );
   const { model, costNow, suggestedPrice } = view;
-
-  const errorFor = (field: string) =>
-    state.status === "error" && state.field === field
-      ? t(`errors.${state.code}`, state.values ?? {})
-      : undefined;
 
   const unpriceable = costNow === null;
   const isStale = costNow !== null && costNow !== model.costAtPublish;
@@ -202,30 +195,15 @@ function PipeRackRow({ view }: { view: PipeRackView }) {
       </Cell>
       <Cell>{view.pipeFt}</Cell>
       <Cell>{view.connectors}</Cell>
+      <Cell>{view.grams === null ? null : t("weightKg", { kg: Math.round(view.grams / 100) / 10 })}</Cell>
       <Cell>{costNow === null ? null : t("rupees", { amount: costNow })}</Cell>
 
-      <form action={action} className="contents">
-        <input type="hidden" name="id" value={model.id} />
-        <NumberField
-          compact
-          label={t("colPrice")}
-          name="price"
-          min={0}
-          defaultValue={model.price}
-          error={errorFor("price")}
-        />
-        <span className="font-body text-sm tabular-nums text-stone">
-          {margin === null ? "—" : t("marginValue", margin)}
-        </span>
-        <button
-          type="submit"
-          disabled={pending}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
-        >
-          {state.status === "saved" && !pending && <Check size={13} strokeWidth={2.5} />}
-          {state.status === "saved" && !pending ? t("savedRow") : t("save")}
-        </button>
-      </form>
+      {/* Worked out, never typed (the owner, 3 Oct 2026: "sell price is
+          based on cost + margin") — every rate and margin edit reprices it. */}
+      <Cell>{t("rupees", { amount: model.price })}</Cell>
+      <span className="font-body text-sm tabular-nums text-stone">
+        {margin === null ? "—" : t("marginValue", margin)}
+      </span>
 
       <form action={togglePipeRack} className="contents">
         <input type="hidden" name="id" value={model.id} />
@@ -286,11 +264,6 @@ function PipeRackRow({ view }: { view: PipeRackView }) {
         </div>
       )}
 
-      {state.status === "error" && !state.field && (
-        <p className="col-span-full font-body text-[11px] text-terracotta">
-          {t(`errors.${state.code}`, state.values ?? {})}
-        </p>
-      )}
     </div>
   );
 }

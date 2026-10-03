@@ -162,6 +162,11 @@ export type GardenScene = {
 /* ------------------------------------------------------------- layout */
 
 const FLOOR_Y = TRAY_RAISE + 0.013;
+/** How far the crop has come (the shader's `uGrow`, 0–1) when the dark
+ *  days end: short, pale shoots about half the height they were first
+ *  drawn at, then shorter again (the owner, 3 Oct 2026: "immediately after blackout, plants
+ *  wont be this tall"). The light step grows them the rest of the way. */
+const DARK_GROW = 0.31;
 const LEVEL = MEDIUM_Y - FLOOR_Y;
 const MED = mediumHalf();
 const FLOOR = floorHalf();
@@ -706,14 +711,42 @@ export function mountGardenScene(
     seeds: THREE.Mesh;
     stems: Stems;
     heap: THREE.InstancedMesh;
+    /** Sprigs in the air on their way to the bowl. */
+    fly: THREE.InstancedMesh;
+    /** Where each sprig of the heap comes to rest, in the heap's space. */
+    rest: THREE.Matrix4[];
   };
   let crop: Crop | null = null;
   const HEAP = 420;
   const heapAt = new THREE.Vector3();
+  /* What is cut is thrown into the bowl (the owner, 3 Oct 2026: "greens
+     should be thrown to the bowl not automatically fill in"): each sprig
+     cut flies from where the blade is, on an arc, to its place in the
+     heap, and only lands there when it arrives. */
+  const FLY_MAX = 96;
+  const FLY_SECONDS = 0.55;
+  /** Sprigs launched per second while the cut is ahead of the bowl. */
+  const FLY_RATE = 170;
+  let heapWant = 0;
+  let heapLaunched = 0;
+  let flyBudget = 0;
+  const flights: { k: number; t: number; from: THREE.Vector3; spin: number }[] =
+    [];
+  const throwFrom = new THREE.Vector3();
+  function resetHeap() {
+    heapWant = 0;
+    heapLaunched = 0;
+    flyBudget = 0;
+    flights.length = 0;
+    if (crop) {
+      crop.heap.count = 0;
+      crop.fly.count = 0;
+    }
+  }
   function disposeCrop() {
     if (!crop) return;
     bed.remove(crop.plants, crop.seeds);
-    scene.remove(crop.heap);
+    scene.remove(crop.heap, crop.fly);
     for (const m of [crop.plants, crop.seeds, crop.heap]) {
       m.geometry.dispose();
       (m.material as THREE.Material).dispose();
@@ -821,7 +854,21 @@ export function mountGardenScene(
     heap.count = 0;
     heap.position.copy(heapAt);
     scene.add(heap);
-    crop = { look: l, plants, seeds, stems, heap };
+    const fly = new THREE.InstancedMesh(heap.geometry, heapMat, FLY_MAX);
+    fly.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    fly.frustumCulled = false;
+    fly.count = 0;
+    scene.add(fly);
+    crop = {
+      look: l,
+      plants,
+      seeds,
+      stems,
+      heap,
+      fly,
+      rest: placed.map((p) => p.m),
+    };
+    resetHeap();
   }
   bin.add({ dispose: disposeCrop });
   let look: Look = startLook;
@@ -1288,9 +1335,9 @@ export function mountGardenScene(
     hfDirty = true;
     const sown = before("sow");
     setMask(sown, false, sown);
-    shared.grow.value = before("dark") ? (before("light") ? 1 : 0.55) : 0;
+    shared.grow.value = before("dark") ? (before("light") ? 1 : DARK_GROW) : 0;
     shared.green.value = before("light") ? 1 : 0;
-    if (crop) crop.heap.count = 0;
+    resetHeap();
     const flat = (o: THREE.Object3D, xz: XZ, yaw = 0, y = 0) => {
       o.position.copy(v3(xz, y));
       o.rotation.set(0, yaw, 0);
@@ -2847,15 +2894,15 @@ export function mountGardenScene(
         DARK_DAYS,
         val.days + ((dt * DARK_DAYS) / DARK_SECONDS) * pace,
       );
-      val.growTarget = 0.55 * (val.days / DARK_DAYS);
+      val.growTarget = DARK_GROW * (val.days / DARK_DAYS);
     }
-    val.lidLift = LID_LIFT * smooth(shared.grow.value, 0.2, 0.55);
+    val.lidLift = LID_LIFT * smooth(shared.grow.value, 0.15, DARK_GROW);
     if (phase === "hold" || phase === "done") {
       lid.position.y = LID_ON + val.lidLift;
     }
     if (phase === "hold") {
       progress = Math.min(0.99, 0.25 + 0.75 * (val.days / DARK_DAYS));
-      if (val.days >= DARK_DAYS && shared.grow.value > 0.54) {
+      if (val.days >= DARK_DAYS && shared.grow.value > DARK_GROW - 0.01) {
         /* The days are done: the visitor takes the tray out into the
            light (the owner, 2 Oct 2026) — or it is done for them. */
         progress = 0.99;
@@ -2960,19 +3007,20 @@ export function mountGardenScene(
           );
           cutterInner.localToWorld(along);
           paintMask(along.x, along.z, 0.11, 1);
+          if (k === 3) throwFrom.set(along.x, MEDIUM_Y + 0.12, along.z);
         }
       }
     }
     const sown = Math.max(1, maskCount(0));
     const cut = maskCount(1) / sown;
-    if (crop) crop.heap.count = Math.round(Math.min(1, cut / 0.9) * HEAP);
+    heapWant = Math.max(heapWant, Math.round(Math.min(1, cut / 0.9) * HEAP));
     if (phase === "cut") {
       progress = Math.min(0.99, cut / 0.9);
       if (cut >= 0.9) {
         for (let k = 0; k < MASK_NX * MASK_NZ; k++)
           if (maskBytes[k * 4] === 255) maskBytes[k * 4 + 1] = 255;
         maskTex.needsUpdate = true;
-        if (crop) crop.heap.count = HEAP;
+        heapWant = HEAP;
         held = null;
         putBack(knife, v3(L.cutter, 0.02), -0.5);
         progress = 1;
@@ -2980,7 +3028,70 @@ export function mountGardenScene(
         setPhase("done");
       }
     }
+    throwGreens(dt);
     handInGreens(dt, p, engaged);
+  }
+
+  const flyM = new THREE.Matrix4();
+  const flyQ = new THREE.Quaternion();
+  const flySpin = new THREE.Quaternion();
+  const flyS = new THREE.Vector3();
+  const sprigTo = new THREE.Vector3();
+  const flyAt = new THREE.Vector3();
+  const flyAxis = new THREE.Vector3(1, 0, 0.4).normalize();
+  const flyColor = new THREE.Color();
+  /** Launch what has been cut toward the bowl, move what is in the air,
+   *  and land what has arrived. Launched in heap order and all in the air
+   *  for the same time, so they land in order, bottom of the heap first. */
+  function throwGreens(dt: number) {
+    if (!crop) return;
+    if (heapLaunched < heapWant) flyBudget += dt * FLY_RATE;
+    else flyBudget = 0;
+    while (
+      heapLaunched < heapWant &&
+      flights.length < FLY_MAX &&
+      flyBudget >= 1
+    ) {
+      flyBudget -= 1;
+      const from =
+        throwFrom.lengthSq() > 0
+          ? throwFrom.clone()
+          : new THREE.Vector3(0, MEDIUM_Y + 0.12, 0);
+      from.x += (Math.random() - 0.5) * 0.25;
+      from.z += (Math.random() - 0.5) * 0.25;
+      flights.push({
+        k: heapLaunched++,
+        t: 0,
+        from,
+        spin: (Math.random() - 0.5) * 9,
+      });
+    }
+    let n = 0;
+    for (let i = 0; i < flights.length; i++) {
+      const f = flights[i];
+      f.t += dt / FLY_SECONDS;
+      if (f.t >= 1) {
+        crop.heap.count = Math.max(crop.heap.count, f.k + 1);
+        continue;
+      }
+      crop.rest[f.k].decompose(sprigTo, flyQ, flyS);
+      sprigTo.add(heapAt);
+      const u = f.t;
+      flyAt.lerpVectors(f.from, sprigTo, u);
+      /* Up and over the bowl's rim, then down into it. */
+      flyAt.y += Math.sin(Math.PI * u) * 0.9;
+      flySpin.setFromAxisAngle(flyAxis, f.spin * (1 - u));
+      flyQ.premultiply(flySpin);
+      flyM.compose(flyAt, flyQ, flyS);
+      crop.fly.setMatrixAt(n, flyM);
+      crop.heap.getColorAt(f.k, flyColor);
+      crop.fly.setColorAt(n, flyColor);
+      flights[n++] = f;
+    }
+    flights.length = n;
+    crop.fly.count = n;
+    crop.fly.instanceMatrix.needsUpdate = true;
+    if (crop.fly.instanceColor) crop.fly.instanceColor.needsUpdate = true;
   }
 
   /* A hand in grown greens bends them, as on the home page. */
@@ -4113,7 +4224,7 @@ export function mountGardenScene(
     const vh = dragView.h;
     darkCam.aspect = vw / vh;
     aim(darkCam, darkAt, wide ? 2.6 : 2.8, wide ? 0.78 : 0.9);
-    darkCam.setViewOffset(vw, vh, 0, wide ? vh * 0.07 : -vh * 0.06, w, h);
+    darkCam.setViewOffset(vw, vh, 0, wide ? -vh * 0.08 : 0, w, h);
     darkCam.updateProjectionMatrix();
     darkCam.updateMatrixWorld();
     if (flying && kw >= 1 && kh >= 1) {
@@ -4166,10 +4277,10 @@ export function mountGardenScene(
   /** The dark room's camera, for a view `pw` × `ph`. */
   function aimDark(pw: number, ph: number, wide: boolean) {
     darkCam.aspect = pw / ph;
-    /* Clear of the page's words: on a wide stage the stages are under the
-       tray, so it sits a little high; on a tall one the title and step
-       dots are over it, so it sits a little low. */
-    darkCam.setViewOffset(pw, ph, 0, wide ? ph * 0.07 : -ph * 0.06, pw, ph);
+    /* Clear of the page's words: the stages are over the tray and the
+       step card under it (the owner, 3 Oct 2026), so on a wide stage it
+       sits a little low, in the room the stages leave. */
+    darkCam.setViewOffset(pw, ph, 0, wide ? -ph * 0.08 : 0, pw, ph);
     aim(darkCam, darkAt, wide ? 2.6 : 2.8, wide ? 0.78 : 0.9);
   }
   /** The kitchen's camera. While the screen opens it is framed at its

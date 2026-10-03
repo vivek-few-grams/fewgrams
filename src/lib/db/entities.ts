@@ -173,6 +173,28 @@ export const ProductEntity = new Entity(
 );
 
 /**
+ * The seeds margin — markup and rounding on each seed's `costPer100g`, one for
+ * the whole seed shelf (the owner, 3 Oct 2026). A singleton, off GSI1, so
+ * listing seeds never sees it.
+ */
+export const SeedSettingsEntity = new Entity(
+  {
+    model: { ...model, entity: "seedSettings" },
+    attributes: {
+      markupPercent: { type: "number", required: true },
+      roundUpToNearest: { type: "number", required: true },
+    },
+    indexes: {
+      single: {
+        pk: { field: "PK", composite: [], template: "SEEDSETTINGS", casing: "none" },
+        sk: { field: "SK", composite: [], template: "SETTINGS", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
  * Seed — SPEC §3 / §22.
  *   PK = SEED#<id>   SK = META   GSI1PK = SEED   GSI1SK = <contentKey>
  *
@@ -201,12 +223,15 @@ export const SeedEntity = new Entity(
     attributes: {
       id: { type: "string", required: true },
       contentKey: { type: "string", required: true },
-      /** ₹ per 50 g, from 25 Sep 2026. Optional only because rows saved
-       *  before then hold `pricePer100g` instead; the repo reads that as half
-       *  until the row is saved again. */
-      pricePer50g: { type: "number" },
-      /** Retired 25 Sep 2026 — see `pricePer50g`. Never written again. */
+      /** ₹ per 100 g — see `Seed.pricePer100g`. Optional only because a row
+       *  saved between 25 Sep and 3 Oct 2026 holds `pricePer50g` instead,
+       *  which the repo reads doubled until the row is saved again. */
       pricePer100g: { type: "number" },
+      /** Retired 3 Oct 2026, when the unit went back to 100 g. Never written
+       *  again. */
+      pricePer50g: { type: "number" },
+      /** ₹ we pay for 100 g — see `Seed.costPer100g`. */
+      costPer100g: { type: "number" },
       /** Grams on the shelf — the most that can be ordered (the owner,
        *  25 Sep 2026). Zero is sold out. */
       stockGrams: { type: "number", required: true },
@@ -256,6 +281,8 @@ export const TrayEntity = new Entity(
       contentKey: { type: "string", required: true },
       /** ₹ for the pack as sold, whole — see the note on `Tray.price`. */
       price: { type: "number", required: true },
+      /** ₹ we pay for one pack — see `Tray.cost`. */
+      cost: { type: "number" },
       /** Packs held (the owner, 25 Sep 2026). Absent on rows saved before
        *  then, read as none. */
       stockPacks: { type: "number" },
@@ -293,6 +320,28 @@ export const TrayEntity = new Entity(
 );
 
 /**
+ * The trays-and-drainage margin — markup and rounding on each pack's `cost`,
+ * one for every item on the screen (the owner, 3 Oct 2026: "keep all under 1
+ * margin"). A singleton, off GSI1, so listing trays never sees it.
+ */
+export const TraySettingsEntity = new Entity(
+  {
+    model: { ...model, entity: "traySettings" },
+    attributes: {
+      markupPercent: { type: "number", required: true },
+      roundUpToNearest: { type: "number", required: true },
+    },
+    indexes: {
+      single: {
+        pk: { field: "PK", composite: [], template: "TRAYSETTINGS", casing: "none" },
+        sk: { field: "SK", composite: [], template: "SETTINGS", casing: "none" },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
  * Grow medium (cocopeat) — SPEC §24.
  *   PK = MEDIUM#<id>  SK = META  GSI1PK = MEDIUM  GSI1SK = <contentKey>
  *
@@ -311,6 +360,10 @@ export const GrowMediumEntity = new Entity(
       contentKey: { type: "string", required: true },
       /** ₹ for one pack as sold, whole — see `GrowMedium.price`. */
       price: { type: "number", required: true },
+      cost: { type: "number" },
+      /** This pack's margin on `cost` — see `GrowMedium.markupPercent`. */
+      markupPercent: { type: "number" },
+      roundUpToNearest: { type: "number" },
       /** Blocks held — see `TrayEntity.stockPacks`. */
       stockPacks: { type: "number" },
       /** Retired 25 Sep 2026 — see `TrayEntity.leadDays`. */
@@ -856,6 +909,9 @@ export const PipeSettingsEntity = new Entity(
        *  fixed four. A 4 ft pipe rack carries a middle support, so six. */
       bushPrice: { type: "number", required: true },
       pipeDiameterCm: { type: "number" },
+      gramsPerFt: { type: "number" },
+      connectorGrams: { type: "number" },
+      bushGrams: { type: "number" },
     },
     indexes: {
       single: {
@@ -887,7 +943,6 @@ export const PipeSizeEntity = new Entity(
       depthFt: { type: "number", required: true },
       lengthFt: { type: "number", required: true },
       active: { type: "boolean", required: true },
-      gramsPerShelf: { type: "number" },
     },
     indexes: {
       byId: {

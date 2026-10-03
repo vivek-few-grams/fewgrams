@@ -50,7 +50,10 @@ const ACCOUNT_STATE = {
     dot: "bg-sage",
     key: "account",
   },
-} as const satisfies Record<Role, { href: string; tone: string; dot: string; key: string }>;
+} as const satisfies Record<
+  Role,
+  { href: string; tone: string; dot: string; key: string }
+>;
 
 export async function Header({
   actor,
@@ -67,7 +70,10 @@ export async function Header({
   const showMicrogreens = await isProductTypeEnabled("microgreens");
 
   return (
-    <header className="sticky top-0 z-[70] border-b border-forest/10 bg-cream/90 backdrop-blur-md">
+    <header className="sticky top-0 z-[70] border-b border-forest/10 bg-white">
+      {/* Solid white on every page (the owner, 3 Oct 2026): it was a
+          translucent cream, which read as one colour over the cream pages
+          and another over the white cart and checkout. */}
       {/* Grid below `lg`, flex from `lg` up. **No vertical padding** — the
           logo's own height is the bar's height, which is what lets the lockup
           fill it rather than float in a padded box. Restores the pre-logo bar
@@ -129,7 +135,11 @@ export async function Header({
 
           <Link
             href="/cart"
-            aria-label={cartCount > 0 ? t("cartWithCount", { count: cartCount }) : t("cart")}
+            aria-label={
+              cartCount > 0
+                ? t("cartWithCount", { count: cartCount })
+                : t("cart")
+            }
             className="relative text-forest hover:text-stone"
           >
             <ShoppingBag size={20} strokeWidth={1.5} />

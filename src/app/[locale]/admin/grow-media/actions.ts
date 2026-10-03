@@ -2,14 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
-import {
-  deleteGrowMedium,
-  getGrowMedium,
-  listGrowMedia,
-  putGrowMedium,
-} from "@/lib/repo/grow-media";
+import { deleteGrowMedium, getGrowMedium, listGrowMedia, putGrowMedium } from "@/lib/repo/grow-media";
+import { NO_MARGIN, retailPrice } from "@/lib/pricing/margin";
 import { isValidContentKey } from "@/lib/content/content-key";
-import { err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
+import { count, err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
 import { isValidStockPacks } from "@/lib/grow-media/lead-time";
 import type { GrowMedium } from "@/lib/types";
 
@@ -31,13 +27,34 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
 }
 
-/** The price and the blocks held — the only two things this screen sets,
- *  plus active. */
-type Ops = Pick<GrowMedium, "price" | "stockPacks" | "active">;
+/** The cost, its margin, the price and the blocks held, plus active. */
+type Ops = Pick<
+  GrowMedium,
+  "price" | "stockPacks" | "active" | "cost" | "markupPercent" | "roundUpToNearest"
+>;
 
+/**
+ * The selling price is **worked out, never typed** (the owner, 3 Oct 2026:
+ * "sell price is based on cost + margin"): `retailPrice(cost, margin)`, with
+ * this pack's own markup and rounding (the owner: "keep separate margin for
+ * 5kg and 1 kg"). So the cost is required. A blank markup or rounding prices
+ * at cost to the rupee (`NO_MARGIN`), never at a figure nobody chose.
+ */
 function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
-  const price = money(fd, "price");
-  if (price === null) return { ok: false, state: err("priceInvalid", "price") };
+  const cost = money(fd, "cost");
+  if (cost === null) return { ok: false, state: err("costInvalid", "cost") };
+
+  const markupRaw = String(fd.get("markupPercent") ?? "").trim();
+  const markupPercent = markupRaw === "" ? undefined : zeroOrMore(fd, "markupPercent");
+  if (markupPercent === null) return { ok: false, state: err("zeroOrMore", "markupPercent") };
+  const roundRaw = String(fd.get("roundUpToNearest") ?? "").trim();
+  const roundUpToNearest = roundRaw === "" ? undefined : count(fd, "roundUpToNearest");
+  if (roundUpToNearest === null) return { ok: false, state: err("countInvalid", "roundUpToNearest") };
+
+  const price = retailPrice(cost, {
+    markupPercent: markupPercent ?? NO_MARGIN.markupPercent,
+    roundUpToNearest: roundUpToNearest ?? NO_MARGIN.roundUpToNearest,
+  });
 
   /* The tray rule — see `trays/actions.ts`. */
   const stockPacks = zeroOrMore(fd, "stockPacks");
@@ -45,7 +62,17 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
     return { ok: false, state: err("stockInvalid", "stockPacks") };
   }
 
-  return { ok: true, value: { price, stockPacks, active: fd.get("active") === "on" } };
+  return {
+    ok: true,
+    value: {
+      price,
+      stockPacks,
+      active: fd.get("active") === "on",
+      cost,
+      ...(markupPercent !== undefined ? { markupPercent } : {}),
+      ...(roundUpToNearest !== undefined ? { roundUpToNearest } : {}),
+    },
+  };
 }
 
 /**
@@ -130,8 +157,11 @@ export async function updateGrowMedium(_prev: FormState, fd: FormData): Promise<
 
   /* Packing replaces rather than merges: clearing all six fields is how an
      owner says "re-measure this", and a merge would keep the old figures. */
+  /* The margin is dropped with the packing so that blanking a field clears
+     it rather than keeping a figure nobody can see. */
+  const cleared: readonly string[] = [...PACKING, "cost", "markupPercent", "roundUpToNearest"];
   const rest = Object.fromEntries(
-    Object.entries(current).filter(([k]) => !(PACKING as readonly string[]).includes(k)),
+    Object.entries(current).filter(([k]) => !cleared.includes(k)),
   ) as GrowMedium;
   await putGrowMedium({ ...rest, ...ops.value, ...packing.value });
   refresh();

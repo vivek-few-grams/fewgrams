@@ -32,7 +32,9 @@ export const CORNER = 0.09;
 /** Coco peat sits a little under the rim — the height the greens were
  *  composed at. */
 export const MEDIUM_Y = TRAY_RAISE + TRAY_H - 0.08;
-export const MEDIUM_COLOR = "#4b3424";
+/** Darker than first drawn (the owner, 3 Oct 2026: "can we make soil
+ *  darker"), so the stems read pale against it. */
+export const MEDIUM_COLOR = "#21160f";
 
 /**
  * The two pairs we sell, by content key. Black is the recycled pair; the
@@ -370,7 +372,7 @@ export function mediumTexture(rand: () => number, base = MEDIUM_COLOR) {
   g.fillStyle = base;
   g.fillRect(0, 0, c.width, c.height);
   for (let k = 0; k < 2200; k++) {
-    const shade = rand() < 0.5 ? "rgba(30,18,10,0.5)" : "rgba(140,100,70,0.35)";
+    const shade = rand() < 0.5 ? "rgba(8,4,2,0.6)" : "rgba(80,56,40,0.28)";
     g.strokeStyle = shade;
     g.lineWidth = 0.6 + rand() * 1.4;
     const x = rand() * c.width;

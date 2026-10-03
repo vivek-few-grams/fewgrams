@@ -55,7 +55,8 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
   const rows = await attachGrowMediumContent(await listGrowMedia({ activeOnly: true }), locale);
   /* Cheapest first, then by name. **Not by name alone**, as `/shop/trays`
      sorts: the items here are pack sizes of one product, and a name sort puts
-     "10 kg" ahead of "5 kg" because "1" sorts before "5". The price follows
+     "10 kg" ahead of "5 kg" because "1" sorts before "5" (when there was a
+     10 kg block; now 1 kg and 5 kg, 3 Oct 2026). The price follows
      the size, so it orders them the way a buyer reads them. */
   const collator = new Intl.Collator(locale === "kn" ? "kn-IN" : "en-IN");
   const items = rows

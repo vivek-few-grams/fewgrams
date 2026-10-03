@@ -105,7 +105,7 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
   const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
 
   /* The shelf is the limit (the owner, 25 Sep 2026): the stepper stops at
-     what is held, in 50 g units, and 0 is sold out. The figure itself is
+     what is held, in 100 g units, and 0 is sold out. The figure itself is
      never printed. Every seed goes out next day, off our shelf. */
   const max = seedMaxUnits(row.stockGrams);
   const nextDispatch = formatDeliveryDate(seedReadyDate(), dateLocale);
@@ -162,12 +162,12 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
                client. The full line is generated rather than only `packs` of
                it, so the array's indices do not shift when stock changes. */
             totals: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
-              d("lineTotal", { total: (i + 1) * row.pricePer50g }),
+              d("lineTotal", { total: (i + 1) * row.pricePer100g }),
             ),
             breakdowns: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
               d("lineBreakdown", {
                 grams: (i + 1) * SEED_MIN_ORDER_GRAMS,
-                price: row.pricePer50g,
+                price: row.pricePer100g,
               }),
             ),
             note: d("buyNote"),

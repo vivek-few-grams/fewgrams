@@ -20,8 +20,10 @@ import {
   Sprout,
   Sun,
   Plus,
+  Droplets,
 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import { FgMark } from "@/components/chrome/FgMark";
 import { QuickAdd } from "@/components/catalogue/QuickAdd";
 import { RecommendedBadge } from "@/components/catalogue/RecommendedBadge";
 import { TrayPlayStage } from "@/components/tray-play/TrayPlayStage";
@@ -216,6 +218,8 @@ export function GardenJourney({
      have landed on the bench, so it reads as the bridge between the two. */
   const [lingering, setLingering] = useState<BenchStep | null>(null);
   const cheer = finished ? bench : lingering;
+  /* The harvest done: the last screen, with its badge and the kit. */
+  const finale = finished && bench === "harvest";
   useEffect(() => {
     if (!finished || !following || !bench) return;
     const id = window.setTimeout(() => {
@@ -431,12 +435,11 @@ export function GardenJourney({
         <WallFrame p={ad.p} recommended={ad.recommended} t={t} />
       </span>
     );
-  const card =
-    ad === "kit" ? (
-      <Kit shelf={shelf} finish={finish} look={look} t={t} />
-    ) : ad ? (
-      <BuyCard p={ad.p} recommended={ad.recommended} t={t} />
-    ) : null;
+  const card = finale ? null : ad === "kit" ? (
+    <Kit shelf={shelf} finish={finish} look={look} t={t} />
+  ) : ad ? (
+    <BuyCard p={ad.p} recommended={ad.recommended} t={t} />
+  ) : null;
 
   const dots = (
     <StepDots
@@ -551,13 +554,115 @@ export function GardenJourney({
         </div>
       )}
 
+      {/* ---- the end: a badge, the last word and the kit under it, so
+          what was grown can be bought right there (the owner, 3 Oct
+          2026) ---- */}
+      {finale && (
+        <div className="absolute inset-0 z-40 flex items-start justify-center overflow-y-auto bg-forest/25 px-4 pb-40 pt-6 backdrop-blur-[2px] md:items-center md:pb-36 md:pt-6">
+          {/* Stacked on a phone; side by side wider, so it all sits above
+              the step card on a short screen. */}
+          <div className="flex w-full max-w-md flex-col items-center gap-3 md:max-w-4xl md:flex-row md:items-stretch md:justify-center md:gap-8">
+            <div
+              role="status"
+              className="garden-cheer flex flex-col items-center gap-2 text-center md:max-w-sm"
+            >
+              {/* A medal for finishing the journey (the owner, 3 Oct 2026):
+                  a striped neck ribbon, a scalloped gold rim and the
+                  Fewgrams mark struck in its face, "Well done" under it. */}
+              <svg
+                viewBox="0 0 120 132"
+                aria-hidden
+                className="garden-medal h-36 w-auto drop-shadow-[0_12px_22px_rgba(90,60,8,0.45)]"
+              >
+                <defs>
+                  <radialGradient id="medal-face" cx="38%" cy="32%" r="75%">
+                    <stop offset="0" stopColor="#fff4c8" />
+                    <stop offset="0.45" stopColor="#f2c94c" />
+                    <stop offset="1" stopColor="#b9821f" />
+                  </radialGradient>
+                  <linearGradient id="medal-rim" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stopColor="#ffe9a3" />
+                    <stop offset="0.5" stopColor="#d4a032" />
+                    <stop offset="1" stopColor="#8f6214" />
+                  </linearGradient>
+                </defs>
+                {/* The ribbon: two forest bands with a sage stripe, meeting
+                    in a V behind the medal. */}
+                <path d="M22 0H50L72 62H44Z" fill="#14402a" />
+                <path d="M31 0H40L62 62H53Z" fill="#a8cf8e" />
+                <path d="M98 0H70L48 62H76Z" fill="#1d5a3a" />
+                <path d="M89 0H80L58 62H67Z" fill="#a8cf8e" />
+                {/* The ring the ribbon hangs it by. */}
+                <rect
+                  x="52"
+                  y="50"
+                  width="16"
+                  height="9"
+                  rx="3"
+                  fill="url(#medal-rim)"
+                />
+                <path
+                  d="M60.0 54.0L64.5 57.8L69.8 55.3L73.2 60.1L79.0 59.1L81.0 64.6L86.9 65.1L87.4 71.0L92.9 73.0L91.9 78.8L96.7 82.2L94.2 87.5L98.0 92.0L94.2 96.5L96.7 101.8L91.9 105.2L92.9 111.0L87.4 113.0L86.9 118.9L81.0 119.4L79.0 124.9L73.2 123.9L69.8 128.7L64.5 126.2L60.0 130.0L55.5 126.2L50.2 128.7L46.8 123.9L41.0 124.9L39.0 119.4L33.1 118.9L32.6 113.0L27.1 111.0L28.1 105.2L23.3 101.8L25.8 96.5L22.0 92.0L25.8 87.5L23.3 82.2L28.1 78.8L27.1 73.0L32.6 71.0L33.1 65.1L39.0 64.6L41.0 59.1L46.8 60.1L50.2 55.3L55.5 57.8Z"
+                  fill="url(#medal-rim)"
+                />
+                <circle cx="60" cy="92" r="29" fill="url(#medal-face)" />
+                <circle
+                  cx="60"
+                  cy="92"
+                  r="25.5"
+                  fill="none"
+                  stroke="#a8761a"
+                  strokeWidth="1.2"
+                  strokeDasharray="2 2.4"
+                />
+                <svg x="39" y="71" width="42" height="42" viewBox="0 0 100 100">
+                  <FgMark className="fill-[#6b4a0c]" />
+                </svg>
+                {/* A glint across the face. */}
+                <path
+                  d="M40 76Q52 66 70 70"
+                  stroke="#fffbe6"
+                  strokeOpacity="0.7"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+              <span className="-mt-1 rounded-full bg-gradient-to-b from-[#f6d77a] to-[#d9a73a] px-3 py-0.5 font-body text-xs font-bold uppercase tracking-[0.18em] text-[#3d2a05] shadow-sm">
+                {t("finale.badge")}
+              </span>
+              <p className="max-w-md text-balance rounded-3xl bg-forest px-6 py-3 font-display text-lg font-bold text-cream shadow-[0_14px_40px_rgba(3,39,24,0.35)] md:text-2xl">
+                {t("steps.harvest.done")}
+              </p>
+              {/* What a tray at home gives a family — what anyone can see
+                  for themselves, never a nutrient or health claim
+                  (CLAUDE.md). */}
+              <ul className="mt-1 grid w-full gap-1.5 text-left">
+                {(["eyes", "fresh", "choose", "family"] as const).map((k) => (
+                  <li
+                    key={k}
+                    className="flex items-center gap-2.5 rounded-2xl bg-cream/95 px-3 py-2 font-body text-sm font-semibold text-forest shadow-sm ring-1 ring-forest/10"
+                  >
+                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-forest text-cream">
+                      <Check size={14} strokeWidth={3} aria-hidden />
+                    </span>
+                    {t(`finale.why.${k}`)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Kit shelf={shelf} finish={finish} look={look} t={t} big />
+          </div>
+        </div>
+      )}
+
       {/* ---- well done, in the middle ---- */}
-      {cheer && (
+      {cheer && !finale && (
         <div className="pointer-events-none absolute inset-x-0 top-[22%] z-30 flex justify-center px-4">
           <p
             key={cheer}
             role="status"
-            className="garden-cheer flex items-center gap-3 rounded-full bg-forest px-6 py-3.5 text-center font-display text-lg font-bold text-cream shadow-[0_14px_40px_rgba(3,39,24,0.35)] md:px-8 md:py-4 md:text-2xl"
+            className="garden-cheer flex max-w-xl items-center gap-3 text-balance rounded-3xl bg-forest px-6 py-3.5 text-center font-display text-lg font-bold text-cream shadow-[0_14px_40px_rgba(3,39,24,0.35)] md:px-8 md:py-4 md:text-2xl"
           >
             <Sparkles className="size-5 shrink-0 md:size-6" aria-hidden />
             {t(`steps.${cheer}.done`)}
@@ -596,7 +701,7 @@ export function GardenJourney({
       {/* ---- where you are, and on: one card, bottom centre (the owner,
           3 Oct 2026) — the steps and the title on the left, the step's
           buttons on the right; stacked on a phone ---- */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 flex justify-center p-4 md:p-6">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-50 flex justify-center p-4 md:p-6">
         {/* Cream, so the title reads over the room behind it. */}
         <div className="pointer-events-auto flex w-full flex-col gap-3 rounded-2xl bg-cream/90 px-4 py-3 shadow-[0_10px_30px_rgba(3,39,24,0.16)] ring-1 ring-forest/10 backdrop-blur-sm md:w-auto md:flex-row md:items-center md:gap-8 md:py-2.5 md:pr-3">
           <div className="min-w-0">
@@ -623,6 +728,18 @@ export function GardenJourney({
                 )}
               {t(`steps.${step}.title`)}
             </h1>
+            {/* The scene waters once; a real tray needs it twice a day
+                (the owner, 3 Oct 2026). */}
+            {step === "light" && (
+              <p className="mt-1 flex items-center gap-1.5 font-body text-sm font-semibold text-forest/80">
+                <Droplets
+                  size={15}
+                  aria-hidden
+                  className="shrink-0 text-sky-600"
+                />
+                {t("steps.light.twice")}
+              </p>
+            )}
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2 md:shrink-0">
             {step === "touch" ? (
@@ -680,13 +797,17 @@ export function GardenJourney({
                     </button>
                   )
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => go("pick")}
-                    className={pillClass}
+                  /* The end of the journey leads to the shop (the owner,
+                     3 Oct 2026); the step dots still start it again. */
+                  <ShopLink
+                    newTab={t("product.newTab")}
+                    href="/shop"
+                    className={primaryClass}
                   >
-                    {t("nav.restart")}
-                  </button>
+                    <ShoppingBag size={16} aria-hidden />
+                    {t("nav.shop")}
+                    <ArrowRight size={16} aria-hidden />
+                  </ShopLink>
                 )}
               </>
             )}
@@ -965,18 +1086,9 @@ function DarkSplit({
         style={panels[0]}
         className="absolute flex flex-col items-center overflow-hidden"
       >
-        <div
-          /* On a tall stage, clear of the page's buttons while the dark
-             room has the whole screen; the kitchen takes the bottom after. */
-          style={
-            wide
-              ? undefined
-              : { marginBottom: "calc(4.75rem * var(--alone, 1) + 0.5rem)" }
-          }
-          className={`garden-stages-in mt-auto ${wide ? "mb-24" : ""}`}
-        >
-          {stages}
-        </div>
+        {/* At the top, over the tray, where nothing else is: the step
+            card holds the bottom (the owner, 3 Oct 2026). */}
+        <div className="garden-stages-in mt-4 md:mt-6">{stages}</div>
       </div>
 
       {/* From the tray to the rack, over the seam, while it waits. */}
@@ -1637,12 +1749,28 @@ function Kit({
   finish,
   look,
   t,
+  big = false,
 }: {
   shelf: GardenShelf;
   finish: TrayFinish;
   look: Look;
   t: T;
+  /** On the finale, beside the medal: as tall as that column, its rows
+   *  and photographs larger to fill it (the owner, 3 Oct 2026). */
+  big?: boolean;
 }) {
+  /* Each size the finale enlarges, wide stages only. */
+  const z = big
+    ? {
+        card: "md:flex md:w-[28rem] md:max-w-none md:flex-col md:p-4",
+        title: "md:text-2xl",
+        list: "md:flex md:flex-1 md:flex-col md:justify-around",
+        row: "md:py-1.5 md:text-base md:gap-3.5",
+        img: "md:size-14",
+        price: "md:text-sm",
+        cta: "md:py-2.5 md:text-base",
+      }
+    : { card: "", title: "", list: "", row: "", img: "", price: "", cta: "" };
   /* What was used, and the rack it grew on (the owner, 3 Oct 2026); the
      fresh greens are not offered here any more. */
   const items = [shelf.trays[finish], shelf.medium, shelf.seeds[look]].filter(
@@ -1670,24 +1798,30 @@ function Kit({
     });
   const rack = shelf.rack;
   return (
-    <div className="garden-card-in w-full max-w-sm rounded-2xl bg-cream/95 p-4 md:w-96 shadow-[0_10px_30px_rgba(3,39,24,0.18)] ring-1 ring-forest/10 backdrop-blur-sm">
+    <div
+      className={`garden-card-in w-full max-w-sm rounded-2xl bg-cream/95 p-4 md:w-96 ${z.card} shadow-[0_10px_30px_rgba(3,39,24,0.18)] ring-1 ring-forest/10 backdrop-blur-sm`}
+    >
       {items.length > 0 && (
         <>
-          <span className="inline-flex items-center gap-1 rounded-full bg-forest px-2 py-0.5 font-body text-[10px] font-semibold uppercase tracking-wider text-cream">
+          <span className="inline-flex self-start items-center gap-1 rounded-full bg-forest px-2 py-0.5 font-body text-[10px] font-semibold uppercase tracking-wider text-cream">
             <ShoppingBag size={11} aria-hidden />
             {t("product.forSale")}
           </span>
-          <p className="font-display text-lg font-bold text-forest">
+          <p
+            className={`font-display text-lg font-bold text-forest ${z.title}`}
+          >
             {t("kit.title")}
           </p>
-          <ul className="mt-2 divide-y divide-forest/10">
+          <ul className={`mt-2 divide-y divide-forest/10 ${z.list}`}>
             {items.map((p) => (
               <li
                 key={`${p.kind}:${p.key}`}
-                className="flex items-center gap-3 py-1.5 font-body text-sm"
+                className={`flex items-center gap-3 py-1.5 font-body text-sm ${z.row}`}
               >
                 {p.image && (
-                  <span className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-sand">
+                  <span
+                    className={`relative size-12 shrink-0 ${z.img} overflow-hidden rounded-lg bg-sand`}
+                  >
                     <Image
                       src={p.image.src}
                       alt=""
@@ -1707,7 +1841,9 @@ function Kit({
                   >
                     {p.name}
                   </ShopLink>
-                  <span className="text-xs text-stone">{p.price}</span>
+                  <span className={`text-xs text-stone ${z.price}`}>
+                    {p.price}
+                  </span>
                 </span>
                 <QuickAdd {...p.quickAdd} className="shrink-0" />
               </li>
@@ -1715,8 +1851,12 @@ function Kit({
             {/* The rack it stood on: sizes and a colour to choose, so a
                 way to its range rather than an Add. */}
             {rack && (
-              <li className="flex items-center gap-3 py-1.5 font-body text-sm">
-                <span className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-sand">
+              <li
+                className={`flex items-center gap-3 py-1.5 font-body text-sm ${z.row}`}
+              >
+                <span
+                  className={`relative size-12 shrink-0 overflow-hidden rounded-lg bg-sand ${z.img}`}
+                >
                   <Image
                     src={rack.image.src}
                     alt=""
@@ -1750,7 +1890,7 @@ function Kit({
           {result === "added" ? (
             <Link
               href="/cart"
-              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-forest px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
+              className={`mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-forest px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep ${z.cta}`}
             >
               <Check size={16} strokeWidth={2.5} aria-hidden />
               {t("kit.added")} · {t("kit.viewCart")}
@@ -1760,7 +1900,7 @@ function Kit({
               type="button"
               onClick={addAll}
               disabled={pending}
-              className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-forest px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep disabled:opacity-70"
+              className={`mt-3 inline-flex w-full items-center justify-center gap-2 rounded-full bg-forest px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep disabled:opacity-70 ${z.cta}`}
             >
               <ShoppingBag size={16} aria-hidden />
               {pending ? t("kit.adding") : t("kit.add")}

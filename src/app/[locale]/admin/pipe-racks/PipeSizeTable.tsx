@@ -35,7 +35,7 @@ import { CheckField, NumberField } from "../fields";
  * which drifts every heading right of the input it names.
  */
 const COLUMNS =
-  "minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) minmax(5rem, 1fr) minmax(5.5rem, 1.1fr) minmax(7rem, 1.4fr) 6rem 5.5rem 4rem";
+  "minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) minmax(5.5rem, 1.1fr) minmax(7rem, 1.4fr) 6rem 5.5rem 4rem";
 
 /** Below this the rows scroll sideways inside their own box rather than
  *  widening the page — see the note in `FrameTable`. Wider than that table's
@@ -89,7 +89,6 @@ export function PipeSizeTable({
             >
               <span>{t("colDepth")}</span>
               <span>{t("colLength")}</span>
-              <span>{t("colGramsPerShelf")}</span>
               <span>{t("colPipeFeet")}</span>
               <span>{t("colLegs")}</span>
               <span />
@@ -160,7 +159,6 @@ function PipeSizeRow({
 
         <NumberField compact label={t("colDepth")} name="depthFt" min={0} defaultValue={size.depthFt} error={errorFor("depthFt")} />
         <NumberField compact label={t("colLength")} name="lengthFt" min={0} defaultValue={size.lengthFt} error={errorFor("lengthFt")} />
-        <NumberField compact label={t("colGramsPerShelf")} name="gramsPerShelf" min={0} defaultValue={size.gramsPerShelf} error={errorFor("gramsPerShelf") ?? (size.gramsPerShelf === undefined ? t("gramsMissing") : undefined)} />
 
         {/* Both derived from what is **stored**, not from the inputs beside
             them. An unsaved edit showing its own consequence would state a
@@ -271,7 +269,6 @@ function AddPipeSizeForm({
           onChange={(e) => setLengthFt(e.target.value)}
           error={errorFor("lengthFt")}
         />
-        <NumberField label={t("colGramsPerShelf")} name="gramsPerShelf" min={0} error={errorFor("gramsPerShelf")} />
         {/* Read-only and posting nothing — the server derives both. No `hint`
             on either: a hint under one field in an `items-end` row sits on the
             baseline and rides that field's input up. */}

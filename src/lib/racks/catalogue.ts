@@ -10,6 +10,7 @@ import {
   ANGLE_PIECES_PER_SHELF,
   angleRackGrams,
   angleRackSku,
+  pipeRackGrams,
   pipeRackPiecesFt,
   pipeRackSku,
   rackCapacityKg,
@@ -88,8 +89,8 @@ export type SellableRack = {
   /** What the whole rack weighs, grams — or null until the parts have been
    *  weighed, when a courier cannot price it. Steel racks are worked out from
    *  the angle's grams per foot and the plate's own weight (`rackGrams`,
-   *  `angleRackGrams`); a pipe rack is still shelves × its size's typed
-   *  grams per shelf. */
+   *  `angleRackGrams`); a pipe rack from the pipe's grams per foot and its
+   *  fittings (`pipeRackGrams`). */
   grams: number | null;
   /**
    * How it packs for the courier — SPEC §7 (the owner, 24 Sep 2026).
@@ -205,7 +206,7 @@ export const listSellableRacks = cache(async (): Promise<SellableRack[]> => {
       capacityKg: null,
       colours: [],
       price: m.price,
-      grams: size.gramsPerShelf === undefined ? null : m.config.shelves * size.gramsPerShelf,
+      grams: pipeRackGrams(m.config, card),
       packing: {
         kind: "pipes",
         piecesFt: pipeRackPiecesFt(m.config, size, card.settings),

@@ -74,7 +74,7 @@ function refresh() {
  * Can this much of this item be ordered right now?
  *
  * The quantity matters for one kind: a seed cannot be ordered past what is on
- * the shelf, and with under 50 g held it is sold out (the owner, 25 Sep
+ * the shelf, and with under 100 g held it is sold out (the owner, 25 Sep
  * 2026). Returns the reason it cannot be ordered, as a message key, so the
  * caller can report it without this function choosing any wording
  * (CLAUDE.md).
@@ -173,7 +173,7 @@ export async function setCartQuantity(
   const units = readUnits(fd);
 
   /* The lower bound is one unit, which is the minimum order for every kind:
-     one tray of greens, 50 g of seed (SPEC §22.2), one pack of trays
+     one tray of greens, 100 g of seed (SPEC §22.2), one pack of trays
      (§23.1). A seed's upper bound is its shelf, checked in `sellable`. */
   if (!Number.isFinite(units) || units < 1 || units > MAX_UNITS_PER_LINE) {
     return err("unitsInvalid", "units");

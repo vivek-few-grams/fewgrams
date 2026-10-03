@@ -14,8 +14,10 @@ store listing and cropped to the **3:2** gallery frame with `cwebp -crop`:
 | `hero.webp` | the block among potted plants, trowel and loose coir in front | `Untitleddesign_8.jpg`, 1080 × 1080, rows 170–890 |
 | `on-bench.webp` | the block on a wooden bench, being watered in the background | `Cocopeat_Light_Image.png`, 1254 × 1254, rows 292–1128, resized to 1080 × 720 |
 
-The 5 kg and 10 kg folders hold the same two files: the pack is identical
-apart from its weight. The maker's three infographic tiles ("Why pick this?",
+The 5 kg and 1 kg folders hold the same two files: the pack is identical
+apart from its weight. (`horti-coir-small` was `horti-coir-bulk`, the 10 kg
+block, until 3 Oct 2026 — renamed with its photographs when the supplier
+dropped 10 kg.) The maker's three infographic tiles ("Why pick this?",
 "Benefits", "How to use") were not used — English text baked into a picture
 cannot be translated, and the how-to is in the content file instead.
 

@@ -117,8 +117,15 @@ const MIN_COVER_MS = ENTER_MS + HOLD_MS;
 const EXIT_MS = 650;
 
 /** Hard ceiling on a navigation curtain. Past this the page is uncovered
- *  whether or not the route ever arrived. */
-const FAILSAFE_MS = 3000;
+ *  whether or not the route ever arrived.
+ *
+ *  10s, not the 3s it was: a slow route (the home page took 6s from the
+ *  logo) outlived the curtain, which lifted onto the page just left, so the
+ *  click read as doing nothing and the home page arrived seconds later
+ *  unannounced (the owner, 3 Oct 2026: "when I click on the logo, it should
+ *  always take user to home page"). Still a ceiling, so a route that never
+ *  arrives cannot leave the page covered. */
+const FAILSAFE_MS = 10_000;
 
 /** First-visit hold. Shorter than a navigation's, because nothing is pending —
  *  the page underneath is already painted and interactive. */

@@ -111,7 +111,7 @@ export function angleRackCost(config, card) {
 /* ── the pipe range (SPEC §21) ──
    Its own material rates and its own footprints, and no gauge at all. The
    three constants below are rules rather than settings, exactly as in
-   pricing.ts: 6 ft is what a 1 inch upright can carry, and a 4 ft span gets a
+   pricing.ts: 6 ft is what a pipe upright can carry, and a 4 ft span gets a
    leg under the middle of each long side. */
 export const PIPE_MAX_HEIGHT_FT = 6;
 export const PIPE_MID_SUPPORT_FROM_LENGTH_FT = 4;

@@ -204,30 +204,6 @@ export async function addAngleRack(_prev: FormState, fd: FormData): Promise<Form
   return { status: "saved" };
 }
 
-/** The owner's own price, overriding the markup. Re-baselines
- *  `costAtPublish` so a hand-set price clears the stale flag rather than
- *  leaving a warning that never clears. */
-export async function saveAngleRack(_prev: FormState, fd: FormData): Promise<FormState> {
-  await assertRole("admin");
-
-  const current = await getAngleRackModel(String(fd.get("id") ?? "").trim());
-  if (!current) return err("notFound");
-
-  const price = money(fd, "price");
-  if (price === null) return err("priceInvalid", "price");
-
-  const card = priceable(await loadRateCard());
-  const cost = card ? angleRackCost(current.config, card) : null;
-
-  await putAngleRackModel({
-    ...current,
-    price,
-    ...(cost ? { costAtPublish: cost.total, publishedAt: new Date().toISOString() } : {}),
-  });
-  refresh();
-  return { status: "saved" };
-}
-
 export async function republishAngleRack(fd: FormData): Promise<void> {
   await assertRole("admin");
   const current = await getAngleRackModel(String(fd.get("id")));

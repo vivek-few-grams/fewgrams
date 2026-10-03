@@ -39,27 +39,31 @@ describe("grow-media-fill.mjs and content/grow-media agree", () => {
   /** Every price is recorded as a whole rupee figure read off a supplier's
    *  page, and each row names the page it came from — see SPEC §24.6 on
    *  whether these are sell prices or costs. */
-  it("holds whole-rupee prices, each with its source", () => {
-    for (const { key, price, source } of script.PRICE_LIST) {
-      expect(Number.isInteger(price) && price > 0, `${key}: ${price}`).toBe(true);
+  it("holds whole-rupee costs, each with its source", () => {
+    for (const { key, cost, source } of script.PRICE_LIST) {
+      expect(Number.isInteger(cost) && cost > 0, `${key}: ${cost}`).toBe(true);
       expect(source, key).toBeTruthy();
     }
   });
 
-  /** IFFCO Urban Gardens' listed prices on 24 Sep 2026 — pinned because a
-   *  transcription slip is invisible afterwards. */
-  it("carries the launch prices verbatim", () => {
-    const byKey = Object.fromEntries(script.PRICE_LIST.map((r) => [r.key, r.price]));
+  /** The supplier's quotation of 3 Oct 2026 — pinned because a transcription
+   *  slip is invisible afterwards. */
+  it("carries the quoted costs verbatim", () => {
+    const byKey = Object.fromEntries(script.PRICE_LIST.map((r) => [r.key, r.cost]));
     expect(byKey).toEqual({
-      "horti-coir": 399,
-      "horti-coir-bulk": 699,
+      "horti-coir": 300,
+      "horti-coir-small": 70,
     });
   });
 
-  /** No arithmetic at zero markup — the launch state. A markup rounds up, so
-   *  a marked-up price can never land below the figure it came from. */
-  it("applies a markup and rounds up to the rupee", () => {
-    expect(script.shelfPrice(399)).toBe(399);
-    expect(script.shelfPrice(699, 10)).toBe(769); // 768.9
+  /** Each row's own margin; a blank half prices at cost to the rupee — the
+   *  admin screen's rule. */
+  it("prices each row at its own margin, at cost where none is set", () => {
+    expect(script.marginFrom(undefined)).toEqual({ markupPercent: 0, roundUpToNearest: 1 });
+    expect(script.marginFrom({ markupPercent: 25, roundUpToNearest: 10, PK: "x" })).toEqual({
+      markupPercent: 25,
+      roundUpToNearest: 10,
+    });
+    expect(script.marginFrom({ markupPercent: 30 })).toEqual({ markupPercent: 30, roundUpToNearest: 1 });
   });
 });

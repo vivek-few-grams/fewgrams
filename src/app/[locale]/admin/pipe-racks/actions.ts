@@ -80,12 +80,22 @@ export async function savePipeRates(
      is set (SPEC §7). */
   const pipeDiameterCm = optionalPositive(fd, "pipeDiameterCm");
   if (pipeDiameterCm === "invalid") return err("packedInvalid", "pipeDiameterCm");
+  /* Weights for the courier — optional, see `PipeSettings.gramsPerFt`. */
+  const gramsPerFt = optionalPositive(fd, "gramsPerFt");
+  if (gramsPerFt === "invalid") return err("gramsInvalid", "gramsPerFt");
+  const connectorGrams = optionalPositive(fd, "connectorGrams");
+  if (connectorGrams === "invalid") return err("gramsInvalid", "connectorGrams");
+  const bushGrams = optionalPositive(fd, "bushGrams");
+  if (bushGrams === "invalid") return err("gramsInvalid", "bushGrams");
 
   await putPipeSettings({
     ratePerFt,
     connectorPrice,
     bushPrice,
     ...(pipeDiameterCm !== undefined ? { pipeDiameterCm } : {}),
+    ...(gramsPerFt !== undefined ? { gramsPerFt } : {}),
+    ...(connectorGrams !== undefined ? { connectorGrams } : {}),
+    ...(bushGrams !== undefined ? { bushGrams } : {}),
   });
   await cascade();
   return { status: "saved" };
@@ -103,17 +113,13 @@ function readSize(
 
   /* No price and no capacity to read — see `PipeSize`. And no leg count: it is
      derived from the length, because whether a shelf needs a middle support is
-     a fact about its span and not a choice. Grams per shelf is optional — see
-     `ShelfPlate.gramsPerShelf`. */
-  const gramsPerShelf = optionalPositive(fd, "gramsPerShelf");
-  if (gramsPerShelf === "invalid") return { ok: false, state: err("gramsInvalid", "gramsPerShelf") };
+     a fact about its span and not a choice. No weight: see `PipeSize`. */
   return {
     ok: true,
     value: {
       depthFt,
       lengthFt,
       active: fd.get("active") === "on",
-      ...(gramsPerShelf !== undefined ? { gramsPerShelf } : {}),
     },
   };
 }
@@ -237,30 +243,6 @@ export async function addPipeRack(_prev: FormState, fd: FormData): Promise<FormS
     costAtPublish: cost.total,
     publishedAt: new Date().toISOString(),
     active: fd.get("active") === "on",
-  });
-  refresh();
-  return { status: "saved" };
-}
-
-/** The owner's own price, overriding the markup. Re-baselines
- *  `costAtPublish` so a hand-set price clears the stale flag rather than
- *  leaving a warning that never clears. */
-export async function savePipeRack(_prev: FormState, fd: FormData): Promise<FormState> {
-  await assertRole("admin");
-
-  const current = await getPipeRackModel(String(fd.get("id") ?? "").trim());
-  if (!current) return err("notFound");
-
-  const price = money(fd, "price");
-  if (price === null) return err("priceInvalid", "price");
-
-  const card = priceable(await loadRateCard());
-  const cost = card ? pipeRackCost(current.config, card) : null;
-
-  await putPipeRackModel({
-    ...current,
-    price,
-    ...(cost ? { costAtPublish: cost.total, publishedAt: new Date().toISOString() } : {}),
   });
   refresh();
   return { status: "saved" };

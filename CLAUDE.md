@@ -78,8 +78,8 @@ public pages skip it. Shape and reasoning: `content/varieties/README.md`.
 ## Seed text does not either — same rule, own folder
 
 `content/seeds/<contentKey>.json`, loaded by `src/lib/content/seeds.ts`.
-DynamoDB holds **two numbers**: price per 50 g and grams held. Admin →
-seeds has no text input at all.
+DynamoDB holds the numbers only: our cost per 100 g, the price worked out
+from it, and grams held. Admin → seeds has no text input at all.
 
 - The fields differ from a variety's, because a seed is bought to be sown:
   `sowing` where a variety has `growingTips`, `specs` where it has `nutrition`,
@@ -92,11 +92,16 @@ seeds has no text input at all.
 - Photographs are optional here (the packet photography does not exist yet);
   for a variety they are required.
 - **Stock lives in one module, and it is the limit** (the owner, 25 Sep 2026 — it was a speed
-  from 17 Sep). `src/lib/seeds/stock.ts` owns the **50 g** minimum (= the cart unit,
+  from 17 Sep). `src/lib/seeds/stock.ts` owns the **100 g** minimum (= the cart unit,
   `GRAMS_PER_UNIT`), `seedMaxUnits` and `seedReadyDate`. A seed can be ordered up to what is held,
-  in 50 g packs; **under 50 g it is sold out**. Every seed ships next day — there is no vendor
-  route. The price is **per 50 g** (`pricePer50g`). Do not re-derive
-  `Math.floor(grams / 50)` or compare grams to stock at a call site.
+  in 100 g packs; **under 100 g it is sold out**. Every seed ships next day — there is no vendor
+  route. The price is **per 100 g** (`pricePer100g`; the owner, 3 Oct 2026 — it was per 50 g
+  from 25 Sep). Do not re-derive `Math.floor(grams / 100)` or compare grams to stock at a call
+  site.
+- **Priced from cost, one margin for the shelf** (3 Oct 2026). Each seed holds `costPer100g` —
+  the vendor's per-kg invoice price ÷ 10 — and its price is `retailPrice(cost, margin)` with the
+  seeds markup and rounding (`SEEDSETTINGS`, the Margin form on admin → seeds). Started at 50%
+  rounded up to ₹10, which reproduced every existing price.
 - **The grams held are never shown to a customer.** They are on
   `/admin/seeds` and nowhere else.
 
@@ -124,6 +129,15 @@ DynamoDB holds **two numbers**: the price of the pack and the packs held
 - **The rule lives in one module.** `src/lib/trays/lead-time.ts` owns
   `fromShelf`, `heldReadyDate` and `RESTOCK_EXTRA_DAYS`. Do not compare units
   to stock at a call site.
+- **Priced from cost, one margin for the screen** (the owner, 3 Oct 2026:
+  "keep all under 1 margin"). A row may hold our buying `cost`; its price is
+  then `retailPrice(cost, margin)` with the single markup and rounding on
+  admin → trays (`TRAYSETTINGS`). A margin save reprices every row with a
+  cost. Not per item — grow media is the one category with a margin per row.
+- **A sell price is never typed — anywhere** (the owner, 3 Oct 2026: "sell
+  price is based on cost + margin"). Trays, grow media and all three rack
+  ranges show it read-only; to move it, change the cost or the margin. Do not
+  add a price input back to a row.
 - **Never write the price or a dispatch day into copy.** The price is printed
   from DynamoDB and the date from the rule; the contract test scans for a
   rupee figure or a day count in either language.
@@ -154,8 +168,13 @@ above applies, with these differences:
   backed by our own words. Only list a medium here that we actually use.
   Customer copy says it is kept in stock here, never "bought in from the
   maker". The "Made by" spec row stays — the brand is on the pack.
-- **One row per pack size** — `horti-coir` (5 kg), `horti-coir-bulk` (10 kg).
-  Content keys ban digits, so a size never goes in the key.
+- **One row per pack size** — `horti-coir` (5 kg), `horti-coir-small` (1 kg;
+  the 10 kg went on 3 Oct 2026). Content keys ban digits, so a size never
+  goes in the key.
+- **Priced from cost** (3 Oct 2026): each row holds our buying `cost`, and the
+  price is `retailPrice(cost, margin)` with **that row's own** markup and
+  rounding — the 5 kg and the 1 kg each have their own, typed on the row.
+  This is the one difference from trays, which share one margin.
 - **Stock is dated by the tray rule** — `src/lib/grow-media/lead-time.ts`
   re-exports it. Do not compare units to stock at a call site.
 - **Do not copy the maker's claims** ("100% organic", "anti-fungal") into
@@ -309,7 +328,7 @@ business:
 | Kind | One unit | Priced |
 |---|---|---|
 | `variety` | one tray | per tray |
-| `seed` | 50 g | per 50 g |
+| `seed` | 100 g | per 100 g |
 | `tray` | one pack (2 trays, or 5 mats) | per pack |
 
 - **`isWeighed(kind)` is the only place that distinction lives.** Never write

@@ -69,7 +69,7 @@ export async function TopSeeds({
               key={s.contentKey}
               href={`/seeds/${s.contentKey}`}
               name={s.content.text.name}
-              meta={ts("meta", { price: s.pricePer50g })}
+              meta={ts("meta", { price: s.pricePer100g })}
               index={i}
               cutout={seedCutout(s.content)}
               hero={seedHero(s.content)}

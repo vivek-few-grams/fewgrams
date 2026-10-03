@@ -428,40 +428,6 @@ function sameConfig(a: RackConfig, b: RackConfig): boolean {
   );
 }
 
-/**
- * The owner's own price, overriding what the markup suggests. The only field
- * a published rack has left to edit.
- *
- * Deliberately separate from `republishModel`: a round number the owner wants
- * on the shop shelf is not the same decision as accepting a recomputed one,
- * and this also re-baselines `costAtPublish` so setting a price by hand clears
- * the stale flag rather than leaving it nagging.
- */
-export async function saveModel(_prev: FormState, fd: FormData): Promise<FormState> {
-  await assertRole("admin");
-
-  const current = await getRackModel(String(fd.get("id") ?? "").trim());
-  if (!current) return err("notFound");
-
-  const price = money(fd, "price");
-  if (price === null) return err("priceInvalid", "price");
-
-  const card = priceable(await loadRateCard());
-  const cost = card ? rackCost(current.config, card) : null;
-
-  await putRackModel({
-    ...current,
-    price,
-    /* Accepting a hand-set price re-baselines the comparison. Leaving the old
-       baseline would flag the rack as stale forever, and a warning that never
-       clears is a warning nobody reads. An unpriceable rack keeps its old
-       baseline, because there is no current cost to adopt. */
-    ...(cost ? { costAtPublish: cost.total, publishedAt: new Date().toISOString() } : {}),
-  });
-  refresh();
-  return { status: "saved" };
-}
-
 /** Recompute from the current rate card and accept the result. */
 export async function republishModel(fd: FormData): Promise<void> {
   await assertRole("admin");

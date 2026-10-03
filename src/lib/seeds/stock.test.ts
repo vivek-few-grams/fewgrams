@@ -8,9 +8,9 @@ const ist = (local: string) => new Date(`${local}+05:30`);
 
 describe("the minimum order and the cart unit", () => {
   /* See the note in stock.ts. The cart has no per-line minimum: "at least one
-     unit" is the minimum, which only means 50 g while these agree. */
-  it("are the same 50 g, which is what lets the cart enforce the minimum", () => {
-    expect(SEED_MIN_ORDER_GRAMS).toBe(50);
+     unit" is the minimum, which only means 100 g while these agree. */
+  it("are the same 100 g, which is what lets the cart enforce the minimum", () => {
+    expect(SEED_MIN_ORDER_GRAMS).toBe(100);
     expect(GRAMS_PER_UNIT).toBe(SEED_MIN_ORDER_GRAMS);
   });
 });
@@ -18,11 +18,11 @@ describe("the minimum order and the cart unit", () => {
 describe("seedMaxUnits — the shelf is the limit (the owner, 25 Sep 2026)", () => {
   it.each([
     [0, 0],
-    [49, 0],
-    [50, 1],
-    [120, 2],
-    [500, 10],
-  ])("%i g on the shelf allows %i units of 50 g", (held, units) => {
+    [99, 0],
+    [100, 1],
+    [250, 2],
+    [1000, 10],
+  ])("%i g on the shelf allows %i units of 100 g", (held, units) => {
     expect(seedMaxUnits(held)).toBe(units);
   });
 
@@ -38,10 +38,10 @@ describe("seedMaxUnits — the shelf is the limit (the owner, 25 Sep 2026)", () 
 });
 
 describe("seedSoldOut", () => {
-  it("is sold out under one 50 g unit, and not from there", () => {
+  it("is sold out under one 100 g unit, and not from there", () => {
     expect(seedSoldOut(0)).toBe(true);
-    expect(seedSoldOut(49)).toBe(true);
-    expect(seedSoldOut(50)).toBe(false);
+    expect(seedSoldOut(99)).toBe(true);
+    expect(seedSoldOut(100)).toBe(false);
   });
 });
 
@@ -54,8 +54,8 @@ describe("seedReadyDate — next day, off our shelf", () => {
 });
 
 describe("shelfPacks — the admin's derived column", () => {
-  it("counts whole 50 g packs", () => {
-    expect(shelfPacks(120)).toBe(2);
+  it("counts whole 100 g packs", () => {
+    expect(shelfPacks(250)).toBe(2);
     expect(shelfPacks(0)).toBe(0);
     expect(shelfPacks(-5)).toBe(0);
   });

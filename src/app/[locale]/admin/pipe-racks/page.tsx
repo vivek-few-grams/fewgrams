@@ -6,6 +6,7 @@ import {
   pipeRackConnectors,
   pipeRackCost,
   pipeRackFeet,
+  pipeRackGrams,
   retailPrice,
   type RateCard,
 } from "@/lib/racks/pricing";
@@ -21,7 +22,7 @@ export const dynamic = "force-dynamic";
 /**
  * `/admin/pipe-racks` — SPEC §21.
  *
- * The third rack category: **a rack built from 1 inch UPVC pipe, joined with
+ * The third rack category: **a rack built from ¾ inch UPVC pipe (1 inch until 3 Oct 2026), joined with
  * four-way connectors.** The owner's reason, 17 Sep 2026: *"in this the
  * stability is a bit important."* Not price — it is the dearest of the three
  * ranges, because the fittings cost more than the pipe.
@@ -139,6 +140,7 @@ function view(model: PipeRackModel, card: RateCard | null): PipeRackView {
     model,
     costNow: cost?.total ?? null,
     suggestedPrice: cost && card ? retailPrice(cost.total, card.margins.pipe) : null,
+    grams: card ? pipeRackGrams(model.config, card) : null,
     depthFt: size?.depthFt ?? null,
     lengthFt: size?.lengthFt ?? null,
     /* The two figures that check against a vendor invoice. No load figure and
