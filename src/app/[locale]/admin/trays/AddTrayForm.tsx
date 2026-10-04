@@ -89,6 +89,18 @@ export function AddTrayForm({ suggestions }: { suggestions: string[] }) {
         error={errorFor("cost")}
       />
       <NumberField
+        label={t("markupPercent")}
+        name="markupPercent"
+        hint={t("markupHint")}
+        error={errorFor("markupPercent")}
+      />
+      <NumberField
+        label={t("roundUpToNearest")}
+        name="roundUpToNearest"
+        hint={t("roundHint")}
+        error={errorFor("roundUpToNearest")}
+      />
+      <NumberField
         label={t("stockPacks")}
         name="stockPacks"
         min={0}

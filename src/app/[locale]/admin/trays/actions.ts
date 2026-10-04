@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
-import { deleteTray, getTray, getTrayMargin, listTrays, putTray, putTrayMargin } from "@/lib/repo/trays";
-import { retailPrice } from "@/lib/pricing/margin";
+import { deleteTray, getTray, listTrays, putTray } from "@/lib/repo/trays";
+import { NO_MARGIN, retailPrice } from "@/lib/pricing/margin";
 import { isValidContentKey } from "@/lib/content/content-key";
 import { count, err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
 import { isValidStockPacks } from "@/lib/trays/lead-time";
@@ -39,16 +39,29 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
 }
 
-/** The cost, the price and the packs held, plus active. */
-type Ops = Pick<Tray, "price" | "stockPacks" | "active" | "cost">;
+/** The cost, its margin, the price and the packs held, plus active. */
+type Ops = Pick<Tray, "price" | "stockPacks" | "active" | "cost" | "markupPercent" | "roundUpToNearest">;
 
 /** The selling price is **worked out, never typed** (the owner, 3 Oct 2026:
- *  "sell price is based on cost + margin"): the cost and the screen's one
- *  margin. So the cost is required. */
-async function readOps(fd: FormData): Promise<{ ok: true; value: Ops } | { ok: false; state: FormState }> {
+ *  "sell price is based on cost + margin"): the cost and **this row's own**
+ *  markup and rounding (the owner, 4 Oct 2026 — grow media's rule; until then
+ *  one margin served the whole screen). So the cost is required. A blank
+ *  markup or rounding prices at cost to the rupee (`NO_MARGIN`). */
+function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
   const cost = money(fd, "cost");
   if (cost === null) return { ok: false, state: err("costInvalid", "cost") };
-  const price = retailPrice(cost, await getTrayMargin());
+
+  const markupRaw = String(fd.get("markupPercent") ?? "").trim();
+  const markupPercent = markupRaw === "" ? undefined : zeroOrMore(fd, "markupPercent");
+  if (markupPercent === null) return { ok: false, state: err("zeroOrMore", "markupPercent") };
+  const roundRaw = String(fd.get("roundUpToNearest") ?? "").trim();
+  const roundUpToNearest = roundRaw === "" ? undefined : count(fd, "roundUpToNearest");
+  if (roundUpToNearest === null) return { ok: false, state: err("countInvalid", "roundUpToNearest") };
+
+  const price = retailPrice(cost, {
+    markupPercent: markupPercent ?? NO_MARGIN.markupPercent,
+    roundUpToNearest: roundUpToNearest ?? NO_MARGIN.roundUpToNearest,
+  });
 
   /* Zero is a real count — nothing held, every order a day later (the
      owner, 25 Sep 2026). An empty field is refused, not read as zero. */
@@ -59,7 +72,14 @@ async function readOps(fd: FormData): Promise<{ ok: true; value: Ops } | { ok: f
 
   return {
     ok: true,
-    value: { cost, price, stockPacks, active: fd.get("active") === "on" },
+    value: {
+      cost,
+      price,
+      stockPacks,
+      active: fd.get("active") === "on",
+      ...(markupPercent !== undefined ? { markupPercent } : {}),
+      ...(roundUpToNearest !== undefined ? { roundUpToNearest } : {}),
+    },
   };
 }
 
@@ -96,7 +116,7 @@ export async function addTray(_prev: FormState, fd: FormData): Promise<FormState
   if (existing.some((t) => t.contentKey === contentKey))
     return err("keyTaken", "contentKey", { key: contentKey });
 
-  const ops = await readOps(fd);
+  const ops = readOps(fd);
   if (!ops.ok) return ops.state;
 
   await putTray({ id: crypto.randomUUID(), contentKey, ...ops.value });
@@ -144,15 +164,18 @@ export async function updateTray(_prev: FormState, fd: FormData): Promise<FormSt
   const current = id ? await getTray(id) : null;
   if (!current) return err("notFound");
 
-  const ops = await readOps(fd);
+  const ops = readOps(fd);
   if (!ops.ok) return ops.state;
   const packing = readPacking(fd);
   if (!packing.ok) return packing.state;
 
   /* Packing replaces rather than merges: clearing all six fields is how an
-     owner says "re-measure this", and a merge would keep the old figures. */
+     owner says "re-measure this", and a merge would keep the old figures.
+     The margin is dropped with it so that blanking a field clears it rather
+     than keeping a figure nobody can see — grow media's rule. */
+  const cleared: readonly string[] = [...PACKING, "markupPercent", "roundUpToNearest"];
   const rest = Object.fromEntries(
-    Object.entries(current).filter(([k]) => !(PACKING as readonly string[]).includes(k)),
+    Object.entries(current).filter(([k]) => !cleared.includes(k)),
   ) as Tray;
   await putTray({ ...rest, ...ops.value, ...packing.value });
   refresh();
@@ -168,31 +191,6 @@ export async function toggleTrayActive(fd: FormData): Promise<void> {
   if (!existing) throw new Error("Tray not found");
   await putTray({ ...existing, active: !existing.active });
   refresh();
-}
-
-/**
- * The one trays-and-drainage margin. Saving reprices **every pack with a
- * cost**, straight away. A pack saved before costs existed has none and
- * keeps its old price until its cost is entered.
- */
-export async function saveTrayMargin(_prev: FormState, fd: FormData): Promise<FormState> {
-  await assertRole("admin");
-
-  const markupPercent = zeroOrMore(fd, "markupPercent");
-  if (markupPercent === null) return err("zeroOrMore", "markupPercent");
-  const roundUpToNearest = count(fd, "roundUpToNearest");
-  if (roundUpToNearest === null) return err("countInvalid", "roundUpToNearest");
-
-  const margin = { markupPercent, roundUpToNearest };
-  await putTrayMargin(margin);
-  const rows = await listTrays();
-  await Promise.all(
-    rows
-      .filter((r) => r.cost !== undefined && retailPrice(r.cost, margin) !== r.price)
-      .map((r) => putTray({ ...r, price: retailPrice(r.cost!, margin) })),
-  );
-  refresh();
-  return { status: "saved" };
 }
 
 export async function removeTray(fd: FormData): Promise<void> {

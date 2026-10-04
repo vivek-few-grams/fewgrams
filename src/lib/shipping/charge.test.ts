@@ -172,10 +172,20 @@ describe("deliveryPlan", () => {
 });
 
 describe("deliveryCharge", () => {
-  it("charges the option chosen, not the cheapest", async () => {
+  it("books the option posted, and charges the customer no more than ₹79 for it", async () => {
     providers.push(courier("delhivery", [opt("delhivery", 59.14)]), courier("ekart", [opt("ekart", 106.2)]));
     const r = await deliveryCharge(seeds, String(pin), { home: "ekart" });
-    expect(r).toMatchObject({ ok: true, amount: 107, shipments: [{ method: "courier", quote: { courier: "ekart", quotedTotal: 106.2 } }] });
+    expect(r).toMatchObject({
+      ok: true,
+      amount: 79,
+      shipments: [{ method: "courier", amount: 79, quote: { courier: "ekart", quotedTotal: 106.2 } }],
+    });
+  });
+
+  it("charges what the courier costs when that is under ₹79", async () => {
+    providers.push(courier("delhivery", [opt("delhivery", 59.14)]));
+    const r = await deliveryCharge(seeds, String(pin), { home: "delhivery" });
+    expect(r).toMatchObject({ ok: true, amount: 60 });
   });
 
   it("records Shiprocket's carrier and service id for booking", async () => {
@@ -190,20 +200,20 @@ describe("deliveryCharge", () => {
     expect(await deliveryCharge(seeds, String(pin), {})).toEqual({ ok: false, reason: "optionGone" });
   });
 
-  it("adds each parcel's chosen price", async () => {
+  it("is free from ₹999 of goods, and still books each parcel's courier at its quote", async () => {
     providers.push(
       courier("delhivery", (q) => [opt("delhivery", q.originPin === "600001" ? 480 : 60)]),
       courier("ekart", (q) => [opt("ekart", q.originPin === "600001" ? 450.5 : 999)]),
     );
     const r = await deliveryCharge([...seeds, rack], String(pin), { home: "delhivery", "trays-co": "ekart" });
-    expect(r.ok && r.amount).toBe(60 + 451);
-    expect(r.ok && r.shipments.map((x) => [x.origin.id, x.method, x.amount])).toEqual([
-      ["home", "courier", 60],
-      ["trays-co", "courier", 451],
+    expect(r.ok && r.amount).toBe(0);
+    expect(r.ok && r.shipments.map((x) => [x.origin.id, x.method, x.amount, x.quote?.quotedTotal])).toEqual([
+      ["home", "courier", 0, 60],
+      ["trays-co", "courier", 0, 450.5],
     ]);
   });
 
-  it("charges the own-run fee for greens", async () => {
+  it("charges the own-run fee for greens under ₹999", async () => {
     providers.push(courier("delhivery", [opt("delhivery", 60)]));
     const r = await deliveryCharge([greens, ...seeds], String(pin), {});
     expect(r).toMatchObject({ ok: true, amount: 200, shipments: [{ method: "own_run", amount: 200 }] });

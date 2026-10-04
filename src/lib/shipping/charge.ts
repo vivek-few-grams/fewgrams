@@ -8,6 +8,7 @@ import type { GrowMedium, Tray } from "@/lib/types";
 import { shippingProviders, type CourierName, type CourierOption } from "./index";
 import { HOME_ORIGIN, lineOrigin, splitShipments } from "./origin";
 import { parcelGrams, type ParcelLine, type RackPacking, type TrayPacking } from "./parcel";
+import { customerDelivery, type CustomerDelivery } from "./fee";
 
 /**
  * The delivery charge for one order to one PIN — SPEC §7. The owner's rules
@@ -23,16 +24,18 @@ import { parcelGrams, type ParcelLine, type RackPacking, type TrayPacking } from
  *   surge and with how many drops share the route — so the fee is set from
  *   the average cost per drop and reviewed, not quoted. A supplier's items in
  *   the same order still go by courier from the supplier.
- * - **Every courier parcel** pays the courier's live surface price, rounded
- *   up to the rupee. A courier prices from a rate card, not from demand, so
- *   today's quote holds for a shipment made next week.
+ * - **Every courier parcel** is booked at the courier's live surface price,
+ *   rounded up to the rupee. A courier prices from a rate card, not from
+ *   demand, so today's quote holds for a shipment made next week. What the
+ *   *customer* pays is a separate rule (`fee.ts`, 4 Oct 2026): free from ₹999
+ *   of goods, otherwise that price capped at ₹79.
  *
  * A subscription pays none — its price includes delivery — and does not come
  * through this path.
  *
  * **Every connected courier is asked at once** (the owner, 24 Sep 2026) —
- * Delhivery, Ekart and Shiprocket's carriers — and the customer is shown each
- * price, cheapest picked, free to pick another. No single courier wins
+ * Delhivery, Ekart and Shiprocket's carriers — and the cheapest is booked
+ * (the customer chose among them until 4 Oct 2026). No single courier wins
  * everywhere: Ekart's flat rate beats Delhivery on a 2 kg tray pack in every
  * city tested and loses on a 500 g seed packet in every one.
  *
@@ -76,6 +79,9 @@ export type ChargedShipment = {
   origin: Origin;
   lines: ChargeLine[];
   method: "own_run" | "courier";
+  /** The customer's share of the delivery charge for this shipment
+   *  (`customerDelivery`) — not what the courier costs, which is the
+   *  quote's `quotedTotal`. */
   amount: number;
   /** Null for the own run, whose fee is fixed. */
   quote: ShippingQuote | null;
@@ -303,11 +309,28 @@ function toOption(o: CourierOption): DeliveryOption {
 }
 
 /**
- * The charge for the options the customer chose, one per parcel, keyed by
- * the parcel's id. `optionGone` when any parcel's choice is no longer
- * offered — checkout then refuses and re-scans rather than charging a
- * different courier's price. The total is the own-run fee, if any, plus each
- * parcel's chosen price.
+ * What a plan costs the customer, with the cheapest option on every parcel
+ * — the courier checkout books (SPEC §7.4). `goods` is the lines' total.
+ */
+export function planDelivery(
+  plan: Extract<DeliveryPlan, { ok: true }>,
+  goods: number,
+): CustomerDelivery {
+  return customerDelivery(
+    goods,
+    plan.ownRun?.amount ?? null,
+    plan.parcels.map((p) => p.options[0].amount),
+  );
+}
+
+/**
+ * The charge for the options checkout booked, one per parcel, keyed by the
+ * parcel's id — the cheapest the scan offered (SPEC §7.4; until 4 Oct 2026
+ * the customer picked). `optionGone` when any parcel's option is no longer
+ * offered — checkout then refuses and re-scans rather than booking a
+ * different courier. The courier is paid its quote; the customer pays
+ * `customerDelivery` — free from ₹999 of goods, otherwise the couriers'
+ * cost capped at ₹79, plus the own-run fee.
  */
 export async function deliveryCharge(
   lines: readonly ChargeLine[],
@@ -317,28 +340,39 @@ export async function deliveryCharge(
   const plan = await deliveryPlan(lines, pincode);
   if (!plan.ok) return plan;
 
+  const chosen: DeliveryOption[] = [];
+  for (const p of plan.parcels) {
+    const option = p.options.find((o) => o.id === choices[p.id]);
+    if (!option) return { ok: false, reason: "optionGone" };
+    chosen.push(option);
+  }
+  const goods = lines.reduce((sum, l) => sum + l.lineTotal, 0);
+  const fee = customerDelivery(
+    goods,
+    plan.ownRun?.amount ?? null,
+    chosen.map((o) => o.amount),
+  );
+
   const shipments: ChargedShipment[] = [];
   if (plan.ownRun) {
     shipments.push({
       origin: plan.ownRun.origin,
       lines: plan.ownRun.lines,
       method: "own_run",
-      amount: plan.ownRun.amount,
+      amount: fee.ownRun ?? 0,
       quote: null,
       days: null,
     });
   }
-  for (const p of plan.parcels) {
-    const chosen = p.options.find((o) => o.id === choices[p.id]);
-    if (!chosen) return { ok: false, reason: "optionGone" };
+  plan.parcels.forEach((p, i) => {
     shipments.push({
       origin: p.origin,
       lines: p.lines,
       method: "courier",
-      amount: chosen.amount,
-      quote: chosen.quote,
-      days: chosen.days,
+      amount: fee.parcels[i],
+      quote: chosen[i].quote,
+      days: chosen[i].days,
     });
-  }
-  return { ok: true, amount: shipments.reduce((sum, x) => sum + x.amount, 0), shipments };
+  });
+  return { ok: true, amount: fee.total, shipments };
 }

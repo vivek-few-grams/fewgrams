@@ -15,13 +15,13 @@ export type CheckoutState =
 
 export const CHECKOUT_IDLE: CheckoutState = { status: "idle" };
 
-/** One courier's price for one parcel. `id` is what the pay form posts back
- *  for that parcel; rupees are already rounded up. */
+/** The courier booked for one parcel — the cheapest the scan found. `id` is
+ *  what the pay form posts back for that parcel. Its price is not here: the
+ *  customer pays `fee`, not the courier's quote (SPEC §7.4). */
 export type ScanOption = {
   id: string;
   courier: "delhivery" | "ekart" | "shiprocket" | "velocity";
   carrier: string | null;
-  amount: number;
   /** `YYYY-MM-DD` IST: the pickup day plus this courier's days on the road,
    *  or null when it gave none. */
   arrives: string | null;
@@ -29,10 +29,12 @@ export type ScanOption = {
 
 /**
  * What the delivery-partner step gets back from `scanDelivery` — the order
- * as it will travel (SPEC §7, the owner, 24 Sep 2026): the own run if it has
- * greens, and one courier parcel per pickup, each with every courier's price
- * cheapest first. Or no price at all. `operatorNote` is resolved only for an
- * admin (CLAUDE.md, "Empty states are role-aware").
+ * as it will travel (SPEC §7): the own run if it has greens, and one courier
+ * parcel per pickup, each with the courier booked for it, plus what the
+ * customer pays for all of it (`fee`, SPEC §7.4 — free from ₹999 of goods,
+ * otherwise the couriers' cost capped at ₹79). Or no price at all.
+ * `operatorNote` is resolved only for an admin (CLAUDE.md, "Empty states are
+ * role-aware").
  *
  * **No pickup is named** — a parcel is "parcel 2" and the things in it, not
  * the town it leaves from (CLAUDE.md, "No city name in customer copy").
@@ -40,6 +42,7 @@ export type ScanOption = {
 export type DeliveryScan =
   | {
       status: "ready";
+      /** `amount` is the customer's share — 0 when delivery is free. */
       ownRun: { amount: number; arrives: string; items: string[] } | null;
       parcels: {
         /** The pickup's id; the pay form posts `delivery:<id>`. */
@@ -48,8 +51,14 @@ export type DeliveryScan =
         items: string[];
         /** `YYYY-MM-DD` IST: the day the courier collects it. */
         pickup: string;
-        options: ScanOption[];
+        option: ScanOption;
+        /** The customer's share of `fee` for this parcel, whole rupees — what
+         *  its row shows on the right; 0 when delivery is free. */
+        charge: number;
       }[];
+      /** What the customer pays for delivery in all; `short` is how much
+       *  more of goods would make it free, 0 once it is. */
+      fee: { total: number; free: boolean; short: number };
     }
   | { status: "none"; operatorNote: { body: string; cta: string } | null };
 

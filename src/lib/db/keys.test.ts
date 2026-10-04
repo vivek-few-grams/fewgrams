@@ -26,7 +26,6 @@ import {
   PinPlaceEntity,
   ShippingSettingsEntity,
   TrayEntity,
-  TraySettingsEntity,
   ShelfPlateEntity,
   SubscriptionEntity,
   VarietyEntity,
@@ -690,16 +689,6 @@ describe("rack rate card keys — SPEC §19", () => {
     ]) {
       expect(params.Item.GSI1PK).toBeUndefined();
     }
-  });
-});
-
-describe("trays margin — markup and rounding on cost", () => {
-  it("is its own singleton, off GSI1, so listing trays never sees it", () => {
-    const params = TraySettingsEntity.put({ markupPercent: 25, roundUpToNearest: 10 }).params();
-    expect(params.Item.PK).toBe("TRAYSETTINGS");
-    expect(params.Item.SK).toBe("SETTINGS");
-    expect(params.TableName).toBe(TABLES.catalogue);
-    expect(params.Item.GSI1PK).toBeUndefined();
   });
 });
 

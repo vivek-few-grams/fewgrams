@@ -16,7 +16,8 @@ import {
 } from "@/lib/orders/order";
 import { paymentProvider } from "@/lib/payments";
 import { getTranslations } from "next-intl/server";
-import { deliveryCharge, deliveryPlan, type ChargeLine } from "@/lib/shipping/charge";
+import { deliveryCharge, deliveryPlan, planDelivery, type ChargeLine } from "@/lib/shipping/charge";
+import { shortOfFreeDelivery } from "@/lib/shipping/fee";
 import { checkDeliveryArea } from "@/lib/pincode/place";
 import { travelsOnOwnRun } from "@/lib/shipping/parcel";
 import { splitByArea } from "@/lib/cart/area-split";
@@ -37,8 +38,9 @@ const fail = (code: string, values?: Record<string, string>): CheckoutState => (
  * **Every figure is recomputed here.** The form sends an address id and the
  * total the customer was looking at, nothing else. The lines, prices and
  * delivery date come from `hydrateCart`, the same read the cart page makes,
- * and the delivery charge from the courier option the customer chose, looked
- * up again in a scan for that address (`deliveryCharge`);
+ * and the delivery charge from the courier option the page booked, looked
+ * up again in a scan for that address (`deliveryCharge`, which applies the
+ * customer's fee rule, SPEC §7.4);
  * the total the browser saw is used only to refuse the order when the two
  * disagree, so that nobody is charged a price they have not been shown.
  *
@@ -206,30 +208,36 @@ export async function scanDelivery(addrId: string, rawLocale: string): Promise<D
   if (found.ok) {
     const names = new Map(cart.items.map((i) => [lineId(i), i.name]));
     const itemNames = (ls: readonly ChargeLine[]) => ls.map((l) => names.get(lineId(l)) ?? l.key);
+    /* The cheapest option on every parcel is the one booked, and the fee is
+       worked out from those — the same arithmetic `startCheckout` repeats. */
+    const goods = lines.reduce((sum, l) => sum + l.lineTotal, 0);
+    const fee = planDelivery(found, goods);
     return {
       status: "ready",
       ownRun: found.ownRun
         ? {
-            amount: found.ownRun.amount,
+            amount: fee.ownRun ?? 0,
             arrives: istDateISO(shipmentReady(cart, found.ownRun.lines)),
             items: itemNames(found.ownRun.lines),
           }
         : null,
-      parcels: found.parcels.map((p) => {
+      parcels: found.parcels.map((p, i) => {
         const pickup = courierPickup(shipmentReady(cart, p.lines));
+        const { id, courier, carrier, days } = p.options[0];
         return {
           id: p.id,
           items: itemNames(p.lines),
           pickup: istDateISO(pickup),
-          options: p.options.map(({ id, courier, carrier, amount, days }) => ({
+          option: {
             id,
             courier,
             carrier,
-            amount,
             arrives: days !== null ? istDateISO(courierArrival(pickup, days)) : null,
-          })),
+          },
+          charge: fee.parcels[i],
         };
       }),
+      fee: { total: fee.total, free: fee.free, short: shortOfFreeDelivery(goods) },
     };
   }
   /* Something not set up is the owner's to fix, not the customer's to wait

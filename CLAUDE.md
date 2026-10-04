@@ -129,15 +129,21 @@ DynamoDB holds **two numbers**: the price of the pack and the packs held
 - **The rule lives in one module.** `src/lib/trays/lead-time.ts` owns
   `fromShelf`, `heldReadyDate` and `RESTOCK_EXTRA_DAYS`. Do not compare units
   to stock at a call site.
-- **Priced from cost, one margin for the screen** (the owner, 3 Oct 2026:
-  "keep all under 1 margin"). A row may hold our buying `cost`; its price is
-  then `retailPrice(cost, margin)` with the single markup and rounding on
-  admin → trays (`TRAYSETTINGS`). A margin save reprices every row with a
-  cost. Not per item — grow media is the one category with a margin per row.
+- **Priced from cost, a margin per row** (the owner, 4 Oct 2026 — it was one
+  `TRAYSETTINGS` margin for the screen from 3 Oct). A row holds our buying
+  `cost`, and its price is `retailPrice(cost, margin)` with **that row's own**
+  markup and rounding, typed on the row — grow media's rule exactly. One
+  shared margin could not keep the tray pair at market while the food-grade
+  pair and the drain mats priced higher.
 - **A sell price is never typed — anywhere** (the owner, 3 Oct 2026: "sell
   price is based on cost + margin"). Trays, grow media and all three rack
   ranges show it read-only; to move it, change the cost or the margin. Do not
   add a price input back to a row.
+- **A rounded price over ₹300 ends in 9** (the owner, 4 Oct 2026). `retailPrice` rounds up to
+  the step as before; if that is over ₹300 (`CHARM_PRICE_ABOVE`) it lands one rupee under
+  instead — ₹339, ₹2,599 — never below the marked-up price, so ₹1,100 exactly becomes ₹1,199.
+  At or under ₹300 it stays round (₹230). Typed prices follow the same line by hand: plans
+  ₹1,199 / ₹1,799; microgreens stay round.
 - **Never write the price or a dispatch day into copy.** The price is printed
   from DynamoDB and the date from the rule; the contract test scans for a
   rupee figure or a day count in either language.
@@ -174,7 +180,7 @@ above applies, with these differences:
 - **Priced from cost** (3 Oct 2026): each row holds our buying `cost`, and the
   price is `retailPrice(cost, margin)` with **that row's own** markup and
   rounding — the 5 kg and the 1 kg each have their own, typed on the row.
-  This is the one difference from trays, which share one margin.
+  Trays work the same way since 4 Oct 2026.
 - **Stock is dated by the tray rule** — `src/lib/grow-media/lead-time.ts`
   re-exports it. Do not compare units to stock at a call site.
 - **Do not copy the maker's claims** ("100% organic", "anti-fungal") into

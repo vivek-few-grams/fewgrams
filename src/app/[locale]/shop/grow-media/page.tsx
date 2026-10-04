@@ -6,8 +6,6 @@ import {
   growMediumCutout,
   growMediumHero,
 } from "@/lib/content/grow-media";
-import { formatDeliveryDate } from "@/lib/delivery-date";
-import { heldReadyDate } from "@/lib/trays/lead-time";
 import { CATEGORY_PANELS } from "@/lib/shop";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Sprout } from "@/components/ui/Sprout";
@@ -24,14 +22,14 @@ import Image from "next/image";
  * would join as a content file and an admin row, not a code change.
  *
  * `/shop/trays` card for card, because the item is sold the same way and a
- * buyer compares the two sizes the same way: the **card** carries the facts
- * and a dated promise, the **detail page** carries the photographs, the
- * preparation steps and the buy box. Every reason for the layout — the 3:2
- * frame, the name-sorted order, the three media treatments, the date on the
- * card — is written out on the tray page and holds here unchanged.
+ * buyer compares the two sizes the same way: the **card** carries the
+ * picture, name, price and add button, the **detail page** everything else —
+ * description, spec rows, the dated promise, photographs, preparation steps
+ * and the buy box (the owner, 4 Oct 2026). Every reason for the layout — the
+ * 3:2 frame, the three media treatments, the trimmed card — is written out on
+ * the tray page and holds here unchanged.
  *
- * Dynamic for the same reason too: the price and the lead time are
- * admin-editable, and a cached date would go stale by a day, silently.
+ * Dynamic for the same reason too: the price is admin-editable.
  */
 export const dynamic = "force-dynamic";
 
@@ -66,7 +64,6 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
         a.price - b.price || collator.compare(a.content!.text.name, b.content!.text.name),
     );
 
-  const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
   const panel = CATEGORY_PANELS.media;
 
   const quickAdd = await quickAddFor();
@@ -93,7 +90,6 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
               const cutout = growMediumCutout(content);
               /* The spec labels, as on the tray grid — labels only. */
               const words = content.text.specs.map((row) => row.label);
-              const ready = formatDeliveryDate(heldReadyDate(1, item.stockPacks), dateLocale);
 
               return (
                 <li key={item.id} className="flex flex-col">
@@ -165,23 +161,7 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
                       {c("price", { price: item.price })}
                     </p>
                   </Link>
-                  <p className="mt-2 font-body text-sm leading-relaxed text-stone">
-                    {content.text.shortDescription}
-                  </p>
-
-                  <dl className="mt-4 divide-y divide-forest/10 border-t border-forest/10 font-body text-xs">
-                    {content.text.specs.map((row) => (
-                      <div key={row.label} className="flex gap-3 py-2">
-                        <dt className="w-[40%] shrink-0 text-stone">{row.label}</dt>
-                        <dd className="text-forest">{row.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-
-                  <p className="mt-4 font-body text-xs font-semibold text-forest">
-                    {t("dispatch", { date: ready })}
-                  </p>
-                  <div className="mt-auto flex items-center justify-between gap-4 pt-4">
+                  <div className="mt-auto flex items-center justify-between gap-4 pt-3">
                     <Link
                       href={`/shop/grow-media/${item.contentKey}`}
                       className="font-body text-xs font-semibold text-forest underline underline-offset-4 transition-colors hover:text-stone"

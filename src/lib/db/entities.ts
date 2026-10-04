@@ -283,6 +283,9 @@ export const TrayEntity = new Entity(
       price: { type: "number", required: true },
       /** ₹ we pay for one pack — see `Tray.cost`. */
       cost: { type: "number" },
+      /** This pack's margin on `cost` — see `Tray.markupPercent`. */
+      markupPercent: { type: "number" },
+      roundUpToNearest: { type: "number" },
       /** Packs held (the owner, 25 Sep 2026). Absent on rows saved before
        *  then, read as none. */
       stockPacks: { type: "number" },
@@ -313,28 +316,6 @@ export const TrayEntity = new Entity(
           template: "${contentKey}",
           casing: "none",
         },
-      },
-    },
-  },
-  catalogueConfig,
-);
-
-/**
- * The trays-and-drainage margin — markup and rounding on each pack's `cost`,
- * one for every item on the screen (the owner, 3 Oct 2026: "keep all under 1
- * margin"). A singleton, off GSI1, so listing trays never sees it.
- */
-export const TraySettingsEntity = new Entity(
-  {
-    model: { ...model, entity: "traySettings" },
-    attributes: {
-      markupPercent: { type: "number", required: true },
-      roundUpToNearest: { type: "number", required: true },
-    },
-    indexes: {
-      single: {
-        pk: { field: "PK", composite: [], template: "TRAYSETTINGS", casing: "none" },
-        sk: { field: "SK", composite: [], template: "SETTINGS", casing: "none" },
       },
     },
   },

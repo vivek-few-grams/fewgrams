@@ -31,8 +31,8 @@
  * withdrawn across a re-run and a lead time the owner has corrected by hand is
  * not silently reset to the launch figure. The price is rewritten every run
  * from the list — **except on a row with a cost** (3 Oct 2026), whose price is
- * the cost and the screen's one margin (`TRAYSETTINGS`), so a re-run cannot
- * put a list price over it.
+ * the cost and that row's own margin (4 Oct 2026; it was one `TRAYSETTINGS`
+ * margin for the screen before), so a re-run cannot put a list price over it.
  */
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
@@ -116,25 +116,23 @@ async function main() {
   });
   for (const item of Items) existing.set(item.contentKey, item);
 
-  const { Item: settings } = await ddb.get({
-    TableName: TABLE,
-    Key: { PK: "TRAYSETTINGS", SK: "SETTINGS" },
-  });
-  const margin = {
-    markupPercent: settings?.markupPercent ?? 0,
-    roundUpToNearest: settings?.roundUpToNearest ?? 1,
-  };
-
   let added = 0;
   let updated = 0;
 
   for (const { key, listed, price, source } of PRICE_LIST) {
     const prior = existing.get(key);
+    /* Each row's own margin, blank as cost to the rupee — `NO_MARGIN`. */
+    const margin = {
+      markupPercent: prior?.markupPercent ?? 0,
+      roundUpToNearest: prior?.roundUpToNearest ?? 1,
+    };
     const row = {
       id: prior?.id ?? randomUUID(),
       contentKey: key,
       price: prior?.cost !== undefined ? retailPrice(prior.cost, margin) : shelfPrice(price, markup),
       ...(prior?.cost !== undefined ? { cost: prior.cost } : {}),
+      ...(prior?.markupPercent !== undefined ? { markupPercent: prior.markupPercent } : {}),
+      ...(prior?.roundUpToNearest !== undefined ? { roundUpToNearest: prior.roundUpToNearest } : {}),
       /* Kept, not reset: the count is what the owner last typed on admin. */
       stockPacks: prior?.stockPacks ?? 0,
       active: prior?.active ?? true,

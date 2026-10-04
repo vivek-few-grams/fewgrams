@@ -1156,6 +1156,30 @@ Seed-needed column appears only for varieties with `seedGramsPerTray` set.
   them one delivery. Also a timing rule: the tray rate is the ⟨⟩ above and is still unset, which
   matters more now that trays are real rows with real prices.
 
+### 7.4 What the customer pays for delivery — 4 Oct 2026
+
+The owner's decision, after a quote study of 546 cart × city checks against all four couriers
+(3–4 Oct 2026): **free delivery from ₹999 of goods; under that, the couriers' cost capped at
+₹79**, never more than it actually costs (a ₹36 seed parcel is charged ₹36). One module,
+`src/lib/shipping/fee.ts` (`FREE_DELIVERY_FROM`, `COURIER_FEE_CAP`, `customerDelivery`), is read
+by checkout, the order and the home-page banner, so they cannot disagree.
+
+- **The courier is still booked at its full quote**, and the cheapest option on each parcel is the
+  one booked — the customer no longer picks among partners. The order records the quote
+  (`quotedTotal`) beside the customer's share (`OrderShipment.charge`); the shares add up to
+  `deliveryCharge`. A capped fee is split across parcels in proportion to their cost.
+- **The threshold covers the whole order**, the greens' own run included, so the banner is true
+  as written. Under it the own run keeps its fixed fee from admin → delivery.
+- **The gap is carried by the margins**, raised the same day — racks' most (shelf 43%, angle 36%,
+  pipe 35%, from about ₹45 + ₹19 per billed kg covering 80% of cities). Nothing in the copy says
+  delivery is "included" in a price, and the old "we never hide delivery in our prices" line was
+  removed from checkout because it would no longer be true.
+- **Why ₹999 and not ₹499.** It was ₹499 for a day. A profit sheet by cart and city showed the
+  threshold only matters for orders between the two, and that is where bulky items sit — drain mats,
+  trays with a 5 kg block — whose delivery (₹100–350) eats most of a ₹200–250 margin. At ₹999 those
+  orders pay up to ₹79, and the threshold can be lowered later as good news, never raised as bad.
+- **Still to come:** a shelf rack shown as its own checkout section with its own delivery line.
+
 ---
 
 ## 8. Roles & access
@@ -1544,7 +1568,7 @@ real blocker is Meta Business verification and per-template approval, not the mo
 | `/shop` | Index of all five categories with live counts. Microgreens, seeds and trays link to their own routes |
 | `/shop/racks` | The three rack ranges — built, §19.6. A photograph, a name, six scrolling properties and a from-price per range |
 | `/shop/racks/[range]` | Pick a rack and buy it — built, §19.7. Height, shelf size and colour as options **in the URL**, then the price and add-to-cart |
-| `/shop/trays` | Trays & drainage — built, §23.5. Its own static route, because trays left `Product` for their own entity and content files. A grid with a spec table and a dated promise per card, each linking to its detail page |
+| `/shop/trays` | Trays & drainage — built, §23.5. Its own static route, because trays left `Product` for their own entity and content files. A grid of picture, name, price and an add button per card (4 Oct 2026), each linking to its detail page |
 | `/shop/grow-media` | Grow media — built 24 Sep 2026, §24.5. The tray grid for its own entity; each card links to `/shop/grow-media/[key]` (§24.3). `/shop/media` redirects here |
 | `/shop/trays/[key]` | Tray detail — built, §23.3. **Deliberately minimal**: gallery, the four spec rows as facts, and the buy box. No description, no FAQ, no spec table repeated below |
 | `/shop/[category]` | What is left of the generic category page — racks and snacks. `/shop/microgreens` and `/shop/seeds` redirect to `/microgreens` and `/seeds`; `/shop/trays` is a static route that wins over this one |
@@ -4644,10 +4668,13 @@ The spec table is deliberately **not** rendered underneath as well. On a seed
 page the facts and the table say different things; here they would be the same
 four rows twice.
 
-**The card/page split:** the card carries the facts, so three items stay
-comparable at a glance; the page carries the photographs and the buy box. The
-price appears only in the buy box — two copies of one number on one screen is
-where they start disagreeing (§18.10).
+**The card/page split** (the owner, 4 Oct 2026): the card carries the picture,
+the name, the price and an "Add" button, so the button is on screen when the
+grid loads; the page carries the description, the spec rows, the dated promise,
+the photographs and the buy box. Until then the card also printed the
+description, four spec rows and the date, which pushed "Add" below the fold and
+repeated the detail page. On the page the price appears only in the buy box —
+two copies of one number on one screen is where they start disagreeing (§18.10).
 
 **The dated promise does not move with the quantity**, and that is the one place
 this page differs from a seed's. `AddToCart` takes `dispatch` as one line per
@@ -4719,8 +4746,8 @@ hover the cut-out scales out 10% and tilts 4° while the spec *labels* — "In t
 Labels, never values, for the reason given in §17.4.
 
 This grid is **not** the shared `Tile` component, though it shares the marquee. `Tile` is a square
-carrying a name and one line of meta; a tray card carries a price, four spec rows and a dated
-promise under the picture. Only the panel is common, and it is shared as `Marquee`.
+carrying a name and one line of meta; a tray card is a 3:2 picture with a name, a price, a
+detail link and an add button under it. Only the panel is common, and it is shared as `Marquee`.
 
 ### 23.6 The three items, at the suppliers' listed prices
 
@@ -4752,6 +4779,11 @@ up needs to be added to trays and drainage … keep all under 1 margin"*). Savin
 row with a cost. **The sell price is never typed**: the cost is required on save, and a row saved
 before costs existed keeps its old price, flagged, until its cost is entered. `trays-fill.mjs` keeps a row's cost and prices it from the margin rather than the list. No
 costs are loaded yet: the listed prices above are still the shelf prices until a cost is entered.
+
+**A margin per row, 4 Oct 2026.** The screen-wide `TRAYSETTINGS` margin is gone: each row carries its
+own markup and rounding, as grow media does (§24), because one margin could not keep the recycled tray
+pair at market while the food-grade pair and the drain mats priced higher. Blank prices at cost to the
+rupee. `trays-fill.mjs` prices a row with a cost from that row's own margin.
 
 ### 23.7 The cart learned a third kind
 
@@ -4927,7 +4959,9 @@ on `/admin/delivery`.
 
 The tray grid on a tan ground (`CATEGORY_PANELS.media`), the colour of the coir. The category's key
 is `media`; its URL says what it holds. The launch cards use the maker's photograph flat
-(`object-cover`), because there is no transparent cut-out yet — see §24.8.
+(`object-cover`), because there is no transparent cut-out yet — see §24.8. The card is trimmed as
+the tray card is (4 Oct 2026): picture, name, price, detail link and "Add"; the description, spec
+rows and date are on the detail page.
 
 ### 24.6 The two items, at the maker's listed prices
 

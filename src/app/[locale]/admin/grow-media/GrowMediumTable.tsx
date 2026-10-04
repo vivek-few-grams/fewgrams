@@ -14,7 +14,6 @@ export function GrowMediumTable({ media }: { media: Array<{ medium: GrowMedium; 
       namespace="admin.growMedia"
       items={media.map(({ medium, name }) => ({ item: medium, name }))}
       actions={{ update: updateGrowMedium, toggle: toggleGrowMediumActive, remove: removeGrowMedium }}
-      rowMargin
     />
   );
 }

@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Hero } from "@/components/home/Hero";
+import { FreeDeliveryBanner } from "@/components/home/FreeDeliveryBanner";
 import { Process } from "@/components/home/Process";
 import { TrayPlay } from "@/components/home/TrayPlay";
 import { WhyMicrogreens } from "@/components/home/WhyMicrogreens";
@@ -154,6 +155,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
   return (
     <>
+      <FreeDeliveryBanner />
       <Hero />
       <Process />
       <WhyMicrogreens growDays={growDays} />

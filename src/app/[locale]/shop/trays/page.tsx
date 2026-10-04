@@ -2,8 +2,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { listTrays } from "@/lib/repo/trays";
 import { attachTrayContent, trayCutout, trayHero } from "@/lib/content/trays";
-import { formatDeliveryDate } from "@/lib/delivery-date";
-import { heldReadyDate } from "@/lib/trays/lead-time";
 import { CATEGORY_PANELS } from "@/lib/shop";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Sprout } from "@/components/ui/Sprout";
@@ -29,27 +27,20 @@ import Image from "next/image";
  * It is still a **grid** rather than a described catalogue like `/seeds`, but
  * every card links to a detail page — `/shop/trays/[key]`, added later the
  * same day on the owner's instruction after this file first argued there was
- * no need for one. The split that settled it: the **card** carries the facts,
- * so three items are comparable in one glance; the **page** carries the
- * photographs and the buy box, which is what a card cannot hold (§23.3).
+ * no need for one. The split (the owner, 4 Oct 2026): the **card** carries
+ * the picture, the name, the price and the add button, so the button is on
+ * screen when the page loads; the **page** carries the description, the spec
+ * rows, the dated promise, the photographs and the buy box (§23.3). Until
+ * that day the card also printed the description, four spec rows and the
+ * date, which pushed "Add" below the fold and said everything twice.
  *
- * ## The date is on the card, before anyone commits to anything
- *
- * Every item here is bought in when it is ordered (SPEC §23.1), so the one
- * thing a buyer needs that the price does not tell them is **when**. The card
- * therefore prints a real date, computed per item from its own `leadDays`,
- * rather than "ordered on request" — the same reasoning that put the dated
- * promise in the seed buy box (SPEC §22.2) instead of a policy sentence.
- *
- * That makes this page dynamic, which it is anyway: prices and lead times are
- * admin-editable, and a cached date would go stale overnight in the worst
- * possible way — by a day, silently.
+ * Dynamic because prices are admin-editable.
  *
  * ## Buying happens on the detail page, not here
  *
  * Twenty steppers and three live totals across three cards would be a form
- * rather than a grid, and a buyer deciding between ₹160 and ₹270 wants the
- * specs and the price in one eyeful — which is the detail page's job.
+ * rather than a grid. The card's "Add" puts one pack in the cart; a quantity
+ * is the detail page's job.
  */
 export const dynamic = "force-dynamic";
 
@@ -83,7 +74,6 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
     .filter((row) => row.content !== null)
     .sort((a, b) => collator.compare(a.content!.text.name, b.content!.text.name));
 
-  const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
   const panel = CATEGORY_PANELS.trays;
 
   const quickAdd = await quickAddFor();
@@ -103,28 +93,22 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
         </p>
       ) : (
         <>
-          {/* Three items, and each carries a spec table — so two columns on a
-              phone would give every card four wrapped rows of specification.
-              One column below `md`, then three. */}
+          {/* One column below `md`, then three. */}
           <ul className="mt-12 grid gap-6 md:grid-cols-3">
             {items.map((item, i) => {
               const content = item.content!;
               const photo = trayHero(content);
               const cutout = trayCutout(content);
-              /* The same labels the spec list below prints in full — what is
-                 in the pack, the size, the thickness, the material. Labels
-                 only, exactly as the seed grid does it; see `Marquee`. */
+              /* The spec labels the detail page prints in full — what is in
+                 the pack, the size, the thickness, the material. Labels only,
+                 exactly as the seed grid does it; see `Marquee`. */
               const words = content.text.specs.map((row) => row.label);
-              const ready = formatDeliveryDate(heldReadyDate(1, item.stockPacks), dateLocale);
 
               return (
                 <li key={item.id} className="flex flex-col">
                   {/* Photograph, name and price are one link — the whole top
                       of the card is the target, because a buyer aims at the
-                      picture. The spec list below stays outside it: it is
-                      reference text somebody may want to select and compare,
-                      and wrapping a `dl` in an anchor turns drag-to-select
-                      into drag-to-navigate. */}
+                      picture. */}
                   <Link href={`/shop/trays/${item.contentKey}`} className="group">
                   {/* 3:2, not the square the other category grids use — and
                       it is an asset decision rather than a layout one. The
@@ -251,31 +235,11 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                     {c("price", { price: item.price })}
                   </p>
                   </Link>
-                  <p className="mt-2 font-body text-sm leading-relaxed text-stone">
-                    {content.text.shortDescription}
-                  </p>
-
-                  {/* The spec table, as a description list: these are
-                      label-and-value pairs, so `dl` is what they are. A table
-                      would need a caption and column headers to say the same
-                      thing. */}
-                  <dl className="mt-4 divide-y divide-forest/10 border-t border-forest/10 font-body text-xs">
-                    {content.text.specs.map((row) => (
-                      <div key={row.label} className="flex gap-3 py-2">
-                        <dt className="w-[40%] shrink-0 text-stone">{row.label}</dt>
-                        <dd className="text-forest">{row.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-
-                  <p className="mt-4 font-body text-xs font-semibold text-forest">
-                    {t("dispatch", { date: ready })}
-                  </p>
                   {/* An explicit link as well as the card. A linked image is
                       invisible to anyone scanning for something to click, and
-                      `mt-auto` lines this row up across three cards whose text
-                      runs to different lengths. */}
-                  <div className="mt-auto flex items-center justify-between gap-4 pt-4">
+                      `mt-auto` lines this row up across cards whose names
+                      wrap to different lengths. */}
+                  <div className="mt-auto flex items-center justify-between gap-4 pt-3">
                     <Link
                       href={`/shop/trays/${item.contentKey}`}
                       className="font-body text-xs font-semibold text-forest underline underline-offset-4 transition-colors hover:text-stone"

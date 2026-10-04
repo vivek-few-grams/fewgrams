@@ -28,6 +28,7 @@ import {
   shelvesForHeight,
   pipeRackPiecesFt,
 } from "./pricing";
+import { CHARM_PRICE_ABOVE } from "@/lib/pricing/margin";
 import type { AngleRackConfig, PipeRackConfig, RackConfig } from "@/lib/types";
 
 /**
@@ -102,15 +103,30 @@ describe("retailPrice", () => {
 
   it("rounds up, never down", () => {
     /* ₹2,310 at the nearest 50 would be ₹2,300 — under cost. */
-    expect(retailPrice(2310, { ...s, markupPercent: 0 })).toBe(2350);
+    expect(retailPrice(2310, { ...s, markupPercent: 0 })).toBe(2349);
   });
 
   it("applies markup before rounding", () => {
-    expect(retailPrice(2310, { ...s, markupPercent: 80 })).toBe(4200);
+    expect(retailPrice(2310, { ...s, markupPercent: 80 })).toBe(4199);
   });
 
-  it("still rounds a fraction up when rounding is disabled", () => {
-    expect(retailPrice(2310, { ...s, markupPercent: 1, roundUpToNearest: 1 })).toBe(2334);
+  it("ends a rounded price over ₹300 in 9, and leaves one at or under ₹300 round", () => {
+    /* The owner, 4 Oct 2026. Over ₹300 a price lands on the next 9 at or
+       above the marked-up price — ₹390 exactly goes up to ₹399, not down. */
+    const ten = { markupPercent: 0, roundUpToNearest: 10 };
+    expect(retailPrice(208, ten)).toBe(210);
+    expect(retailPrice(300, ten)).toBe(300);
+    expect(retailPrice(300.5, ten)).toBe(309);
+    expect(retailPrice(336, ten)).toBe(339);
+    expect(retailPrice(339, ten)).toBe(339);
+    expect(retailPrice(390, ten)).toBe(399);
+    expect(retailPrice(250, { markupPercent: 0, roundUpToNearest: 100 })).toBe(300);
+    expect(retailPrice(2577.6, { markupPercent: 0, roundUpToNearest: 100 })).toBe(2599);
+    for (let cost = 1; cost < 3000; cost += 7.3) {
+      const p = retailPrice(cost, ten);
+      expect(p % 10).toBe(p > CHARM_PRICE_ABOVE ? 9 : 0);
+      expect(p).toBeGreaterThanOrEqual(cost);
+    }
   });
 });
 
@@ -776,7 +792,7 @@ describe("repricedRows", () => {
     /* The baseline has to follow the cost even when the price stands still,
        or the row reads as stale for ever. */
     const rounded = { ...margin, roundUpToNearest: 500 };
-    const model = published(OWNERS_RACK, { price: 2500 });
+    const model = published(OWNERS_RACK, { price: 2499 });
     const dearer = { ...card, settings: { ...card.settings, boltSetPrice: 3 } };
     const rows = repricedRows(
       [model],
@@ -784,7 +800,7 @@ describe("repricedRows", () => {
       rounded,
     );
     expect(rows).toHaveLength(1);
-    expect(rows[0].price).toBe(2500);
+    expect(rows[0].price).toBe(2499);
     expect(rows[0].costAtPublish).not.toBe(model.costAtPublish);
   });
 

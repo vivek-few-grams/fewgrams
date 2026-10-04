@@ -50,16 +50,10 @@ export function StockTable({
   namespace,
   items,
   actions,
-  rowMargin = false,
 }: {
   namespace: "admin.trays" | "admin.growMedia";
   items: Array<{ item: Item; name: string | null }>;
   actions: { update: Action; toggle: PlainAction; remove: PlainAction };
-  /** Both screens (3 Oct 2026) take a buying cost before the price, which is
-   *  worked out from it and shown, not typed, and the margin after it. Grow media also sets
-   *  the markup and rounding **per row** — the 5 kg and the 1 kg each have
-   *  their own; trays use one margin for the screen, set above the table. */
-  rowMargin?: boolean;
 }) {
   const t = useTranslations(namespace);
 
@@ -76,17 +70,13 @@ export function StockTable({
       <h2 className="font-display text-lg font-semibold text-forest">{t("savedCount", { count: items.length })}</h2>
       <p className="font-body text-xs text-stone">{t("packingNote")}</p>
       <div className="overflow-x-auto rounded-xl border border-forest/15 bg-white">
-        <table className={`w-full ${rowMargin ? "min-w-[80rem]" : "min-w-[72rem]"} border-collapse [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0 [&_thead_th]:border-t-0`}>
+        <table className={`w-full min-w-[80rem] border-collapse [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0 [&_thead_th]:border-t-0`}>
           <thead>
             <tr className="bg-sand text-left">
               <Th className="w-64">{t("colItem")}</Th>
               <Th className="w-24 text-right">{t("colCost")}</Th>
-              {rowMargin && (
-                <>
-                  <Th className="w-20 text-right">{t("colMarkup")}</Th>
-                  <Th className="w-20 text-right">{t("colRound")}</Th>
-                </>
-              )}
+              <Th className="w-20 text-right">{t("colMarkup")}</Th>
+              <Th className="w-20 text-right">{t("colRound")}</Th>
               <Th className="w-24 text-right">{t("colPrice")}</Th>
               <Th className="w-28 text-right">{t("colMargin")}</Th>
               <Th className="w-20 text-right">{t("colStock")}</Th>
@@ -100,7 +90,7 @@ export function StockTable({
           </thead>
           <tbody>
             {items.map(({ item, name }) => (
-              <Row key={item.id} namespace={namespace} item={item} name={name} actions={actions} rowMargin={rowMargin} />
+              <Row key={item.id} namespace={namespace} item={item} name={name} actions={actions} />
             ))}
           </tbody>
         </table>
@@ -125,13 +115,11 @@ function Row({
   item,
   name,
   actions,
-  rowMargin,
 }: {
   namespace: "admin.trays" | "admin.growMedia";
   item: Item;
   name: string | null;
   actions: { update: Action; toggle: PlainAction; remove: PlainAction };
-  rowMargin: boolean;
 }) {
   const t = useTranslations(namespace);
   const tc = useTranslations("admin.common");
@@ -184,25 +172,15 @@ function Row({
         <td className={`${CELL} p-0`}>
           {input("cost", { "aria-label": t("colCost"), defaultValue: item.cost })}
         </td>
-        {rowMargin && (
-          /* A grow medium row: its margin fields may be unset, so read them
-             off the wider type rather than narrowing on `in`, which would
-             drop both cells and shift every column after them. */
-          <>
-            <td className={`${CELL} p-0`}>
-              {input("markupPercent", {
-                "aria-label": t("markupPercent"),
-                defaultValue: (item as GrowMedium).markupPercent,
-              })}
-            </td>
-            <td className={`${CELL} p-0`}>
-              {input("roundUpToNearest", {
-                "aria-label": t("roundUpToNearest"),
-                defaultValue: (item as GrowMedium).roundUpToNearest,
-              })}
-            </td>
-          </>
-        )}
+        {/* Every row carries its own markup and rounding — the 5 kg and the
+            1 kg block (3 Oct 2026), and each tray pack (4 Oct 2026). Either
+            may be unset, which prices at cost to the rupee. */}
+        <td className={`${CELL} p-0`}>
+          {input("markupPercent", { "aria-label": t("markupPercent"), defaultValue: item.markupPercent })}
+        </td>
+        <td className={`${CELL} p-0`}>
+          {input("roundUpToNearest", { "aria-label": t("roundUpToNearest"), defaultValue: item.roundUpToNearest })}
+        </td>
         {/* Worked out from the cost and margin on save, never typed (the owner,
             3 Oct 2026: "sell price is based on cost + margin"). */}
         <td className={`${CELL} px-3 py-2 text-right font-body text-sm tabular-nums text-forest`}>
@@ -280,7 +258,7 @@ function Row({
       </tr>
       {notes.length > 0 && (
         <tr>
-          <td colSpan={PACKING_FIELDS.length + 6 + (rowMargin ? 2 : 0)} className={`${CELL} bg-terracotta/5 px-3 py-1.5`}>
+          <td colSpan={PACKING_FIELDS.length + 8} className={`${CELL} bg-terracotta/5 px-3 py-1.5`}>
             {notes.map((n) => (
               <p key={n} className="flex items-start gap-1.5 font-body text-[11px] text-terracotta">
                 <AlertTriangle aria-hidden size={12} strokeWidth={1.75} className="mt-px shrink-0" />

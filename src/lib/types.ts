@@ -195,12 +195,18 @@ export type Tray = {
   /** ₹ for the pack as sold, whole. Not per piece and not per kilo: a pack of
    *  five mats has one price, and dividing it by five would invite an order
    *  for one mat that the supplier will not break a pack for. With a `cost`
-   *  it is worked out — `retailPrice(cost, the trays margin)`, one margin for
-   *  every item on the screen (the owner, 3 Oct 2026) — and a price typed
-   *  over it holds until the next cost or margin change. */
+   *  it is worked out — `retailPrice(cost, this row's margin)` — and a price
+   *  typed over it holds until the next cost or margin change. */
   price: number;
   /** ₹ we pay for one pack. Absent on a row priced by hand. */
   cost?: number;
+  /** This pack's own markup and rounding on `cost` (the owner, 4 Oct 2026:
+   *  the tray pair stays at market while the food-grade pair and the drain
+   *  mats price higher, which one shared margin cannot do — it replaced the
+   *  screen-wide `TRAYSETTINGS` margin of 3 Oct). Grow media's rule exactly;
+   *  blank prices at cost to the rupee (`NO_MARGIN`). */
+  markupPercent?: number;
+  roundUpToNearest?: number;
   /** Packs held in Bengaluru (the owner, 25 Sep 2026). Up to this ships
    *  next day; more still sells, a day later (`heldReadyDate`). Never shown
    *  to a customer. */

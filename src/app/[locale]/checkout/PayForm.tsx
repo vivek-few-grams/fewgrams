@@ -43,10 +43,11 @@ export type { PayAddress, AddressPrefill } from "./AddressStep";
  *
  * Accepting an address starts a scan (`scanDelivery`): every connected
  * courier is asked for its price to that address, the step shows each one
- * being checked, and then lists every option with the cheapest picked. The
- * customer may pick another. An order is split by where each thing is
- * collected (SPEC §7), so there is one choice per courier parcel; greens and
- * whatever of ours rides with them go on the owner's own run at the fixed fee.
+ * being checked, and then the cheapest is booked on each parcel — the
+ * customer no longer picks (4 Oct 2026). An order is split by where each
+ * thing is collected (SPEC §7); greens and whatever of ours rides with them
+ * go on the owner's own run. The customer pays the scan's `fee` (SPEC §7.4):
+ * free from ₹999 of goods, otherwise the couriers' cost capped at ₹79.
  *
  * The scan is held on screen for at least `MIN_SCAN_MS` so it reads as a
  * comparison; a scan that comes back in 200 ms would otherwise flash past.
@@ -61,8 +62,8 @@ export type { PayAddress, AddressPrefill } from "./AddressStep";
  * The add form and the default switch post to the account's own actions, so
  * an address added here is the same row the account page shows, validated by
  * the same `validateAddress`. They sit **outside** the pay `<form>` — a form
- * cannot nest — and the pay form carries the chosen address id, and one
- * `delivery:<parcel>` option id per parcel, in hidden inputs.
+ * cannot nest — and the pay form carries the chosen address id, and the
+ * booked `delivery:<parcel>` option id per parcel, in hidden inputs.
  *
  * The server action places the order and returns what the gateway's own
  * payment screen needs (`openGateway` — Razorpay's modal, or Cashfree's
@@ -131,8 +132,6 @@ export function PayForm({
      lands after the customer has moved on is dropped, and `round` so a
      re-scan can be forced for the same address. */
   const [scan, setScan] = useState<{ key: string; result: DeliveryScan } | null>(null);
-  /* Parcel id → the option picked for it; each starts on its cheapest. */
-  const [chosen, setChosen] = useState<Record<string, string>>({});
   const [round, setRound] = useState(0);
   const scanKey = confirmed && selected ? `${selected.addrId}#${round}` : null;
   const current = scan && scan.key === scanKey ? scan.result : null;
@@ -146,11 +145,6 @@ export function PayForm({
     ]).then(([result]) => {
       if (!live) return;
       setScan({ key: scanKey, result });
-      setChosen(
-        result.status === "ready"
-          ? Object.fromEntries(result.parcels.flatMap((p) => (p.options[0] ? [[p.id, p.options[0].id]] : [])))
-          : {},
-      );
     });
     return () => {
       live = false;
@@ -158,27 +152,25 @@ export function PayForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `scanKey` names the address and the round; `selected` follows it.
   }, [scanKey, locale]);
 
-  /* Each parcel's chosen price, plus the own run's fee. Null until every
-     parcel has a choice, so the total is never shown short of a parcel. */
-  const picked =
-    current?.status === "ready"
-      ? current.parcels.map((p) => p.options.find((o) => o.id === chosen[p.id]) ?? null)
-      : null;
-  const delivery =
-    current?.status === "ready" && picked && picked.every(Boolean)
-      ? (current.ownRun?.amount ?? 0) + picked.reduce((sum, o) => sum + o!.amount, 0)
-      : null;
+  /* The courier booked on each parcel — the cheapest the scan found — posted
+     back so checkout books the one the customer was shown (SPEC §7.4). What
+     the customer pays is the scan's `fee`, worked out on the server. */
+  const picked = current?.status === "ready" ? current.parcels.map((p) => p.option) : null;
+  const chosen: Record<string, string> =
+    current?.status === "ready" ? Object.fromEntries(current.parcels.map((p) => [p.id, p.option.id])) : {};
+  const delivery = current?.status === "ready" ? current.fee.total : null;
+  const freeDelivery = current?.status === "ready" && current.fee.free;
   const scanning = confirmed && current === null;
   const total = delivery === null ? null : subtotal + delivery;
 
-  /* The date under the order summary follows the partners chosen (the owner,
+  /* The date under the order summary follows the partners booked (the owner,
      24 Sep 2026): the day the last parcel arrives — the own run on its ready
-     date, each courier parcel on its chosen option's. Where a courier gave
+     date, each courier parcel on its booked option's. Where a courier gave
      no transit time, the latest collection day is the best that can be said. */
   const localeTag = useLocale() === "kn" ? "kn-IN" : "en-IN";
   const dateLine = (() => {
     if (current?.status !== "ready" || !picked) return null;
-    const arrivals = [...(current.ownRun ? [current.ownRun.arrives] : []), ...picked.map((o) => o?.arrives ?? null)];
+    const arrivals = [...(current.ownRun ? [current.ownRun.arrives] : []), ...picked.map((o) => o.arrives)];
     if (arrivals.every((d): d is string => d !== null)) {
       return { key: "arrives", iso: arrivals.sort().at(-1)! };
     }
@@ -277,8 +269,6 @@ export function PayForm({
           locked={!confirmed}
           partners={partners}
           scan={current}
-          chosen={chosen}
-          onChoose={(parcel, option) => setChosen((c) => ({ ...c, [parcel]: option }))}
           heading={({ id, n, done, muted, children }) => (
             <StepHeading id={id} n={n} done={done} muted={muted}>
               {children}
@@ -323,6 +313,8 @@ export function PayForm({
                   <span className="font-normal text-stone">{t("deliveryScanning")}</span>
                 ) : delivery === null ? (
                   <span className="text-terracotta">{t("deliveryUnavailableShort")}</span>
+                ) : freeDelivery ? (
+                  t("deliveryFree")
                 ) : (
                   tc("subtotalValue", { amount: delivery })
                 )}

@@ -1,4 +1,7 @@
 {
+  "freeDelivery": {
+    "banner": "₹{amount, number} ಮತ್ತು ಅದಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಆರ್ಡರ್‌ಗಳಿಗೆ ಉಚಿತ ಡೆಲಿವರಿ"
+  },
   "hero": {
     "slides": {
       "harvest": {

@@ -105,7 +105,6 @@
   },
   "trays": {
     "body": "Kept in stock in Bengaluru, so most orders leave the next day. The price is for the whole pack.",
-    "dispatch": "Ready to ship {date}",
     "note": "Trays and mats travel with the rest of your order.",
     "cardLink": "See the detail",
     "detail": {
@@ -146,7 +145,6 @@
       "holdsWater": "Holds water",
       "airyRoots": "Airy roots"
     },
-    "dispatch": "Ready to ship {date}",
     "note": "Grow media travel with the rest of your order.",
     "cardLink": "See the detail",
     "detail": {
