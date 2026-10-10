@@ -127,7 +127,12 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+/* Entry point only, as in racks-fill.mjs. The parity test imports this file
+   for its price list, and an unguarded call wrote to DynamoDB on import — or,
+   in CI with no credentials, exited the test run (10 Oct 2026). */
+if (process.argv[1]?.endsWith("varieties-fill.mjs")) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
