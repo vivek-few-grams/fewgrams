@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-27",
+  "updated": "2026-10-10",
   "sections": [
     "about",
     "collect",
@@ -24,7 +24,7 @@
       "about": {
         "heading": "Who is responsible for your data",
         "body": [
-          "{tradingName}, a partnership of {partners}, at {address}, decides how your personal data is used. Under the Digital Personal Data Protection Act we are the Data Fiduciary.",
+          "{tradingName}, a sole proprietorship of {proprietor}, at {address}, decides how your personal data is used. Under the Digital Personal Data Protection Act we are the Data Fiduciary.",
           "For any question about your data, write to {email} or message {phone} on WhatsApp."
         ]
       },
@@ -96,7 +96,7 @@
       "security": {
         "heading": "How we protect it",
         "body": [
-          "The website is served only over an encrypted connection. Sign-in uses one-time links that expire after 15 minutes, and the sign-in cookie cannot be read by scripts on the page. Customer data can be seen only by the two partners who run {tradingName}, through a sign-in protected admin area.",
+          "The website is served only over an encrypted connection. Sign-in uses one-time links that expire after 15 minutes, and the sign-in cookie cannot be read by scripts on the page. Customer data can be seen only by the people who run {tradingName}, through a sign-in protected admin area.",
           "No system is perfectly secure. If a breach affecting your personal data occurs, we will tell you and the Data Protection Board of India as the law requires."
         ]
       },
@@ -137,7 +137,7 @@
       "about": {
         "heading": "ನಿಮ್ಮ ಮಾಹಿತಿಗೆ ಯಾರು ಜವಾಬ್ದಾರರು",
         "body": [
-          "{address} ನಲ್ಲಿರುವ, {partners} ಅವರ ಪಾಲುದಾರಿಕೆಯಾದ {tradingName}, ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಹೇಗೆ ಬಳಸಬೇಕೆಂದು ನಿರ್ಧರಿಸುತ್ತದೆ. ಡಿಜಿಟಲ್ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಸಂರಕ್ಷಣಾ ಕಾಯ್ದೆಯಡಿ ನಾವು ಡೇಟಾ ಫಿಡ್ಯೂಷಿಯರಿ.",
+          "{address} ನಲ್ಲಿರುವ, {proprietor} ಅವರ ಏಕಮಾಲೀಕತ್ವದ ಸಂಸ್ಥೆಯಾದ {tradingName}, ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಹೇಗೆ ಬಳಸಬೇಕೆಂದು ನಿರ್ಧರಿಸುತ್ತದೆ. ಡಿಜಿಟಲ್ ವೈಯಕ್ತಿಕ ಡೇಟಾ ಸಂರಕ್ಷಣಾ ಕಾಯ್ದೆಯಡಿ ನಾವು ಡೇಟಾ ಫಿಡ್ಯೂಷಿಯರಿ.",
           "ನಿಮ್ಮ ಮಾಹಿತಿಯ ಬಗ್ಗೆ ಯಾವುದೇ ಪ್ರಶ್ನೆಗೆ {email} ಗೆ ಬರೆಯಿರಿ ಅಥವಾ ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ {phone} ಗೆ ಸಂದೇಶ ಕಳುಹಿಸಿ."
         ]
       },
@@ -209,7 +209,7 @@
       "security": {
         "heading": "ನಾವು ಅದನ್ನು ಹೇಗೆ ರಕ್ಷಿಸುತ್ತೇವೆ",
         "body": [
-          "ವೆಬ್‌ಸೈಟ್ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಸಂಪರ್ಕದ ಮೂಲಕ ಮಾತ್ರ ಸಿಗುತ್ತದೆ. ಸೈನ್ ಇನ್ 15 ನಿಮಿಷಗಳಲ್ಲಿ ಅವಧಿ ಮುಗಿಯುವ ಒಂದು ಬಾರಿಯ ಲಿಂಕ್‌ಗಳನ್ನು ಬಳಸುತ್ತದೆ, ಮತ್ತು ಸೈನ್ ಇನ್ ಕುಕೀಯನ್ನು ಪುಟದಲ್ಲಿನ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳು ಓದಲಾಗುವುದಿಲ್ಲ. ಗ್ರಾಹಕರ ಮಾಹಿತಿಯನ್ನು {tradingName} ನಡೆಸುವ ಇಬ್ಬರು ಪಾಲುದಾರರು ಮಾತ್ರ, ಸೈನ್ ಇನ್ ರಕ್ಷಿತ ಆಡಳಿತ ವಿಭಾಗದ ಮೂಲಕ ನೋಡಬಹುದು.",
+          "ವೆಬ್‌ಸೈಟ್ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಸಂಪರ್ಕದ ಮೂಲಕ ಮಾತ್ರ ಸಿಗುತ್ತದೆ. ಸೈನ್ ಇನ್ 15 ನಿಮಿಷಗಳಲ್ಲಿ ಅವಧಿ ಮುಗಿಯುವ ಒಂದು ಬಾರಿಯ ಲಿಂಕ್‌ಗಳನ್ನು ಬಳಸುತ್ತದೆ, ಮತ್ತು ಸೈನ್ ಇನ್ ಕುಕೀಯನ್ನು ಪುಟದಲ್ಲಿನ ಸ್ಕ್ರಿಪ್ಟ್‌ಗಳು ಓದಲಾಗುವುದಿಲ್ಲ. ಗ್ರಾಹಕರ ಮಾಹಿತಿಯನ್ನು {tradingName} ನಡೆಸುವವರು ಮಾತ್ರ, ಸೈನ್ ಇನ್ ರಕ್ಷಿತ ಆಡಳಿತ ವಿಭಾಗದ ಮೂಲಕ ನೋಡಬಹುದು.",
           "ಯಾವ ವ್ಯವಸ್ಥೆಯೂ ಸಂಪೂರ್ಣ ಸುರಕ್ಷಿತವಲ್ಲ. ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಗೆ ಧಕ್ಕೆಯಾಗುವ ಉಲ್ಲಂಘನೆ ಸಂಭವಿಸಿದರೆ, ಕಾನೂನು ಬಯಸುವಂತೆ ನಿಮಗೂ ಭಾರತದ ಡೇಟಾ ಸಂರಕ್ಷಣಾ ಮಂಡಳಿಗೂ ತಿಳಿಸುತ್ತೇವೆ."
         ]
       },

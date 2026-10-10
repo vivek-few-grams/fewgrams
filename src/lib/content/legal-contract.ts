@@ -22,7 +22,7 @@
 
 export const LEGAL_TOKENS = [
   "tradingName",
-  "partners",
+  "proprietor",
   "grievanceOfficer",
   "address",
   "email",

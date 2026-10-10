@@ -36,7 +36,7 @@ type LegalFile = { updated: string; sections: string[]; en: Block; kn?: Partial<
 
 export type Business = {
   tradingName: string;
-  partners: string[];
+  proprietor: string;
   grievanceOfficer: string;
   address: string;
 };
@@ -54,11 +54,10 @@ const read = cache(
  * `fssai` is the one token that is a sentence rather than a fact until the
  * licence exists, so the caller passes it already translated.
  */
-export function legalTokens(fssai: string, locale: Locale): Record<LegalToken, string> {
-  const and = new Intl.ListFormat(locale === "kn" ? "kn-IN" : "en-IN", { type: "conjunction" });
+export function legalTokens(fssai: string): Record<LegalToken, string> {
   return {
     tradingName: BUSINESS.tradingName,
-    partners: and.format(BUSINESS.partners),
+    proprietor: BUSINESS.proprietor,
     grievanceOfficer: BUSINESS.grievanceOfficer,
     address: BUSINESS.address,
     email: contact.email,
@@ -75,7 +74,7 @@ export async function getLegalDoc(name: LegalDocName, locale: string, fssai: str
   const file = await read(name);
   const lang: Locale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
   const local = lang === "kn" ? file.kn : undefined;
-  const tokens = legalTokens(fssai, lang);
+  const tokens = legalTokens(fssai);
   const fill = (ps: string[]) => ps.map((p) => fillTokens(p, tokens));
 
   return {

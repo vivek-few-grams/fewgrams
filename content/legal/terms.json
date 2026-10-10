@@ -1,5 +1,5 @@
 {
-  "updated": "2026-09-27",
+  "updated": "2026-10-10",
   "sections": [
     "about",
     "acceptance",
@@ -28,7 +28,7 @@
       "about": {
         "heading": "Who we are",
         "body": [
-          "{tradingName} is a partnership of {partners}, trading as {tradingName}. We grow microgreens to order and sell seeds, trays, cocopeat and growing racks.",
+          "{tradingName} is a sole proprietorship owned by {proprietor}. We grow microgreens to order and sell seeds, trays, cocopeat and growing racks.",
           "Address: {address}.",
           "Email: {email}. Phone and WhatsApp: {phone}.",
           "FSSAI: {fssai}."
@@ -171,7 +171,7 @@
       "about": {
         "heading": "ನಾವು ಯಾರು",
         "body": [
-          "{tradingName} ಎಂಬುದು {partners} ಅವರ ಪಾಲುದಾರಿಕೆ, {tradingName} ಹೆಸರಿನಲ್ಲಿ ವ್ಯಾಪಾರ ನಡೆಸುತ್ತದೆ. ನಾವು ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಬೆಳೆಸುತ್ತೇವೆ ಮತ್ತು ಬೀಜಗಳು, ಟ್ರೇಗಳು, ಕೊಕೊಪೀಟ್ ಹಾಗೂ ಬೆಳೆಸುವ ರ್ಯಾಕ್‌ಗಳನ್ನು ಮಾರುತ್ತೇವೆ.",
+          "{tradingName} ಎಂಬುದು {proprietor} ಅವರ ಏಕಮಾಲೀಕತ್ವದ ಸಂಸ್ಥೆ. ನಾವು ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಬೆಳೆಸುತ್ತೇವೆ ಮತ್ತು ಬೀಜಗಳು, ಟ್ರೇಗಳು, ಕೊಕೊಪೀಟ್ ಹಾಗೂ ಬೆಳೆಸುವ ರ್ಯಾಕ್‌ಗಳನ್ನು ಮಾರುತ್ತೇವೆ.",
           "ವಿಳಾಸ: {address}.",
           "ಇಮೇಲ್: {email}. ಫೋನ್ ಮತ್ತು ವಾಟ್ಸ್‌ಆ್ಯಪ್: {phone}.",
           "ಎಫ್‌ಎಸ್‌ಎಸ್‌ಎಐ: {fssai}."
