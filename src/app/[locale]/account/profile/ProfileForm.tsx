@@ -18,26 +18,13 @@ import { IDLE, type FormState } from "@/lib/forms";
  * `account.errors` (CLAUDE.md). That is what keeps a server action out of the
  * business of writing English.
  */
-export function ProfileForm({
-  email,
-  name,
-  phone,
-}: {
-  email: string;
-  name: string;
-  phone: string;
-}) {
+export function ProfileForm({ email, name, phone }: { email: string; name: string; phone: string }) {
   const t = useTranslations("account.profile");
   const e = useTranslations("account.errors");
-  const [state, action, pending] = useActionState<FormState, FormData>(
-    saveProfileAction,
-    IDLE,
-  );
+  const [state, action, pending] = useActionState<FormState, FormData>(saveProfileAction, IDLE);
 
   const errorFor = (field: string) =>
-    state.status === "error" && state.field === field
-      ? e(state.code, state.values ?? {})
-      : undefined;
+    state.status === "error" && state.field === field ? e(state.code, state.values ?? {}) : undefined;
 
   return (
     <Card>

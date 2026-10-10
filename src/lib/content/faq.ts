@@ -41,9 +41,7 @@ export type FaqSection = {
 
 const FAQ_PATH = path.join(process.cwd(), "content", "faq.json");
 
-const readFaq = cache(
-  async (): Promise<FaqFile> => JSON.parse(await readFile(FAQ_PATH, "utf8")) as FaqFile,
-);
+const readFaq = cache(async (): Promise<FaqFile> => JSON.parse(await readFile(FAQ_PATH, "utf8")) as FaqFile);
 
 /** The FAQ in reading order, each string falling back to English on its own
  *  (SPEC §4.4) — the contract test is what keeps that fallback unused. */

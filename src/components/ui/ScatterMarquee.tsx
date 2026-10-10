@@ -83,10 +83,7 @@ function hash(input: string): number {
 
 export type ScatterToken = { key: string; word: string; size: string };
 
-export function scatterTokens(
-  words: string[],
-  minTokens: number = SCATTER_MIN_TOKENS,
-): ScatterToken[] {
+export function scatterTokens(words: string[], minTokens: number = SCATTER_MIN_TOKENS): ScatterToken[] {
   if (words.length === 0) return [];
   const copies = Math.ceil(minTokens / words.length);
   const tokens: ScatterToken[] = [];
@@ -148,11 +145,7 @@ export function ScatterMarquee({
   const cloud = (copy: number) => (
     <div key={copy} className="mcard__marquee-scatter">
       {tokens.map((t) => (
-        <span
-          key={`${copy}-${t.key}`}
-          className="mcard__marquee-scatter-word"
-          style={{ fontSize: t.size }}
-        >
+        <span key={`${copy}-${t.key}`} className="mcard__marquee-scatter-word" style={{ fontSize: t.size }}>
           {t.word}
         </span>
       ))}

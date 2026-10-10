@@ -1,13 +1,6 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
-import {
-  TRAY_D,
-  TRAY_H,
-  TRAY_W,
-  WATER_MARGIN,
-  roundedRect,
-  trayGeometry,
-} from "@/components/tray-play/tray";
+import { TRAY_D, TRAY_H, TRAY_W, WATER_MARGIN, roundedRect, trayGeometry } from "@/components/tray-play/tray";
 
 /**
  * Everything on the play garden's bench that is not the tray or the greens:
@@ -37,8 +30,7 @@ export class Bin {
   /** Every geometry under `root` — materials are shared and added by hand. */
   geometries(root: THREE.Object3D) {
     root.traverse((o) => {
-      if (o instanceof THREE.Mesh || o instanceof THREE.Points)
-        this.items.push(o.geometry);
+      if (o instanceof THREE.Mesh || o instanceof THREE.Points) this.items.push(o.geometry);
     });
     return root;
   }
@@ -48,11 +40,7 @@ export class Bin {
   }
 }
 
-export function canvasTexture(
-  w: number,
-  h: number,
-  paint: (g: CanvasRenderingContext2D) => void,
-) {
+export function canvasTexture(w: number, h: number, paint: (g: CanvasRenderingContext2D) => void) {
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
@@ -73,8 +61,7 @@ export function bench(bin: Bin, rand: () => number) {
       g.fillRect(0, 0, 1024, 512);
       for (let k = 0; k < 140; k++) {
         const y = rand() * 512;
-        g.strokeStyle =
-          rand() < 0.5 ? "rgba(120,80,45,0.14)" : "rgba(255,235,205,0.1)";
+        g.strokeStyle = rand() < 0.5 ? "rgba(120,80,45,0.14)" : "rgba(255,235,205,0.1)";
         g.lineWidth = 0.6 + rand() * 2.4;
         g.beginPath();
         g.moveTo(0, y);
@@ -110,10 +97,7 @@ export function bench(bin: Bin, rand: () => number) {
      the back edge stays put, where it meets the panel like a wall. Wide
      enough for the dark step's walk left to the dark room's door and the
      rack beside it. */
-  const top = new THREE.Mesh(
-    bin.add(new RoundedBoxGeometry(76, 0.24, 12, 2, 0.06)),
-    mat,
-  );
+  const top = new THREE.Mesh(bin.add(new RoundedBoxGeometry(76, 0.24, 12, 2, 0.06)), mat);
   top.position.set(0, -0.12, 2.6);
   return top;
 }
@@ -174,9 +158,7 @@ export function sprayBottle(bin: Bin, label: string, font: string) {
     [0.08, 0.8],
     [0, 0.8],
   ].map(([r, y]) => new THREE.Vector2(r, y));
-  group.add(
-    new THREE.Mesh(bin.add(new THREE.LatheGeometry(profile, 32)), plastic),
-  );
+  group.add(new THREE.Mesh(bin.add(new THREE.LatheGeometry(profile, 32)), plastic));
 
   /* The words run along the bottle, not round it, because it lies on the
      bench label up (scene.ts) and that is when it is read. The band is
@@ -200,14 +182,9 @@ export function sprayBottle(bin: Bin, label: string, font: string) {
       g.textBaseline = "middle";
       const words = label.split(" ");
       const cut = Math.ceil(words.length / 2);
-      const lines =
-        words.length > 2
-          ? [words.slice(0, cut).join(" "), words.slice(cut).join(" ")]
-          : [label];
+      const lines = words.length > 2 ? [words.slice(0, cut).join(" "), words.slice(cut).join(" ")] : [label];
       g.font = `700 ${lines.length > 1 ? 66 : 76}px ${font}`;
-      lines.forEach((line, n) =>
-        g.fillText(line, 0, (n - (lines.length - 1) / 2) * 92, 450),
-      );
+      lines.forEach((line, n) => g.fillText(line, 0, (n - (lines.length - 1) / 2) * 92, 450));
       g.restore();
     }),
   );
@@ -245,21 +222,13 @@ export function sprayBottle(bin: Bin, label: string, font: string) {
       envMapIntensity: 0.4,
     }),
   );
-  const foot = new THREE.Mesh(
-    bin.add(new THREE.CylinderGeometry(0.218, 0.218, 0.06, 40)),
-    accent,
-  );
+  const foot = new THREE.Mesh(bin.add(new THREE.CylinderGeometry(0.218, 0.218, 0.06, 40)), accent);
   foot.position.y = 0.035;
   group.add(foot);
 
   const collar = new THREE.Group();
   collar.position.y = 0.84;
-  collar.add(
-    new THREE.Mesh(
-      bin.add(new THREE.CylinderGeometry(0.1, 0.1, 0.1, 24)),
-      accent,
-    ),
-  );
+  collar.add(new THREE.Mesh(bin.add(new THREE.CylinderGeometry(0.1, 0.1, 0.1, 24)), accent));
   const rib = bin.add(new THREE.BoxGeometry(0.018, 0.09, 0.018));
   for (let k = 0; k < 16; k++) {
     const a = (k / 16) * Math.PI * 2;
@@ -270,19 +239,14 @@ export function sprayBottle(bin: Bin, label: string, font: string) {
   }
   group.add(collar);
 
-  const stem = new THREE.Mesh(
-    bin.add(new THREE.CylinderGeometry(0.05, 0.06, 0.1, 20)),
-    headMat,
-  );
+  const stem = new THREE.Mesh(bin.add(new THREE.CylinderGeometry(0.05, 0.06, 0.1, 20)), headMat);
   stem.position.y = 0.93;
   group.add(stem);
 
   /* A side profile, extruded across: drawn in (z, y) with the nozzle end
      forward (+z), then turned so the drawing's x runs along z. */
   const side = (points: [number, number][], width: number) => {
-    const shape = new THREE.Shape(
-      points.map(([z, y]) => new THREE.Vector2(z, y)),
-    );
+    const shape = new THREE.Shape(points.map(([z, y]) => new THREE.Vector2(z, y)));
     const g = new THREE.ExtrudeGeometry(shape, {
       depth: width,
       bevelEnabled: true,
@@ -314,10 +278,7 @@ export function sprayBottle(bin: Bin, label: string, font: string) {
     headMat,
   );
   group.add(shroud);
-  const tip = new THREE.Mesh(
-    bin.add(new THREE.CylinderGeometry(0.04, 0.045, 0.07, 16)),
-    accent,
-  );
+  const tip = new THREE.Mesh(bin.add(new THREE.CylinderGeometry(0.04, 0.045, 0.07, 16)), accent);
   tip.rotation.x = Math.PI / 2;
   tip.position.set(0, 0.975, 0.33);
   group.add(tip);
@@ -366,8 +327,7 @@ export function cloth(bin: Bin, rand: () => number) {
       g.fillStyle = "#efe8d8";
       g.fillRect(0, 0, 256, 256);
       for (let k = 0; k < 9000; k++) {
-        g.fillStyle =
-          rand() < 0.5 ? "rgba(255,255,255,0.55)" : "rgba(160,145,120,0.28)";
+        g.fillStyle = rand() < 0.5 ? "rgba(255,255,255,0.55)" : "rgba(160,145,120,0.28)";
         g.beginPath();
         g.arc(rand() * 256, rand() * 256, 0.6 + rand() * 0.9, 0, Math.PI * 2);
         g.fill();
@@ -395,8 +355,7 @@ export function cloth(bin: Bin, rand: () => number) {
     const edge = Math.max(ex, ez);
     /* Rolled edges: thinner toward the rim. */
     y *= 1 - (0.55 * Math.max(0, edge - 0.75)) / 0.25;
-    if (y > 0)
-      y += 0.012 * Math.sin(x * 23 + z * 9) + 0.008 * Math.sin(z * 31 - x * 5);
+    if (y > 0) y += 0.012 * Math.sin(x * 23 + z * 9) + 0.008 * Math.sin(z * 31 - x * 5);
     pos.setXYZ(k, x * (1 + 0.03 * Math.sin(z * 12)), y + 0.05, z);
   }
   geo.computeVertexNormals();
@@ -473,11 +432,7 @@ function printed(bin: Bin, text: string, font: string, w: number, h: number) {
 export function trayPrint(bin: Bin, text: string, font: string) {
   const print = printed(bin, text, font, TRAY_W * 0.85, 0.17);
   print.rotation.x = Math.atan2(0.04, TRAY_H);
-  print.position.set(
-    0,
-    TRAY_H * 0.47,
-    (TRAY_D + 2 * WATER_MARGIN) / 2 - 0.075 + 0.02 + 0.006,
-  );
+  print.position.set(0, TRAY_H * 0.47, (TRAY_D + 2 * WATER_MARGIN) / 2 - 0.075 + 0.02 + 0.006);
   return print;
 }
 
@@ -507,9 +462,7 @@ export function dipTub(bin: Bin, label: string, font: string) {
      `rippleWater`, so the light slides over slow, crossing waves. */
   const geo = new THREE.PlaneGeometry(DIP.w - 0.16, DIP.d - 0.16, 44, 52);
   geo.rotateX(-Math.PI / 2);
-  geo.userData.rest = Float32Array.from(
-    geo.getAttribute("position").array as Float32Array,
-  );
+  geo.userData.rest = Float32Array.from(geo.getAttribute("position").array as Float32Array);
   const waterMat = bin.add(
     new THREE.MeshPhysicalMaterial({
       color: "#6f93e3",
@@ -530,15 +483,9 @@ export function dipTub(bin: Bin, label: string, font: string) {
     shader.uniforms.uTime = uTime;
     shader.vertexShader = shader.vertexShader
       .replace("#include <common>", "#include <common>\nvarying vec2 vWaterXZ;")
-      .replace(
-        "#include <begin_vertex>",
-        "#include <begin_vertex>\nvWaterXZ = position.xz;",
-      );
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvWaterXZ = position.xz;");
     shader.fragmentShader = shader.fragmentShader
-      .replace(
-        "#include <common>",
-        "#include <common>\nvarying vec2 vWaterXZ;\nuniform float uTime;",
-      )
+      .replace("#include <common>", "#include <common>\nvarying vec2 vWaterXZ;\nuniform float uTime;")
       .replace(
         "#include <emissivemap_fragment>",
         `#include <emissivemap_fragment>
@@ -602,8 +549,7 @@ export function rippleWater(water: THREE.Mesh, time: number, stir = 0) {
   }
   pos.needsUpdate = true;
   geo.computeVertexNormals();
-  const t = (water.material as THREE.Material).userData.time as
-    { value: number } | undefined;
+  const t = (water.material as THREE.Material).userData.time as { value: number } | undefined;
   if (t) t.value = time;
 }
 
@@ -623,12 +569,8 @@ export const BLOCK = { hx: 0.36, hy: 0.11, hz: 0.25 };
  * the change reads as the same stuff changing.
  */
 export function peatBlock(bin: Bin, tex: THREE.Texture) {
-  const geo = bin.add(
-    new THREE.BoxGeometry(BLOCK.hx * 2, BLOCK.hy * 2, BLOCK.hz * 2, 14, 6, 10),
-  );
-  const rest = Float32Array.from(
-    geo.getAttribute("position").array as Float32Array,
-  );
+  const geo = bin.add(new THREE.BoxGeometry(BLOCK.hx * 2, BLOCK.hy * 2, BLOCK.hz * 2, 14, 6, 10));
+  const rest = Float32Array.from(geo.getAttribute("position").array as Float32Array);
   const mat = bin.add(
     new THREE.MeshStandardMaterial({
       map: tex,
@@ -659,9 +601,7 @@ export function shapeBlock(
   crumble: number,
   left: number,
 ) {
-  const pos = block.mesh.geometry.getAttribute(
-    "position",
-  ) as THREE.BufferAttribute;
+  const pos = block.mesh.geometry.getAttribute("position") as THREE.BufferAttribute;
   const r = block.rest;
   /* Swollen: taller and a little wider, its faces bulging and fibrous. */
   const sx = 1 + 0.32 * swell;
@@ -675,23 +615,18 @@ export function shapeBlock(
     const y = r[k * 3 + 1];
     const z = r[k * 3 + 2];
     const n = hash3(x * 9, y * 9, z * 9);
-    const bulge =
-      1 + swell * (0.1 * (1 - Math.abs(y) / BLOCK.hy) + 0.05 * (n - 0.5));
+    const bulge = 1 + swell * (0.1 * (1 - Math.abs(y) / BLOCK.hy) + 0.05 * (n - 0.5));
     const bx = x * sx * bulge;
     const by = (y + BLOCK.hy) * sy;
     const bz = z * sz * bulge;
     /* Mound: the block's footprint spread out, its height a dome. */
-    const rho = Math.min(
-      1,
-      Math.max(Math.abs(x) / BLOCK.hx, Math.abs(z) / BLOCK.hz),
-    );
+    const rho = Math.min(1, Math.max(Math.abs(x) / BLOCK.hx, Math.abs(z) / BLOCK.hz));
     const ang = Math.atan2(z / BLOCK.hz, x / BLOCK.hx);
     const top = (y + BLOCK.hy) / (2 * BLOCK.hy);
     const mr = R * (rho * 0.92 + 0.08 * n);
     const mx = Math.cos(ang) * mr;
     const mz = Math.sin(ang) * mr;
-    const my =
-      top * H * Math.pow(Math.max(0, 1 - rho * rho), 0.6) * (0.85 + 0.3 * n);
+    const my = top * H * Math.pow(Math.max(0, 1 - rho * rho), 0.6) * (0.85 + 0.3 * n);
     pos.setXYZ(
       k,
       THREE.MathUtils.lerp(bx, mx, crumble),
@@ -729,9 +664,7 @@ export function wateringCan(bin: Bin, label: string, font: string) {
   const DEPTH = 0.3;
   /* A side profile in (x, y), extruded across z and centred. */
   const slab = (points: [number, number][], depth: number, bevel: number) => {
-    const shape = new THREE.Shape(
-      points.map(([x, y]) => new THREE.Vector2(x, y)),
-    );
+    const shape = new THREE.Shape(points.map(([x, y]) => new THREE.Vector2(x, y)));
     const geo = new THREE.ExtrudeGeometry(shape, {
       depth,
       bevelEnabled: true,
@@ -778,9 +711,7 @@ export function wateringCan(bin: Bin, label: string, font: string) {
   );
   const mouth = new THREE.Mesh(
     bin.add(new THREE.CircleGeometry(0.07, 20)),
-    bin.add(
-      new THREE.MeshStandardMaterial({ color: "#1d3a16", roughness: 0.9 }),
-    ),
+    bin.add(new THREE.MeshStandardMaterial({ color: "#1d3a16", roughness: 0.9 })),
   );
   mouth.rotation.x = -Math.PI / 2;
   /* The filler sits forward on the top, toward the spout, so the
@@ -792,9 +723,7 @@ export function wateringCan(bin: Bin, label: string, font: string) {
   const tube = (pts: [number, number][], r: number) =>
     bin.add(
       new THREE.TubeGeometry(
-        new THREE.CatmullRomCurve3(
-          pts.map(([x, y]) => new THREE.Vector3(x, y, 0)),
-        ),
+        new THREE.CatmullRomCurve3(pts.map(([x, y]) => new THREE.Vector3(x, y, 0))),
         40,
         r,
         10,
@@ -818,10 +747,7 @@ export function wateringCan(bin: Bin, label: string, font: string) {
     ),
   );
   /* A flattened lip at the tip. */
-  const lip = new THREE.Mesh(
-    bin.add(new THREE.CylinderGeometry(0.036, 0.028, 0.05, 12)),
-    mat,
-  );
+  const lip = new THREE.Mesh(bin.add(new THREE.CylinderGeometry(0.036, 0.028, 0.05, 12)), mat);
   lip.rotation.z = -1.3;
   lip.position.set(0.76, 0.646, 0);
   g.add(lip);
@@ -887,13 +813,7 @@ export function seedPacket(bin: Bin, rand: () => number, seed: string) {
   const base = new THREE.Color(seed);
   for (let k = 0; k < 900; k++) {
     const c = base.clone().offsetHSL(0, 0, (rand() - 0.4) * 0.22);
-    grains.push([
-      rand(),
-      rand(),
-      5 + rand() * 4,
-      rand() * Math.PI,
-      `#${c.getHexString()}`,
-    ]);
+    grains.push([rand(), rand(), 5 + rand() * 4, rand() * Math.PI, `#${c.getHexString()}`]);
   }
   let logo: HTMLCanvasElement | null = null;
   const paint = () => {
@@ -962,10 +882,7 @@ export function seedPacket(bin: Bin, rand: () => number, seed: string) {
       envMapIntensity: 0.35,
     }),
   );
-  const m = new THREE.Mesh(
-    bin.add(new RoundedBoxGeometry(PACKET.w, PACKET.h, PACKET.d, 3, 0.03)),
-    mat,
-  );
+  const m = new THREE.Mesh(bin.add(new RoundedBoxGeometry(PACKET.w, PACKET.h, PACKET.d, 3, 0.03)), mat);
   const group = new THREE.Group();
   m.position.y = PACKET.h / 2;
   group.add(m);
@@ -1069,9 +986,7 @@ export function shelfRack(bin: Bin, ours: number) {
   );
   const flange = bin.add(new THREE.BoxGeometry(0.22, h, 0.025));
   const flangeSide = bin.add(new THREE.BoxGeometry(0.025, h, 0.22));
-  const rubber = bin.add(
-    new THREE.MeshStandardMaterial({ color: "#151515", roughness: 0.8 }),
-  );
+  const rubber = bin.add(new THREE.MeshStandardMaterial({ color: "#151515", roughness: 0.8 }));
   const foot = bin.add(new THREE.BoxGeometry(0.26, 0.08, 0.26));
   for (const sx of [-1, 1]) {
     for (const sz of [-1, 1]) {
@@ -1163,9 +1078,7 @@ export function shelfRack(bin: Bin, ours: number) {
   const clipGeo = bin.add(new THREE.BoxGeometry(0.05, 0.2, 0.06));
   const litMat = bin.add(new THREE.MeshBasicMaterial({ color: "#fffbe9" }));
   const litBeam = beamOf(0.26);
-  const diffuserMat = bin.add(
-    new THREE.MeshBasicMaterial({ color: "#c9ccc6" }),
-  );
+  const diffuserMat = bin.add(new THREE.MeshBasicMaterial({ color: "#c9ccc6" }));
   const beamMat = beamOf(0);
   let batten = new THREE.Group();
   for (let i = 0; i < shelves.length - 1; i++) {
@@ -1185,9 +1098,7 @@ export function shelfRack(bin: Bin, ours: number) {
     const beamH = top - shelves[i] - 0.06;
     /* From the whole length of the tube, not a point under its middle
        (the owner, 3 Oct 2026), spreading to the shelf. */
-    const beamGeo = bin.add(
-      lightWedge(TUBE / 2, 0.06, w * 0.46, d * 0.4, beamH),
-    );
+    const beamGeo = bin.add(lightWedge(TUBE / 2, 0.06, w * 0.46, d * 0.4, beamH));
     const beam = new THREE.Mesh(beamGeo, mine ? beamMat : litBeam);
     beam.position.y = top - 0.06 - beamH / 2;
     g.add(beam);
@@ -1198,9 +1109,7 @@ export function shelfRack(bin: Bin, ours: number) {
      at hand height: a white plate with a rocker that tips when pressed, and
      an invisible pad round it so it is easy to hit. */
   const lightSwitch = new THREE.Group();
-  const plateMat = bin.add(
-    new THREE.MeshStandardMaterial({ color: "#f7f6f1", roughness: 0.4 }),
-  );
+  const plateMat = bin.add(new THREE.MeshStandardMaterial({ color: "#f7f6f1", roughness: 0.4 }));
   const rockerMat = bin.add(
     new THREE.MeshStandardMaterial({
       color: "#1f4a33",
@@ -1209,14 +1118,8 @@ export function shelfRack(bin: Bin, ours: number) {
       emissiveIntensity: 0,
     }),
   );
-  const swPlate = new THREE.Mesh(
-    bin.add(new RoundedBoxGeometry(0.34, 0.5, 0.06, 2, 0.02)),
-    plateMat,
-  );
-  const rocker = new THREE.Mesh(
-    bin.add(new RoundedBoxGeometry(0.17, 0.27, 0.06, 2, 0.016)),
-    rockerMat,
-  );
+  const swPlate = new THREE.Mesh(bin.add(new RoundedBoxGeometry(0.34, 0.5, 0.06, 2, 0.02)), plateMat);
+  const rocker = new THREE.Mesh(bin.add(new RoundedBoxGeometry(0.17, 0.27, 0.06, 2, 0.016)), rockerMat);
   rocker.position.z = 0.04;
   /* Off: the bottom stands proud, to be pressed in for on (the owner,
      2 Oct 2026: down is on, up is off). */
@@ -1266,9 +1169,7 @@ export function cutter(bin: Bin) {
       envMapIntensity: 0.5,
     }),
   );
-  const rubber = bin.add(
-    new THREE.MeshStandardMaterial({ color: "#2b2b2b", roughness: 0.85 }),
-  );
+  const rubber = bin.add(new THREE.MeshStandardMaterial({ color: "#2b2b2b", roughness: 0.85 }));
   const steel = bin.add(
     new THREE.MeshStandardMaterial({
       color: "#e3e6e8",
@@ -1301,13 +1202,7 @@ export function cutter(bin: Bin) {
     geo.translate(0, depth + bevel, 0);
     return geo;
   };
-  const rounded = (
-    x0: number,
-    z0: number,
-    x1: number,
-    z1: number,
-    r: number,
-  ) => {
+  const rounded = (x0: number, z0: number, x1: number, z1: number, r: number) => {
     const sh = new THREE.Shape();
     sh.moveTo(x0 + r, z0);
     sh.lineTo(x1 - r, z0);
@@ -1342,11 +1237,7 @@ export function cutter(bin: Bin) {
   }
   /* The metal nose the blade slides out of. */
   const nose = new THREE.Mesh(
-    flat(
-      rounded(-0.04, CUTTER_BLADE.to, 0.04, CUTTER_BLADE.to + 0.07, 0.012),
-      0.032,
-      0.004,
-    ),
+    flat(rounded(-0.04, CUTTER_BLADE.to, 0.04, CUTTER_BLADE.to + 0.07, 0.012), 0.032, 0.004),
     steel,
   );
   nose.position.y = 0.006;
@@ -1354,42 +1245,18 @@ export function cutter(bin: Bin) {
   /* The handle, with a rubber grip down its length and the slider on
      top, near the front. */
   const handle = new THREE.Mesh(
-    flat(
-      rounded(-0.05, CUTTER_BLADE.to + 0.06, 0.05, CUTTER_BLADE.to + 0.5, 0.03),
-      0.04,
-      0.008,
-    ),
+    flat(rounded(-0.05, CUTTER_BLADE.to + 0.06, 0.05, CUTTER_BLADE.to + 0.5, 0.03), 0.04, 0.008),
     body,
   );
   g.add(handle);
   const gripPad = new THREE.Mesh(
-    flat(
-      rounded(
-        -0.03,
-        CUTTER_BLADE.to + 0.2,
-        0.03,
-        CUTTER_BLADE.to + 0.46,
-        0.022,
-      ),
-      0.006,
-      0.003,
-    ),
+    flat(rounded(-0.03, CUTTER_BLADE.to + 0.2, 0.03, CUTTER_BLADE.to + 0.46, 0.022), 0.006, 0.003),
     rubber,
   );
   gripPad.position.y = 0.05;
   g.add(gripPad);
   const slider = new THREE.Mesh(
-    flat(
-      rounded(
-        -0.018,
-        CUTTER_BLADE.to + 0.09,
-        0.018,
-        CUTTER_BLADE.to + 0.15,
-        0.008,
-      ),
-      0.012,
-      0.003,
-    ),
+    flat(rounded(-0.018, CUTTER_BLADE.to + 0.09, 0.018, CUTTER_BLADE.to + 0.15, 0.008), 0.012, 0.003),
     rubber,
   );
   slider.position.y = 0.05;
@@ -1410,12 +1277,7 @@ export function bowl(bin: Bin) {
   const pts: THREE.Vector2[] = [];
   for (let k = 0; k <= 16; k++) {
     const a = (k / 16) * (Math.PI / 2);
-    pts.push(
-      new THREE.Vector2(
-        0.16 + Math.sin(a) * 0.46,
-        0.02 + (1 - Math.cos(a)) * 0.34,
-      ),
-    );
+    pts.push(new THREE.Vector2(0.16 + Math.sin(a) * 0.46, 0.02 + (1 - Math.cos(a)) * 0.34));
   }
   pts.unshift(new THREE.Vector2(0, 0.02));
   pts.push(new THREE.Vector2(0.64, 0.37), new THREE.Vector2(0.6, 0.35));
@@ -1544,8 +1406,7 @@ export class Particles {
         this.vel[i * 3] = this.vel[i * 3 + 1] = this.vel[i * 3 + 2] = 0;
       }
       const t = Math.max(this.life[i], 0) / this.span[i];
-      this.alpha[i] =
-        opacity * Math.min(1, t * 3) * Math.min(1, (1 - t) * 12 + 0.2);
+      this.alpha[i] = opacity * Math.min(1, t * 3) * Math.min(1, (1 - t) * 12 + 0.2);
     }
     const geo = this.points.geometry;
     geo.getAttribute("position").needsUpdate = true;
@@ -1593,8 +1454,7 @@ export function grime(rand: () => number) {
     g.stroke();
   }
   for (let k = 0; k < 1800; k++) {
-    g.fillStyle =
-      rand() < 0.7 ? "rgba(150,135,110,0.55)" : "rgba(95,75,55,0.6)";
+    g.fillStyle = rand() < 0.7 ? "rgba(150,135,110,0.55)" : "rgba(95,75,55,0.6)";
     const s = 0.6 + rand() * 1.4;
     g.fillRect(rand() * W, rand() * H, s, s);
   }

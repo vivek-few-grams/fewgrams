@@ -32,10 +32,7 @@ import type { SellableRack } from "./catalogue";
 
 /** The shape `getTranslations("shop.racks")` satisfies — just enough of it to
  *  call, so this module does not depend on next-intl's types. */
-export type RackTranslator = (
-  key: string,
-  values?: Record<string, string | number>,
-) => string;
+export type RackTranslator = (key: string, values?: Record<string, string | number>) => string;
 
 /** `1.25 × 3 ft`. The footprint, which is the figure buyers compare on. */
 export function rackSizeLabel(t: RackTranslator, rack: SellableRack): string {
@@ -54,11 +51,7 @@ export function rackSizeLabel(t: RackTranslator, rack: SellableRack): string {
  * add, and is harder to read aloud on the phone when someone is confirming an
  * order.
  */
-export function rackLineName(
-  t: RackTranslator,
-  rack: SellableRack,
-  colour: RackColour | null,
-): string {
+export function rackLineName(t: RackTranslator, rack: SellableRack, colour: RackColour | null): string {
   const common = {
     range: t(`ranges.${rack.range}.name`),
     height: rack.heightFt,

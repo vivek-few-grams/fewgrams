@@ -36,9 +36,7 @@ export async function quickAddFor() {
       addAria: q("addAria", { name }),
       decrease: c(stepKey(kind, "decrease"), { name }),
       increase: c(stepKey(kind, "increase"), { name }),
-      quantities: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
-        lineQuantity(kind, i + 1, c),
-      ),
+      quantities: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) => lineQuantity(kind, i + 1, c)),
       errors,
       soldOut: q("soldOut"),
     },

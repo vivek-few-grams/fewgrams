@@ -63,10 +63,7 @@ async function cascade() {
 
 /** Three numbers, and all three must be real. No partial save: a rack priced
  *  from two of the three rates would be wrong rather than incomplete. */
-export async function savePipeRates(
-  _prev: FormState,
-  fd: FormData,
-): Promise<FormState> {
+export async function savePipeRates(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
 
   const ratePerFt = money(fd, "ratePerFt");
@@ -103,9 +100,7 @@ export async function savePipeRates(
 
 /* ───────────────────────────── footprints ──────────────────────────── */
 
-function readSize(
-  fd: FormData,
-): { ok: true; value: Omit<PipeSize, "id"> } | { ok: false; state: FormState } {
+function readSize(fd: FormData): { ok: true; value: Omit<PipeSize, "id"> } | { ok: false; state: FormState } {
   const depthFt = money(fd, "depthFt");
   if (depthFt === null) return { ok: false, state: err("dimensionInvalid", "depthFt") };
   const lengthFt = money(fd, "lengthFt");
@@ -188,9 +183,7 @@ function validateConfig(
   return { ok: true };
 }
 
-function readConfig(
-  fd: FormData,
-): { ok: true; value: PipeRackConfig } | { ok: false; state: FormState } {
+function readConfig(fd: FormData): { ok: true; value: PipeRackConfig } | { ok: false; state: FormState } {
   const heightFt = money(fd, "heightFt");
   if (heightFt === null) return { ok: false, state: err("dimensionInvalid", "heightFt") };
 
@@ -207,11 +200,7 @@ function readConfig(
 }
 
 function sameConfig(a: PipeRackConfig, b: PipeRackConfig): boolean {
-  return (
-    a.heightFt === b.heightFt &&
-    a.shelves === b.shelves &&
-    a.pipeSizeId === b.pipeSizeId
-  );
+  return a.heightFt === b.heightFt && a.shelves === b.shelves && a.pipeSizeId === b.pipeSizeId;
 }
 
 /** Publishes a pipe rack: cost from the current rates, price from the markup,
@@ -228,8 +217,7 @@ export async function addPipeRack(_prev: FormState, fd: FormData): Promise<FormS
   if (!valid.ok) return valid.state;
 
   const existing = await listPipeRackModels();
-  if (existing.some((m) => sameConfig(m.config, read.value)))
-    return err("duplicateRack", "pipeSizeId");
+  if (existing.some((m) => sameConfig(m.config, read.value))) return err("duplicateRack", "pipeSizeId");
 
   /* Null here means the pipe rates are still absent, which the form already
      blocks — but the action is reachable without the form. */

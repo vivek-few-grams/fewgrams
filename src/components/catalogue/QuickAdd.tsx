@@ -137,9 +137,7 @@ export function QuickAdd({
         </div>
       )}
       {error && (
-        <p className="mt-1 max-w-40 text-right font-body text-[11px] leading-snug text-terracotta">
-          {error}
-        </p>
+        <p className="mt-1 max-w-40 text-right font-body text-[11px] leading-snug text-terracotta">{error}</p>
       )}
     </div>
   );

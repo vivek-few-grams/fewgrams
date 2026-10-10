@@ -12,14 +12,7 @@ import {
   type FieldRect,
 } from "./field";
 import { HOME_ROW } from "./kinds";
-import {
-  LOOKS,
-  fullMask,
-  mulberry32,
-  plantMesh,
-  plantStems,
-  sharedUniforms,
-} from "./plants";
+import { LOOKS, fullMask, mulberry32, plantMesh, plantStems, sharedUniforms } from "./plants";
 import {
   MEDIUM_Y,
   TRAY_D,
@@ -184,12 +177,7 @@ export function mountTrayScene(
   const field = createField(FIELD_NX, FIELD_NZ, FIELD_RECT);
   const fieldBytes = new Uint8Array(FIELD_NX * FIELD_NZ * 4);
   packField(field, fieldBytes);
-  const fieldTex = new THREE.DataTexture(
-    fieldBytes,
-    FIELD_NX,
-    FIELD_NZ,
-    THREE.RGBAFormat,
-  );
+  const fieldTex = new THREE.DataTexture(fieldBytes, FIELD_NX, FIELD_NZ, THREE.RGBAFormat);
   fieldTex.magFilter = THREE.LinearFilter;
   fieldTex.minFilter = THREE.LinearFilter;
   fieldTex.needsUpdate = true;
@@ -202,10 +190,7 @@ export function mountTrayScene(
   ROW.forEach((v, n) => {
     const cx = (n - 1) * (TRAY_W + TRAY_GAP);
 
-    const shadow = new THREE.Mesh(
-      new THREE.PlaneGeometry(TRAY_W * 1.45, TRAY_D * 1.33),
-      shadowMat,
-    );
+    const shadow = new THREE.Mesh(new THREE.PlaneGeometry(TRAY_W * 1.45, TRAY_D * 1.33), shadowMat);
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.set(cx + 0.12, 0.001, 0.1);
     scene.add(shadow);
@@ -223,14 +208,7 @@ export function mountTrayScene(
     scene.add(medium);
     disposables.push(medium.geometry);
 
-    const { stems, extra } = plantStems(
-      v,
-      cx,
-      2 * hw - 0.06,
-      2 * hd - 0.06,
-      thin,
-      rand,
-    );
+    const { stems, extra } = plantStems(v, cx, 2 * hw - 0.06, 2 * hd - 0.06, thin, rand);
     const mesh = plantMesh(v, stems, extra, MEDIUM_Y, shared);
     scene.add(mesh);
     disposables.push(mesh.geometry, mesh.material as THREE.Material);
@@ -252,17 +230,13 @@ export function mountTrayScene(
     const halfV = THREE.MathUtils.degToRad(camera.fov / 2);
     const halfH = Math.atan(Math.tan(halfV) * camera.aspect);
     const across = (SPAN_X / 2 + (snug ? 0.8 : 0.9)) / Math.tan(halfH);
-    const down =
-      (TRAY_D * Math.sin(ELEVATION) * 0.5 + (snug ? 0.7 : 0.95)) /
-      Math.tan(halfV);
+    const down = (TRAY_D * Math.sin(ELEVATION) * 0.5 + (snug ? 0.7 : 0.95)) / Math.tan(halfV);
     /* The garden's own screen (`snug`) draws the row a tenth smaller on a
        screen wide enough to spare it (the owner, 2 Oct 2026: "reduce
        only 10%"), for room round it; a phone's row is already as small
        as it can go across. */
     const dist = Math.max(across, down) / (snug && w >= 640 ? 0.9 : 1);
-    camera.position
-      .set(0, Math.sin(ELEVATION) * dist, Math.cos(ELEVATION) * dist)
-      .add(target);
+    camera.position.set(0, Math.sin(ELEVATION) * dist, Math.cos(ELEVATION) * dist).add(target);
     camera.lookAt(target);
     camera.updateProjectionMatrix();
     if (onAnchors) {
@@ -308,10 +282,7 @@ export function mountTrayScene(
     endDemo();
     demo.touched = true;
     const box = canvas.getBoundingClientRect();
-    ndc.set(
-      ((e.clientX - box.left) / box.width) * 2 - 1,
-      -((e.clientY - box.top) / box.height) * 2 + 1,
-    );
+    ndc.set(((e.clientX - box.left) / box.width) * 2 - 1, -((e.clientY - box.top) / box.height) * 2 + 1);
     ray.setFromCamera(ndc, camera);
     if (!ray.ray.intersectPlane(handPlane, hit)) return;
     const now = e.timeStamp / 1000;
@@ -355,11 +326,7 @@ export function mountTrayScene(
     onMove(e);
     if (!hand.on) return;
     const bed = beds.find(
-      (b) =>
-        hand.x >= b.minX &&
-        hand.x <= b.maxX &&
-        hand.z >= b.minZ &&
-        hand.z <= b.maxZ,
+      (b) => hand.x >= b.minX && hand.x <= b.maxX && hand.z >= b.minZ && hand.z <= b.maxZ,
     );
     if (!bed) return;
     if (waves.length >= 4) waves.shift();
@@ -406,12 +373,7 @@ export function mountTrayScene(
   function driveDemo(now: number) {
     if (demo.done) {
       /* Nobody has tried it: show it again, a little later. */
-      if (
-        demo.touched ||
-        demo.replays >= DEMO_REPLAYS ||
-        !demo.inView ||
-        now - demo.ended < DEMO_AGAIN_AFTER
-      )
+      if (demo.touched || demo.replays >= DEMO_REPLAYS || !demo.inView || now - demo.ended < DEMO_AGAIN_AFTER)
         return;
       demo.replays++;
       demo.done = false;

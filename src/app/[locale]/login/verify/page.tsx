@@ -8,9 +8,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/login/ve
   return { title: t("title") };
 }
 
-export default async function VerifyPage({
-  params,
-}: PageProps<"/[locale]/login/verify">) {
+export default async function VerifyPage({ params }: PageProps<"/[locale]/login/verify">) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("auth.verify");
@@ -20,13 +18,10 @@ export default async function VerifyPage({
       <span className="grid size-12 place-items-center rounded-full bg-forest text-cream">
         <Mail size={22} strokeWidth={1.5} />
       </span>
-      <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-forest">
-        {t("heading")}
-      </h1>
+      <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-forest">{t("heading")}</h1>
       <p className="mt-3 font-body text-sm leading-relaxed text-stone">{t("body")}</p>
       <p className="mt-6 rounded-xl bg-sand px-4 py-3 font-body text-xs text-stone">
-        <strong className="font-semibold text-forest">{t("devNoteTitle")}</strong>{" "}
-        {t("devNoteBody")}
+        <strong className="font-semibold text-forest">{t("devNoteTitle")}</strong> {t("devNoteBody")}
       </p>
       <Link
         href="/login"

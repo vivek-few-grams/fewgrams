@@ -11,7 +11,13 @@ const capturedBody = JSON.stringify({
   contains: ["payment"],
   payload: {
     payment: {
-      entity: { id: "pay_1", status: "captured", order_id: "order_1", amount: 45000, notes: { order_id: "FGABC123" } },
+      entity: {
+        id: "pay_1",
+        status: "captured",
+        order_id: "order_1",
+        amount: 45000,
+        notes: { order_id: "FGABC123" },
+      },
     },
   },
 });
@@ -79,7 +85,11 @@ describe("API calls", () => {
       "fetch",
       vi.fn(async (url: string, init: RequestInit) => {
         const path = url.replace("https://api.razorpay.com/v1", "");
-        calls.push({ method: init.method!, path, body: init.body ? JSON.parse(String(init.body)) : undefined });
+        calls.push({
+          method: init.method!,
+          path,
+          body: init.body ? JSON.parse(String(init.body)) : undefined,
+        });
         const key = `${init.method} ${path}`;
         const next = routes[key];
         const value = Array.isArray(next) ? next.shift() : next;
@@ -99,7 +109,12 @@ describe("API calls", () => {
       notifyUrl: null,
       expiresAt: new Date(Date.now() + 30 * 60_000),
     });
-    expect(calls[0].body).toEqual({ amount: 45000, currency: "INR", receipt: "FGABC123", notes: { order_id: "FGABC123" } });
+    expect(calls[0].body).toEqual({
+      amount: 45000,
+      currency: "INR",
+      receipt: "FGABC123",
+      notes: { order_id: "FGABC123" },
+    });
     expect(created.providerOrderId).toBe("order_1");
     expect(created.checkout).toMatchObject({
       gateway: "razorpay",
@@ -118,22 +133,44 @@ describe("API calls", () => {
       ],
       "GET /orders/order_1/payments": [
         { items: [{ id: "pay_1", amount: 45000, currency: "INR", status: "authorized", method: "upi" }] },
-        { items: [{ id: "pay_1", amount: 45000, currency: "INR", status: "captured", method: "upi", created_at: 1758860000 }] },
+        {
+          items: [
+            {
+              id: "pay_1",
+              amount: 45000,
+              currency: "INR",
+              status: "captured",
+              method: "upi",
+              created_at: 1758860000,
+            },
+          ],
+        },
       ],
       "POST /payments/pay_1/capture": { id: "pay_1", status: "captured" },
     });
     const result = await provider.fetchOrder({ orderId: "FGABC123", providerOrderId: "order_1" });
-    expect(calls.find((c) => c.path === "/payments/pay_1/capture")?.body).toEqual({ amount: 45000, currency: "INR" });
+    expect(calls.find((c) => c.path === "/payments/pay_1/capture")?.body).toEqual({
+      amount: 45000,
+      currency: "INR",
+    });
     expect(result.status).toBe("paid");
     expect(result.attempts).toEqual([
-      expect.objectContaining({ providerPaymentId: "pay_1", orderId: "FGABC123", status: "success", amount: 450, method: "upi" }),
+      expect.objectContaining({
+        providerPaymentId: "pay_1",
+        orderId: "FGABC123",
+        status: "success",
+        amount: 450,
+        method: "upi",
+      }),
     ]);
   });
 
   it("does not capture a payment for a different amount", async () => {
     const calls = stub({
       "GET /orders/order_1": { id: "order_1", amount: 45000, currency: "INR", status: "attempted" },
-      "GET /orders/order_1/payments": { items: [{ id: "pay_1", amount: 100, currency: "INR", status: "authorized" }] },
+      "GET /orders/order_1/payments": {
+        items: [{ id: "pay_1", amount: 100, currency: "INR", status: "authorized" }],
+      },
     });
     const result = await provider.fetchOrder({ orderId: "FGABC123", providerOrderId: "order_1" });
     expect(calls.some((c) => c.method === "POST")).toBe(false);
@@ -143,7 +180,10 @@ describe("API calls", () => {
 
   it("treats an order with no Razorpay id as open and asks nothing", async () => {
     const calls = stub({});
-    expect(await provider.fetchOrder({ orderId: "FGABC123", providerOrderId: null })).toEqual({ status: "active", attempts: [] });
+    expect(await provider.fetchOrder({ orderId: "FGABC123", providerOrderId: null })).toEqual({
+      status: "active",
+      attempts: [],
+    });
     expect(calls).toHaveLength(0);
   });
 });

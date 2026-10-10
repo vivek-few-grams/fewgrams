@@ -152,7 +152,10 @@ export class DelhiveryProvider implements ShippingProvider {
           payment_mode: "Prepaid",
           cod_amount: 0,
           total_amount: input.value,
-          products_desc: input.items.map((i) => i.name).join(", ").slice(0, 200),
+          products_desc: input.items
+            .map((i) => i.name)
+            .join(", ")
+            .slice(0, 200),
           quantity: String(input.items.reduce((n, i) => n + i.units, 0)),
           seller_name: brand.name,
           ...(gstin ? { seller_gst_tin: gstin } : {}),
@@ -179,7 +182,9 @@ export class DelhiveryProvider implements ShippingProvider {
     const pkg = body.packages?.[0];
     if (!res.ok || pkg?.status !== "Success" || !pkg.waybill) {
       const why = [pkg?.remarks, body.rmk].flat().filter(Boolean).join("; ");
-      throw new Error(`Delhivery refused the shipment: ${res.status} ${why || "no reason given"}`.slice(0, 500));
+      throw new Error(
+        `Delhivery refused the shipment: ${res.status} ${why || "no reason given"}`.slice(0, 500),
+      );
     }
 
     /* The waybill exists: from here nothing may throw. */

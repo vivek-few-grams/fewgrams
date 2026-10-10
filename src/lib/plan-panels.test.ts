@@ -40,12 +40,7 @@ describe("planPanels", () => {
   });
 
   it("wraps if a fourth plan ever exists", () => {
-    expect(planPanels([true, false, false, false])).toEqual([
-      "forest",
-      "sage",
-      "sand",
-      "sage",
-    ]);
+    expect(planPanels([true, false, false, false])).toEqual(["forest", "sage", "sand", "sage"]);
   });
 
   it("returns nothing for no plans", () => {

@@ -129,7 +129,9 @@ export function nextDelivery(
   now: Date = new Date(),
 ): SubscriptionDelivery | null {
   const today = istDateISO(now);
-  return [...sub.deliveries].sort((a, b) => a.date.localeCompare(b.date)).find((d) => d.date >= today) ?? null;
+  return (
+    [...sub.deliveries].sort((a, b) => a.date.localeCompare(b.date)).find((d) => d.date >= today) ?? null
+  );
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;

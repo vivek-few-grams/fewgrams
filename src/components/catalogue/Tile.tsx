@@ -92,9 +92,7 @@ export function Tile({
           one stop per card, on the name. */}
       <Link href={href} tabIndex={-1} aria-hidden="true" className="group block">
         <div
-          className={`mcard flex aspect-square items-center justify-center ${
-            cutout ? panel : "bg-forest"
-          }`}
+          className={`mcard flex aspect-square items-center justify-center ${cutout ? panel : "bg-forest"}`}
         >
           {cutout ? (
             <>
@@ -153,12 +151,8 @@ export function Tile({
                 <div className="mcard__marquee-inner">
                   {[0, 1].map((copy) => (
                     <div key={copy} className="px-2">
-                      <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">
-                        {name}
-                      </span>
-                      <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">
-                        {name}
-                      </span>
+                      <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">{name}</span>
+                      <span className="mcard__marquee-line text-[clamp(1.6rem,3vw,2.6rem)]">{name}</span>
                     </div>
                   ))}
                 </div>
@@ -183,9 +177,7 @@ export function Tile({
           <p className="font-display text-sm font-semibold uppercase tracking-wide text-forest transition-colors group-hover:text-stone">
             {name}
           </p>
-          <p className="mt-0.5 font-body text-sm font-semibold tabular-nums text-forest">
-            {meta}
-          </p>
+          <p className="mt-0.5 font-body text-sm font-semibold tabular-nums text-forest">{meta}</p>
         </Link>
         {action && <div className="shrink-0">{action}</div>}
       </div>

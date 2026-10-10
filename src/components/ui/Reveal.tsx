@@ -28,13 +28,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
  * these classes to no animation, so marking anything `out` would hide content
  * that is never going to animate back.
  */
-export function Reveal({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function Reveal({ children, className }: { children: ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [hidden, setHidden] = useState(false);
 

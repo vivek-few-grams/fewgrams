@@ -154,18 +154,10 @@ export function Gallery({
                    differently from the image it opens, so what you tap would
                    not be what you get. */
                 className={`relative h-14 w-[84px] shrink-0 overflow-hidden rounded-xl border-2 bg-sand transition-colors md:h-16 md:w-24 ${
-                  i === active
-                    ? "border-forest"
-                    : "border-transparent hover:border-forest/40"
+                  i === active ? "border-forest" : "border-transparent hover:border-forest/40"
                 }`}
               >
-                <Image
-                  src={shot.src}
-                  alt=""
-                  fill
-                  sizes="96px"
-                  className="object-contain"
-                />
+                <Image src={shot.src} alt="" fill sizes="96px" className="object-contain" />
               </button>
             ))}
           </div>

@@ -30,9 +30,7 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
   const [key, setKey] = useState("");
 
   const errorFor = (field: string) =>
-    state.status === "error" && state.field === field
-      ? e(state.code, state.values ?? {})
-      : undefined;
+    state.status === "error" && state.field === field ? e(state.code, state.values ?? {}) : undefined;
 
   const keyError = errorFor("contentKey");
 
@@ -43,9 +41,7 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
   return (
     <form action={action} className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
       <label className="block sm:col-span-2 lg:col-span-5">
-        <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
-          {t("pick")}
-        </span>
+        <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">{t("pick")}</span>
         <input
           name="contentKey"
           required
@@ -71,13 +67,9 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
         </datalist>
         <span className="mt-1 block font-body text-[11px] text-stone">{t("pickHint")}</span>
         {suggestions.length > 0 && (
-          <span className="mt-0.5 block font-body text-[11px] text-stone/80">
-            {t("pickExisting")}
-          </span>
+          <span className="mt-0.5 block font-body text-[11px] text-stone/80">{t("pickExisting")}</span>
         )}
-        {keyError && (
-          <span className="mt-1 block font-body text-[11px] text-terracotta">{keyError}</span>
-        )}
+        {keyError && <span className="mt-1 block font-body text-[11px] text-terracotta">{keyError}</span>}
       </label>
 
       <NumberField
@@ -111,12 +103,7 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
         hint={t("priceHint")}
         error={errorFor("pricePerTray")}
       />
-      <NumberField
-        label={t("seed")}
-        name="seedGramsPerTray"
-        min={1}
-        hint={t("seedHint")}
-      />
+      <NumberField label={t("seed")} name="seedGramsPerTray" min={1} hint={t("seedHint")} />
 
       <label className="flex items-center gap-2 font-body text-sm text-forest sm:col-span-2 lg:col-span-5">
         <input type="checkbox" name="active" defaultChecked className="size-4" />
@@ -132,9 +119,7 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
           {t("saveNew")}
         </button>
         {state.status === "error" && !state.field && (
-          <p className="font-body text-sm text-terracotta">
-            {e(state.code, state.values ?? {})}
-          </p>
+          <p className="font-body text-sm text-terracotta">{e(state.code, state.values ?? {})}</p>
         )}
       </div>
     </form>

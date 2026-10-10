@@ -106,8 +106,7 @@ export async function addTray(_prev: FormState, fd: FormData): Promise<FormState
   /* Validated rather than sanitised: the key is a filename, so quietly
      rewriting it would break the link between this row and the file the
      operator is about to create. */
-  if (!isValidContentKey(contentKey))
-    return err("keyInvalid", "contentKey", { key: contentKey });
+  if (!isValidContentKey(contentKey)) return err("keyInvalid", "contentKey", { key: contentKey });
 
   /* One row per key — the key is the GSI1 sort key, so two rows sharing one
      would make the pair indistinguishable in every list. Checked against
@@ -150,7 +149,8 @@ function readPacking(fd: FormData): { ok: true; value: Partial<Packing> } | { ok
   const missing = read.find(([, v]) => v === undefined);
   if (missing) return { ok: false, state: err("packingIncomplete", missing[0]) };
   const value = Object.fromEntries(read) as Packing;
-  if (!Number.isInteger(value.packPieces)) return { ok: false, state: err("packPiecesInvalid", "packPieces") };
+  if (!Number.isInteger(value.packPieces))
+    return { ok: false, state: err("packPiecesInvalid", "packPieces") };
   return { ok: true, value };
 }
 
@@ -174,9 +174,7 @@ export async function updateTray(_prev: FormState, fd: FormData): Promise<FormSt
      The margin is dropped with it so that blanking a field clears it rather
      than keeping a figure nobody can see — grow media's rule. */
   const cleared: readonly string[] = [...PACKING, "markupPercent", "roundUpToNearest"];
-  const rest = Object.fromEntries(
-    Object.entries(current).filter(([k]) => !cleared.includes(k)),
-  ) as Tray;
+  const rest = Object.fromEntries(Object.entries(current).filter(([k]) => !cleared.includes(k))) as Tray;
   await putTray({ ...rest, ...ops.value, ...packing.value });
   refresh();
   return { status: "saved" };

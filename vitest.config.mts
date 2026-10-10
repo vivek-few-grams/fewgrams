@@ -7,6 +7,8 @@ import { defineConfig } from "vitest/config";
  * that imports `@/...` fails to resolve.
  */
 export default defineConfig({
+  /* infra/cdk.out holds staged copies of the build; never test those. */
+  test: { exclude: ["**/node_modules/**", "infra/cdk.out/**"] },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

@@ -4,11 +4,7 @@ import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getVarietyByKey } from "@/lib/repo/varieties";
-import {
-  getVarietyContent,
-  varietyHero,
-  varietyImageUrl,
-} from "@/lib/content/varieties";
+import { getVarietyContent, varietyHero, varietyImageUrl } from "@/lib/content/varieties";
 import { DetailPage } from "@/components/catalogue/DetailPage";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import type { Shot } from "@/components/catalogue/Gallery";
@@ -55,16 +51,11 @@ async function load(key: string, locale: string) {
   /* Both reads are cheap and independent, so they run together rather than
      gating the file read on the row. `getVarietyContent` is `cache`d per
      request, so generateMetadata and the page share one file read. */
-  const [row, content] = await Promise.all([
-    getVarietyByKey(key),
-    getVarietyContent(key, locale),
-  ]);
+  const [row, content] = await Promise.all([getVarietyByKey(key), getVarietyContent(key, locale)]);
   return row?.active && content ? { row, content } : null;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/microgreens/[key]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/microgreens/[key]">) {
   const { locale, key } = await params;
   const found = await load(key, locale);
   if (!found) return {};
@@ -77,9 +68,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function VarietyPage({
-  params,
-}: PageProps<"/[locale]/microgreens/[key]">) {
+export default async function VarietyPage({ params }: PageProps<"/[locale]/microgreens/[key]">) {
   const { locale, key } = await params;
   setRequestLocale(locale);
   await guardProductTypeEnabled("microgreens", locale);
@@ -189,9 +178,7 @@ export default async function VarietyPage({
           }}
         />
       }
-      aside={
-        text.flavourNotes ? { heading: d("flavour"), body: text.flavourNotes } : null
-      }
+      aside={text.flavourNotes ? { heading: d("flavour"), body: text.flavourNotes } : null}
       description={text.description}
       table={
         text.nutrition?.length
@@ -223,9 +210,7 @@ export default async function VarietyPage({
             }
           : null
       }
-      cautions={
-        text.cautions?.length ? { heading: d("cautions"), items: text.cautions } : null
-      }
+      cautions={text.cautions?.length ? { heading: d("cautions"), items: text.cautions } : null}
       prose={text.growingTips ? { heading: d("growing"), body: text.growingTips } : null}
       faq={text.faq?.length ? { heading: d("faq"), items: text.faq } : null}
       footer={

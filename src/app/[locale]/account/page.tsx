@@ -85,9 +85,7 @@ export default async function AccountOverview({ params }: PageProps<"/[locale]/a
           {address ? (
             <AddressLines address={address} />
           ) : (
-            <EmptyNote icon={<MapPin size={18} strokeWidth={1.5} />}>
-              {t("noAddress")}
-            </EmptyNote>
+            <EmptyNote icon={<MapPin size={18} strokeWidth={1.5} />}>{t("noAddress")}</EmptyNote>
           )}
         </Card>
 
@@ -120,9 +118,7 @@ export default async function AccountOverview({ params }: PageProps<"/[locale]/a
           }
         >
           {orders.length === 0 ? (
-            <EmptyNote icon={<Package size={18} strokeWidth={1.5} />}>
-              {t("noOrders")}
-            </EmptyNote>
+            <EmptyNote icon={<Package size={18} strokeWidth={1.5} />}>{t("noOrders")}</EmptyNote>
           ) : (
             <ul className="space-y-2 font-body text-sm text-forest">
               {orders.slice(0, 3).map((order) => (
@@ -136,13 +132,7 @@ export default async function AccountOverview({ params }: PageProps<"/[locale]/a
   );
 }
 
-function EmptyNote({
-  icon,
-  children,
-}: {
-  icon: React.ReactNode;
-  children: React.ReactNode;
-}) {
+function EmptyNote({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
   return (
     <p className="flex items-start gap-2.5 font-body text-sm text-stone">
       <span className="mt-0.5 shrink-0 text-forest/60">{icon}</span>

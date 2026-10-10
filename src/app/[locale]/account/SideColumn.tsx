@@ -41,7 +41,9 @@ export function SideColumn({ children }: { children: ReactNode }) {
     const measure = () => {
       const on = wide.matches;
       column.style.marginTop =
-        on && start ? `${Math.max(0, start.getBoundingClientRect().top - row.getBoundingClientRect().top)}px` : "";
+        on && start
+          ? `${Math.max(0, start.getBoundingClientRect().top - row.getBoundingClientRect().top)}px`
+          : "";
       column.style.minHeight = on && target ? `${target.getBoundingClientRect().height}px` : "";
     };
     measure();

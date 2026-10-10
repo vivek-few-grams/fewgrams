@@ -55,10 +55,7 @@ const source = createContentSource<GrowMediumText>({ folder: "grow-media" });
 
 export const listGrowMediumKeys = source.listKeys;
 
-export function resolveGrowMediumText(
-  file: GrowMediumContentFile,
-  locale: Locale,
-): GrowMediumText {
+export function resolveGrowMediumText(file: GrowMediumContentFile, locale: Locale): GrowMediumText {
   return source.resolveText(file, locale);
 }
 

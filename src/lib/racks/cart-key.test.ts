@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { isValidContentKey } from "@/lib/content/content-key";
-import {
-  isValidRackCartKey,
-  parseRackCartKey,
-  rackCartKey,
-  rackRangeOf,
-} from "./cart-key";
+import { isValidRackCartKey, parseRackCartKey, rackCartKey, rackRangeOf } from "./cart-key";
 
 describe("rackCartKey", () => {
   it("lowercases the SKU and appends the colour for a steel rack", () => {
@@ -49,11 +44,11 @@ describe("parseRackCartKey", () => {
       "",
       "broccoli",
       "RK-6F-5S-1x3-1.4-orange", // uppercase — one rack must not have two keys
-      "rk-6f-5s-1x3-1.4",        // steel with no colour
-      "rk-6f-5s-1x3-1.4-teal",   // not in the palette
-      "pr-6f-5s-1.5x3-white",    // pipe with a colour appended
+      "rk-6f-5s-1x3-1.4", // steel with no colour
+      "rk-6f-5s-1x3-1.4-teal", // not in the palette
+      "pr-6f-5s-1.5x3-white", // pipe with a colour appended
       "xx-6f-5s-1x3-1.4-orange", // unknown range prefix
-      "rk-6f-5s-1x3-orange",     // steel missing its gauge segment
+      "rk-6f-5s-1x3-orange", // steel missing its gauge segment
       "rk-af-5s-1x3-1.4-orange", // height is not a number
       `rk-6f-5s-1x3-1.4-orange${"x".repeat(60)}`,
     ]) {

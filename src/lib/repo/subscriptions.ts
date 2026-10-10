@@ -63,9 +63,7 @@ export async function getSubscription(id: string): Promise<Subscription | null> 
 }
 
 export async function setSubscriptionProviderOrderId(id: string, providerOrderId: string): Promise<void> {
-  await SubscriptionEntity.patch({ id })
-    .set({ providerOrderId, updatedAt: new Date().toISOString() })
-    .go();
+  await SubscriptionEntity.patch({ id }).set({ providerOrderId, updatedAt: new Date().toISOString() }).go();
 }
 
 /**
@@ -99,25 +97,19 @@ export async function markSubscriptionPaid(
 }
 
 export async function setSubscriptionReceiptNo(id: string, receiptNo: number): Promise<void> {
-  await SubscriptionEntity.patch({ id })
-    .set({ receiptNo, updatedAt: new Date().toISOString() })
-    .go();
+  await SubscriptionEntity.patch({ id }).set({ receiptNo, updatedAt: new Date().toISOString() }).go();
 }
 
 /** Every subscription in one stored status, newest first. `active` holds the
  *  expired ones too — expiry is derived from the dates. */
 export async function listSubscriptionsByStatus(status: SubscriptionStatus): Promise<Subscription[]> {
-  const { data } = await SubscriptionEntity.query
-    .byStatus({ status })
-    .go({ ...LIST_OPTS, order: "desc" });
+  const { data } = await SubscriptionEntity.query.byStatus({ status }).go({ ...LIST_OPTS, order: "desc" });
   return data.map(toSubscription);
 }
 
 /** One customer's paid subscriptions, newest first. */
 export async function listSubscriptionsForUser(userId: string): Promise<Subscription[]> {
-  const { data } = await SubscriptionEntity.query
-    .byUser({ userId })
-    .go({ ...LIST_OPTS, order: "desc" });
+  const { data } = await SubscriptionEntity.query.byUser({ userId }).go({ ...LIST_OPTS, order: "desc" });
   return data.map(toSubscription);
 }
 
@@ -128,7 +120,10 @@ export async function listSubscriptionsForUser(userId: string): Promise<Subscrip
  * same starting point: the second is refused and sees the first's result. Supplies
  * `userId` and `createdAt` for the indexes a status change rewrites.
  */
-export async function changeSubscriptionSchedule(sub: Subscription, change: ScheduleChange): Promise<boolean> {
+export async function changeSubscriptionSchedule(
+  sub: Subscription,
+  change: ScheduleChange,
+): Promise<boolean> {
   try {
     await SubscriptionEntity.patch({ id: sub.id })
       .set({

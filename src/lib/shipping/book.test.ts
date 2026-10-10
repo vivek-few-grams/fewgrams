@@ -64,9 +64,39 @@ const order = (over: Partial<Order> = {}): Order =>
     email: "asha@example.com",
     status: "ready_for_delivery",
     lines: [
-      { kind: "seed", key: "radish", name: "Radish seed", units: 2, unitPrice: 60, lineTotal: 120, grams: 100, readyDate: "2026-09-28", sourcing: "shelf" },
-      { kind: "tray", key: "standard", name: "Standard tray", units: 1, unitPrice: 160, lineTotal: 160, grams: null, readyDate: "2026-09-28", sourcing: null },
-      { kind: "variety", key: "pea", name: "Pea shoots", units: 1, unitPrice: 200, lineTotal: 200, grams: 100, readyDate: "2026-09-30", sourcing: null },
+      {
+        kind: "seed",
+        key: "radish",
+        name: "Radish seed",
+        units: 2,
+        unitPrice: 60,
+        lineTotal: 120,
+        grams: 100,
+        readyDate: "2026-09-28",
+        sourcing: "shelf",
+      },
+      {
+        kind: "tray",
+        key: "standard",
+        name: "Standard tray",
+        units: 1,
+        unitPrice: 160,
+        lineTotal: 160,
+        grams: null,
+        readyDate: "2026-09-28",
+        sourcing: null,
+      },
+      {
+        kind: "variety",
+        key: "pea",
+        name: "Pea shoots",
+        units: 1,
+        unitPrice: 200,
+        lineTotal: 200,
+        grams: 100,
+        readyDate: "2026-09-30",
+        sourcing: null,
+      },
     ],
     total: 600,
     deliveryCharge: 120,
@@ -95,7 +125,13 @@ const order = (over: Partial<Order> = {}): Order =>
     ...over,
   }) as Order;
 
-const PICKUP = { name: "Fewgrams Home", phone: "9000000000", address: "1 Main Rd", city: "Bengaluru", pincode: "560038" };
+const PICKUP = {
+  name: "Fewgrams Home",
+  phone: "9000000000",
+  address: "1 Main Rd",
+  city: "Bengaluru",
+  pincode: "560038",
+};
 
 describe("which parcels can be booked", () => {
   it("only a courier parcel of an order ready for delivery", () => {
@@ -150,13 +186,24 @@ describe("Delhivery book", () => {
     expect(calls[0].url).toContain("/api/cmu/create.json");
     const data = JSON.parse(new URLSearchParams(calls[0].body).get("data")!);
     expect(data.pickup_location.name).toBe("Fewgrams Home");
-    expect(data.shipments[0]).toMatchObject({ order: "FG0000000001", payment_mode: "Prepaid", weight: "1800" });
-    expect(JSON.parse(calls[1].body)).toMatchObject({ pickup_date: "2026-09-28", pickup_location: "Fewgrams Home" });
+    expect(data.shipments[0]).toMatchObject({
+      order: "FG0000000001",
+      payment_mode: "Prepaid",
+      weight: "1800",
+    });
+    expect(JSON.parse(calls[1].body)).toMatchObject({
+      pickup_date: "2026-09-28",
+      pickup_location: "Fewgrams Home",
+    });
   });
 
   it("treats a 200 whose package failed as a refusal, and throws", async () => {
     stubFetch({
-      body: { success: false, rmk: "ClientWarehouse matching query does not exist", packages: [{ status: "Fail" }] },
+      body: {
+        success: false,
+        rmk: "ClientWarehouse matching query does not exist",
+        packages: [{ status: "Fail" }],
+      },
     });
     await expect(new DelhiveryProvider("t", "staging").book(INPUT)).rejects.toThrow(/ClientWarehouse/);
   });
@@ -215,7 +262,11 @@ describe("Shiprocket book", () => {
       pickupError: null,
       labelUrl: "https://example.test/label.pdf",
     });
-    expect(JSON.parse(calls[1].body)).toMatchObject({ order_id: "FG0000000001", weight: 1.8, pickup_location: "Fewgrams Home" });
+    expect(JSON.parse(calls[1].body)).toMatchObject({
+      order_id: "FG0000000001",
+      weight: 1.8,
+      pickup_location: "Fewgrams Home",
+    });
     expect(JSON.parse(calls[2].body)).toEqual({ shipment_id: 15151515, courier_id: 142 });
   });
 
@@ -223,7 +274,12 @@ describe("Shiprocket book", () => {
     stubFetch(
       { body: { token: "tok" } },
       { body: { order_id: 1, shipment_id: 15151515 } },
-      { body: { awb_assign_status: 0, response: { data: { awb_assign_error: "Insufficient wallet balance" } } } },
+      {
+        body: {
+          awb_assign_status: 0,
+          response: { data: { awb_assign_error: "Insufficient wallet balance" } },
+        },
+      },
     );
     await expect(new ShiprocketProvider("e", "p").book(input)).rejects.toThrow(/wallet/);
   });
@@ -293,7 +349,10 @@ describe("Velocity book", () => {
 
   it("throws when the order is refused and no earlier attempt shipped it", async () => {
     warehouses();
-    stubFetch({ status: 422, body: { status: "ERROR", message: "Insufficient wallet balance" } }, { body: { data: [] } });
+    stubFetch(
+      { status: 422, body: { status: "ERROR", message: "Insufficient wallet balance" } },
+      { body: { data: [] } },
+    );
     await expect(new VelocityProvider("key").book(input)).rejects.toThrow(/wallet/);
   });
 
@@ -301,7 +360,13 @@ describe("Velocity book", () => {
     warehouses();
     const calls = stubFetch(
       { status: 422, body: { status: "ERROR", message: "Order id already exists" } },
-      { body: { data: [{ attributes: { tracking_number: "34812010700125", order: { external_id: "FG0000000001" } } }] } },
+      {
+        body: {
+          data: [
+            { attributes: { tracking_number: "34812010700125", order: { external_id: "FG0000000001" } } },
+          ],
+        },
+      },
     );
     const r = await new VelocityProvider("key").book(input);
     expect(r.trackingNumber).toBe("34812010700125");

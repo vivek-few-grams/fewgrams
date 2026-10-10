@@ -1522,3 +1522,59 @@ export const CounterEntity = new Entity(
   },
   ordersConfig,
 );
+
+/**
+ * One day's sowing and its harvests — `/admin/sowing` (10 Oct 2026).
+ *   PK = SOWING#<id>   SK = META   GSI1PK = SOWING   GSI1SK = <sowDate>#<id>
+ *
+ * In the orders table with the rest of the operation's records (SPEC §4.6),
+ * not the catalogue: it is a log, written every sowing day, and wants the
+ * same backups. Shares GSI1 with the delivery run under its own partition —
+ * `SOWING` cannot match a `DELIVERY#` or `ORDER#` prefix — so the log is one
+ * Query, newest first, with no Scan.
+ *
+ * The lines are a list on the one row because a sowing is edited as a whole:
+ * the harvest is recorded on the same form the seed grams were.
+ */
+export const SowingEntity = new Entity(
+  {
+    model: { ...model, entity: "sowing" },
+    attributes: {
+      id: { type: "string", required: true },
+      sowDate: { type: "string", required: true },
+      lines: {
+        type: "list",
+        required: true,
+        items: {
+          type: "map",
+          properties: {
+            varietyKey: { type: "string", required: true },
+            seedGrams: { type: "number", required: true },
+            trays: { type: "number" },
+            harvestGrams: { type: "number" },
+            harvestedOn: { type: "string" },
+          },
+        },
+      },
+      createdAt: { type: "string", required: true },
+      updatedAt: { type: "string", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "SOWING#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      byDate: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: [], template: "SOWING", casing: "none" },
+        sk: {
+          field: "GSI1SK",
+          composite: ["sowDate", "id"],
+          template: "${sowDate}#${id}",
+          casing: "none",
+        },
+      },
+    },
+  },
+  ordersConfig,
+);

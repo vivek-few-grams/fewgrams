@@ -8,7 +8,6 @@ import { OrderSteps } from "./OrderSteps";
 
 export const dynamic = "force-dynamic";
 
-
 /** The statuses that need the owner to do something, in the order the work
  *  happens. After `ready_for_delivery` the order is with the delivery agent. */
 const ACTIVE = ["paid", "picked", "ready_for_delivery"] as const satisfies readonly OrderStatus[];
@@ -19,7 +18,13 @@ const ACTIVE = ["paid", "picked", "ready_for_delivery"] as const satisfies reado
  * them — so a `?status=paid` link lands on the board rather than on a second
  * view of one lane.
  */
-const DONE = ["out_for_delivery", "delivered", "failed", "cancelled", "refunded"] as const satisfies readonly OrderStatus[];
+const DONE = [
+  "out_for_delivery",
+  "delivered",
+  "failed",
+  "cancelled",
+  "refunded",
+] as const satisfies readonly OrderStatus[];
 const TABBED: readonly OrderStatus[] = [...DONE, "pending_payment"];
 const isTabbed = (v: string): v is OrderStatus => (TABBED as readonly string[]).includes(v);
 
@@ -43,9 +48,7 @@ const byUrgency = (a: Order, b: Order) =>
  * not orders to prepare, only where a customer who says they paid and has no
  * receipt is looked up.
  */
-export default async function OrdersAdmin({
-  searchParams,
-}: PageProps<"/[locale]/admin/orders">) {
+export default async function OrdersAdmin({ searchParams }: PageProps<"/[locale]/admin/orders">) {
   const raw = (await searchParams).status;
   const current: OrderStatus | null = typeof raw === "string" && isTabbed(raw) ? raw : null;
 
@@ -65,12 +68,7 @@ export default async function OrdersAdmin({
             {t("doneGroup")}
           </span>
           {DONE.map((s) => (
-            <Tab
-              key={s}
-              href={`/admin/orders?status=${s}`}
-              active={s === current}
-              label={t(`status.${s}`)}
-            />
+            <Tab key={s} href={`/admin/orders?status=${s}`} active={s === current} label={t(`status.${s}`)} />
           ))}
         </div>
         <div className="ml-auto">
@@ -150,8 +148,7 @@ const CARD_LINES = 3;
 async function OrderCard({ order, today }: { order: Order; today: string }) {
   const t = await getTranslations("admin.orders");
   const format = await getFormatter();
-  const due =
-    order.deliveryDate < today ? "overdue" : order.deliveryDate === today ? "dueToday" : null;
+  const due = order.deliveryDate < today ? "overdue" : order.deliveryDate === today ? "dueToday" : null;
   const shown = order.lines.slice(0, CARD_LINES);
 
   return (
@@ -202,9 +199,7 @@ async function OrderCard({ order, today }: { order: Order; today: string }) {
           </li>
         ))}
         {order.lines.length > CARD_LINES && (
-          <li className="text-xs text-stone">
-            {t("more", { count: order.lines.length - CARD_LINES })}
-          </li>
+          <li className="text-xs text-stone">{t("more", { count: order.lines.length - CARD_LINES })}</li>
         )}
       </ul>
 
@@ -229,17 +224,15 @@ async function StatusTable({ status }: { status: OrderStatus }) {
       <table className="w-full min-w-[46rem] border-collapse text-left">
         <thead>
           <tr className="border-b border-forest/15">
-            {[t("colOrder"), t("colCustomer"), t("colItems"), t("colDelivery"), t("colTotal")].map(
-              (h) => (
-                <th
-                  key={h}
-                  scope="col"
-                  className="pb-3 font-body text-xs font-medium uppercase tracking-wider text-stone"
-                >
-                  {h}
-                </th>
-              ),
-            )}
+            {[t("colOrder"), t("colCustomer"), t("colItems"), t("colDelivery"), t("colTotal")].map((h) => (
+              <th
+                key={h}
+                scope="col"
+                className="pb-3 font-body text-xs font-medium uppercase tracking-wider text-stone"
+              >
+                {h}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>

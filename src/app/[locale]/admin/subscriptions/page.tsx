@@ -1,6 +1,12 @@
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { firstDeliveryDate, formatDeliveryDate, fromIstDateISO, istDateISO, nextCutoff } from "@/lib/delivery-date";
+import {
+  firstDeliveryDate,
+  formatDeliveryDate,
+  fromIstDateISO,
+  istDateISO,
+  nextCutoff,
+} from "@/lib/delivery-date";
 import { formatReceiptNo } from "@/lib/orders/order";
 import { getPlanContent } from "@/lib/content/plans";
 import { varietyNameMap } from "@/lib/content/varieties";
@@ -46,7 +52,9 @@ const HORIZON = 4;
  * subscription, expired included — hundreds at most for a one-farm operation,
  * and one Query.
  */
-export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[locale]/admin/subscriptions">) {
+export default async function SubscriptionsAdmin({
+  searchParams,
+}: PageProps<"/[locale]/admin/subscriptions">) {
   const raw = (await searchParams).view;
   const view: View = isView(raw) ? raw : "active";
   const t = await getTranslations("admin.subscriptions");
@@ -65,7 +73,10 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
   ]);
   const planNames = new Map(
     await Promise.all(
-      planRows.map(async ({ plan }) => [plan.id, (await getPlanContent(plan.contentKey, "en"))?.text.name ?? plan.contentKey] as const),
+      planRows.map(
+        async ({ plan }) =>
+          [plan.id, (await getPlanContent(plan.contentKey, "en"))?.text.name ?? plan.contentKey] as const,
+      ),
     ),
   );
   const rotations = new Map(planRows.map(({ plan, weeks }) => [plan.id, weeks]));
@@ -83,8 +94,10 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
   const subscribable = planRows.filter(({ plan }) => plan.monthlyPrice !== null && plan.active);
 
   const date = (iso: string) => formatDeliveryDate(fromIstDateISO(iso));
-  const weight = (g: number) => (g >= 1000 ? t("kg", { kg: Math.round(g / 10) / 100 }) : t("grams", { grams: g }));
-  const money = (n: number) => format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+  const weight = (g: number) =>
+    g >= 1000 ? t("kg", { kg: Math.round(g / 10) / 100 }) : t("grams", { grams: g });
+  const money = (n: number) =>
+    format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 
   const lists: Record<View, Subscription[]> = { active: current, paused, expired, cancelled, pending };
   const list = lists[view];
@@ -96,15 +109,24 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
         <p className="mt-2 max-w-3xl font-body text-sm text-stone">{t("intro")}</p>
         <dl className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Stat label={t("statActive")} value={format.number(current.length)} />
-          <Stat label={t("statBoxes", { date: date(saturdays[0]) })} value={format.number(demand[0].plans.reduce((n, p) => n + p.boxes, 0))} />
-          <Stat label={t("statOpen", { date: date(openDate) })} value={formatDeliveryDate(lastDayToJoin)} hint={t("statOpenHint")} />
+          <Stat
+            label={t("statBoxes", { date: date(saturdays[0]) })}
+            value={format.number(demand[0].plans.reduce((n, p) => n + p.boxes, 0))}
+          />
+          <Stat
+            label={t("statOpen", { date: date(openDate) })}
+            value={formatDeliveryDate(lastDayToJoin)}
+            hint={t("statOpenHint")}
+          />
           <Stat label={t("statExpired")} value={format.number(expired.length)} />
         </dl>
       </section>
 
       {/* 1. The tray plan. */}
       <section aria-labelledby="tray-plan">
-        <h2 id="tray-plan" className="font-display text-xl font-semibold text-forest">{t("trayPlanHeading")}</h2>
+        <h2 id="tray-plan" className="font-display text-xl font-semibold text-forest">
+          {t("trayPlanHeading")}
+        </h2>
         <p className="mt-1 max-w-3xl font-body text-sm text-stone">{t("trayPlanIntro")}</p>
         <div className="mt-5 space-y-5">
           {demand.map((d) => (
@@ -127,7 +149,9 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
       {/* 2. The rotation, on the shared calendar. */}
       <section aria-labelledby="rotation">
         <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 id="rotation" className="font-display text-xl font-semibold text-forest">{t("rotationHeading")}</h2>
+          <h2 id="rotation" className="font-display text-xl font-semibold text-forest">
+            {t("rotationHeading")}
+          </h2>
           <Link
             href="/admin/plans"
             className="rounded-full border border-forest/25 px-4 py-1.5 font-body text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-cream"
@@ -143,9 +167,13 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
             <table className="w-full min-w-[40rem] border-collapse text-left">
               <thead>
                 <tr className="border-b border-forest/15 bg-sand/50">
-                  <th scope="col" className={th}>{t("colSaturday")}</th>
+                  <th scope="col" className={th}>
+                    {t("colSaturday")}
+                  </th>
                   {subscribable.map(({ plan }) => (
-                    <th key={plan.id} scope="col" className={th}>{planNames.get(plan.id)}</th>
+                    <th key={plan.id} scope="col" className={th}>
+                      {planNames.get(plan.id)}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -175,7 +203,9 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
                               ))
                             )}
                             <span className="mt-1 block text-xs text-stone">
-                              {t("perVariety", { grams: keys.length ? Math.round(plan.gramsPerBox / keys.length) : 0 })}
+                              {t("perVariety", {
+                                grams: keys.length ? Math.round(plan.gramsPerBox / keys.length) : 0,
+                              })}
                             </span>
                           </td>
                         );
@@ -191,7 +221,9 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
 
       {/* 3. The subscriptions themselves. */}
       <section aria-labelledby="subs">
-        <h2 id="subs" className="font-display text-xl font-semibold text-forest">{t("listHeading")}</h2>
+        <h2 id="subs" className="font-display text-xl font-semibold text-forest">
+          {t("listHeading")}
+        </h2>
         <nav aria-label={t("filterLabel")} className="mt-3 flex flex-wrap gap-2">
           {VIEWS.map((v) => (
             <Link
@@ -213,8 +245,17 @@ export default async function SubscriptionsAdmin({ searchParams }: PageProps<"/[
             <table className="w-full min-w-[56rem] border-collapse text-left">
               <thead>
                 <tr className="border-b border-forest/15 bg-sand/50">
-                  {[t("colReceipt"), t("colCustomer"), t("colPlans"), t("colNext"), t("colSchedule"), t("colTotal")].map((h) => (
-                    <th key={h} scope="col" className={th}>{h}</th>
+                  {[
+                    t("colReceipt"),
+                    t("colCustomer"),
+                    t("colPlans"),
+                    t("colNext"),
+                    t("colSchedule"),
+                    t("colTotal"),
+                  ].map((h) => (
+                    <th key={h} scope="col" className={th}>
+                      {h}
+                    </th>
                   ))}
                 </tr>
               </thead>
@@ -274,7 +315,8 @@ async function DemandCard({
       <header className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
           <h3 className="font-display text-lg font-semibold text-forest">
-            {title} <span className="font-body text-sm font-normal text-stone">· {t("week", { n: week })}</span>
+            {title}{" "}
+            <span className="font-body text-sm font-normal text-stone">· {t("week", { n: week })}</span>
           </h3>
           <p className="mt-0.5 font-body text-sm text-stone">
             {demand.plans.length === 0
@@ -296,7 +338,10 @@ async function DemandCard({
 
       {demand.emptyWeeks.length > 0 && (
         <p className="mt-3 rounded-xl border border-terracotta/40 bg-terracotta/5 p-3 font-body text-sm text-terracotta">
-          {t("emptyWeekWarning", { plans: demand.emptyWeeks.map((p) => planName(p.planId)).join(", "), n: week })}
+          {t("emptyWeekWarning", {
+            plans: demand.emptyWeeks.map((p) => planName(p.planId)).join(", "),
+            n: week,
+          })}
         </p>
       )}
 
@@ -306,7 +351,11 @@ async function DemandCard({
             <thead>
               <tr className="border-b border-forest/15">
                 {[t("colVariety"), t("colWeight"), t("colTrays"), t("colSeed"), t("colSowBy")].map((h) => (
-                  <th key={h} scope="col" className="pb-2 pr-4 font-body text-xs font-medium uppercase tracking-wider text-stone">
+                  <th
+                    key={h}
+                    scope="col"
+                    className="pb-2 pr-4 font-body text-xs font-medium uppercase tracking-wider text-stone"
+                  >
                     {h}
                   </th>
                 ))}
@@ -319,9 +368,13 @@ async function DemandCard({
                   <tr key={l.varietyKey} className="border-b border-forest/10 last:border-0">
                     <td className="py-2.5 pr-4 font-body text-sm font-semibold text-forest">
                       {nameOf(l.varietyKey)}
-                      <span className="block text-xs font-normal text-stone">{t("inBoxes", { count: l.boxes })}</span>
+                      <span className="block text-xs font-normal text-stone">
+                        {t("inBoxes", { count: l.boxes })}
+                      </span>
                     </td>
-                    <td className="py-2.5 pr-4 font-body text-sm tabular-nums text-forest">{weight(l.grams)}</td>
+                    <td className="py-2.5 pr-4 font-body text-sm tabular-nums text-forest">
+                      {weight(l.grams)}
+                    </td>
                     <td className="py-2.5 pr-4 font-body text-sm tabular-nums text-forest">
                       {l.trays === null ? (
                         <span className="text-terracotta">{t("noYield")}</span>
@@ -329,7 +382,9 @@ async function DemandCard({
                         <>
                           <span className="text-base font-bold">{l.trays}</span>
                           {l.traysAtBest !== null && l.traysAtBest !== l.trays && (
-                            <span className="ml-1.5 text-xs text-stone">{t("atBest", { count: l.traysAtBest })}</span>
+                            <span className="ml-1.5 text-xs text-stone">
+                              {t("atBest", { count: l.traysAtBest })}
+                            </span>
                           )}
                         </>
                       )}
@@ -343,7 +398,9 @@ async function DemandCard({
                       ) : (
                         <span className={late ? "font-semibold text-terracotta" : "text-forest"}>
                           {date(l.sowBy)}
-                          <span className="ml-1.5 text-xs font-normal text-stone">{t("growDays", { days: l.growDays ?? 0 })}</span>
+                          <span className="ml-1.5 text-xs font-normal text-stone">
+                            {t("growDays", { days: l.growDays ?? 0 })}
+                          </span>
                           {late && <span className="block text-xs">{t("late")}</span>}
                         </span>
                       )}
@@ -426,7 +483,8 @@ function SubRow({
       <td className={td}>
         <span className="text-forest">{t("left", { left, total: sub.deliveries.length })}</span>
         <span className="block text-xs text-stone">
-          {sub.deliveries[0] && t("range", { from: date(sub.deliveries[0].date), to: date(sub.deliveries.at(-1)!.date) })}
+          {sub.deliveries[0] &&
+            t("range", { from: date(sub.deliveries[0].date), to: date(sub.deliveries.at(-1)!.date) })}
         </span>
       </td>
       <td className={`${td} tabular-nums text-forest`}>{money(sub.total)}</td>

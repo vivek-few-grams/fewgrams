@@ -1,11 +1,7 @@
 import { access, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import {
-  MIN_STORY_PARAGRAPHS,
-  STORY_FIELDS,
-  checkStoryBook,
-} from "./story-contract";
+import { MIN_STORY_PARAGRAPHS, STORY_FIELDS, checkStoryBook } from "./story-contract";
 import { getStoryBook } from "./story";
 
 /**
@@ -20,8 +16,7 @@ import { getStoryBook } from "./story";
 const BOOK = path.join(process.cwd(), "content", "story", "book.json");
 const IMAGES = path.join(process.cwd(), "public", "story");
 
-const loadBook = async () =>
-  JSON.parse(await readFile(BOOK, "utf8")) as Record<string, never>;
+const loadBook = async () => JSON.parse(await readFile(BOOK, "utf8")) as Record<string, never>;
 
 describe("story content template", () => {
   it("conforms, and reports every fault at once", async () => {
@@ -135,16 +130,12 @@ describe("getStoryBook", () => {
   it("returns the pages in the order the file lists them", async () => {
     const raw = await loadBook();
     const pages = await getStoryBook("en");
-    expect(pages.map((p) => p.key)).toEqual(
-      (raw.pages as unknown as { key: string }[]).map((p) => p.key),
-    );
+    expect(pages.map((p) => p.key)).toEqual((raw.pages as unknown as { key: string }[]).map((p) => p.key));
   });
 
   it("resolves every page's image through the image base", async () => {
     for (const page of await getStoryBook("en")) {
-      expect(page.src).toMatch(
-        new RegExp(`^/story/${page.image.replace(".", "\\.")}\\?v=\\d+$`),
-      );
+      expect(page.src).toMatch(new RegExp(`^/story/${page.image.replace(".", "\\.")}\\?v=\\d+$`));
     }
   });
 
@@ -158,9 +149,7 @@ describe("getStoryBook", () => {
     expect(pages.length).toBeGreaterThan(0);
 
     for (const page of pages) {
-      const { mtimeMs } = await stat(
-        path.join(process.cwd(), "public", "story", page.image),
-      );
+      const { mtimeMs } = await stat(path.join(process.cwd(), "public", "story", page.image));
       expect(new URL(page.src, "https://x").searchParams.get("v"), page.key).toBe(
         String(Math.round(mtimeMs)),
       );
@@ -177,9 +166,7 @@ describe("getStoryBook", () => {
     expect(kn).toHaveLength(en.length);
     for (const [i, page] of kn.entries()) {
       expect(page.text.heading, page.key).not.toBe(en[i].text.heading);
-      expect(page.text.body.length, page.key).toBeGreaterThanOrEqual(
-        MIN_STORY_PARAGRAPHS,
-      );
+      expect(page.text.body.length, page.key).toBeGreaterThanOrEqual(MIN_STORY_PARAGRAPHS);
     }
   });
 
@@ -238,9 +225,7 @@ describe("checkStoryBook", () => {
 
   it("catches a one-paragraph page", () => {
     const book = { ...valid, en: { one: { ...text, body: ["Only one."] } } };
-    expect(checkStoryBook(book)).toContain(
-      `en.one.body needs at least ${MIN_STORY_PARAGRAPHS} paragraphs`,
-    );
+    expect(checkStoryBook(book)).toContain(`en.one.body needs at least ${MIN_STORY_PARAGRAPHS} paragraphs`);
   });
 
   it("catches words left behind for a page that was deleted", () => {
@@ -250,9 +235,7 @@ describe("checkStoryBook", () => {
 
   it("requires Kannada to carry every page English carries", () => {
     expect(checkStoryBook({ ...valid, kn: {} })).toContain("kn.one is required");
-    expect(checkStoryBook({ pages: valid.pages, en: valid.en })).toContain(
-      'missing "kn" block',
-    );
+    expect(checkStoryBook({ pages: valid.pages, en: valid.en })).toContain('missing "kn" block');
   });
 
   it("requires Kannada to carry every field English carries", () => {
@@ -260,15 +243,11 @@ describe("checkStoryBook", () => {
     const problems = checkStoryBook(book);
     expect(problems).toContain("kn.one.eyebrow must be a non-empty string");
     expect(problems).toContain("kn.one.caption must be a non-empty string");
-    expect(problems).toContain(
-      `kn.one.body needs at least ${MIN_STORY_PARAGRAPHS} paragraphs`,
-    );
+    expect(problems).toContain(`kn.one.body needs at least ${MIN_STORY_PARAGRAPHS} paragraphs`);
   });
 
   it("refuses a borrowed field from another template", () => {
     const book = { ...valid, en: { one: { ...text, tagline: "x" } } };
-    expect(checkStoryBook(book)).toContain(
-      "en.one.tagline is not a field in the template",
-    );
+    expect(checkStoryBook(book)).toContain("en.one.tagline is not a field in the template");
   });
 });

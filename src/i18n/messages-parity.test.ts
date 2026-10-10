@@ -63,25 +63,28 @@ describe("Kannada message parity", () => {
        placeholders, and if no letter in any script remains there is nothing
        to translate. That correctly passes "© {year} {brand}", "₹{price}" and
        "—" without naming them, so the rule still holds for the next one. */
-    const hasTranslatableWords = (v: string) =>
-      /\p{L}/u.test(v.replace(/\{[^}]*\}/gu, ""));
+    const hasTranslatableWords = (v: string) => /\p{L}/u.test(v.replace(/\{[^}]*\}/gu, ""));
     const offenders: string[] = [];
     for (const ns of translated) {
       const [en, kn] = await Promise.all([read("en", ns), read("kn", ns)]);
       const flat = (o: unknown, p = "", out: Record<string, string> = {}) => {
-        if (typeof o === "string") { out[p] = o; return out; }
+        if (typeof o === "string") {
+          out[p] = o;
+          return out;
+        }
         if (typeof o === "object" && o !== null) {
           for (const [k, v] of Object.entries(o)) flat(v, p ? `${p}.${k}` : k, out);
         }
         return out;
       };
-      const enFlat = flat(en), knFlat = flat(kn);
+      const enFlat = flat(en),
+        knFlat = flat(kn);
       for (const [k, v] of Object.entries(enFlat)) {
         const t = knFlat[k];
         if (t === undefined || t !== v) continue;
-        if (!hasTranslatableWords(v)) continue;               // "₹{price}", "—"
+        if (!hasTranslatableWords(v)) continue; // "₹{price}", "—"
         if (/^[A-Za-z]+$/.test(v) && v.length <= 8) continue; // "Google", "FAQ"
-        if (v.includes("@")) continue;                        // email samples
+        if (v.includes("@")) continue; // email samples
         offenders.push(`${ns}.${k} = ${JSON.stringify(v)}`);
       }
     }

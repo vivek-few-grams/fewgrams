@@ -16,13 +16,7 @@
  */
 
 /** Every field a page's `en` block must carry, in the order they are written. */
-export const STORY_FIELDS = [
-  "eyebrow",
-  "heading",
-  "body",
-  "caption",
-  "imageAlt",
-] as const;
+export const STORY_FIELDS = ["eyebrow", "heading", "body", "caption", "imageAlt"] as const;
 
 /** Two paragraphs is the floor. One is a caption, not a page of a book. */
 export const MIN_STORY_PARAGRAPHS = 2;
@@ -33,8 +27,7 @@ const ALLOWED_PAGE_KEYS = new Set(["key", "image"]);
 /** The same rule every content key obeys: kebab-case, no digits (CLAUDE.md). */
 const KEY = /^[a-z]+(?:-[a-z]+)*$/;
 
-const isFilledString = (v: unknown): boolean =>
-  typeof v === "string" && v.trim().length > 0;
+const isFilledString = (v: unknown): boolean => typeof v === "string" && v.trim().length > 0;
 
 export function checkStoryBook(raw: unknown): string[] {
   const problems: string[] = [];
@@ -104,12 +97,7 @@ function checkPageList(pages: unknown[], at: (msg: string) => void): string[] {
   return keys;
 }
 
-function checkTextBlock(
-  keys: string[],
-  raw: unknown,
-  locale: string,
-  at: (msg: string) => void,
-) {
+function checkTextBlock(keys: string[], raw: unknown, locale: string, at: (msg: string) => void) {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
     at(`"${locale}" must be an object`);
     return;

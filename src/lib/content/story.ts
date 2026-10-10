@@ -164,9 +164,7 @@ export function storyImageUrl(filename: string, version?: number): string {
  * depending on whether the master carried an alpha channel.
  */
 const readImageMeta = cache(
-  async (
-    filename: string,
-  ): Promise<{ width: number; height: number; version: number }> => {
+  async (filename: string): Promise<{ width: number; height: number; version: number }> => {
     /* No version on the fallback: a file we could not read has no modification
        time, and inventing one would put a `?v=0` on a URL that is already
        going to render broken. */

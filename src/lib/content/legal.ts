@@ -68,16 +68,10 @@ export function legalTokens(fssai: string, locale: Locale): Record<LegalToken, s
 }
 
 export function fillTokens(text: string, tokens: Record<LegalToken, string>): string {
-  return text.replace(/\{(\w+)\}/g, (m, k: string) =>
-    k in tokens ? tokens[k as LegalToken] : m,
-  );
+  return text.replace(/\{(\w+)\}/g, (m, k: string) => (k in tokens ? tokens[k as LegalToken] : m));
 }
 
-export async function getLegalDoc(
-  name: LegalDocName,
-  locale: string,
-  fssai: string,
-): Promise<LegalDoc> {
+export async function getLegalDoc(name: LegalDocName, locale: string, fssai: string): Promise<LegalDoc> {
   const file = await read(name);
   const lang: Locale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
   const local = lang === "kn" ? file.kn : undefined;

@@ -113,26 +113,17 @@ export function AddToCart({
      Falls back to 1 for an item not in the cart — a stepper offering 0 has
      nothing to commit. Clamped to `max` so a cookie written when the per-line
      cap was higher cannot mount above today's. */
-  const [units, setUnits] = useState(() =>
-    Math.min(Math.max(inCart > 0 ? inCart : 1, 1), Math.max(max, 1)),
-  );
-  const [state, action, pending] = useActionState<FormState, FormData>(
-    setCartQuantity,
-    IDLE,
-  );
+  const [units, setUnits] = useState(() => Math.min(Math.max(inCart > 0 ? inCart : 1, 1), Math.max(max, 1)));
+  const [state, action, pending] = useActionState<FormState, FormData>(setCartQuantity, IDLE);
 
   /* The label follows the cart, not the local stepper: while this item is in
      the cart the button's job is to change that quantity, whatever the stepper
      currently reads. */
   const alreadyIn = inCart > 0;
 
-  const step = (delta: number) =>
-    setUnits((n) => Math.min(Math.max(n + delta, 1), max));
+  const step = (delta: number) => setUnits((n) => Math.min(Math.max(n + delta, 1), max));
 
-  const error =
-    state.status === "error"
-      ? labels.errors[state.code] ?? labels.errors.generic
-      : null;
+  const error = state.status === "error" ? (labels.errors[state.code] ?? labels.errors.generic) : null;
 
   if (max < 1) {
     return (
@@ -156,16 +147,12 @@ export function AddToCart({
           <p className="font-display text-[clamp(2rem,4vw,2.75rem)] font-bold leading-none tabular-nums text-forest">
             {labels.totals[units - 1]}
           </p>
-          <p className="mt-2 font-body text-xs text-stone">
-            {labels.breakdowns[units - 1]}
-          </p>
+          <p className="mt-2 font-body text-xs text-stone">{labels.breakdowns[units - 1]}</p>
           {/* Inside the same live region as the total and the weight, so a
               screen reader announces "₹540 · 200 g · arrives Fri 18 Sept" as
               one change rather than three. */}
           {labels.dispatch && (
-            <p className="mt-1.5 font-body text-xs font-medium text-forest">
-              {labels.dispatch[units - 1]}
-            </p>
+            <p className="mt-1.5 font-body text-xs font-medium text-forest">{labels.dispatch[units - 1]}</p>
           )}
         </div>
 
@@ -225,10 +212,7 @@ export function AddToCart({
         <p className="mt-4 flex flex-wrap items-center gap-2 font-body text-sm font-medium text-forest">
           <Check size={16} strokeWidth={2.25} />
           {alreadyIn ? labels.updated : labels.added}
-          <Link
-            href="/cart"
-            className="font-semibold underline underline-offset-4 hover:text-forest-deep"
-          >
+          <Link href="/cart" className="font-semibold underline underline-offset-4 hover:text-forest-deep">
             {labels.viewCart}
           </Link>
         </p>

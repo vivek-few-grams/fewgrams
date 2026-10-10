@@ -108,8 +108,7 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
      an ordinal rather than a quantity — there is no grouping for `Intl` to
      apply, and the typed-placeholder rule in CLAUDE.md is about money and
      weight. */
-  const folioFor = (i: number) =>
-    t("folio", { current: i + 1, total: pages.length });
+  const folioFor = (i: number) => t("folio", { current: i + 1, total: pages.length });
 
   /* Both queries, re-evaluated on change rather than read once: a laptop that
      gets docked to a monitor crosses `lg` without a reload, and macOS flips
@@ -192,9 +191,7 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
 
   if (pages.length === 0) {
     return (
-      <p className="mx-auto max-w-xl px-6 py-24 text-center font-body text-sm text-stone">
-        {t("empty")}
-      </p>
+      <p className="mx-auto max-w-xl px-6 py-24 text-center font-body text-sm text-stone">{t("empty")}</p>
     );
   }
 
@@ -246,11 +243,7 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
               of the cover, like the inside of a real one. */}
           <div aria-hidden="true" className="book__base" />
 
-          <div
-            ref={leavesRef}
-            className="book__leaves"
-            style={{ "--p": 0 } as CSSProperties}
-          >
+          <div ref={leavesRef} className="book__leaves" style={{ "--p": 0 } as CSSProperties}>
             {/* First in DOM order, so a turned page 0 — which shares its
                 z-index of 0 on the left — is drawn over it. */}
             <div className="book__leaf book__cover" data-open={opened || undefined}>
@@ -288,12 +281,7 @@ export function StoryBook({ pages }: { pages: StoryPage[] }) {
                   }
                 >
                   <div className="book__face">
-                    <StoryFace
-                      page={page}
-                      folio={folioFor(k)}
-                      part="text"
-                      heading={k === 0 ? "h1" : "h2"}
-                    />
+                    <StoryFace page={page} folio={folioFor(k)} part="text" heading={k === 0 ? "h1" : "h2"} />
                   </div>
                   {/* The last sheet has nothing after it, so its back is the
                       inside of the back cover — plain paper, and deliberately

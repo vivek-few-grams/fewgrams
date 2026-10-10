@@ -39,9 +39,7 @@ function fromRow(r: Row): Seed {
 
 /** Every seed, ordered by content key — GSI1's sort key, so the order comes
  *  from DynamoDB rather than from a sort here. */
-export async function listSeeds(
-  opts: { activeOnly?: boolean } = {},
-): Promise<Seed[]> {
+export async function listSeeds(opts: { activeOnly?: boolean } = {}): Promise<Seed[]> {
   const { data } = await SeedEntity.query.byCatalogue({}).go(LIST_OPTS);
   const seeds = data.map(fromRow);
   return opts.activeOnly ? seeds.filter((s) => s.active) : seeds;

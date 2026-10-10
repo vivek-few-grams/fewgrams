@@ -33,10 +33,7 @@ const nextConfig: NextConfig = {
      * listing a literal value per file per swap. Do not widen the pattern
      * beyond `/story/`.
      */
-    localPatterns: [
-      { pathname: "/story/**" },
-      { pathname: "/**", search: "" },
-    ],
+    localPatterns: [{ pathname: "/story/**" }, { pathname: "/**", search: "" }],
   },
 };
 

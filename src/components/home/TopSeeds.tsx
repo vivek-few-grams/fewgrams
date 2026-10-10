@@ -74,7 +74,11 @@ export async function TopSeeds({
               cutout={seedCutout(s.content)}
               hero={seedHero(s.content)}
               words={(s.content.text.specs ?? []).map((spec) => spec.label)}
-              action={<QuickAdd {...quickAdd("seed", s.contentKey, s.content.text.name, seedMaxUnits(s.stockGrams))} />}
+              action={
+                <QuickAdd
+                  {...quickAdd("seed", s.contentKey, s.content.text.name, seedMaxUnits(s.stockGrams))}
+                />
+              }
             />
           ))}
         </ScrollRow>

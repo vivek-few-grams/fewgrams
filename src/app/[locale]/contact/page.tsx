@@ -26,10 +26,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/contact"
   };
 }
 
-export default async function ContactPage({
-  params,
-  searchParams,
-}: PageProps<"/[locale]/contact">) {
+export default async function ContactPage({ params, searchParams }: PageProps<"/[locale]/contact">) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -113,7 +110,12 @@ export default async function ContactPage({
 
       {!website && (
         <div className="mt-12 grid gap-5 md:grid-cols-2">
-          <Tip heading={t("order.heading")} body={t("order.body")} href="/account/orders" link={t("order.link")} />
+          <Tip
+            heading={t("order.heading")}
+            body={t("order.body")}
+            href="/account/orders"
+            link={t("order.link")}
+          />
           <Tip heading={t("faq.heading")} body={t("faq.body")} href="/faq" link={t("faq.link")} />
         </div>
       )}

@@ -67,7 +67,11 @@ export default async function FaqPage({ params }: PageProps<"/[locale]/faq">) {
                 <h2 className="font-display text-xl font-bold tracking-tight text-forest">{s.title}</h2>
                 <div className="mt-5 border-t border-forest/15">
                   {s.questions.map((q) => (
-                    <details key={q.key} id={q.key} className="group scroll-mt-28 border-b border-forest/15 py-4">
+                    <details
+                      key={q.key}
+                      id={q.key}
+                      className="group scroll-mt-28 border-b border-forest/15 py-4"
+                    >
                       <summary className="flex items-center justify-between gap-4 font-display text-[15px] font-semibold text-forest transition-colors group-hover:text-stone [&::-webkit-details-marker]:hidden">
                         {q.question}
                         <span

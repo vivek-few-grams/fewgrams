@@ -1,9 +1,4 @@
-import {
-  LOOK_KEYS,
-  TRAY_FINISH_KEYS,
-  type Look,
-  type TrayFinish,
-} from "@/components/tray-play/kinds";
+import { LOOK_KEYS, TRAY_FINISH_KEYS, type Look, type TrayFinish } from "@/components/tray-play/kinds";
 
 /**
  * The play garden's phases and what to reach for in each — no three.js
@@ -38,16 +33,7 @@ export type Phase =
   | "done";
 
 export type Target =
-  | TrayFinish
-  | "basin"
-  | "cloth"
-  | "can"
-  | "block"
-  | "tray"
-  | `packet-${Look}`
-  | "lid"
-  | "lamp"
-  | "cutter";
+  TrayFinish | "basin" | "cloth" | "can" | "block" | "tray" | `packet-${Look}` | "lid" | "lamp" | "cutter";
 
 export const TARGETS: readonly Target[] = [
   ...TRAY_FINISH_KEYS,
@@ -70,13 +56,7 @@ export const TARGETS: readonly Target[] = [
  *  printed on its tub, `dipTub`, and what a tray pair is made of on its
  *  front, `trayPrint` — not pinned.) */
 export type Anchor = Target | "medium" | "timer" | "ad" | "rackArrow";
-export const ANCHORS: readonly Anchor[] = [
-  ...TARGETS,
-  "medium",
-  "timer",
-  "ad",
-  "rackArrow",
-];
+export const ANCHORS: readonly Anchor[] = [...TARGETS, "medium", "timer", "ad", "rackArrow"];
 
 /** How long the clean step's soak clock runs, in real seconds — a sped-up
  *  clock, not the soak time itself, which the copy does not state. */

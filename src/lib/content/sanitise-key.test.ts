@@ -45,8 +45,18 @@ describe("sanitiseKey", () => {
    */
   it("never yields a value containing anything but a-z and hyphens", () => {
     const inputs = [
-      "Red Amaranthus 2", "RADISH", "pea_shoots", "../../secrets", "ಮೂಲಂಗಿ",
-      "sun-flower!!", "a b c", "123", "--x--", "", "  ", "Mixed-CASE_99",
+      "Red Amaranthus 2",
+      "RADISH",
+      "pea_shoots",
+      "../../secrets",
+      "ಮೂಲಂಗಿ",
+      "sun-flower!!",
+      "a b c",
+      "123",
+      "--x--",
+      "",
+      "  ",
+      "Mixed-CASE_99",
     ];
     for (const input of inputs) {
       const out = sanitiseKey(input);

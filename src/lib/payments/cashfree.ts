@@ -85,7 +85,9 @@ export function cashfreeCustomerId(userId: string): string {
 
 /** Exported for the tests, which sign a body the same way Cashfree does. */
 export function cashfreeSignature(timestamp: string, rawBody: string, secret: string): string {
-  return createHmac("sha256", secret).update(timestamp + rawBody).digest("base64");
+  return createHmac("sha256", secret)
+    .update(timestamp + rawBody)
+    .digest("base64");
 }
 
 function toAttempt(p: CashfreePayment, orderId: string): PaymentAttempt | null {
@@ -110,7 +112,10 @@ export class CashfreeProvider implements PaymentProvider {
     readonly mode: "sandbox" | "production",
   ) {}
 
-  private async call<T>(path: string, init: { method: string; body?: unknown; idempotencyKey?: string }): Promise<T> {
+  private async call<T>(
+    path: string,
+    init: { method: string; body?: unknown; idempotencyKey?: string },
+  ): Promise<T> {
     const res = await fetch(`${HOSTS[this.mode]}${path}`, {
       method: init.method,
       headers: {
@@ -153,10 +158,11 @@ export class CashfreeProvider implements PaymentProvider {
     };
     /* Deterministic per order, so a retried request cannot open a second
        gateway order for one of ours. Cashfree asks for 32–64 characters. */
-    const res = await this.call<{ payment_session_id: string; cf_order_id: string | number }>(
-      "/orders",
-      { method: "POST", body, idempotencyKey: `fewgrams-order-${input.orderId}-create-v1` },
-    );
+    const res = await this.call<{ payment_session_id: string; cf_order_id: string | number }>("/orders", {
+      method: "POST",
+      body,
+      idempotencyKey: `fewgrams-order-${input.orderId}-create-v1`,
+    });
     return {
       providerOrderId: String(res.cf_order_id),
       checkout: { gateway: "cashfree", sessionId: res.payment_session_id, mode: this.mode },
@@ -172,9 +178,7 @@ export class CashfreeProvider implements PaymentProvider {
     return {
       /* Unknown reads as still open — never as paid. */
       status: ORDER_STATUS[order.order_status ?? ""] ?? ("active" as const),
-      attempts: payments
-        .map((p) => toAttempt(p, orderId))
-        .filter((a): a is PaymentAttempt => a !== null),
+      attempts: payments.map((p) => toAttempt(p, orderId)).filter((a): a is PaymentAttempt => a !== null),
     };
   }
 

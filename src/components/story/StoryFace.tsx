@@ -79,10 +79,7 @@ export function StoryFace({
      figures on one screen, one of them hard against the gutter, which reads
      as a bug rather than as pagination. */
   const folioMark = (
-    <span
-      aria-hidden="true"
-      className="absolute right-8 top-6 font-body text-xs tabular-nums text-stone/50"
-    >
+    <span aria-hidden="true" className="absolute right-8 top-6 font-body text-xs tabular-nums text-stone/50">
       {folio}
     </span>
   );
@@ -133,9 +130,7 @@ export function StoryFace({
   const words = (
     <div className="story-page relative flex h-full w-full flex-col justify-center bg-cream py-12 pl-14 pr-10 lg:pl-20 lg:pr-14">
       <div className="mx-auto w-full max-w-[46ch]">
-        <p className="ui-label font-body text-stone [--label-size:12px]">
-          {page.text.eyebrow}
-        </p>
+        <p className="ui-label font-body text-stone [--label-size:12px]">{page.text.eyebrow}</p>
         <Heading className="mt-4 font-display text-[clamp(1.4rem,4.4cqw,2.5rem)] font-bold leading-[1.12] tracking-tight text-forest">
           {page.text.heading}
         </Heading>
@@ -173,9 +168,7 @@ export function StoryFace({
         <p className="pr-14 font-display text-[clamp(0.95rem,3.6cqw,1.2rem)] font-semibold leading-snug text-forest/70">
           {page.text.caption}
         </p>
-        <p className="ui-label mt-6 font-body text-stone [--label-size:11px]">
-          {page.text.eyebrow}
-        </p>
+        <p className="ui-label mt-6 font-body text-stone [--label-size:11px]">{page.text.eyebrow}</p>
         <Heading className="mt-3 font-display text-[clamp(1.25rem,6cqw,1.9rem)] font-bold leading-[1.15] tracking-tight text-forest">
           {page.text.heading}
         </Heading>

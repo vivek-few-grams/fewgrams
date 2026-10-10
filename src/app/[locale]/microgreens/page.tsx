@@ -30,9 +30,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/microgre
   return { title: t("title"), description: t("description"), alternates: localeAlternates("/microgreens") };
 }
 
-export default async function MicrogreensPage({
-  params,
-}: PageProps<"/[locale]/microgreens">) {
+export default async function MicrogreensPage({ params }: PageProps<"/[locale]/microgreens">) {
   const { locale } = await params;
   setRequestLocale(locale);
   await guardProductTypeEnabled("microgreens", locale);
@@ -49,8 +47,7 @@ export default async function MicrogreensPage({
   const isAdmin = actor?.role === "admin";
   const ta = await getTranslations("admin.publicEmpty");
   const varieties = (await attachContent(rows, locale)).filter(
-    (v): v is (typeof rows)[number] & { content: NonNullable<typeof v.content> } =>
-      v.content !== null,
+    (v): v is (typeof rows)[number] & { content: NonNullable<typeof v.content> } => v.content !== null,
   );
 
   const quickAdd = await quickAddFor();
@@ -63,9 +60,7 @@ export default async function MicrogreensPage({
       <h1 className="mt-3 max-w-2xl font-display text-[clamp(1.25rem,2.5vw,1.9rem)] font-bold leading-tight tracking-tight text-forest">
         {t("heading")}
       </h1>
-      <p className="mt-4 max-w-xl font-body text-sm text-stone">
-        {t("body")}
-      </p>
+      <p className="mt-4 max-w-xl font-body text-sm text-stone">{t("body")}</p>
 
       {varieties.length === 0 ? (
         /* Operator copy for an operator, customer copy for everyone else. The
@@ -75,10 +70,7 @@ export default async function MicrogreensPage({
           {isAdmin ? (
             ta.rich("varieties", {
               link: (chunks) => (
-                <Link
-                  href="/admin/varieties"
-                  className="text-forest underline underline-offset-4"
-                >
+                <Link href="/admin/varieties" className="text-forest underline underline-offset-4">
                   {chunks}
                 </Link>
               ),

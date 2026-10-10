@@ -59,10 +59,7 @@ export default async function PlansAdmin() {
   const stored = new Map(entries.map((e) => [e.plan.contentKey, e]));
   const weeksOf = (plan: Plan | null) =>
     Object.fromEntries(
-      (plan ? (stored.get(plan.contentKey)?.weeks ?? []) : []).map((w) => [
-        w.week,
-        w.varietyKeys,
-      ]),
+      (plan ? (stored.get(plan.contentKey)?.weeks ?? []) : []).map((w) => [w.week, w.varietyKeys]),
     );
 
   /* The content folder is the list of plans. Rows are ordered by the stored

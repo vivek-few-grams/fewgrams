@@ -2,11 +2,7 @@
   "images": {
     "hero": "hero.jpg",
     "cutout": "cutout.webp",
-    "gallery": [
-      "bunch.jpg",
-      "bunch-2.jpg",
-      "bunch-3.jpg"
-    ]
+    "gallery": ["bunch.jpg", "bunch-2.jpg", "bunch-3.jpg"]
   },
   "en": {
     "name": "Cabbage",

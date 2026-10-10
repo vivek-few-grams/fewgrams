@@ -70,9 +70,7 @@ export function resolveMargins(settingsItem, marginItems) {
   };
   const pick = (range) => {
     const row = marginItems.find((r) => r.range === range);
-    return row
-      ? { markupPercent: row.markupPercent, roundUpToNearest: row.roundUpToNearest }
-      : legacy;
+    return row ? { markupPercent: row.markupPercent, roundUpToNearest: row.roundUpToNearest } : legacy;
   };
   return { plated: pick("plated"), angle: pick("angle"), pipe: pick("pipe") };
 }
@@ -123,8 +121,7 @@ export const PIPE_MID_SUPPORT_LEGS = 2;
 /** The four corners, plus the middle support on anything long enough. */
 export function pipeRackLegs(size, settings) {
   return (
-    settings.legsPerRack +
-    (size.lengthFt >= PIPE_MID_SUPPORT_FROM_LENGTH_FT ? PIPE_MID_SUPPORT_LEGS : 0)
+    settings.legsPerRack + (size.lengthFt >= PIPE_MID_SUPPORT_FROM_LENGTH_FT ? PIPE_MID_SUPPORT_LEGS : 0)
   );
 }
 
@@ -211,8 +208,7 @@ const sameConfig = (a, b) =>
   a.heightFt === b.heightFt &&
   a.shelves === b.shelves &&
   a.angleId === b.angleId &&
-  (a.plateId ?? a.frameId ?? a.pipeSizeId) ===
-    (b.plateId ?? b.frameId ?? b.pipeSizeId);
+  (a.plateId ?? a.frameId ?? a.pipeSizeId) === (b.plateId ?? b.frameId ?? b.pipeSizeId);
 
 /* ───────────────────────────── the writing ──────────────────────────── */
 
@@ -310,9 +306,7 @@ async function main() {
   const now = new Date().toISOString();
 
   for (const range of ranges) {
-    const missing = range.wanted.filter(
-      (c) => !range.existing.some((m) => sameConfig(m.config, c)),
-    );
+    const missing = range.wanted.filter((c) => !range.existing.some((m) => sameConfig(m.config, c)));
 
     console.log(
       `${range.label}: wanted ${range.wanted.length} · on sale ${range.existing.length} · ` +
@@ -329,8 +323,7 @@ async function main() {
       }
       const price = retailPrice(cost, range.margin);
       console.log(
-        `  ${dry ? "would add" : "add     "}  ${range.describe(config)}  ` +
-          `cost ₹${cost} → ₹${price}`,
+        `  ${dry ? "would add" : "add     "}  ${range.describe(config)}  ` + `cost ₹${cost} → ₹${price}`,
       );
       if (dry) continue;
 

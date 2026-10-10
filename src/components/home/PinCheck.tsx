@@ -45,10 +45,7 @@ export function PinCheck() {
       <p className="flex items-center gap-2 font-body text-sm text-forest">
         <Check size={16} strokeWidth={2} className="text-forest" />
         {t("served", { pin: result.pin })}{" "}
-        <strong className="font-semibold">
-          {formatDeliveryDate(firstDeliveryDate())}
-        </strong>
-        .
+        <strong className="font-semibold">{formatDeliveryDate(firstDeliveryDate())}</strong>.
       </p>
     );
   }

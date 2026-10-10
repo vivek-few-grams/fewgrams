@@ -1,12 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import {
-  MIN_TRAY_SPEC_ROWS,
-  TRAY_EN_REQUIRED,
-  TRAY_KN_REQUIRED,
-  checkTrayFile,
-} from "./tray-contract";
+import { MIN_TRAY_SPEC_ROWS, TRAY_EN_REQUIRED, TRAY_KN_REQUIRED, checkTrayFile } from "./tray-contract";
 
 /**
  * The tray template guard — the same contract test varieties and seeds have,

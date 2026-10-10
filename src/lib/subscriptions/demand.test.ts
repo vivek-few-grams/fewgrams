@@ -19,14 +19,21 @@ const varieties = new Map([
   ["radish", variety("radish", 7, 300, 400)],
 ]);
 const rotations = new Map<string, PlanWeek[]>([
-  ["ess", [
-    { planId: "ess", week: 1, varietyKeys: ["mustard", "radish"] },
-    { planId: "ess", week: 2, varietyKeys: ["broccoli"] },
-  ]],
+  [
+    "ess",
+    [
+      { planId: "ess", week: 1, varietyKeys: ["mustard", "radish"] },
+      { planId: "ess", week: 2, varietyKeys: ["broccoli"] },
+    ],
+  ],
   ["exo", [{ planId: "exo", week: 1, varietyKeys: ["broccoli"] }]],
 ]);
 
-const sub = (id: string, lines: Array<[string, number, number]>, status: Subscription["status"] = "active"): Subscription =>
+const sub = (
+  id: string,
+  lines: Array<[string, number, number]>,
+  status: Subscription["status"] = "active",
+): Subscription =>
   ({
     id,
     status,
@@ -39,14 +46,23 @@ const sub = (id: string, lines: Array<[string, number, number]>, status: Subscri
       lineTotal: boxes * 1000,
       gramsPerBox,
     })),
-    deliveries: [{ date: "2026-10-10", week: 1 }, { date: "2026-10-17", week: 2 }],
+    deliveries: [
+      { date: "2026-10-10", week: 1 },
+      { date: "2026-10-17", week: 2 },
+    ],
   }) as Subscription;
 
 describe("demandFor — the tray plan (SPEC §6)", () => {
   it("adds every box on the day, splitting a box evenly across its week's varieties", () => {
     const d = demandFor(
       "2026-10-10",
-      [sub("a", [["ess", 2, 200]]), sub("b", [["ess", 1, 200], ["exo", 3, 300]])],
+      [
+        sub("a", [["ess", 2, 200]]),
+        sub("b", [
+          ["ess", 1, 200],
+          ["exo", 3, 300],
+        ]),
+      ],
       rotations,
       varieties,
     );
@@ -55,7 +71,10 @@ describe("demandFor — the tray plan (SPEC §6)", () => {
        Exotic week 1: 3 boxes × 300 g of broccoli. */
     expect(grams).toEqual({ mustard: 300, radish: 300, broccoli: 900 });
     expect(d.subscribers).toBe(2);
-    expect(d.plans.map((p) => [p.planId, p.boxes])).toEqual([["ess", 3], ["exo", 3]]);
+    expect(d.plans.map((p) => [p.planId, p.boxes])).toEqual([
+      ["ess", 3],
+      ["exo", 3],
+    ]);
   });
 
   it("counts trays at the low yield, with the high yield as the best case, and seed from the trays", () => {
@@ -68,12 +87,24 @@ describe("demandFor — the tray plan (SPEC §6)", () => {
   });
 
   it("puts what must be sown first at the top", () => {
-    const d = demandFor("2026-10-10", [sub("b", [["ess", 1, 200], ["exo", 1, 300]])], rotations, varieties);
+    const d = demandFor(
+      "2026-10-10",
+      [
+        sub("b", [
+          ["ess", 1, 200],
+          ["exo", 1, 300],
+        ]),
+      ],
+      rotations,
+      varieties,
+    );
     expect(d.lines[0].varietyKey).toBe("broccoli");
   });
 
   it("ignores unpaid checkouts and Saturdays outside a subscription's term", () => {
-    expect(demandFor("2026-10-10", [sub("p", [["ess", 5, 200]], "pending_payment")], rotations, varieties).lines).toEqual([]);
+    expect(
+      demandFor("2026-10-10", [sub("p", [["ess", 5, 200]], "pending_payment")], rotations, varieties).lines,
+    ).toEqual([]);
     expect(demandFor("2026-10-24", [sub("a", [["ess", 1, 200]])], rotations, varieties).subscribers).toBe(0);
   });
 

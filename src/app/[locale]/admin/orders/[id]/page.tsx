@@ -32,7 +32,9 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
   /* Shiprocket's quote names the carrier chosen, which is what booking the
      shipment has to match. */
   const courierLabel = (q: ShippingQuote) =>
-    q.carrier ? t("courierVia", { carrier: q.carrier, courier: t(`courier.${q.courier}`) }) : t(`courier.${q.courier}`);
+    q.carrier
+      ? t("courierVia", { carrier: q.carrier, courier: t(`courier.${q.courier}`) })
+      : t(`courier.${q.courier}`);
   const quoteText = (q: ShippingQuote) =>
     t("deliveryQuote", {
       courier: courierLabel(q),
@@ -41,8 +43,7 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
     });
   const payments = await listPayments(id);
 
-  const when = (iso: string) =>
-    format.dateTime(new Date(iso), { dateStyle: "medium", timeStyle: "short" });
+  const when = (iso: string) => format.dateTime(new Date(iso), { dateStyle: "medium", timeStyle: "short" });
 
   return (
     <div className="space-y-8">
@@ -109,14 +110,22 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
               ? order.shipments.map((x, i) => (
                   <tr key={x.origin.id} className="border-b border-forest/10 align-top">
                     <td className="py-2.5 font-body text-sm text-forest">
-                      {t("shipmentLine", { name: x.origin.name, city: x.origin.city, pincode: x.origin.pincode })}
+                      {t("shipmentLine", {
+                        name: x.origin.name,
+                        city: x.origin.city,
+                        pincode: x.origin.pincode,
+                      })}
                       <span className="block text-xs text-stone">
                         {x.quote ? quoteText(x.quote) : t("deliveryOwnRun")}
                         {" · "}
-                        {x.lines.map((id) => order.lines.find((l) => `${l.kind}:${l.key}` === id)?.name ?? id).join(", ")}
+                        {x.lines
+                          .map((id) => order.lines.find((l) => `${l.kind}:${l.key}` === id)?.name ?? id)
+                          .join(", ")}
                         {" · "}
                         {t("shipmentArrives", {
-                          date: format.dateTime(new Date(`${x.deliveryDate}T00:00:00+05:30`), { dateStyle: "medium" }),
+                          date: format.dateTime(new Date(`${x.deliveryDate}T00:00:00+05:30`), {
+                            dateStyle: "medium",
+                          }),
                         })}
                       </span>
                       {x.method === "courier" && (
@@ -125,7 +134,9 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                           index={i}
                           courier={x.quote ? courierLabel(x.quote) : ""}
                           when={when}
-                          day={(iso) => format.dateTime(new Date(`${iso}T00:00:00+05:30`), { dateStyle: "medium" })}
+                          day={(iso) =>
+                            format.dateTime(new Date(`${iso}T00:00:00+05:30`), { dateStyle: "medium" })
+                          }
                         />
                       )}
                     </td>
@@ -179,13 +190,14 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
             .join(", ")}
         </p>
         <p className="mt-1 font-body text-sm text-forest">
-          <a href={`tel:${order.address.phone}`} className="tabular-nums underline underline-offset-4 hover:text-stone">
+          <a
+            href={`tel:${order.address.phone}`}
+            className="tabular-nums underline underline-offset-4 hover:text-stone"
+          >
             {formatPhone(order.address.phone)}
           </a>
         </p>
-        {order.address.notes && (
-          <p className="mt-1 font-body text-xs text-stone">{order.address.notes}</p>
-        )}
+        {order.address.notes && <p className="mt-1 font-body text-xs text-stone">{order.address.notes}</p>}
         <p className="mt-2 font-body text-xs text-stone">
           {order.email && (
             <a href={`mailto:${order.email}`} className="underline underline-offset-4 hover:text-forest">
@@ -193,7 +205,10 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
             </a>
           )}
           {" · "}
-          <Link href={`/admin/customers/${order.userId}`} className="underline underline-offset-4 hover:text-forest">
+          <Link
+            href={`/admin/customers/${order.userId}`}
+            className="underline underline-offset-4 hover:text-forest"
+          >
             {t("customerLink")}
           </Link>
         </p>
@@ -210,8 +225,8 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                 {t(`attempt.${p.status}`)} · {t("amount", { amount: p.amount })}
                 {p.method && ` · ${p.method}`}
                 <span className="block text-xs text-stone">
-                  {t("gatewayRef", { gateway: GATEWAY_LABEL[order.provider], id: p.id })} · {t(`source.${p.source}`)} ·{" "}
-                  {when(p.receivedAt)}
+                  {t("gatewayRef", { gateway: GATEWAY_LABEL[order.provider], id: p.id })} ·{" "}
+                  {t(`source.${p.source}`)} · {when(p.receivedAt)}
                 </span>
               </li>
             ))}

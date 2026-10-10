@@ -93,9 +93,7 @@ async function sellable(
   if (kind === "rack") {
     /* One call is the entire test. Nothing else to check: the price is on the
        model, and a rack has no stock and no content file. */
-    return (await findSellableRack(key))
-      ? { ok: true }
-      : { ok: false, code: "notSellable" };
+    return (await findSellableRack(key)) ? { ok: true } : { ok: false, code: "notSellable" };
   }
 
   if (kind === "variety") {
@@ -139,7 +137,9 @@ function readKind(fd: FormData): CartKind | null {
 }
 
 function readKey(fd: FormData): string {
-  return String(fd.get("key") ?? "").trim().toLowerCase();
+  return String(fd.get("key") ?? "")
+    .trim()
+    .toLowerCase();
 }
 
 function readUnits(fd: FormData): number {
@@ -163,10 +163,7 @@ function readUnits(fd: FormData): number {
  * One action for every kind rather than one each: every rule is shared between
  * them, and three copies would be three places to fix the next one.
  */
-export async function setCartQuantity(
-  _prev: FormState,
-  fd: FormData,
-): Promise<FormState> {
+export async function setCartQuantity(_prev: FormState, fd: FormData): Promise<FormState> {
   const kind = readKind(fd);
   if (!kind) return err("notSellable");
   const key = readKey(fd);

@@ -22,11 +22,7 @@ import { signOutAction } from "./actions";
  * to end a session beats three, and it keeps a destructive control out of the
  * chrome that sits on every page.
  */
-export default async function AccountLayout({
-  children,
-  aside,
-  params,
-}: LayoutProps<"/[locale]/account">) {
+export default async function AccountLayout({ children, aside, params }: LayoutProps<"/[locale]/account">) {
   const { locale } = await params;
   setRequestLocale(locale);
 

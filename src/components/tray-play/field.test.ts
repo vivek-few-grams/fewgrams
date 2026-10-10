@@ -1,14 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  BRUSH_RADIUS,
-  brush,
-  createField,
-  isSettled,
-  packField,
-  stepField,
-  wave,
-  WAVE_LIFE,
-} from "./field";
+import { BRUSH_RADIUS, brush, createField, isSettled, packField, stepField, wave, WAVE_LIFE } from "./field";
 
 const RECT = { minX: -2, minZ: -1, width: 4, depth: 2 };
 const DT = 1 / 120;
@@ -19,11 +10,7 @@ function cellAt(nx: number, nz: number, x: number, z: number) {
   return (j * nx + i) * 2;
 }
 
-function run(
-  seconds: number,
-  f: ReturnType<typeof createField>,
-  each?: () => void,
-) {
+function run(seconds: number, f: ReturnType<typeof createField>, each?: () => void) {
   for (let s = 0; s < seconds / DT; s++) {
     each?.();
     stepField(f, DT);
@@ -81,9 +68,7 @@ describe("tray field", () => {
     const f = createField(64, 32, RECT);
     run(2, f, () => brush(f, 0, 0, 100, 100, DT));
     for (let c = 0; c < f.bend.length; c += 2) {
-      expect(Math.hypot(f.bend[c], f.bend[c + 1])).toBeLessThanOrEqual(
-        1 + 1e-6,
-      );
+      expect(Math.hypot(f.bend[c], f.bend[c + 1])).toBeLessThanOrEqual(1 + 1e-6);
     }
   });
 

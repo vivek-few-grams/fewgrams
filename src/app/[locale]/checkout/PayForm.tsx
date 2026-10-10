@@ -6,7 +6,13 @@ import { CalendarCheck, ChevronRight, Info, Lock, ReceiptText, ShieldCheck, Truc
 import { useRouter } from "@/i18n/navigation";
 import { PinnedColumn } from "@/components/ui/PinnedColumn";
 import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
-import { AddressStep, StepHeading, useAddressChoice, type AddressPrefill, type PayAddress } from "./AddressStep";
+import {
+  AddressStep,
+  StepHeading,
+  useAddressChoice,
+  type AddressPrefill,
+  type PayAddress,
+} from "./AddressStep";
 import { scanDelivery, startCheckout } from "./actions";
 import { openGateway } from "./open-gateway";
 import { PaymentConfirming } from "./PaymentConfirming";
@@ -140,7 +146,10 @@ export function PayForm({
     if (!scanKey || !selected) return;
     let live = true;
     Promise.all([
-      scanDelivery(selected.addrId, locale).catch((): DeliveryScan => ({ status: "none", operatorNote: null })),
+      scanDelivery(selected.addrId, locale).catch((): DeliveryScan => ({
+        status: "none",
+        operatorNote: null,
+      })),
       new Promise((r) => setTimeout(r, MIN_SCAN_MS)),
     ]).then(([result]) => {
       if (!live) return;
@@ -188,7 +197,10 @@ export function PayForm({
     async (prev: CheckoutState, fd: FormData): Promise<CheckoutState> => {
       const next = await startCheckout(prev, fd);
       /* The delivery prices on screen are what moved — ask the couriers again. */
-      if (next.status === "error" && (next.code === "deliveryChanged" || next.code === "deliveryUnavailable")) {
+      if (
+        next.status === "error" &&
+        (next.code === "deliveryChanged" || next.code === "deliveryUnavailable")
+      ) {
         setRound((r) => r + 1);
       }
       if (next.status !== "ready") return next;
@@ -244,8 +256,8 @@ export function PayForm({
       : scanning
         ? t("payScanning")
         : total === null
-        ? t("payUnavailable")
-        : t("pay", { amount: total });
+          ? t("payUnavailable")
+          : t("pay", { amount: total });
 
   const payButton = (
     <button
@@ -330,10 +342,12 @@ export function PayForm({
             )}
           </dl>
 
-
           {!payable ? (
             <div className="mt-5 flex items-start gap-3 rounded-xl border border-sage/50 bg-sage/20 p-4">
-              <span aria-hidden className="grid size-7 shrink-0 place-items-center rounded-full bg-forest text-cream">
+              <span
+                aria-hidden
+                className="grid size-7 shrink-0 place-items-center rounded-full bg-forest text-cream"
+              >
                 <Info size={15} strokeWidth={2} />
               </span>
               <div>
@@ -350,7 +364,10 @@ export function PayForm({
                 <input key={parcel} type="hidden" name={choiceField(parcel)} value={option} />
               ))}
               {error && (
-                <p role="alert" className="rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta">
+                <p
+                  role="alert"
+                  className="rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta"
+                >
                   {error}
                 </p>
               )}

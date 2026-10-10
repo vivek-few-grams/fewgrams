@@ -58,7 +58,7 @@ DYNAMODB_TABLE_PREFIX=fewgrams
 Credentials are required by the SDK but ignored by DynamoDB Local — any dummy values work.
 
 **Do not name the region variable `AWS_REGION`.** That name is reserved and auto-populated in
-Lambda-backed runtimes, so setting it in Amplify can be rejected.
+Lambda, so Lambda rejects it as an environment variable — and the site runs on Lambda (SPEC §2.2).
 
 ## Gotchas that cost real time
 
@@ -256,8 +256,8 @@ for a staging token, or set `DELHIVERY_ENV=production` locally — every call th
 far (serviceability, quote, expected delivery) is read-only and spends nothing. With no token,
 `shippingProvider()` returns null.
 
-`DELHIVERY_ENV` must be spelled out, as with Cashfree. In Amplify, set both variables per
-branch; production uses `production`.
+`DELHIVERY_ENV` must be spelled out, as with Cashfree. In production both are set on the
+Lambda by the CDK web stack (SPEC §2.2); production uses `production`.
 
 ## Couriers — Ekart and Shiprocket (added 24 Sep 2026)
 

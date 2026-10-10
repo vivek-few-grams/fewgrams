@@ -84,9 +84,7 @@ export function ColourSelect({
   return (
     <div ref={wrapper} className="relative">
       {!compact && (
-        <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
-          {label}
-        </span>
+        <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">{label}</span>
       )}
 
       {selected.map((slug) => (
@@ -120,9 +118,7 @@ export function ColourSelect({
               ))}
             </span>
             <span className="truncate text-xs text-stone">
-              {selected.length <= 2
-                ? selected.map(texts.name).join(", ")
-                : texts.summary(selected.length)}
+              {selected.length <= 2 ? selected.map(texts.name).join(", ") : texts.summary(selected.length)}
             </span>
           </span>
         )}

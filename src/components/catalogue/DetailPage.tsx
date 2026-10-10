@@ -164,23 +164,17 @@ export function DetailPage({
             {name}
           </h1>
           {shortDescription && (
-            <p className="mt-4 max-w-md font-body text-base leading-relaxed text-stone">
-              {shortDescription}
-            </p>
+            <p className="mt-4 max-w-md font-body text-base leading-relaxed text-stone">{shortDescription}</p>
           )}
 
           <dl className="mt-8 grid grid-cols-2 gap-6 border-t border-forest/15 pt-6">
             {facts.map((f) => (
               <div key={f.label}>
-                <dt className="font-body text-[10px] uppercase tracking-widest text-stone">
-                  {f.label}
-                </dt>
+                <dt className="font-body text-[10px] uppercase tracking-widest text-stone">{f.label}</dt>
                 <dd className="mt-1.5 font-display text-base font-semibold leading-snug text-forest">
                   {f.value}
                   {f.note && (
-                    <span className="mt-1 block font-body text-xs font-normal text-stone">
-                      {f.note}
-                    </span>
+                    <span className="mt-1 block font-body text-xs font-normal text-stone">{f.note}</span>
                   )}
                 </dd>
               </div>
@@ -206,12 +200,8 @@ export function DetailPage({
                 carries `lg:pt-8`. On the wrapper it spanned the padding too, so
                 the rule started a centimetre above the heading it marks. */}
             <div className="border-l-2 border-sage pl-4">
-              <h2 className="font-body text-[10px] uppercase tracking-widest text-stone">
-                {aside.heading}
-              </h2>
-              <p className="mt-1.5 font-body text-sm leading-relaxed text-ink">
-                {aside.body}
-              </p>
+              <h2 className="font-body text-[10px] uppercase tracking-widest text-stone">{aside.heading}</h2>
+              <p className="mt-1.5 font-body text-sm leading-relaxed text-ink">{aside.body}</p>
             </div>
           </div>
         )}
@@ -222,10 +212,7 @@ export function DetailPage({
           {/* Split on blank lines so a multi-paragraph description renders as
               paragraphs rather than one wall of text. */}
           {description.split(/\n\s*\n/).map((para, i) => (
-            <p
-              key={i}
-              className="mt-5 font-body text-[15px] leading-[1.85] text-ink first:mt-0"
-            >
+            <p key={i} className="mt-5 font-body text-[15px] leading-[1.85] text-ink first:mt-0">
               {para}
             </p>
           ))}
@@ -254,10 +241,7 @@ export function DetailPage({
                 <tbody>
                   {table.rows.map((r) => (
                     <tr key={r.label} className="border-b border-forest/10">
-                      <th
-                        scope="row"
-                        className="py-3 pr-4 font-body text-sm font-medium text-ink"
-                      >
+                      <th scope="row" className="py-3 pr-4 font-body text-sm font-medium text-ink">
                         {r.label}
                       </th>
                       <td className="py-3 font-body text-sm text-stone">{r.value}</td>
@@ -299,11 +283,7 @@ export function DetailPage({
                   </li>
                 ))}
               </ul>
-              {list.note && (
-                <p className="mt-5 font-body text-xs leading-relaxed text-stone">
-                  {list.note}
-                </p>
-              )}
+              {list.note && <p className="mt-5 font-body text-xs leading-relaxed text-stone">{list.note}</p>}
             </section>
           )}
         </div>
@@ -342,10 +322,7 @@ export function DetailPage({
               are open, so a crawler indexes them. */}
           <div className="mt-6 border-t border-forest/15">
             {faq.items.map((item) => (
-              <details
-                key={item.question}
-                className="group border-b border-forest/15 py-4"
-              >
+              <details key={item.question} className="group border-b border-forest/15 py-4">
                 <summary className="flex items-center justify-between gap-4 font-display text-[15px] font-semibold text-forest transition-colors group-hover:text-stone [&::-webkit-details-marker]:hidden">
                   {item.question}
                   <span
@@ -355,9 +332,7 @@ export function DetailPage({
                     +
                   </span>
                 </summary>
-                <p className="mt-3 max-w-2xl font-body text-sm leading-[1.8] text-stone">
-                  {item.answer}
-                </p>
+                <p className="mt-3 max-w-2xl font-body text-sm leading-[1.8] text-stone">{item.answer}</p>
               </details>
             ))}
           </div>
@@ -365,9 +340,7 @@ export function DetailPage({
       )}
 
       {footer && (
-        <div className="mt-16 border-t border-forest/15 pt-8 font-body text-sm text-stone">
-          {footer}
-        </div>
+        <div className="mt-16 border-t border-forest/15 pt-8 font-body text-sm text-stone">{footer}</div>
       )}
     </article>
   );

@@ -48,10 +48,7 @@ const fail = (code: string, values?: Record<string, string>): CheckoutState => (
  * `pending_payment`. If the gateway call then fails, what is left is an
  * unpaid order that expires, never a gateway order we have no record of.
  */
-export async function startCheckout(
-  _prev: CheckoutState,
-  fd: FormData,
-): Promise<CheckoutState> {
+export async function startCheckout(_prev: CheckoutState, fd: FormData): Promise<CheckoutState> {
   const actor = await assertRole("customer");
 
   const provider = paymentProvider();
@@ -107,7 +104,9 @@ export async function startCheckout(
       lines: x.lines.map(lineId),
       charge: x.amount,
       quote: x.quote,
-      deliveryDate: istDateISO(x.method === "courier" ? courierArrival(courierPickup(ready), x.days ?? 0) : ready),
+      deliveryDate: istDateISO(
+        x.method === "courier" ? courierArrival(courierPickup(ready), x.days ?? 0) : ready,
+      ),
       trackingNumber: null,
       bookingStartedAt: null,
       booking: null,
@@ -128,7 +127,10 @@ export async function startCheckout(
     shipments,
     /* The order is complete when its last parcel arrives. ISO dates sort as
        strings. */
-    deliveryDate: shipments.map((x) => x.deliveryDate).sort().at(-1)!,
+    deliveryDate: shipments
+      .map((x) => x.deliveryDate)
+      .sort()
+      .at(-1)!,
     address: addressSnapshot(address),
     locale,
     provider: provider.name,
@@ -160,9 +162,7 @@ export async function startCheckout(
       /* Cashfree accepts only an HTTPS notify URL, and Razorpay ignores it
          (its webhook is set in the dashboard). On localhost there is no
          webhook, and the return route settles the order instead. */
-      notifyUrl: origin.startsWith("https://")
-        ? `${origin}/api/payments/${provider.name}/webhook`
-        : null,
+      notifyUrl: origin.startsWith("https://") ? `${origin}/api/payments/${provider.name}/webhook` : null,
       expiresAt,
     });
     await setProviderOrderId(order.id, created.providerOrderId);

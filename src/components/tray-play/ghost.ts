@@ -25,13 +25,7 @@ export const GHOST_IDLE_SECONDS = 4;
  * 0 → 1 over one tap: the hand presses in for the first half and a ring
  * spreads from the fingertip; 0 is no tap.
  */
-export function placeGhost(
-  el: HTMLElement | null,
-  x: number,
-  y: number,
-  alpha: number,
-  tap = 0,
-) {
+export function placeGhost(el: HTMLElement | null, x: number, y: number, alpha: number, tap = 0) {
   if (!el) return;
   const a = Math.max(0, Math.min(1, alpha));
   el.style.opacity = a.toFixed(3);

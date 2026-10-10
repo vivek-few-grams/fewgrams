@@ -141,7 +141,14 @@ describe("operator status moves — SPEC §13", () => {
   });
 
   it("does not offer refunded, which needs a gateway refund behind it", () => {
-    for (const s of ["paid", "picked", "ready_for_delivery", "out_for_delivery", "delivered", "failed"] as const) {
+    for (const s of [
+      "paid",
+      "picked",
+      "ready_for_delivery",
+      "out_for_delivery",
+      "delivered",
+      "failed",
+    ] as const) {
       expect(nextStatuses(s)).not.toContain("refunded");
     }
   });
@@ -152,7 +159,14 @@ describe("cancelling and refunding — admin only, 27 Sep 2026", () => {
     expect(canCancel("paid")).toBe(true);
     expect(canCancel("picked")).toBe(true);
     expect(canCancel("ready_for_delivery")).toBe(true);
-    for (const s of ["pending_payment", "out_for_delivery", "delivered", "failed", "cancelled", "refunded"] as const) {
+    for (const s of [
+      "pending_payment",
+      "out_for_delivery",
+      "delivered",
+      "failed",
+      "cancelled",
+      "refunded",
+    ] as const) {
       expect(canCancel(s)).toBe(false);
     }
   });
@@ -160,13 +174,28 @@ describe("cancelling and refunding — admin only, 27 Sep 2026", () => {
   it("marks refunded only after a cancel or a failed delivery", () => {
     expect(canMarkRefunded("cancelled")).toBe(true);
     expect(canMarkRefunded("failed")).toBe(true);
-    for (const s of ["pending_payment", "paid", "picked", "ready_for_delivery", "out_for_delivery", "delivered", "refunded"] as const) {
+    for (const s of [
+      "pending_payment",
+      "paid",
+      "picked",
+      "ready_for_delivery",
+      "out_for_delivery",
+      "delivered",
+      "refunded",
+    ] as const) {
       expect(canMarkRefunded(s)).toBe(false);
     }
   });
 
   it("never offers either as a one-press step on the board", () => {
-    for (const s of ["paid", "picked", "ready_for_delivery", "out_for_delivery", "failed", "cancelled"] as const) {
+    for (const s of [
+      "paid",
+      "picked",
+      "ready_for_delivery",
+      "out_for_delivery",
+      "failed",
+      "cancelled",
+    ] as const) {
       expect(nextStatuses(s)).not.toContain("cancelled");
       expect(nextStatuses(s)).not.toContain("refunded");
     }

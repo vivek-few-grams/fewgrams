@@ -1,9 +1,7 @@
 {
   "images": {
     "hero": "hero.jpg",
-    "gallery": [
-      "bunch.jpg"
-    ]
+    "gallery": ["bunch.jpg"]
   },
   "en": {
     "name": "",
@@ -34,14 +32,8 @@
       }
     ],
     "nutritionNote": "",
-    "benefits": [
-      "",
-      "",
-      ""
-    ],
-    "cautions": [
-      ""
-    ],
+    "benefits": ["", "", ""],
+    "cautions": [""],
     "faq": [
       {
         "question": "",
@@ -95,14 +87,8 @@
       }
     ],
     "nutritionNote": "",
-    "benefits": [
-      "",
-      "",
-      ""
-    ],
-    "cautions": [
-      ""
-    ],
+    "benefits": ["", "", ""],
+    "cautions": [""],
     "faq": [
       {
         "question": "",

@@ -60,8 +60,7 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
   const isAdmin = actor?.role === "admin";
   const ta = await getTranslations("admin.publicEmpty");
   const seeds = (await attachSeedContent(rows, locale)).filter(
-    (s): s is (typeof rows)[number] & { content: NonNullable<typeof s.content> } =>
-      s.content !== null,
+    (s): s is (typeof rows)[number] & { content: NonNullable<typeof s.content> } => s.content !== null,
   );
   /* Sorted by the name on the card, not by the content key underneath it.
      `listSeeds` returns GSI1 key order, which is the right default for the
@@ -98,10 +97,7 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
           {isAdmin ? (
             ta.rich("seeds", {
               link: (chunks) => (
-                <Link
-                  href="/admin/seeds"
-                  className="text-forest underline underline-offset-4"
-                >
+                <Link href="/admin/seeds" className="text-forest underline underline-offset-4">
                   {chunks}
                 </Link>
               ),
@@ -133,7 +129,11 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
                    see the prop's note for why the figures stay on the detail
                    page. */
                 words={(s.content.text.specs ?? []).map((row) => row.label)}
-                action={<QuickAdd {...quickAdd("seed", s.contentKey, s.content.text.name, seedMaxUnits(s.stockGrams))} />}
+                action={
+                  <QuickAdd
+                    {...quickAdd("seed", s.contentKey, s.content.text.name, seedMaxUnits(s.stockGrams))}
+                  />
+                }
               />
             </li>
           ))}

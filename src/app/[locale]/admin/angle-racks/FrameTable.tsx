@@ -30,8 +30,7 @@ import { CheckField, NumberField } from "../fields";
  * given there: `auto` resolves against content, and the header's action cells
  * are empty where a row's hold buttons, which drifts every heading right.
  */
-const COLUMNS =
-  "minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) minmax(6rem, 1.3fr) 6rem 5.5rem 4rem";
+const COLUMNS = "minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) minmax(6rem, 1.3fr) 6rem 5.5rem 4rem";
 
 /** Below this the rows scroll sideways inside their own box rather than
  *  widening the page.
@@ -77,7 +76,9 @@ export function FrameTable({ frames }: { frames: FrameSize[] }) {
               <span />
             </div>
 
-            {frames.map((frame) => <FrameRow key={frame.id} frame={frame} />)}
+            {frames.map((frame) => (
+              <FrameRow key={frame.id} frame={frame} />
+            ))}
           </div>
         </div>
       )}
@@ -108,8 +109,22 @@ function FrameRow({ frame }: { frame: FrameSize }) {
             forward rather than clearing it. */}
         <input type="hidden" name="active" value={frame.active ? "on" : "off"} />
 
-        <NumberField compact label={t("colDepth")} name="depthFt" min={0} defaultValue={frame.depthFt} error={errorFor("depthFt")} />
-        <NumberField compact label={t("colLength")} name="lengthFt" min={0} defaultValue={frame.lengthFt} error={errorFor("lengthFt")} />
+        <NumberField
+          compact
+          label={t("colDepth")}
+          name="depthFt"
+          min={0}
+          defaultValue={frame.depthFt}
+          error={errorFor("depthFt")}
+        />
+        <NumberField
+          compact
+          label={t("colLength")}
+          name="lengthFt"
+          min={0}
+          defaultValue={frame.lengthFt}
+          error={errorFor("lengthFt")}
+        />
 
         {/* Derived from what is **stored**, not from the inputs beside it. An
             unsaved edit showing its own consequence would state a figure the
@@ -225,9 +240,7 @@ function AddFrameForm() {
             {t("colFrameFeet")}
           </span>
           <output className="mt-1.5 block rounded-lg border border-forest/15 bg-sand px-3 py-2 font-body text-sm tabular-nums text-forest">
-            {ready
-              ? t("frameFeetValue", { feet: feetPerShelf(d, l), length: l, depth: d })
-              : "—"}
+            {ready ? t("frameFeetValue", { feet: feetPerShelf(d, l), length: l, depth: d }) : "—"}
           </output>
         </label>
         <button

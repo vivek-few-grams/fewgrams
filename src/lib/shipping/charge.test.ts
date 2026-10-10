@@ -6,7 +6,16 @@ const providers: ShippingProvider[] = [];
 vi.mock("./index", () => ({ shippingProviders: () => providers }));
 const settings = {
   pickup: { name: "Fewgrams", phone: "9999999999", address: "x", city: "Home", pincode: "560034" },
-  origins: [{ id: "trays-co", name: "Trays Co", phone: "8888888888", address: "y", city: "Chennai", pincode: "600001" }],
+  origins: [
+    {
+      id: "trays-co",
+      name: "Trays Co",
+      phone: "8888888888",
+      address: "y",
+      city: "Chennai",
+      pincode: "600001",
+    },
+  ],
   vendorOf: { "rack:shelf": "trays-co" } as Record<string, string>,
   greenRunFee: 200,
   packing: { seedPackingGrams: 100 },
@@ -15,14 +24,30 @@ vi.mock("@/lib/repo/shipping", async (orig) => ({
   ...(await orig<typeof import("@/lib/repo/shipping")>()),
   getShippingSettings: async () => settings,
 }));
-const mat = { contentKey: "drain-cell-mat", packPieces: 5, pieceLengthCm: 50, pieceWidthCm: 25, pieceHeightCm: 3, pieceStackCm: 1, pieceGrams: 300 };
+const mat = {
+  contentKey: "drain-cell-mat",
+  packPieces: 5,
+  pieceLengthCm: 50,
+  pieceWidthCm: 25,
+  pieceHeightCm: 3,
+  pieceStackCm: 1,
+  pieceGrams: 300,
+};
 vi.mock("@/lib/repo/trays", () => ({ listTrays: async () => [mat] }));
 vi.mock("@/lib/repo/grow-media", () => ({ listGrowMedia: async () => [] }));
 /* A 6 ft, 5-shelf, 1 × 2 ft shelf rack: 2.5 kg, 183 × 30 × 15 cm, so
    16,723 g by size. */
 vi.mock("@/lib/racks/catalogue", () => ({
   findSellableRack: async () => ({
-    rack: { range: "shelf", heightFt: 6, shelves: 5, depthFt: 1, lengthFt: 2, grams: 2500, packing: { kind: "plates", shelfCm: 3 } },
+    rack: {
+      range: "shelf",
+      heightFt: 6,
+      shelves: 5,
+      depthFt: 1,
+      lengthFt: 2,
+      grams: 2500,
+      packing: { kind: "plates", shelfCm: 3 },
+    },
     colour: "orange",
   }),
 }));
@@ -68,7 +93,13 @@ const opt = (id: string, total: number, extra: Partial<CourierOption> = {}): Cou
 let pin = 110000;
 const seeds = [{ kind: "seed" as const, key: "radish", units: 5, grams: 500, lineTotal: 300 }];
 const mats = { kind: "tray" as const, key: "drain-cell-mat", units: 1, grams: null, lineTotal: 300 };
-const rack = { kind: "rack" as const, key: "rk-6f-5s-1x2-1.4-orange", units: 1, grams: null, lineTotal: 3550 };
+const rack = {
+  kind: "rack" as const,
+  key: "rk-6f-5s-1x2-1.4-orange",
+  units: 1,
+  grams: null,
+  lineTotal: 3550,
+};
 const greens = { kind: "variety" as const, key: "radish", units: 1, grams: null, lineTotal: 80 };
 
 beforeEach(() => {
@@ -82,12 +113,21 @@ describe("deliveryPlan", () => {
     providers.push(
       courier("delhivery", [opt("delhivery", 59.14)]),
       courier("ekart", [opt("ekart", 106.2)]),
-      courier("shiprocket", [opt("shiprocket:43", 65.72, { carrier: "Xpressbees", serviceId: "43", days: 5 })]),
+      courier("shiprocket", [
+        opt("shiprocket:43", 65.72, { carrier: "Xpressbees", serviceId: "43", days: 5 }),
+      ]),
     );
     const r = await deliveryPlan(seeds, String(pin));
     expect(r.ok && r.ownRun).toBeNull();
     expect(r.ok && r.parcels.map((p) => [p.id, p.options.map((o) => [o.id, o.amount])])).toEqual([
-      ["home", [["delhivery", 60], ["shiprocket:43", 66], ["ekart", 107]]],
+      [
+        "home",
+        [
+          ["delhivery", 60],
+          ["shiprocket:43", 66],
+          ["ekart", 107],
+        ],
+      ],
     ]);
   });
 
@@ -189,14 +229,23 @@ describe("deliveryCharge", () => {
   });
 
   it("records Shiprocket's carrier and service id for booking", async () => {
-    providers.push(courier("shiprocket", [opt("shiprocket:43", 65.72, { carrier: "Xpressbees", serviceId: "43" })]));
+    providers.push(
+      courier("shiprocket", [opt("shiprocket:43", 65.72, { carrier: "Xpressbees", serviceId: "43" })]),
+    );
     const r = await deliveryCharge(seeds, String(pin), { home: "shiprocket:43" });
-    expect(r.ok && r.shipments[0].quote).toMatchObject({ courier: "shiprocket", carrier: "Xpressbees", serviceId: "43" });
+    expect(r.ok && r.shipments[0].quote).toMatchObject({
+      courier: "shiprocket",
+      carrier: "Xpressbees",
+      serviceId: "43",
+    });
   });
 
   it("refuses an option that is no longer offered instead of charging another", async () => {
     providers.push(courier("delhivery", [opt("delhivery", 59.14)]));
-    expect(await deliveryCharge(seeds, String(pin), { home: "ekart" })).toEqual({ ok: false, reason: "optionGone" });
+    expect(await deliveryCharge(seeds, String(pin), { home: "ekart" })).toEqual({
+      ok: false,
+      reason: "optionGone",
+    });
     expect(await deliveryCharge(seeds, String(pin), {})).toEqual({ ok: false, reason: "optionGone" });
   });
 
@@ -227,4 +276,3 @@ describe("deliveryCharge", () => {
     });
   });
 });
-

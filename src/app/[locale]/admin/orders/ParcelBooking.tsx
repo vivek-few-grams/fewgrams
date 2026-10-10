@@ -57,7 +57,10 @@ export async function ParcelBooking({
       )}
 
       {state === "stuck" && x.bookingStartedAt && (
-        <p role="alert" className="rounded-lg border border-terracotta/40 bg-terracotta/5 p-2 text-terracotta">
+        <p
+          role="alert"
+          className="rounded-lg border border-terracotta/40 bg-terracotta/5 p-2 text-terracotta"
+        >
           {t("book.stuck", { when: when(x.bookingStartedAt) })}
         </p>
       )}

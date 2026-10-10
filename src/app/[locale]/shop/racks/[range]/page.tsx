@@ -58,9 +58,7 @@ import { isRackColour, type RackColour } from "@/lib/racks/colours";
  */
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/shop/racks/[range]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/shop/racks/[range]">) {
   const { locale, range } = await params;
   const r = rackRangeOf(range);
   if (!r) return {};
@@ -84,9 +82,7 @@ function sizeParam(rack: SellableRack): string {
 function Options({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="font-body text-[11px] uppercase tracking-widest text-stone">
-        {label}
-      </p>
+      <p className="font-body text-[11px] uppercase tracking-widest text-stone">{label}</p>
       <div className="mt-2 flex flex-wrap gap-2">{children}</div>
     </div>
   );
@@ -97,24 +93,14 @@ function Options({ label, children }: { label: string; children: React.ReactNode
  *  and losing your place is the whole reason a `<select>` would have been
  *  tempting. `aria-current` rather than `aria-selected`, which belongs to
  *  listbox and tab roles these are not. */
-function Chip({
-  href,
-  on,
-  children,
-}: {
-  href: string;
-  on: boolean;
-  children: React.ReactNode;
-}) {
+function Chip({ href, on, children }: { href: string; on: boolean; children: React.ReactNode }) {
   return (
     <Link
       href={href}
       scroll={false}
       aria-current={on ? "true" : undefined}
       className={`rounded-full border px-3 py-1.5 font-body text-xs transition-colors ${
-        on
-          ? "border-forest bg-forest text-cream"
-          : "border-forest/25 text-forest hover:border-forest/60"
+        on ? "border-forest bg-forest text-cream" : "border-forest/25 text-forest hover:border-forest/60"
       }`}
     >
       {children}
@@ -162,9 +148,7 @@ export default async function RackRangePage({
   const height = heights.includes(wantHeight) ? wantHeight : heights[0];
 
   const wantSize = one(q.s);
-  const size = sizes.some((x) => sizeParam(x) === wantSize)
-    ? wantSize!
-    : sizeParam(sizes[0]);
+  const size = sizes.some((x) => sizeParam(x) === wantSize) ? wantSize! : sizeParam(sizes[0]);
 
   /* Both axes are valid on their own; the pair may still not be built. */
   const rack = racks.find((x) => x.heightFt === height && sizeParam(x) === size) ?? null;
@@ -210,9 +194,7 @@ export default async function RackRangePage({
     { src: `/racks/${r}/whats-included-2.webp`, alt: t(`ranges.${r}.includedAlt`) },
     /* Pipe is the only range shown loaded with drainage cell mats so far —
        the same shot also appears on the mat's own gallery. */
-    ...(r === "pipe"
-      ? [{ src: `/racks/${r}/with-mats-2.webp`, alt: t(`ranges.${r}.withMatsAlt`) }]
-      : []),
+    ...(r === "pipe" ? [{ src: `/racks/${r}/with-mats-2.webp`, alt: t(`ranges.${r}.withMatsAlt`) }] : []),
   ];
 
   const facts = rack
@@ -246,9 +228,7 @@ export default async function RackRangePage({
       shortDescription={t(`ranges.${r}.line`)}
       gallery={{
         shots,
-        thumbLabels: shots.map((_, i) =>
-          d("thumb", { n: i + 1, total: shots.length }),
-        ),
+        thumbLabels: shots.map((_, i) => d("thumb", { n: i + 1, total: shots.length })),
         prevLabel: d("prevPhotos"),
         nextLabel: d("nextPhotos"),
       }}
@@ -270,11 +250,7 @@ export default async function RackRangePage({
 
           <Options label={d("size")}>
             {sizes.map((x) => (
-              <Chip
-                key={sizeParam(x)}
-                href={url({ s: sizeParam(x) })}
-                on={sizeParam(x) === size}
-              >
+              <Chip key={sizeParam(x)} href={url({ s: sizeParam(x) })} on={sizeParam(x) === size}>
                 {rackSizeLabel(t, x)}
               </Chip>
             ))}
@@ -293,9 +269,7 @@ export default async function RackRangePage({
             </Options>
           ) : (
             <div>
-              <p className="font-body text-[11px] uppercase tracking-widest text-stone">
-                {d("colour")}
-              </p>
+              <p className="font-body text-[11px] uppercase tracking-widest text-stone">{d("colour")}</p>
               <p className="mt-2 font-body text-sm text-forest">{d("colourNone")}</p>
             </div>
           )}

@@ -51,9 +51,7 @@ export function AddressEntry({
       ? {
           pincode: address.pincode,
           place:
-            address.district && address.state
-              ? { district: address.district, state: address.state }
-              : null,
+            address.district && address.state ? { district: address.district, state: address.state } : null,
         }
       : null,
   );

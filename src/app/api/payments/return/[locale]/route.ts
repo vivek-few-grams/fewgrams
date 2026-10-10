@@ -27,10 +27,7 @@ import { settleSubscription } from "@/lib/subscriptions/settle";
  * A route handler rather than a page because it clears the cart cookie,
  * which a page render cannot write.
  */
-export async function GET(
-  request: NextRequest,
-  ctx: RouteContext<"/api/payments/return/[locale]">,
-) {
+export async function GET(request: NextRequest, ctx: RouteContext<"/api/payments/return/[locale]">) {
   const { locale: raw } = await ctx.params;
   const locale = hasLocale(routing.locales, raw) ? raw : routing.defaultLocale;
   const prefix = locale === routing.defaultLocale ? "" : `/${locale}`;
@@ -68,7 +65,9 @@ export async function GET(
      and tries again. And only what was bought comes out — greens set aside
      for an address outside the area stay in the cart (`cartAfterOrder`). */
   if (paid) {
-    const left = serialiseCart(cartAfterOrder(parseCart(request.cookies.get(CART_COOKIE)?.value), paid.lines));
+    const left = serialiseCart(
+      cartAfterOrder(parseCart(request.cookies.get(CART_COOKIE)?.value), paid.lines),
+    );
     if (left) res.cookies.set(CART_COOKIE, left, cartCookieOptions());
     else res.cookies.delete(CART_COOKIE);
   }

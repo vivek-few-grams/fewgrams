@@ -8,9 +8,10 @@ import { BUSINESS, getLegalDoc } from "./legal";
 const DOCS = ["terms", "privacy", "refunds", "shipping"] as const;
 
 const load = async (name: string) =>
-  JSON.parse(
-    await readFile(path.join(process.cwd(), "content", "legal", `${name}.json`), "utf8"),
-  ) as Record<string, unknown>;
+  JSON.parse(await readFile(path.join(process.cwd(), "content", "legal", `${name}.json`), "utf8")) as Record<
+    string,
+    unknown
+  >;
 
 describe.each(DOCS)("content/legal/%s.json", (name) => {
   it("conforms, and reports every fault at once", async () => {

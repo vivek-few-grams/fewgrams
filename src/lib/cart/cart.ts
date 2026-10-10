@@ -192,9 +192,7 @@ function clampUnits(n: number): number {
 /** Narrows a string from a form field or a cookie to a kind, or null. Nothing
  *  else in the app may cast to `CartKind`. */
 export function asCartKind(raw: string | null | undefined): CartKind | null {
-  return (CART_KINDS as readonly string[]).includes(raw ?? "")
-    ? (raw as CartKind)
-    : null;
+  return (CART_KINDS as readonly string[]).includes(raw ?? "") ? (raw as CartKind) : null;
 }
 
 /**
@@ -262,12 +260,7 @@ export function serialiseCart(lines: CartLine[]): string {
  * so it is enforced in the action and re-checked on every render
  * (`src/lib/cart/server.ts`); this function stays pure.
  */
-export function upsertLine(
-  lines: CartLine[],
-  kind: CartKind,
-  key: string,
-  units: number,
-): CartLine[] {
+export function upsertLine(lines: CartLine[], kind: CartKind, key: string, units: number): CartLine[] {
   if (!isValidKeyFor(kind, key)) return lines;
   const next = clampUnits(units);
   if (next <= 0) return removeFromCart(lines, kind, key);
@@ -286,11 +279,7 @@ export function unitsFor(lines: CartLine[], kind: CartKind, key: string): number
   return lines.find((l) => l.kind === kind && l.key === key)?.units ?? 0;
 }
 
-export function removeFromCart(
-  lines: CartLine[],
-  kind: CartKind,
-  key: string,
-): CartLine[] {
+export function removeFromCart(lines: CartLine[], kind: CartKind, key: string): CartLine[] {
   return lines.filter((l) => !(l.kind === kind && l.key === key));
 }
 
@@ -313,7 +302,5 @@ export function cartUnitCount(lines: CartLine[]): number {
  * pack would have reported 100 g of nothing.
  */
 export function cartGrams(lines: CartLine[]): number {
-  return lines
-    .filter((l) => isWeighed(l.kind))
-    .reduce((sum, l) => sum + l.units * GRAMS_PER_UNIT, 0);
+  return lines.filter((l) => isWeighed(l.kind)).reduce((sum, l) => sum + l.units * GRAMS_PER_UNIT, 0);
 }

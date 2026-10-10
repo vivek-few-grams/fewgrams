@@ -163,8 +163,7 @@ async function main() {
       contentKey: key,
       pricePer100g: cost === undefined ? priorPrice : retailPrice(cost, margin),
       ...(cost === undefined ? {} : { costPer100g: cost }),
-      stockGrams:
-        prior && !resetStock ? prior.stockGrams : DEFAULT_STOCK_GRAMS,
+      stockGrams: prior && !resetStock ? prior.stockGrams : DEFAULT_STOCK_GRAMS,
       active: prior?.active ?? true,
     };
 

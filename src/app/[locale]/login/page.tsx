@@ -114,7 +114,9 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
             className="pointer-events-none absolute -bottom-12 -right-10 -z-10 hidden w-40 -rotate-12 select-none opacity-90 md:block lg:w-56"
           />
           <div className="flex w-full max-w-md flex-col">
-            <p className="font-body text-[11px] font-semibold uppercase tracking-widest text-stone">{t("welcome")}</p>
+            <p className="font-body text-[11px] font-semibold uppercase tracking-widest text-stone">
+              {t("welcome")}
+            </p>
             <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-forest">
               {t("heading", { brand: brand.name })}
             </h1>
@@ -146,7 +148,9 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
 
                   <div className="my-6 flex items-center gap-3">
                     <span className="h-px flex-1 bg-forest/15" />
-                    <span className="font-body text-[11px] uppercase tracking-widest text-stone">{t("or")}</span>
+                    <span className="font-body text-[11px] uppercase tracking-widest text-stone">
+                      {t("or")}
+                    </span>
                     <span className="h-px flex-1 bg-forest/15" />
                   </div>
                 </>

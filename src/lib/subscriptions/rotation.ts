@@ -45,7 +45,10 @@ export type ScheduledBox = { date: Date; week: number };
  * rotation week — first box first. Starts on the §5.3 first-delivery date,
  * so whatever week that happens to be is the customer's first box.
  */
-export function subscriptionSchedule(now: Date = new Date(), boxes: number = ROTATION_WEEKS.length): ScheduledBox[] {
+export function subscriptionSchedule(
+  now: Date = new Date(),
+  boxes: number = ROTATION_WEEKS.length,
+): ScheduledBox[] {
   return deliverySchedule(now, boxes).map((date) => ({ date, week: rotationWeek(date) }));
 }
 

@@ -40,12 +40,20 @@ export default async function DeliveryAdmin() {
       .map((x) => ({ screen: "growMedia", label: x.contentKey, href: "/admin/grow-media" })),
     ...card.plates
       .filter((x) => x.active && (x.gramsPerShelf === undefined || x.packedCm === undefined))
-      .map((x) => ({ screen: "plates", label: t("sizePlate", { depth: x.depthFt, length: x.lengthFt, thickness: x.thicknessMm }), href: "/admin/racks" })),
+      .map((x) => ({
+        screen: "plates",
+        label: t("sizePlate", { depth: x.depthFt, length: x.lengthFt, thickness: x.thicknessMm }),
+        href: "/admin/racks",
+      })),
     /* Angle is weighed per foot on its grade, which both steel ranges use;
        a footprint has no weight of its own (3 Oct 2026). */
     ...card.angles
       .filter((x) => x.active && x.gramsPerFt === undefined)
-      .map((x) => ({ screen: "frames", label: t("angleGrade", { thickness: x.thicknessMm }), href: "/admin/angle-racks" })),
+      .map((x) => ({
+        screen: "frames",
+        label: t("angleGrade", { thickness: x.thicknessMm }),
+        href: "/admin/angle-racks",
+      })),
     /* Pipe is weighed per foot in the pipe rates; a size has no weight of its
        own (3 Oct 2026). */
     ...(card.pipeSettings && card.pipeSettings.gramsPerFt === undefined
@@ -53,7 +61,8 @@ export default async function DeliveryAdmin() {
       : []),
     /* The bundle figures are range-wide, so one entry each rather than one
        per size: every angle or pipe rack waits on the same two numbers. */
-    ...(card.settings && (card.settings.angleWidthCm === undefined || card.settings.angleStackCm === undefined)
+    ...(card.settings &&
+    (card.settings.angleWidthCm === undefined || card.settings.angleStackCm === undefined)
       ? [{ screen: "frames", label: t("anglePacking"), href: "/admin/racks" }]
       : []),
     ...(card.pipeSettings && card.pipeSettings.pipeDiameterCm === undefined
@@ -83,7 +92,10 @@ export default async function DeliveryAdmin() {
       ? await Promise.all(
           settings.origins.map(async (o) => ({
             o,
-            collects: await provider.serviceability(o.pincode).then((x) => x?.pickup ?? false, () => false),
+            collects: await provider.serviceability(o.pincode).then(
+              (x) => x?.pickup ?? false,
+              () => false,
+            ),
           })),
         )
       : [];
@@ -128,7 +140,11 @@ export default async function DeliveryAdmin() {
               ? t("statusNoSettings", { mode: provider.mode })
               : check?.ok
                 ? check.pickup
-                  ? t("statusOk", { mode: provider.mode, price: check.price, pincode: settings.pickup.pincode })
+                  ? t("statusOk", {
+                      mode: provider.mode,
+                      price: check.price,
+                      pincode: settings.pickup.pincode,
+                    })
                   : t("statusNoPickup", { pincode: settings.pickup.pincode })
                 : t("statusError", { mode: provider.mode, detail: check?.ok === false ? check.detail : "" })}
         </p>
@@ -151,7 +167,12 @@ export default async function DeliveryAdmin() {
                   : o.state === "noSettings"
                     ? t("statusOtherNoSettings", { courier })
                     : o.state === "ok"
-                      ? t("statusOtherOk", { courier, price: o.price, count: o.count, pincode: settings!.pickup.pincode })
+                      ? t("statusOtherOk", {
+                          courier,
+                          price: o.price,
+                          count: o.count,
+                          pincode: settings!.pickup.pincode,
+                        })
                       : t("statusOtherError", { courier, detail: o.detail })}
               </li>
             );
@@ -160,10 +181,7 @@ export default async function DeliveryAdmin() {
       </section>
 
       {unmeasured.length > 0 && (
-        <section
-          aria-labelledby="unmeasured"
-          className="mt-4 max-w-3xl rounded-2xl bg-terracotta/[0.06] p-5"
-        >
+        <section aria-labelledby="unmeasured" className="mt-4 max-w-3xl rounded-2xl bg-terracotta/[0.06] p-5">
           <h2 id="unmeasured" className="font-display text-base font-semibold text-forest">
             {t("unmeasuredHeading", { count: unmeasured.length })}
           </h2>

@@ -64,6 +64,33 @@ export type Variety = {
   active: boolean;
 };
 
+/**
+ * One day's sowing, and what each variety in it gave at harvest — the sowing
+ * log on `/admin/sowing` (the owner, 10 Oct 2026). A record of what *was*
+ * done, not the sow plan of SPEC §6, which says what *should* be.
+ */
+export type Sowing = {
+  id: string;
+  /** `YYYY-MM-DD`, IST. */
+  sowDate: string;
+  lines: SowingLine[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+/** One variety sown that day. Harvest fields stay absent until it is cut. */
+export type SowingLine = {
+  /** A variety's content key. Not a `Variety.id`, so a line still reads
+   *  after its variety row is deleted. */
+  varietyKey: string;
+  seedGrams: number;
+  trays?: number;
+  /** Zero is a real answer — a tray that failed. */
+  harvestGrams?: number;
+  /** `YYYY-MM-DD`, IST. Present exactly when `harvestGrams` is. */
+  harvestedOn?: string;
+};
+
 /** SPEC §3.0.1 — the product model carries variants from the start rather than
  *  having them retrofitted when trays need material and size. */
 export type ProductVariant = {

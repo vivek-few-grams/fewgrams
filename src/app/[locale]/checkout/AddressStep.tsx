@@ -2,7 +2,18 @@
 
 import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
-import { ArrowRight, Check, ChevronRight, Home, Leaf, MapPin, PenLine, Phone, Plus, Truck } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  ChevronRight,
+  Home,
+  Leaf,
+  MapPin,
+  PenLine,
+  Phone,
+  Plus,
+  Truck,
+} from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { MAX_ADDRESSES } from "@/lib/account/validation";
 import { AddressEntry } from "../account/addresses/AddressEntry";
@@ -127,8 +138,19 @@ export function AddressStep({
   const t = useTranslations("checkout");
   const ta = useTranslations("account.addresses");
   const router = useRouter();
-  const { addrId, setAddrId, accepted, setAccepted, changing, setChanging, adding, setAdding, selected, confirmed, accept } =
-    choice;
+  const {
+    addrId,
+    setAddrId,
+    accepted,
+    setAccepted,
+    changing,
+    setChanging,
+    adding,
+    setAdding,
+    selected,
+    confirmed,
+    accept,
+  } = choice;
   const canAdd = savedCount < MAX_ADDRESSES;
 
   /* A saved address changes what the page can offer, which only the server
@@ -170,7 +192,9 @@ export function AddressStep({
               <StepHeading id="pin-heading" n={n}>
                 {ta("pinHeading")}
               </StepHeading>
-              <p className="mt-2 font-body text-sm leading-relaxed text-stone">{ta(forSubscription ? "pinBodySubscription" : "pinBody")}</p>
+              <p className="mt-2 font-body text-sm leading-relaxed text-stone">
+                {ta(forSubscription ? "pinBodySubscription" : "pinBody")}
+              </p>
               <div className="mt-5">{pin}</div>
             </section>
           )}
@@ -213,7 +237,11 @@ export function AddressStep({
             className="group inline-flex items-center gap-1 font-body text-xs text-stone transition-colors hover:text-forest"
           >
             {t("manageAddresses")}
-            <ChevronRight size={13} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" />
+            <ChevronRight
+              size={13}
+              strokeWidth={2}
+              className="transition-transform group-hover:translate-x-0.5"
+            />
           </Link>
         }
       >
@@ -268,7 +296,11 @@ export function AddressStep({
               >
                 <Truck size={15} strokeWidth={1.75} />
                 {t("useThisAddress")}
-                <ArrowRight size={16} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight
+                  size={16}
+                  strokeWidth={2}
+                  className="transition-transform group-hover:translate-x-0.5"
+                />
               </button>
             </div>
           )}
@@ -319,7 +351,9 @@ export function AddressStep({
 
           {adding ? (
             <div className="rounded-2xl border-2 border-dashed border-sage bg-cream/80 p-5">
-              <h3 className="mb-4 font-display text-sm font-semibold text-forest">{t("newAddressHeading")}</h3>
+              <h3 className="mb-4 font-display text-sm font-semibold text-forest">
+                {t("newAddressHeading")}
+              </h3>
               {entry()}
             </div>
           ) : canAdd ? (
@@ -343,7 +377,11 @@ export function AddressStep({
                 className="group flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
               >
                 {t("useThisAddress")}
-                <ArrowRight size={16} strokeWidth={2} className="transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight
+                  size={16}
+                  strokeWidth={2}
+                  className="transition-transform group-hover:translate-x-0.5"
+                />
               </button>
             </div>
           )}
@@ -419,7 +457,10 @@ function DefaultChip({ label }: { label: string }) {
 function AddressSummary({ address }: { address: PayAddress }) {
   return (
     <span className="flex min-w-0 items-start gap-3">
-      <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forest text-cream">
+      <span
+        aria-hidden
+        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-forest text-cream"
+      >
         <Home size={16} strokeWidth={1.75} />
       </span>
       <span className="block min-w-0 font-body text-[13px] leading-relaxed">

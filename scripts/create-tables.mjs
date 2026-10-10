@@ -62,9 +62,7 @@ for (const { name, indexes } of tables) {
     const have = new Set((Table.GlobalSecondaryIndexes ?? []).map((i) => i.IndexName));
     /* DynamoDB adds one GSI per UpdateTable call, so a table missing several
        gains them over several runs; each run adds the lowest missing one. */
-    const missing = Array.from({ length: indexes }, (_, i) => i + 1).find(
-      (n) => !have.has(`GSI${n}`),
-    );
+    const missing = Array.from({ length: indexes }, (_, i) => i + 1).find((n) => !have.has(`GSI${n}`));
     if (missing) {
       await client.send(
         new UpdateTableCommand({
@@ -100,9 +98,7 @@ for (const { name, indexes } of tables) {
         { AttributeName: "PK", KeyType: "HASH" },
         { AttributeName: "SK", KeyType: "RANGE" },
       ],
-      GlobalSecondaryIndexes: Array.from({ length: indexes }, (_, i) =>
-        gsi(i + 1),
-      ),
+      GlobalSecondaryIndexes: Array.from({ length: indexes }, (_, i) => gsi(i + 1)),
     }),
   );
   console.log(

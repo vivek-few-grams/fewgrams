@@ -92,7 +92,6 @@ export const READ_OPTS = { ignoreOwnership: true } as const;
 export function isConditionFailure(e: unknown): boolean {
   const err = e as { cause?: { name?: string }; name?: string };
   return (
-    err?.cause?.name === "ConditionalCheckFailedException" ||
-    err?.name === "ConditionalCheckFailedException"
+    err?.cause?.name === "ConditionalCheckFailedException" || err?.name === "ConditionalCheckFailedException"
   );
 }

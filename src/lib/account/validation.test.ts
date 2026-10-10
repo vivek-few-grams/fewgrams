@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  formatPhone,
-  normalisePhone,
-  formatPlace,
-  validateAddress,
-  validateProfile,
-} from "./validation";
+import { formatPhone, normalisePhone, formatPlace, validateAddress, validateProfile } from "./validation";
 
 const served = "560034";
 
@@ -74,9 +68,9 @@ describe("validateProfile", () => {
 
 describe("formatPlace", () => {
   it("shows district, state and PIN", () => {
-    expect(
-      formatPlace({ district: "Bengaluru Urban", state: "Karnataka", pincode: "560034" }),
-    ).toBe("Bengaluru Urban, Karnataka 560034");
+    expect(formatPlace({ district: "Bengaluru Urban", state: "Karnataka", pincode: "560034" })).toBe(
+      "Bengaluru Urban, Karnataka 560034",
+    );
   });
 
   /* Addresses saved before 23 Sep 2026 have a city and neither of the others. */
@@ -102,7 +96,10 @@ describe("validateAddress", () => {
    * a cart with greens in it (`checkout/actions.ts`).
    */
   it("accepts a PIN code outside the greens delivery area", () => {
-    const r = validateAddress(form({ ...goodAddress, district: "New Delhi", state: "Delhi", pincode: "110001" }), IN);
+    const r = validateAddress(
+      form({ ...goodAddress, district: "New Delhi", state: "Delhi", pincode: "110001" }),
+      IN,
+    );
     expect(r.ok).toBe(true);
   });
 
@@ -127,10 +124,7 @@ describe("validateAddress", () => {
      no JavaScript, or a lookup that had not answered. */
   it("fills a blank district and state from the PIN's place", () => {
     const place = { district: "Bengaluru Urban", state: "Karnataka" };
-    const r = validateAddress(
-      form({ ...goodAddress, district: "", state: " " }),
-      place,
-    );
+    const r = validateAddress(form({ ...goodAddress, district: "", state: " " }), place);
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value).toMatchObject(place);
   });
@@ -138,10 +132,10 @@ describe("validateAddress", () => {
   /* On a PIN split between two districts the customer knows which side they
      are on and the directory does not, so what they typed wins. */
   it("keeps what the customer typed over the looked-up place", () => {
-    const r = validateAddress(
-      form({ ...goodAddress, district: "Bengaluru Rural" }),
-      { district: "Bengaluru Urban", state: "Karnataka" },
-    );
+    const r = validateAddress(form({ ...goodAddress, district: "Bengaluru Rural" }), {
+      district: "Bengaluru Urban",
+      state: "Karnataka",
+    });
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value.district).toBe("Bengaluru Rural");
   });

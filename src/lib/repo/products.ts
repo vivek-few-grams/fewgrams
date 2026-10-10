@@ -25,18 +25,12 @@ export async function listByCategory(
   category: ProductCategory,
   opts: { activeOnly?: boolean } = {},
 ): Promise<Product[]> {
-  const { data } = await ProductEntity.query
-    .byCategory({ category })
-    .go(LIST_OPTS);
+  const { data } = await ProductEntity.query.byCategory({ category }).go(LIST_OPTS);
   return opts.activeOnly ? data.filter((p) => p.active) : data;
 }
 
-export async function listProducts(
-  opts: { activeOnly?: boolean } = {},
-): Promise<Product[]> {
-  const groups = await Promise.all(
-    PRODUCT_CATEGORIES.map((c) => listByCategory(c, opts)),
-  );
+export async function listProducts(opts: { activeOnly?: boolean } = {}): Promise<Product[]> {
+  const groups = await Promise.all(PRODUCT_CATEGORIES.map((c) => listByCategory(c, opts)));
   return groups.flat();
 }
 
@@ -48,10 +42,7 @@ export async function getProduct(id: string): Promise<Product | null> {
 /** Active product count per category, for the home page tiles. */
 export async function countsByCategory(): Promise<Record<ProductCategory, number>> {
   const groups = await Promise.all(
-    PRODUCT_CATEGORIES.map(
-      async (c) =>
-        [c, (await listByCategory(c, { activeOnly: true })).length] as const,
-    ),
+    PRODUCT_CATEGORIES.map(async (c) => [c, (await listByCategory(c, { activeOnly: true })).length] as const),
   );
   return Object.fromEntries(groups) as Record<ProductCategory, number>;
 }

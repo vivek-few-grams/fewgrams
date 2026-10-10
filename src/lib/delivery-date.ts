@@ -60,11 +60,7 @@ function istDayOfWeek(date: Date): number {
 /** The instant of 00:00 IST on the IST calendar day containing `date`. */
 function istMidnight(date: Date): Date {
   const shifted = new Date(date.getTime() + IST_OFFSET_MS);
-  const dayStart = Date.UTC(
-    shifted.getUTCFullYear(),
-    shifted.getUTCMonth(),
-    shifted.getUTCDate(),
-  );
+  const dayStart = Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate());
   return new Date(dayStart - IST_OFFSET_MS);
 }
 
@@ -173,10 +169,7 @@ export function firstDeliveryDate(now: Date = new Date()): Date {
 /** The four delivery Saturdays of a one-month plan starting at `now`. */
 export function deliverySchedule(now: Date = new Date(), weeks = 4): Date[] {
   const first = firstDeliveryDate(now);
-  return Array.from(
-    { length: weeks },
-    (_, i) => new Date(first.getTime() + i * 7 * DAY_MS),
-  );
+  return Array.from({ length: weeks }, (_, i) => new Date(first.getTime() + i * 7 * DAY_MS));
 }
 
 /* ── One-off orders — SPEC §18.6 ─────────────────────────────────────

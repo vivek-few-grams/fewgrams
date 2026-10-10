@@ -1,11 +1,7 @@
 import { paymentProvider, type PaymentProvider } from "@/lib/payments";
 import { settlementFor } from "@/lib/orders/order";
 import { nextSequence, recordPayment } from "@/lib/repo/orders";
-import {
-  getSubscription,
-  markSubscriptionPaid,
-  setSubscriptionReceiptNo,
-} from "@/lib/repo/subscriptions";
+import { getSubscription, markSubscriptionPaid, setSubscriptionReceiptNo } from "@/lib/repo/subscriptions";
 import { firstDeliveryDate, istDateISO } from "@/lib/delivery-date";
 import { ROTATION_WEEKS } from "./weeks";
 import { shiftForCutoff, type Subscription } from "./subscription";

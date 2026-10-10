@@ -72,11 +72,7 @@ import {
   trayPrint,
 } from "./props";
 import type { BenchStep } from "./steps";
-import {
-  GHOST_IDLE_SECONDS,
-  hideGhost,
-  placeGhost,
-} from "@/components/tray-play/ghost";
+import { GHOST_IDLE_SECONDS, hideGhost, placeGhost } from "@/components/tray-play/ghost";
 import {
   DARK_DAYS,
   DARK_SECONDS,
@@ -190,11 +186,7 @@ const RACK_DROP = SHELF_RACK.shelves[OUR_SHELF];
 /** Where the rack stands in the kitchen: against the plain wall left of the
  *  dark room's door (the owner, 2 Oct 2026), so the trip to the dark room
  *  passes it and the tray comes out to it. Clear of the door's swing. */
-const RACK_AT = new THREE.Vector3(
-  CORNER_X + SHELF_RACK.w / 2 + 0.2,
-  0,
-  WALL_Z + SHELF_RACK.d / 2 + 0.2,
-);
+const RACK_AT = new THREE.Vector3(CORNER_X + SHELF_RACK.w / 2 + 0.2, 0, WALL_Z + SHELF_RACK.d / 2 + 0.2);
 const RIM_Y = TRAY_RAISE + TRAY_H + 0.004;
 /** The lid's pivot sits at its mid-height, so it can flip in place. The lid
  *  is the pair's own water tray, taken from under the grow tray (which then
@@ -289,13 +281,7 @@ const ease = (t: number) => 1 - (1 - t) ** 3;
 const smooth = THREE.MathUtils.smoothstep;
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 
-function clampRounded(
-  x: number,
-  z: number,
-  hw: number,
-  hd: number,
-  r: number,
-): [number, number] {
+function clampRounded(x: number, z: number, hw: number, hd: number, r: number): [number, number] {
   const cx = hw - r;
   const cz = hd - r;
   const ax = Math.abs(x);
@@ -305,10 +291,7 @@ function clampRounded(
   const dz = az - cz;
   const d = Math.hypot(dx, dz);
   if (d <= r) return [x, z];
-  return [
-    Math.sign(x) * (cx + (dx / d) * r),
-    Math.sign(z) * (cz + (dz / d) * r),
-  ];
+  return [Math.sign(x) * (cx + (dx / d) * r), Math.sign(z) * (cz + (dz / d) * r)];
 }
 
 /** Boustrophedon across the peat: s 0 → 1 visits every row once. */
@@ -437,10 +420,7 @@ export function mountGardenScene(
         depthWrite: false,
       }),
     );
-    const shadow = new THREE.Mesh(
-      bin.add(new THREE.PlaneGeometry(TRAY_W * 1.45, TRAY_D * 1.33)),
-      shadowMat,
-    );
+    const shadow = new THREE.Mesh(bin.add(new THREE.PlaneGeometry(TRAY_W * 1.45, TRAY_D * 1.33)), shadowMat);
     shadow.rotation.x = -Math.PI / 2;
     shadow.position.y = 0.002;
     scene.add(shadow);
@@ -448,10 +428,7 @@ export function mountGardenScene(
       finish: f,
       group,
       grow: group.getObjectByName("grow")!,
-      water: [
-        group.getObjectByName("water")!,
-        group.getObjectByName("waterFloor")!,
-      ],
+      water: [group.getObjectByName("water")!, group.getObjectByName("waterFloor")!],
       mats,
       shadow,
       shadowMat,
@@ -510,12 +487,8 @@ export function mountGardenScene(
      off. The wipe is still measured over the whole floor (`dirtCells`), so
      the cloth has to go over all of it. */
   function repaintGrime() {
-    grimeCanvases.dirt
-      .getContext("2d")!
-      .clearRect(0, 0, grimeCanvases.W, grimeCanvases.H);
-    grimeCanvases.wet
-      .getContext("2d")!
-      .clearRect(0, 0, grimeCanvases.W, grimeCanvases.H);
+    grimeCanvases.dirt.getContext("2d")!.clearRect(0, 0, grimeCanvases.W, grimeCanvases.H);
+    grimeCanvases.wet.getContext("2d")!.clearRect(0, 0, grimeCanvases.W, grimeCanvases.H);
     dirtTex.needsUpdate = true;
     wetTex.needsUpdate = true;
     dirtCells.fill(1);
@@ -540,9 +513,7 @@ export function mountGardenScene(
   );
   const hfGeo = bin.add(new THREE.PlaneGeometry(2, 2, HF_NX - 1, HF_NZ - 1));
   hfGeo.rotateX(-Math.PI / 2);
-  const hfBase = Float32Array.from(
-    hfGeo.getAttribute("position").array as Float32Array,
-  );
+  const hfBase = Float32Array.from(hfGeo.getAttribute("position").array as Float32Array);
   const hf = new Float32Array(HF_NX * HF_NZ);
   const peat = new THREE.Mesh(hfGeo, peatMat);
   /* What lies in the grow tray — the coco peat and the crop — on one
@@ -566,13 +537,7 @@ export function mountGardenScene(
       const wall = innerWallAt(y - TRAY_RAISE, TRAY_H) + 0.004;
       const hw = FLOOR.hw + wall;
       const hd = FLOOR.hd + wall;
-      const [x, z] = clampRounded(
-        hfBase[k * 3] * hw,
-        hfBase[k * 3 + 2] * hd,
-        hw,
-        hd,
-        CORNER + wall,
-      );
+      const [x, z] = clampRounded(hfBase[k * 3] * hw, hfBase[k * 3 + 2] * hd, hw, hd, CORNER + wall);
       pos.setXYZ(k, x, h > 0.0005 ? y : FLOOR_Y - 0.004, z);
     }
     pos.needsUpdate = true;
@@ -585,10 +550,7 @@ export function mountGardenScene(
       const px = hfBase[k * 3] * FLOOR.hw;
       const pz = hfBase[k * 3 + 2] * FLOOR.hd;
       const d2 = (px - x) ** 2 + (pz - z) ** 2;
-      hf[k] = Math.min(
-        LEVEL + 0.12,
-        hf[k] + amount * Math.exp(-d2 / (2 * sig * sig)),
-      );
+      hf[k] = Math.min(LEVEL + 0.12, hf[k] + amount * Math.exp(-d2 / (2 * sig * sig)));
     }
     hfDirty = true;
   }
@@ -622,16 +584,12 @@ export function mountGardenScene(
   const field = createField(FIELD_NX, FIELD_NZ, FIELD_RECT);
   const fieldBytes = new Uint8Array(FIELD_NX * FIELD_NZ * 4);
   packField(field, fieldBytes);
-  const fieldTex = bin.add(
-    new THREE.DataTexture(fieldBytes, FIELD_NX, FIELD_NZ, THREE.RGBAFormat),
-  );
+  const fieldTex = bin.add(new THREE.DataTexture(fieldBytes, FIELD_NX, FIELD_NZ, THREE.RGBAFormat));
   fieldTex.magFilter = THREE.LinearFilter;
   fieldTex.minFilter = THREE.LinearFilter;
   fieldTex.needsUpdate = true;
   const maskBytes = new Uint8Array(MASK_NX * MASK_NZ * 4);
-  const maskTex = bin.add(
-    new THREE.DataTexture(maskBytes, MASK_NX, MASK_NZ, THREE.RGBAFormat),
-  );
+  const maskTex = bin.add(new THREE.DataTexture(maskBytes, MASK_NX, MASK_NZ, THREE.RGBAFormat));
   maskTex.magFilter = THREE.NearestFilter;
   maskTex.minFilter = THREE.NearestFilter;
   const maskInside = new Uint8Array(MASK_NX * MASK_NZ);
@@ -655,30 +613,12 @@ export function mountGardenScene(
     maskTex.needsUpdate = true;
   }
   setMask(false, false, false);
-  function paintMask(
-    x: number,
-    z: number,
-    r: number,
-    channel: 0 | 1,
-    chance = 1,
-  ) {
+  function paintMask(x: number, z: number, r: number, channel: 0 | 1, chance = 1) {
     let changed = 0;
-    const i0 = Math.max(
-      0,
-      Math.floor(((x - r - FIELD_RECT.minX) / FIELD_RECT.width) * MASK_NX),
-    );
-    const i1 = Math.min(
-      MASK_NX - 1,
-      Math.ceil(((x + r - FIELD_RECT.minX) / FIELD_RECT.width) * MASK_NX),
-    );
-    const j0 = Math.max(
-      0,
-      Math.floor(((z - r - FIELD_RECT.minZ) / FIELD_RECT.depth) * MASK_NZ),
-    );
-    const j1 = Math.min(
-      MASK_NZ - 1,
-      Math.ceil(((z + r - FIELD_RECT.minZ) / FIELD_RECT.depth) * MASK_NZ),
-    );
+    const i0 = Math.max(0, Math.floor(((x - r - FIELD_RECT.minX) / FIELD_RECT.width) * MASK_NX));
+    const i1 = Math.min(MASK_NX - 1, Math.ceil(((x + r - FIELD_RECT.minX) / FIELD_RECT.width) * MASK_NX));
+    const j0 = Math.max(0, Math.floor(((z - r - FIELD_RECT.minZ) / FIELD_RECT.depth) * MASK_NZ));
+    const j1 = Math.min(MASK_NZ - 1, Math.ceil(((z + r - FIELD_RECT.minZ) / FIELD_RECT.depth) * MASK_NZ));
     for (let j = j0; j <= j1; j++) {
       for (let i = i0; i <= i1; i++) {
         const k = j * MASK_NX + i;
@@ -697,8 +637,7 @@ export function mountGardenScene(
   }
   function maskCount(channel: 0 | 1) {
     let n = 0;
-    for (let k = 0; k < MASK_NX * MASK_NZ; k++)
-      if (maskInside[k] && maskBytes[k * 4 + channel] === 255) n++;
+    for (let k = 0; k < MASK_NX * MASK_NZ; k++) if (maskInside[k] && maskBytes[k * 4 + channel] === 255) n++;
     return n;
   }
 
@@ -730,8 +669,7 @@ export function mountGardenScene(
   let heapWant = 0;
   let heapLaunched = 0;
   let flyBudget = 0;
-  const flights: { k: number; t: number; from: THREE.Vector3; spin: number }[] =
-    [];
+  const flights: { k: number; t: number; from: THREE.Vector3; spin: number }[] = [];
   const throwFrom = new THREE.Vector3();
   function resetHeap() {
     heapWant = 0;
@@ -758,14 +696,7 @@ export function mountGardenScene(
     disposeCrop();
     const v = LOOKS[l];
     const cropRand = mulberry32(20260926);
-    const { stems, extra } = plantStems(
-      v,
-      0,
-      2 * MED.hw - 0.06,
-      2 * MED.hd - 0.06,
-      thin,
-      cropRand,
-    );
+    const { stems, extra } = plantStems(v, 0, 2 * MED.hw - 0.06, 2 * MED.hd - 0.06, thin, cropRand);
     const plants = plantMesh(v, stems, extra, MEDIUM_Y, shared);
     const seeds = seedMesh(v, stems, MEDIUM_Y, shared);
     bed.add(plants, seeds);
@@ -776,11 +707,7 @@ export function mountGardenScene(
       side: THREE.DoubleSide,
     });
     const sprigLen = Math.min(0.3, v.height * 0.5);
-    const heap = new THREE.InstancedMesh(
-      sprigGeometry(v, sprigLen),
-      heapMat,
-      HEAP,
-    );
+    const heap = new THREE.InstancedMesh(sprigGeometry(v, sprigLen), heapMat, HEAP);
     const m = new THREE.Matrix4();
     const q = new THREE.Quaternion();
     const e = new THREE.Euler();
@@ -795,15 +722,10 @@ export function mountGardenScene(
        of a sprig may stand outside it. Above the rim, the rim's. */
     const bowlRoom = (y: number) => {
       const c = Math.max(-1, 1 - (y - 0.02) / 0.34);
-      return (
-        (y >= 0.36 ? 0.62 : 0.16 + Math.sqrt(1 - c * c) * 0.46) -
-        0.03 -
-        v.leafLength * 0.8
-      );
+      return (y >= 0.36 ? 0.62 : 0.16 + Math.sqrt(1 - c * c) * 0.46) - 0.03 - v.leafLength * 0.8;
     };
     const inBowl = (p: THREE.Vector3) =>
-      p.y > floorAt(Math.hypot(p.x, p.z)) &&
-      Math.hypot(p.x, p.z) < bowlRoom(p.y);
+      p.y > floorAt(Math.hypot(p.x, p.z)) && Math.hypot(p.x, p.z) < bowlRoom(p.y);
     const placed: { y: number; m: THREE.Matrix4; c: THREE.Color }[] = [];
     const at = new THREE.Vector3();
     const end = new THREE.Vector3();
@@ -882,13 +804,7 @@ export function mountGardenScene(
   const lidInner = new THREE.Group();
   lidInner.position.y = -TRAY_H / 2;
   const lidTray = new THREE.Mesh(
-    bin.add(
-      trayGeometry(
-        TRAY_W + 2 * WATER_MARGIN,
-        TRAY_D + 2 * WATER_MARGIN,
-        TRAY_H,
-      ),
-    ),
+    bin.add(trayGeometry(TRAY_W + 2 * WATER_MARGIN, TRAY_D + 2 * WATER_MARGIN, TRAY_H)),
     pairs[finish].mats.water,
   );
   /* Both faces: upturned, its floor is the solid top of the cover, seen
@@ -901,9 +817,7 @@ export function mountGardenScene(
     }),
   );
   const lidFloor = new THREE.Mesh(
-    bin.add(
-      roundedRect(FLOOR.hw + WATER_MARGIN, FLOOR.hd + WATER_MARGIN, CORNER),
-    ),
+    bin.add(roundedRect(FLOOR.hw + WATER_MARGIN, FLOOR.hd + WATER_MARGIN, CORNER)),
     lidFloorMat,
   );
   lidFloor.position.y = 0.013;
@@ -942,10 +856,7 @@ export function mountGardenScene(
       envMapIntensity: 1,
     }),
   );
-  const water = new THREE.Mesh(
-    bin.add(new THREE.CircleGeometry(1, 40)),
-    waterMat,
-  );
+  const water = new THREE.Mesh(bin.add(new THREE.CircleGeometry(1, 40)), waterMat);
   water.rotation.x = -Math.PI / 2;
   tub.add(water);
   const blockTex = bin.add(mediumTexture(mulberry32(3), "#9a9a9a"));
@@ -958,9 +869,7 @@ export function mountGardenScene(
   can.userData.target = "can";
   const packets = {} as Record<Look, THREE.Group>;
   for (const l of LOOK_KEYS) {
-    const inner = bin.geometries(
-      seedPacket(bin, mulberry32(11), LOOKS[l].seed),
-    );
+    const inner = bin.geometries(seedPacket(bin, mulberry32(11), LOOKS[l].seed));
     packets[l] = rig(inner);
     packets[l].userData.target = `packet-${l}`;
     scene.add(packets[l]);
@@ -975,11 +884,7 @@ export function mountGardenScene(
   function shiftToRack(on: boolean) {
     if (on) {
       room.group.position.set(-RACK_AT.x, -RACK_DROP, -RACK_AT.z);
-      benchTop.position.set(
-        BENCH_AT.x - RACK_AT.x,
-        BENCH_AT.y - RACK_DROP,
-        BENCH_AT.z - RACK_AT.z,
-      );
+      benchTop.position.set(BENCH_AT.x - RACK_AT.x, BENCH_AT.y - RACK_DROP, BENCH_AT.z - RACK_AT.z);
       rack.group.position.set(0, -RACK_DROP, 0);
     } else {
       room.group.position.set(0, 0, 0);
@@ -995,22 +900,13 @@ export function mountGardenScene(
      full mask of their own, so brushing the played tray does not move
      them, but they sway on the same clock. */
   {
-    const still = bin.add(
-      new THREE.DataTexture(
-        new Uint8Array([128, 128, 0, 255]),
-        1,
-        1,
-        THREE.RGBAFormat,
-      ),
-    );
+    const still = bin.add(new THREE.DataTexture(new Uint8Array([128, 128, 0, 255]), 1, 1, THREE.RGBAFormat));
     still.needsUpdate = true;
     const decorShared = {
       ...sharedUniforms(still, FIELD_RECT, bin.add(fullMask()), sun),
       time: shared.time,
     };
-    const peatTop = bin.add(
-      new THREE.BoxGeometry(2 * MED.hw, 0.02, 2 * MED.hd),
-    );
+    const peatTop = bin.add(new THREE.BoxGeometry(2 * MED.hw, 0.02, 2 * MED.hd));
     const decorRand = mulberry32(20261002);
     const decorLooks: Look[] = ["radish", "amaranth", "sunflower", "radish"];
     const decorMats = pairs["tray-pair"].mats;
@@ -1148,14 +1044,7 @@ export function mountGardenScene(
     floor: 0.04,
     opacity: 0.85,
   });
-  scene.add(
-    mist.points,
-    drops.points,
-    crumbs.points,
-    seedsFall.points,
-    bubbles.points,
-    pourDrops.points,
-  );
+  scene.add(mist.points, drops.points, crumbs.points, seedsFall.points, bubbles.points, pourDrops.points);
   const particleSets = [mist, drops, crumbs, seedsFall, bubbles, pourDrops];
 
   /* ------------------------------------------------------------ state */
@@ -1195,12 +1084,7 @@ export function mountGardenScene(
 
   function report() {
     const p = Math.round(progress * 100) / 100;
-    if (
-      reported.step === step &&
-      reported.phase === phase &&
-      Math.abs(reported.progress - p) < 0.01
-    )
-      return;
+    if (reported.step === step && reported.phase === phase && Math.abs(reported.progress - p) < 0.01) return;
     reported = { step, phase, progress: p };
     events.onProgress(step, p, phase);
   }
@@ -1220,13 +1104,8 @@ export function mountGardenScene(
     const from = obj.position.y;
     tween(0.7 + delay, (k) => {
       const t = clamp01((k * (0.7 + delay) - delay) / 0.7);
-      const b =
-        t < 1 ? 1 - Math.abs(Math.cos(t * Math.PI * 1.5)) * (1 - t) ** 2 : 1;
-      obj.position.y = THREE.MathUtils.lerp(
-        from,
-        at.y,
-        t < 0.55 ? (t / 0.55) ** 2 : b,
-      );
+      const b = t < 1 ? 1 - Math.abs(Math.cos(t * Math.PI * 1.5)) * (1 - t) ** 2 : 1;
+      obj.position.y = THREE.MathUtils.lerp(from, at.y, t < 0.55 ? (t / 0.55) ** 2 : b);
     });
   }
   /** Send a tool from the hand back to where it lives. */
@@ -1243,16 +1122,7 @@ export function mountGardenScene(
   }
 
   /* ---------------------------------------------------- step baselines */
-  const order: BenchStep[] = [
-    "pick",
-    "clean",
-    "soak",
-    "fill",
-    "sow",
-    "dark",
-    "light",
-    "harvest",
-  ];
+  const order: BenchStep[] = ["pick", "clean", "soak", "fill", "sow", "dark", "light", "harvest"];
 
   function placeTrays() {
     for (const f of TRAY_FINISH_KEYS) {
@@ -1272,9 +1142,7 @@ export function mountGardenScene(
     shiftToRack(false);
     activePair().grow.add(grimeGroup);
     lidTray.material = activePair().mats.water;
-    lidFloorMat.color.copy(
-      (activePair().mats.water as THREE.MeshStandardMaterial).color,
-    );
+    lidFloorMat.color.copy((activePair().mats.water as THREE.MeshStandardMaterial).color);
   }
 
   function hideAll() {
@@ -1349,11 +1217,7 @@ export function mountGardenScene(
           pairs[f].group.visible = true;
           pairs[f].shadow.visible = true;
           pairs[f].group.position.copy(v3(L.pick[f], 0.32));
-          pairs[f].shadow.position.set(
-            L.pick[f][0] + 0.12,
-            0.002,
-            L.pick[f][1] + 0.1,
-          );
+          pairs[f].shadow.position.set(L.pick[f][0] + 0.12, 0.002, L.pick[f][1] + 0.1);
         }
         pickAnim.active = false;
         phase = "choose";
@@ -1468,8 +1332,7 @@ export function mountGardenScene(
   /** The object standing in for each target, for clicks, rings and labels. */
   function targetObject(t: Target): THREE.Object3D | null {
     if (t === "tray") return activePair().group;
-    if (t === "tray-pair" || t === "tray-pair-food-grade")
-      return pairs[t].group;
+    if (t === "tray-pair" || t === "tray-pair-food-grade") return pairs[t].group;
     if (t.startsWith("packet-")) return packets[t.slice(7) as Look];
     switch (t) {
       case "basin":
@@ -1493,9 +1356,7 @@ export function mountGardenScene(
   function pickTarget(): Target | null {
     if (!ptr.over) return null;
     const ts = targetsFor(phase).filter((t) => t !== "tray" || held === null);
-    const objs = ts
-      .map(targetObject)
-      .filter((o): o is THREE.Object3D => !!o && o.visible);
+    const objs = ts.map(targetObject).filter((o): o is THREE.Object3D => !!o && o.visible);
     if (!objs.length) return null;
     ray.setFromCamera(ndc, camera);
     const hits = ray.intersectObjects(objs, true);
@@ -1504,11 +1365,7 @@ export function mountGardenScene(
     const t = (o?.userData.target ?? null) as Target | null;
     /* The active tray counts as "tray" only when the phase is a gesture on
        it; as itself it is never a target after the pick. */
-    if (
-      t &&
-      (t === "tray-pair" || t === "tray-pair-food-grade") &&
-      phase !== "choose"
-    )
+    if (t && (t === "tray-pair" || t === "tray-pair-food-grade") && phase !== "choose")
       return ts.includes("tray") ? "tray" : null;
     return t && ts.includes(t) ? t : null;
   }
@@ -1521,10 +1378,7 @@ export function mountGardenScene(
       if (at) dragTo.copy(at).sub(grabOff).setY(0.5);
       return;
     }
-    ndc.set(
-      ((e.clientX - box.left) / box.width) * 2 - 1,
-      -((e.clientY - box.top) / box.height) * 2 + 1,
-    );
+    ndc.set(((e.clientX - box.left) / box.width) * 2 - 1, -((e.clientY - box.top) / box.height) * 2 + 1);
     ptr.over = true;
     ptr.mouse = e.pointerType === "mouse";
   }
@@ -1535,11 +1389,7 @@ export function mountGardenScene(
       /* Taken hold of in the dark room, to be dragged into the light. */
       const box = canvas.getBoundingClientRect();
       const at = dragPoint(e.clientX - box.left, e.clientY - box.top, tmp);
-      if (
-        at &&
-        Math.abs(at.x - carry.x) < TRAY_W / 2 + 0.5 &&
-        Math.abs(at.z - carry.z) < TRAY_D / 2 + 0.5
-      ) {
+      if (at && Math.abs(at.x - carry.x) < TRAY_W / 2 + 0.5 && Math.abs(at.z - carry.z) < TRAY_D / 2 + 0.5) {
         dragging = true;
         dragView.w = darkRect.w;
         dragView.h = darkRect.h;
@@ -1629,9 +1479,7 @@ export function mountGardenScene(
       if (l !== look) {
         look = l;
         buildCrop(l);
-        (
-          seedsFall.points.material as THREE.ShaderMaterial
-        ).uniforms.uColor.value.set(LOOKS[l].seed);
+        (seedsFall.points.material as THREE.ShaderMaterial).uniforms.uColor.value.set(LOOKS[l].seed);
         events.onLook(l);
       }
       held = "packet";
@@ -1691,9 +1539,7 @@ export function mountGardenScene(
   /* ---- the clean step: into the solution, hold, out, wipe ---- */
   const dip = { steep: 0, busy: false };
   const overDip = (p: THREE.Vector3 | null) =>
-    !!p &&
-    Math.abs(p.x - L.dip[0]) < DIP.w / 2 + 0.2 &&
-    Math.abs(p.z - L.dip[1]) < DIP.d / 2 + 0.2;
+    !!p && Math.abs(p.x - L.dip[0]) < DIP.w / 2 + 0.2 && Math.abs(p.z - L.dip[1]) < DIP.d / 2 + 0.2;
   function takeTray() {
     if (phase !== "takeTray" || dip.busy) return;
     held = "tray";
@@ -1720,14 +1566,8 @@ export function mountGardenScene(
         for (let n = 0; n < 90; n++) {
           const a = Math.random() * Math.PI * 2;
           drops.emit(
-            v3(L.dip, DIP.water).add(
-              new THREE.Vector3(Math.cos(a) * 1.1, 0, Math.sin(a) * 1.35),
-            ),
-            new THREE.Vector3(
-              Math.cos(a) * 0.8,
-              1.8 + Math.random() * 1.4,
-              Math.sin(a) * 0.8,
-            ),
+            v3(L.dip, DIP.water).add(new THREE.Vector3(Math.cos(a) * 1.1, 0, Math.sin(a) * 1.35)),
+            new THREE.Vector3(Math.cos(a) * 0.8, 1.8 + Math.random() * 1.4, Math.sin(a) * 0.8),
             0.6 + Math.random() * 0.3,
             0.03 + Math.random() * 0.03,
           );
@@ -1757,13 +1597,7 @@ export function mountGardenScene(
               drops.emit(
                 g.position
                   .clone()
-                  .add(
-                    new THREE.Vector3(
-                      (Math.random() - 0.5) * 1.9,
-                      -0.02,
-                      (Math.random() - 0.5) * 2.5,
-                    ),
-                  ),
+                  .add(new THREE.Vector3((Math.random() - 0.5) * 1.9, -0.02, (Math.random() - 0.5) * 2.5)),
                 new THREE.Vector3(0, -0.5, 0),
                 0.5,
                 0.025 + Math.random() * 0.02,
@@ -1849,11 +1683,7 @@ export function mountGardenScene(
           MEDIUM_Y + 0.4 + Math.random() * 0.1,
           z + (Math.random() - 0.5) * 0.25,
         ),
-        new THREE.Vector3(
-          (Math.random() - 0.5) * 0.6,
-          -1 - Math.random(),
-          (Math.random() - 0.5) * 0.6,
-        ),
+        new THREE.Vector3((Math.random() - 0.5) * 0.6, -1 - Math.random(), (Math.random() - 0.5) * 0.6),
         0.5 + Math.random() * 0.3,
         0.03 + Math.random() * 0.04,
       );
@@ -1881,9 +1711,7 @@ export function mountGardenScene(
       (k) => {
         const up = smooth(k, 0.12, 0.32);
         const down = smooth(k, 0.7, 0.92);
-        bedAt(
-          down > 0 ? THREE.MathUtils.lerp(LIFT, -TRAY_RAISE, down) : LIFT * up,
-        );
+        bedAt(down > 0 ? THREE.MathUtils.lerp(LIFT, -TRAY_RAISE, down) : LIFT * up);
         const out = ease(clamp01((k - 0.32) / 0.35));
         lid.position.lerpVectors(under, side, out);
         lidShadow.visible = out > 0;
@@ -1914,9 +1742,7 @@ export function mountGardenScene(
         const down = smooth(k, 0.66, 1);
         lid.position.set(
           THREE.MathUtils.lerp(from.x, 0, over),
-          down > 0
-            ? THREE.MathUtils.lerp(HIGH, LID_ON, down)
-            : THREE.MathUtils.lerp(from.y, HIGH, up),
+          down > 0 ? THREE.MathUtils.lerp(HIGH, LID_ON, down) : THREE.MathUtils.lerp(from.y, HIGH, up),
           THREE.MathUtils.lerp(from.z, 0, over),
         );
         lid.rotation.set(Math.PI * turn, 0, 0);
@@ -2086,9 +1912,7 @@ export function mountGardenScene(
   }
   /** Past the seam, into the kitchen's half. */
   function overLight(px: number, py: number) {
-    return L === WIDE
-      ? px > darkRect.x + darkRect.w
-      : py > darkRect.y + darkRect.h;
+    return L === WIDE ? px > darkRect.x + darkRect.w : py > darkRect.y + darkRect.h;
   }
   /** The whole rack first, the covered tray slid onto its shelf, and then
    *  the camera comes in close on that one shelf: the tray and its light. */
@@ -2132,11 +1956,7 @@ export function mountGardenScene(
     /* Out through the rack's open left side, between its legs, and turned
        over beside it: the shelf above leaves no room to turn it over where
        it is, and toward the viewer it filled the screen. */
-    const side = new THREE.Vector3(
-      -SHELF_RACK.w / 2 - TRAY_W / 2 - 0.35,
-      LID_OFF,
-      0,
-    );
+    const side = new THREE.Vector3(-SHELF_RACK.w / 2 - TRAY_W / 2 - 0.35, LID_OFF, 0);
     const under = new THREE.Vector3(0, LID_OFF, 0);
     tween(
       2.6,
@@ -2154,9 +1974,7 @@ export function mountGardenScene(
         else {
           lid.position.set(
             THREE.MathUtils.lerp(from.x, side.x, slide),
-            land > 0
-              ? THREE.MathUtils.lerp(HIGH, side.y, land)
-              : THREE.MathUtils.lerp(from.y, HIGH, rise),
+            land > 0 ? THREE.MathUtils.lerp(HIGH, side.y, land) : THREE.MathUtils.lerp(from.y, HIGH, rise),
             THREE.MathUtils.lerp(from.z, side.z, slide),
           );
         }
@@ -2165,11 +1983,7 @@ export function mountGardenScene(
         shadowUnder(lid);
         const up = smooth(k, 0.36, 0.52);
         const down = smooth(k, 0.78, 0.97);
-        bedAt(
-          down > 0
-            ? THREE.MathUtils.lerp(LIFT, 0, down)
-            : THREE.MathUtils.lerp(-TRAY_RAISE, LIFT, up),
-        );
+        bedAt(down > 0 ? THREE.MathUtils.lerp(LIFT, 0, down) : THREE.MathUtils.lerp(-TRAY_RAISE, LIFT, up));
       },
       () => {
         lid.visible = false;
@@ -2190,11 +2004,7 @@ export function mountGardenScene(
       const flick = k < 0.45 ? (Math.sin(k * 60) > 0.2 ? 1 : 0.2) : 1;
       const on = ease(clamp01((k - 0.1) / 0.9)) * flick;
       rack.beamMat.opacity = 0.32 * on;
-      rack.diffuserMat.color.setRGB(
-        0.79 + 0.21 * on,
-        0.8 + 0.18 * on,
-        0.78 + 0.13 * on,
-      );
+      rack.diffuserMat.color.setRGB(0.79 + 0.21 * on, 0.8 + 0.18 * on, 0.78 + 0.13 * on);
     });
     lightTarget = 1.12;
     val.greenTarget = 0.35;
@@ -2209,21 +2019,14 @@ export function mountGardenScene(
   /* ---------------------------------------------------------- autoplay */
   function autoplay() {
     wake();
-    if (
-      phase === "done" ||
-      step === "pick" ||
-      phase === "drop" ||
-      phase === "carry"
-    )
-      return;
+    if (phase === "done" || step === "pick" || phase === "drop" || phase === "carry") return;
     auto = { t: 0 };
   }
   function autoTick(dt: number) {
     if (!auto) return;
     auto.t += dt;
     const t = auto.t;
-    const tick = (every: number) =>
-      Math.floor(t / every) !== Math.floor((t - dt) / every);
+    const tick = (every: number) => Math.floor(t / every) !== Math.floor((t - dt) / every);
     const at = (x: number, z: number) => {
       ptr.auto = (ptr.auto ?? new THREE.Vector3()).set(x, 0, z);
     };
@@ -2262,14 +2065,7 @@ export function mountGardenScene(
       case "wipe":
       case "sow":
       case "cut": {
-        const rate =
-          phase === "wipe"
-            ? 0.11
-            : phase === "cut"
-              ? 0.13
-              : phase === "sow"
-                ? 0.18
-                : 0.16;
+        const rate = phase === "wipe" ? 0.11 : phase === "cut" ? 0.13 : phase === "sow" ? 0.18 : 0.16;
         const [x, z] = zigzag((t * rate) % 1, 6, 0.15);
         at(x, z);
         return;
@@ -2285,10 +2081,7 @@ export function mountGardenScene(
         /* The can's body where its tipped spout reaches the bowl: about
            one modelled unit back from the tip along the way it faces. */
         const reach = 0.95 * can.scale.x;
-        at(
-          L.basin[0] - Math.cos(CAN_YAW) * reach,
-          L.basin[1] + Math.sin(CAN_YAW) * reach,
-        );
+        at(L.basin[0] - Math.cos(CAN_YAW) * reach, L.basin[1] + Math.sin(CAN_YAW) * reach);
         holding = true;
         return;
       }
@@ -2379,9 +2172,7 @@ export function mountGardenScene(
     /* Rings, bobs and the hover lift on whatever is to be reached for. */
     const ts = held
       ? targetsFor(phase).filter((t) => t === "basin")
-      : targetsFor(phase).filter(
-          (t) => t !== "tray" || phase === "takeTray" || phase === "lift",
-        );
+      : targetsFor(phase).filter((t) => t !== "tray" || phase === "takeTray" || phase === "lift");
     halos.forEach((ring, i) => {
       const t = ts[i];
       const o = t ? targetObject(t) : null;
@@ -2413,9 +2204,7 @@ export function mountGardenScene(
       if (!o || t === "tray" || t === "lamp" || t.startsWith("tray")) continue;
       const inner = o.children[0];
       if (!inner || o === lid || o === tub || o === dipRig) continue;
-      const want = ts.includes(t)
-        ? 0.035 + 0.035 * Math.sin(clock * 3.2) + (hovered === t ? 0.08 : 0)
-        : 0;
+      const want = ts.includes(t) ? 0.035 + 0.035 * Math.sin(clock * 3.2) + (hovered === t ? 0.08 : 0) : 0;
       inner.position.y += (want - inner.position.y) * Math.min(1, dt * 10);
     }
     /* The switch glows and breathes while it waits to be pressed. */
@@ -2427,14 +2216,10 @@ export function mountGardenScene(
       rack.lightSwitch.scale.setScalar(1);
     }
 
-    shared.grow.value +=
-      (val.growTarget - shared.grow.value) * Math.min(1, dt * 2.2);
-    if (Math.abs(val.growTarget - shared.grow.value) < 1e-3)
-      shared.grow.value = val.growTarget;
-    shared.green.value +=
-      (val.greenTarget - shared.green.value) * Math.min(1, dt * 1.6);
-    if (Math.abs(val.greenTarget - shared.green.value) < 1e-3)
-      shared.green.value = val.greenTarget;
+    shared.grow.value += (val.growTarget - shared.grow.value) * Math.min(1, dt * 2.2);
+    if (Math.abs(val.growTarget - shared.grow.value) < 1e-3) shared.grow.value = val.growTarget;
+    shared.green.value += (val.greenTarget - shared.green.value) * Math.min(1, dt * 1.6);
+    if (Math.abs(val.greenTarget - shared.green.value) < 1e-3) shared.green.value = val.greenTarget;
     lightLevel += (lightTarget - lightLevel) * Math.min(1, dt * 2.5);
     hemi.intensity = 1.6 * lightLevel;
     sunLight.intensity = 1.6 * lightLevel;
@@ -2450,10 +2235,7 @@ export function mountGardenScene(
       s.position.x = obj.position.x;
       s.position.z = obj.position.z;
       s.scale.setScalar(obj.scale.x);
-      (s.material as THREE.MeshBasicMaterial).opacity = Math.max(
-        0,
-        1 - Math.max(0, obj.position.y) * 0.8,
-      );
+      (s.material as THREE.MeshBasicMaterial).opacity = Math.max(0, 1 - Math.max(0, obj.position.y) * 0.8);
     }
     updateCamera(dt);
     report();
@@ -2464,28 +2246,19 @@ export function mountGardenScene(
       for (const f of TRAY_FINISH_KEYS) {
         const g = pairs[f].group;
         const lift = hovered === f ? 0.14 : 0;
-        const bob =
-          0.32 +
-          Math.sin(clock * 1.5 + (f === "tray-pair" ? 0 : 1.7)) * 0.06 +
-          lift;
+        const bob = 0.32 + Math.sin(clock * 1.5 + (f === "tray-pair" ? 0 : 1.7)) * 0.06 + lift;
         g.position.y += (bob - g.position.y) * Math.min(1, dt * 8);
-        g.rotation.z =
-          Math.sin(clock * 1.1 + (f === "tray-pair" ? 0.5 : 2)) * 0.025;
+        g.rotation.z = Math.sin(clock * 1.1 + (f === "tray-pair" ? 0.5 : 2)) * 0.025;
         pairs[f].shadowMat.opacity = 0.55;
       }
       return;
     }
     pickAnim.t += dt;
     const me = pairs[finish];
-    const other =
-      pairs[finish === "tray-pair" ? "tray-pair-food-grade" : "tray-pair"];
+    const other = pairs[finish === "tray-pair" ? "tray-pair-food-grade" : "tray-pair"];
     const ot = clamp01(pickAnim.t / 0.8);
     const [ox, oz] = L.pick[other.finish];
-    other.group.position.set(
-      ox * (1 + ease(ot) * 1.2),
-      0.32 + ease(ot) * 2.4,
-      oz * (1 + ease(ot) * 1.2),
-    );
+    other.group.position.set(ox * (1 + ease(ot) * 1.2), 0.32 + ease(ot) * 2.4, oz * (1 + ease(ot) * 1.2));
     other.shadowMat.opacity = 0.55 * (1 - ot);
     if (ot >= 1) {
       other.group.visible = false;
@@ -2495,11 +2268,7 @@ export function mountGardenScene(
     const [mx, mz] = L.pick[finish];
     me.group.position.x = mx * (1 - ease(st));
     me.group.position.z = mz * (1 - ease(st));
-    me.shadow.position.set(
-      me.group.position.x + 0.12,
-      0.002,
-      me.group.position.z + 0.1,
-    );
+    me.shadow.position.set(me.group.position.x + 0.12, 0.002, me.group.position.z + 0.1);
     if (st < 1) {
       me.group.position.y = THREE.MathUtils.lerp(pickAnim.y, 1.3, ease(st));
       me.group.rotation.z *= 0.9;
@@ -2557,11 +2326,7 @@ export function mountGardenScene(
       for (let n = 0; n < 3; n++)
         bubbles.emit(
           v3(L.dip, DIP.water - 0.04).add(
-            new THREE.Vector3(
-              (Math.random() - 0.5) * 1.9,
-              0,
-              (Math.random() - 0.5) * 2.5,
-            ),
+            new THREE.Vector3((Math.random() - 0.5) * 1.9, 0, (Math.random() - 0.5) * 2.5),
           ),
           new THREE.Vector3(0, 0.2, 0),
           0.5 + Math.random() * 0.4,
@@ -2577,8 +2342,7 @@ export function mountGardenScene(
       );
       const from = clothRig.position.clone();
       clothRig.position.lerp(pose, Math.min(1, dt * 28));
-      clothRig.rotation.y +=
-        (Math.sin(clock * 3) * 0.3 - clothRig.rotation.y) * dt * 3;
+      clothRig.rotation.y += (Math.sin(clock * 3) * 0.3 - clothRig.rotation.y) * dt * 3;
       /* Wipe along the whole path the cloth swept this frame, so a quick
          hand does not skip patches. */
       if (ptr.speed > 0.15) {
@@ -2650,10 +2414,7 @@ export function mountGardenScene(
         (Math.hypot(aim.x - spot.x, aim.z - spot.z) < 0.45 * k ||
           Math.hypot(aim.x - basinAt.x, aim.z - basinAt.z) < BASIN_R * BOWL);
       const pouring = (holding || near) && phase === "pour";
-      canAnim.t = Math.max(
-        0,
-        Math.min(1, canAnim.t + (pouring ? dt : -dt) * 3),
-      );
+      canAnim.t = Math.max(0, Math.min(1, canAnim.t + (pouring ? dt : -dt) * 3));
       const tilt = ease(canAnim.t);
       /* Lifted as it stood, facing the bowl, and tipped forward over its
          spout — never turned round, which would swing it across the tray.
@@ -2678,10 +2439,7 @@ export function mountGardenScene(
             0.035 + Math.random() * 0.03,
           );
         }
-        if (
-          Math.hypot(tip.x - 0.25 - basinAt.x, tip.z - basinAt.z) <
-          BASIN_R * BOWL
-        )
+        if (Math.hypot(tip.x - 0.25 - basinAt.x, tip.z - basinAt.z) < BASIN_R * BOWL)
           val.water = Math.min(1, val.water + dt * 0.55);
       }
     }
@@ -2699,11 +2457,7 @@ export function mountGardenScene(
       if (Math.random() < 0.35) {
         const at = v3(L.basin, 0.4);
         crumbs.emit(
-          at.set(
-            at.x + (Math.random() - 0.5) * 0.6 * BOWL,
-            at.y,
-            at.z + (Math.random() - 0.5) * 0.4 * BOWL,
-          ),
+          at.set(at.x + (Math.random() - 0.5) * 0.6 * BOWL, at.y, at.z + (Math.random() - 0.5) * 0.4 * BOWL),
           new THREE.Vector3(
             (Math.random() - 0.5) * 0.6,
             0.3 + Math.random() * 0.4,
@@ -2746,9 +2500,7 @@ export function mountGardenScene(
   const bowlLip = new THREE.Vector3();
   const lipAt = new THREE.Vector3();
   /** How far left of the bowl's foot its rim pours from, tipped. */
-  const bowlReach = () =>
-    BOWL *
-    ((BASIN_R + 0.05) * Math.cos(BOWL_TIP) + BASIN_H * Math.sin(BOWL_TIP));
+  const bowlReach = () => BOWL * ((BASIN_R + 0.05) * Math.cos(BOWL_TIP) + BASIN_H * Math.sin(BOWL_TIP));
   function updateFill(dt: number, p: THREE.Vector3 | null) {
     /* Drawn by the square of what is left, so the mound visibly drops
        with the first pour rather than holding its height until the end
@@ -2779,10 +2531,7 @@ export function mountGardenScene(
       }
     }
     if (phase !== "done") {
-      progress = Math.min(
-        0.99,
-        phase === "takeScoop" ? 0 : clamp01(vol / (LEVEL * 0.97)),
-      );
+      progress = Math.min(0.99, phase === "takeScoop" ? 0 : clamp01(vol / (LEVEL * 0.97)));
       /* Full: the bowl goes back and the peat settles flat on its own
          (the owner, 2 Oct 2026: no levelling by hand). */
       if (phase === "fill" && vol >= LEVEL * 0.97) {
@@ -2791,8 +2540,7 @@ export function mountGardenScene(
         putBack(tub, v3(L.basin), 0);
         const from = Float32Array.from(hf);
         tween(0.7, (k) => {
-          for (let i = 0; i < hf.length; i++)
-            hf[i] = THREE.MathUtils.lerp(from[i], LEVEL, ease(k));
+          for (let i = 0; i < hf.length; i++) hf[i] = THREE.MathUtils.lerp(from[i], LEVEL, ease(k));
           hfDirty = true;
         });
         progress = 1;
@@ -2807,10 +2555,7 @@ export function mountGardenScene(
     let moving = false;
     for (let k = 0; k < MASK_NX * MASK_NZ; k++) {
       if (maskBytes[k * 4] === 255 && maskBytes[k * 4 + 2] < 255) {
-        maskBytes[k * 4 + 2] = Math.min(
-          255,
-          maskBytes[k * 4 + 2] + Math.ceil(dt * 500),
-        );
+        maskBytes[k * 4 + 2] = Math.min(255, maskBytes[k * 4 + 2] + Math.ceil(dt * 500));
         moving = true;
       }
     }
@@ -2831,13 +2576,7 @@ export function mountGardenScene(
       mine.position.lerp(pose, Math.min(1, dt * 12));
       mine.rotation.y += (0.2 - mine.rotation.y) * dt * 6;
       mine.rotation.z += (1.15 - mine.rotation.z) * Math.min(1, dt * 6);
-      if (
-        phase === "sow" &&
-        p &&
-        engaged &&
-        onTray(p, 0.2) &&
-        (ptr.speed > 0.1 || ptr.auto)
-      ) {
+      if (phase === "sow" && p && engaged && onTray(p, 0.2) && (ptr.speed > 0.1 || ptr.auto)) {
         /* The corner that tips lowest: the top of the pouch's left edge. */
         packetMouth.set(-PACKET.w / 2 + 0.05, PACKET.h - 0.03, 0);
         mine.localToWorld(packetMouth);
@@ -2845,11 +2584,7 @@ export function mountGardenScene(
         for (let n = 0; n < 3; n++) {
           seedsFall.emit(
             packetMouth,
-            new THREE.Vector3(
-              -0.15 - Math.random() * 0.2,
-              -0.7,
-              (Math.random() - 0.5) * 0.2,
-            ),
+            new THREE.Vector3(-0.15 - Math.random() * 0.2, -0.7, (Math.random() - 0.5) * 0.2),
             0.35,
             LOOKS[look].seedSize * 1.6,
           );
@@ -2890,10 +2625,7 @@ export function mountGardenScene(
       if (darkIntro > 0.9) darkOpen = Math.min(1, darkOpen + (dt * pace) / 1.1);
     }
     if (phase === "hold" && darkOpen >= 1) {
-      val.days = Math.min(
-        DARK_DAYS,
-        val.days + ((dt * DARK_DAYS) / DARK_SECONDS) * pace,
-      );
+      val.days = Math.min(DARK_DAYS, val.days + ((dt * DARK_DAYS) / DARK_SECONDS) * pace);
       val.growTarget = DARK_GROW * (val.days / DARK_DAYS);
     }
     val.lidLift = LID_LIFT * smooth(shared.grow.value, 0.15, DARK_GROW);
@@ -2925,14 +2657,8 @@ export function mountGardenScene(
          gap under the lifted white tray — so the stream visibly leaves
          the spout and lands in the tray. */
       bedAt(0.75 * smooth(ct, 0, 0.35) * (1 - smooth(ct, 2.3, 2.7)));
-      const k =
-        ease(clamp01((ct - 0.25) / 0.45)) *
-        (1 - ease(clamp01((ct - 1.95) / 0.4)));
-      can.rotation.set(
-        0,
-        THREE.MathUtils.lerp(2.9, Math.PI, k),
-        THREE.MathUtils.lerp(0, -0.55, k),
-      );
+      const k = ease(clamp01((ct - 0.25) / 0.45)) * (1 - ease(clamp01((ct - 1.95) / 0.4)));
+      can.rotation.set(0, THREE.MathUtils.lerp(2.9, Math.PI, k), THREE.MathUtils.lerp(0, -0.55, k));
       can.updateMatrixWorld();
       const reach = SPOUT.clone().multiply(can.scale).applyEuler(can.rotation);
       pose.set(TRAY_W / 2 - 0.3, TRAY_H + 0.16, TRAY_D / 2 - 0.35).sub(reach);
@@ -2966,45 +2692,27 @@ export function mountGardenScene(
     }
     if (phase !== "done") {
       const base = phase === "uncover" ? 0 : phase === "light" ? 0.15 : 0.35;
-      progress = Math.min(
-        0.99,
-        base + (phase === "water" ? val.waterings * 0.64 : 0),
-      );
+      progress = Math.min(0.99, base + (phase === "water" ? val.waterings * 0.64 : 0));
     }
     handInGreens(dt, p, engaged);
   }
 
-  function updateHarvest(
-    dt: number,
-    p: THREE.Vector3 | null,
-    engaged: boolean,
-  ) {
+  function updateHarvest(dt: number, p: THREE.Vector3 | null, engaged: boolean) {
     if (held === "cutter") {
       /* Held low as a hand holds it, blade pointing away and handle toward
          the visitor, the middle of the blade where the pointer is. A slice
          cuts the stems along the whole blade as it moves, so a sweep
          across the tray clears a band as deep as the blade is long. */
-      const at =
-        p && onTray(p, 0.3) ? p : new THREE.Vector3(0, MEDIUM_Y, MED.hd);
+      const at = p && onTray(p, 0.3) ? p : new THREE.Vector3(0, MEDIUM_Y, MED.hd);
       pose.set(at.x, MEDIUM_Y + 0.09, at.z);
       knife.position.lerp(pose, Math.min(1, dt * 14));
       const lean = THREE.MathUtils.clamp(-hand.vx * 0.08, -0.35, 0.35);
       knife.rotation.set(0, lean, 0);
       knife.updateMatrixWorld(true);
-      if (
-        phase === "cut" &&
-        p &&
-        engaged &&
-        onTray(p, 0.25) &&
-        (ptr.speed > 0.1 || ptr.auto)
-      ) {
+      if (phase === "cut" && p && engaged && onTray(p, 0.25) && (ptr.speed > 0.1 || ptr.auto)) {
         const along = new THREE.Vector3();
         for (let k = 0; k <= 6; k++) {
-          along.set(
-            0,
-            0,
-            THREE.MathUtils.lerp(CUTTER_BLADE.from, CUTTER_BLADE.to, k / 6),
-          );
+          along.set(0, 0, THREE.MathUtils.lerp(CUTTER_BLADE.from, CUTTER_BLADE.to, k / 6));
           cutterInner.localToWorld(along);
           paintMask(along.x, along.z, 0.11, 1);
           if (k === 3) throwFrom.set(along.x, MEDIUM_Y + 0.12, along.z);
@@ -3017,8 +2725,7 @@ export function mountGardenScene(
     if (phase === "cut") {
       progress = Math.min(0.99, cut / 0.9);
       if (cut >= 0.9) {
-        for (let k = 0; k < MASK_NX * MASK_NZ; k++)
-          if (maskBytes[k * 4] === 255) maskBytes[k * 4 + 1] = 255;
+        for (let k = 0; k < MASK_NX * MASK_NZ; k++) if (maskBytes[k * 4] === 255) maskBytes[k * 4 + 1] = 255;
         maskTex.needsUpdate = true;
         heapWant = HEAP;
         held = null;
@@ -3047,16 +2754,9 @@ export function mountGardenScene(
     if (!crop) return;
     if (heapLaunched < heapWant) flyBudget += dt * FLY_RATE;
     else flyBudget = 0;
-    while (
-      heapLaunched < heapWant &&
-      flights.length < FLY_MAX &&
-      flyBudget >= 1
-    ) {
+    while (heapLaunched < heapWant && flights.length < FLY_MAX && flyBudget >= 1) {
       flyBudget -= 1;
-      const from =
-        throwFrom.lengthSq() > 0
-          ? throwFrom.clone()
-          : new THREE.Vector3(0, MEDIUM_Y + 0.12, 0);
+      const from = throwFrom.lengthSq() > 0 ? throwFrom.clone() : new THREE.Vector3(0, MEDIUM_Y + 0.12, 0);
       from.x += (Math.random() - 0.5) * 0.25;
       from.z += (Math.random() - 0.5) * 0.25;
       flights.push({
@@ -3098,11 +2798,7 @@ export function mountGardenScene(
   let fieldAcc = 0;
   let fieldMoving = false;
   const hand = { x: 0, z: 0, vx: 0, vz: 0, on: false };
-  function handInGreens(
-    dt: number,
-    p0: THREE.Vector3 | null,
-    engaged: boolean,
-  ) {
+  function handInGreens(dt: number, p0: THREE.Vector3 | null, engaged: boolean) {
     const p = hit(MEDIUM_Y + 0.4, new THREE.Vector3());
     if (p && engaged && onTray(p, 0.2) && p0) {
       if (hand.on) {
@@ -3193,13 +2889,7 @@ export function mountGardenScene(
            follows the tray there, leaving the bench behind. */
         if (trip) {
           /* The door, and the rack waiting beside it. */
-          box = [
-            CORNER_X,
-            DOOR.x1 + 1.3,
-            WALL_Z,
-            WALL_Z + TRAY_D + 1.6,
-            SHELF_RACK.h + 0.2,
-          ];
+          box = [CORNER_X, DOOR.x1 + 1.3, WALL_Z, WALL_Z + TRAY_D + 1.6, SHELF_RACK.h + 0.2];
           add([carry.x, carry.z], TRAY_D / 2 + 0.2);
         }
         break;
@@ -3210,14 +2900,7 @@ export function mountGardenScene(
         const { w, d, shelves, h } = SHELF_RACK;
         box =
           rackClose < 0.5
-            ? [
-                -w / 2 - 0.3,
-                w / 2 + 0.3,
-                -d / 2,
-                d / 2,
-                h - RACK_DROP + 0.1,
-                -RACK_DROP,
-              ]
+            ? [-w / 2 - 0.3, w / 2 + 0.3, -d / 2, d / 2, h - RACK_DROP + 0.1, -RACK_DROP]
             : [
                 -w / 2 - 0.1,
                 w / 2 + 0.1,
@@ -3252,9 +2935,7 @@ export function mountGardenScene(
   const up = new THREE.Vector3();
   function extent(target: THREE.Vector3, dist: number, box: number[]) {
     fitCam.copy(camera);
-    fitCam.position
-      .set(0, Math.sin(fitElev) * dist, Math.cos(fitElev) * dist)
-      .add(target);
+    fitCam.position.set(0, Math.sin(fitElev) * dist, Math.cos(fitElev) * dist).add(target);
     fitCam.lookAt(target);
     fitCam.updateMatrixWorld();
     const [x0, x1, z0, z1, top, bottom = 0] = box;
@@ -3344,29 +3025,16 @@ export function mountGardenScene(
    *  2026); the nail and the frame may not. */
   function shelfTop() {
     return room.group.localToWorld(
-      shelfAbove.set(
-        (WALL_AD.x0 + WALL_AD.x1) / 2,
-        WALL_AD.shelfBottom - 0.04,
-        WALL_AD.z,
-      ),
+      shelfAbove.set((WALL_AD.x0 + WALL_AD.x1) / 2, WALL_AD.shelfBottom - 0.04, WALL_AD.z),
     );
   }
   /** Fit `box` between `top` and `bottom` (and the side margins) from
    *  `fitElev`, with `keep` (if any) under the top edge, leaving the pose
    *  in `wantTarget` and `wantPos`; returns its distance. */
-  function fitTo(
-    box: number[],
-    TOP: number,
-    BOTTOM: number,
-    keep: THREE.Vector3 | null,
-  ) {
+  function fitTo(box: number[], TOP: number, BOTTOM: number, keep: THREE.Vector3 | null) {
     const [x0, x1, z0, z1, top, bottom = 0] = box;
     const MX = 0.97;
-    wantTarget.set(
-      (x0 + x1) / 2,
-      bottom + (top - bottom) * 0.35,
-      (z0 + z1) / 2,
-    );
+    wantTarget.set((x0 + x1) / 2, bottom + (top - bottom) * 0.35, (z0 + z1) / 2);
     let dist = 6;
     for (let pass = 0; pass < 2; pass++) {
       let lo = 1;
@@ -3394,9 +3062,7 @@ export function mountGardenScene(
         wantTarget.addScaledVector(up, off * halfH);
       }
     }
-    wantPos
-      .set(0, Math.sin(fitElev) * dist, Math.cos(fitElev) * dist)
-      .add(wantTarget);
+    wantPos.set(0, Math.sin(fitElev) * dist, Math.cos(fitElev) * dist).add(wantTarget);
     return dist;
   }
   const doorAt = new THREE.Vector3();
@@ -3441,9 +3107,7 @@ export function mountGardenScene(
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
-    const scale =
-      (h * renderer.getPixelRatio()) /
-      (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
+    const scale = (h * renderer.getPixelRatio()) / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)));
     for (const s of particleSets) s.uniforms.uScale.value = scale;
     const next = camera.aspect < 0.9 ? TALL : WIDE;
     elevation = next === TALL ? 0.68 : 0.42;
@@ -3582,26 +3246,14 @@ export function mountGardenScene(
       /* In from below and to the right, as a hand comes onto a screen. */
       const k = glide(Math.min(1, u / 0.45));
       const tapK = u < 0.45 ? 0 : Math.min(1, (u - 0.45) / 0.3);
-      return placeGhost(
-        ghostEl,
-        to.x + 90 * (1 - k),
-        to.y + 70 * (1 - k),
-        fade,
-        tapK,
-      );
+      return placeGhost(ghostEl, to.x + 90 * (1 - k), to.y + 70 * (1 - k), fade, tapK);
     }
     if (move.kind === "carry") {
       const a = onScreen(move.from, false);
       const b = onScreen(move.to, false);
       const k = glide(Math.min(1, Math.max(0, (u - 0.1) / 0.55)));
       const tapK = move.tap && u > 0.68 ? Math.min(1, (u - 0.68) / 0.25) : 0;
-      return placeGhost(
-        ghostEl,
-        a.x + (b.x - a.x) * k,
-        a.y + (b.y - a.y) * k,
-        fade,
-        tapK,
-      );
+      return placeGhost(ghostEl, a.x + (b.x - a.x) * k, a.y + (b.y - a.y) * k, fade, tapK);
     }
     if (move.kind === "drag") {
       /* Take hold of the tray in the dark room and pull it across the
@@ -3699,9 +3351,7 @@ export function mountGardenScene(
       anchorPoint.z += PACKET.d;
       return anchorPoint;
     }
-    anchorPoint.y += t.startsWith("packet")
-      ? PACKET.h + 0.08
-      : (lift[t] ?? 0.5) * o.scale.x;
+    anchorPoint.y += t.startsWith("packet") ? PACKET.h + 0.08 : (lift[t] ?? 0.5) * o.scale.x;
     return anchorPoint;
   }
   const cutPoint = new THREE.Vector3();
@@ -3723,24 +3373,16 @@ export function mountGardenScene(
       seen.add(o);
       const pts: [number, number][] = [];
       o.traverseVisible((m) => {
-        const geo = (m as THREE.Mesh).geometry as
-          THREE.BufferGeometry | undefined;
+        const geo = (m as THREE.Mesh).geometry as THREE.BufferGeometry | undefined;
         if (!geo) return;
         if (!geo.boundingBox) geo.computeBoundingBox();
         const b = geo.boundingBox!;
         for (let i = 0; i < 8; i++) {
           cutPoint
-            .set(
-              i & 1 ? b.max.x : b.min.x,
-              i & 2 ? b.max.y : b.min.y,
-              i & 4 ? b.max.z : b.min.z,
-            )
+            .set(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z)
             .applyMatrix4(m.matrixWorld)
             .project(camera);
-          pts.push([
-            ((cutPoint.x + 1) / 2) * box.width - left,
-            ((1 - cutPoint.y) / 2) * box.height - top,
-          ]);
+          pts.push([((cutPoint.x + 1) / 2) * box.width - left, ((1 - cutPoint.y) / 2) * box.height - top]);
         }
       });
       if (pts.length < 3) continue;
@@ -3753,11 +3395,7 @@ export function mountGardenScene(
       )
         continue;
       hull(pts);
-      holes.push(
-        "M" +
-          cutHull.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L") +
-          "Z",
-      );
+      holes.push("M" + cutHull.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L") + "Z");
     }
     frame.style.clipPath = holes.length
       ? /* Everything round the frame — its cord, nail and shadow — and
@@ -3768,17 +3406,11 @@ export function mountGardenScene(
   /** The convex hull of `pts`, into `cutHull` (monotone chain). */
   function hull(pts: [number, number][]) {
     pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    const cross = (
-      o: [number, number],
-      a: [number, number],
-      b: [number, number],
-    ) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+    const cross = (o: [number, number], a: [number, number], b: [number, number]) =>
+      (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
     cutHull.length = 0;
     for (const p of pts) {
-      while (
-        cutHull.length >= 2 &&
-        cross(cutHull[cutHull.length - 2], cutHull[cutHull.length - 1], p) <= 0
-      )
+      while (cutHull.length >= 2 && cross(cutHull[cutHull.length - 2], cutHull[cutHull.length - 1], p) <= 0)
         cutHull.pop();
       cutHull.push(p);
     }
@@ -3801,9 +3433,7 @@ export function mountGardenScene(
    *  at the card's edge. Drawn only where the card stands clear of the
    *  rack, to its left. */
   function placeRackArrow(el: HTMLElement, box: DOMRect) {
-    const card = document
-      .querySelector('[data-garden-card="light"]')
-      ?.getBoundingClientRect();
+    const card = document.querySelector('[data-garden-card="light"]')?.getBoundingClientRect();
     const line = el.querySelector("[data-arrow-line]");
     const head = el.querySelector("[data-arrow-head]");
     if (step !== "light" || !card || !card.width || !line || !head) {
@@ -3811,9 +3441,7 @@ export function mountGardenScene(
       return;
     }
     const { w, d, shelves } = SHELF_RACK;
-    rack.group.localToWorld(
-      rackPoint.set(-w / 2 + 1.1, shelves[OUR_SHELF] + 0.05, d / 2),
-    );
+    rack.group.localToWorld(rackPoint.set(-w / 2 + 1.1, shelves[OUR_SHELF] + 0.05, d / 2));
     rackPoint.project(camera);
     const sx = ((rackPoint.x + 1) / 2) * box.width;
     const sy = ((1 - rackPoint.y) / 2) * box.height;
@@ -3837,10 +3465,7 @@ export function mountGardenScene(
     const L = 9;
     const p = (a: number) =>
       `${(ex - L * Math.cos(ang + a)).toFixed(1)} ${(ey - L * Math.sin(ang + a)).toFixed(1)}`;
-    head.setAttribute(
-      "d",
-      `M${p(0.5)}L${ex.toFixed(1)} ${ey.toFixed(1)}L${p(-0.5)}`,
-    );
+    head.setAttribute("d", `M${p(0.5)}L${ex.toFixed(1)} ${ey.toFixed(1)}L${p(-0.5)}`);
     el.style.transform = "translate(0px, 0px)";
     el.dataset.place = "frame";
     el.dataset.show = "true";
@@ -3875,21 +3500,13 @@ export function mountGardenScene(
       const vx1 = Math.min(x1, W - 8);
       fits = adA.z < 1 && vx1 - vx0 > 120 && y0 >= 8 && y0 < box.height * 0.6;
       /* The wall showing between the shelf and the frame, for the cord. */
-      el?.style.setProperty(
-        "--ad-gap",
-        `${Math.max(0, Math.round(y0 - shelfY))}px`,
-      );
+      el?.style.setProperty("--ad-gap", `${Math.max(0, Math.round(y0 - shelfY))}px`);
       if (el && fits) {
         el.style.setProperty("--ad-w", `${Math.round(vx1 - vx0)}px`);
         /* The frame grows past this to hold its content (`WallFrame`). */
         el.style.setProperty("--ad-h", `${Math.max(0, Math.round(y1 - y0))}px`);
-        const tw =
-          (el.firstElementChild as HTMLElement | null)?.offsetWidth ?? 0;
-        const cx = THREE.MathUtils.clamp(
-          (vx0 + vx1) / 2,
-          tw / 2 + 8,
-          Math.max(tw / 2 + 8, W - tw / 2 - 8),
-        );
+        const tw = (el.firstElementChild as HTMLElement | null)?.offsetWidth ?? 0;
+        const cx = THREE.MathUtils.clamp((vx0 + vx1) / 2, tw / 2 + 8, Math.max(tw / 2 + 8, W - tw / 2 - 8));
         el.style.transform = `translate(${Math.round(cx)}px, ${Math.round(y0)}px)`;
         el.dataset.place = "frame";
         /* The frame is drawn over the scene, so a tray lifted in front
@@ -3924,15 +3541,10 @@ export function mountGardenScene(
   }
   function placeAnchors() {
     const box = canvas.getBoundingClientRect();
-    const live = held
-      ? targetsFor(phase).filter((t) => t === "tray" || t === "basin")
-      : targetsFor(phase);
+    const live = held ? targetsFor(phase).filter((t) => t === "tray" || t === "basin") : targetsFor(phase);
     placeWallAd(box);
     /* The seed tags of one row, to be spread apart where they meet. */
-    const rows: Record<
-      string,
-      { el: HTMLElement; x: number; y: number; tw: number }[]
-    > = {};
+    const rows: Record<string, { el: HTMLElement; x: number; y: number; tw: number }[]> = {};
     for (const [name, el] of anchors) {
       if (name === "ad") continue;
       if (name === "rackArrow") {
@@ -3953,19 +3565,14 @@ export function mountGardenScene(
          view, so its label is placed in that view's rectangle. */
       const split = splitOn();
       at.project(split ? darkCam : camera);
-      let rawX = split
-        ? darkRect.x + ((at.x + 1) / 2) * darkRect.w
-        : ((at.x + 1) / 2) * box.width;
-      let rawY = split
-        ? darkRect.y + ((1 - at.y) / 2) * darkRect.h
-        : ((1 - at.y) / 2) * box.height;
+      let rawX = split ? darkRect.x + ((at.x + 1) / 2) * darkRect.w : ((at.x + 1) / 2) * box.width;
+      let rawY = split ? darkRect.y + ((1 - at.y) / 2) * darkRect.h : ((1 - at.y) / 2) * box.height;
       const tag = el.firstElementChild as HTMLElement | null;
       const tw = tag?.offsetWidth ?? 0;
       const th = tag?.offsetHeight ?? 0;
       const W = box.width;
       const H = box.height;
-      const clamp = (v: number, lo: number, hi: number) =>
-        THREE.MathUtils.clamp(v, lo, Math.max(lo, hi));
+      const clamp = (v: number, lo: number, hi: number) => THREE.MathUtils.clamp(v, lo, Math.max(lo, hi));
       let place = anchorPlace(name);
       /* A pair's card goes beside its tray only where it fits there with
          a clear gap; on a narrower stage it stands over the tray's back
@@ -3989,27 +3596,18 @@ export function mountGardenScene(
       let x: number;
       let y: number;
       if (place === "left" || place === "right") {
-        x =
-          place === "left"
-            ? clamp(rawX, tw + 8, W - 8)
-            : clamp(rawX, 8, W - tw - 8);
+        x = place === "left" ? clamp(rawX, tw + 8, W - 8) : clamp(rawX, 8, W - tw - 8);
         y = clamp(rawY, th / 2 + 8, H - th / 2 - 8);
       } else {
         /* The coco peat tag hangs to the right of its point on a wide
            screen, not centred on it. */
         const side = name === "medium" && L !== TALL;
-        x = side
-          ? Math.min(rawX, W - tw - 8)
-          : clamp(rawX, tw / 2 + 8, W - tw / 2 - 8);
-        y =
-          place === "below"
-            ? clamp(rawY, 8, H - th - 8)
-            : clamp(rawY, th + 8, H - 8);
+        x = side ? Math.min(rawX, W - tw - 8) : clamp(rawX, tw / 2 + 8, W - tw / 2 - 8);
+        y = place === "below" ? clamp(rawY, 8, H - th - 8) : clamp(rawY, th + 8, H - 8);
       }
       el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
       el.dataset.show = at.z < 1 ? "true" : "false";
-      if (name.startsWith("packet-") && at.z < 1)
-        (rows[place] ??= []).push({ el, x, y, tw });
+      if (name.startsWith("packet-") && at.z < 1) (rows[place] ??= []).push({ el, x, y, tw });
     }
     /* On a narrow stage two seed tags in a row can meet (fixed-size words
        over a scene that shrinks): push them apart, keeping the row's
@@ -4029,11 +3627,9 @@ export function mountGardenScene(
             b.x += need / 2;
           }
         }
-        for (const t of row)
-          t.x = THREE.MathUtils.clamp(t.x, t.tw / 2 + 8, W - t.tw / 2 - 8);
+        for (const t of row) t.x = THREE.MathUtils.clamp(t.x, t.tw / 2 + 8, W - t.tw / 2 - 8);
       }
-      for (const t of row)
-        t.el.style.transform = `translate(${Math.round(t.x)}px, ${Math.round(t.y)}px)`;
+      for (const t of row) t.el.style.transform = `translate(${Math.round(t.x)}px, ${Math.round(t.y)}px)`;
     }
   }
 
@@ -4049,12 +3645,7 @@ export function mountGardenScene(
   const NIGHT_HEMI = new THREE.Color("#7f8fc4");
   const DAY_HEMI = new THREE.Color("#fff7ea");
   const splitOn = () =>
-    step === "dark" &&
-    (phase === "hold" ||
-      phase === "toLight" ||
-      phase === "done" ||
-      flying ||
-      leave > 0);
+    step === "dark" && (phase === "hold" || phase === "toLight" || phase === "done" || flying || leave > 0);
   /** The dark room's share of the stage's width (wide) or height (tall):
    *  all of it alone, half or `DARK_SHARE_TALL` once the kitchen has slid
    *  in, none once the tray has been carried into the light. */
@@ -4066,19 +3657,10 @@ export function mountGardenScene(
   const darkRect = { x: 0, y: 0, w: 0, h: 0 };
   /** Aim `cam` at `target` from `elevation` radians up, far enough back that
    *  a sphere of `radius` fits its view. */
-  function aim(
-    cam: THREE.PerspectiveCamera,
-    target: THREE.Vector3,
-    radius: number,
-    elev: number,
-  ) {
+  function aim(cam: THREE.PerspectiveCamera, target: THREE.Vector3, radius: number, elev: number) {
     const tanV = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
     const dist = radius / Math.min(tanV, tanV * cam.aspect);
-    cam.position.set(
-      target.x,
-      target.y + Math.sin(elev) * dist,
-      target.z + Math.cos(elev) * dist,
-    );
+    cam.position.set(target.x, target.y + Math.sin(elev) * dist, target.z + Math.cos(elev) * dist);
     cam.lookAt(target);
     cam.updateProjectionMatrix();
   }
@@ -4158,9 +3740,7 @@ export function mountGardenScene(
       rack.group.visible = true;
       /* Without the tray, until it has landed on its shelf. */
       const landed = leave >= 1 && !flying;
-      const hidden = landed
-        ? [lidShadow]
-        : [activePair().group, activePair().shadow, lid, lidShadow, bed];
+      const hidden = landed ? [lidShadow] : [activePair().group, activePair().shadow, lid, lidShadow, bed];
       const was = hidden.map((o) => o.visible);
       for (const o of hidden) o.visible = false;
       /* Past the last night, morning comes up toward noon. */
@@ -4198,8 +3778,7 @@ export function mountGardenScene(
   /** Everything that is the tray, and the lights, on a layer of its own,
    *  so it can be drawn by itself over both halves. */
   function trayOnLayer() {
-    for (const o of [activePair().group, lid, bed])
-      o.traverse((c) => c.layers.enable(TRAY_LAYER));
+    for (const o of [activePair().group, lid, bed]) o.traverse((c) => c.layers.enable(TRAY_LAYER));
     hemi.layers.enable(TRAY_LAYER);
     sunLight.layers.enable(TRAY_LAYER);
   }
@@ -4211,15 +3790,7 @@ export function mountGardenScene(
    *  view stretched past the dark room's edge, so dragging it carries it
    *  visibly over the seam; dropped, it flies to its shelf in the kitchen's
    *  view and shrinks to the size it is drawn there. */
-  function drawCrossing(
-    w: number,
-    h: number,
-    wide: boolean,
-    pw: number,
-    ph: number,
-    kw: number,
-    kh: number,
-  ) {
+  function drawCrossing(w: number, h: number, wide: boolean, pw: number, ph: number, kw: number, kh: number) {
     const vw = dragView.w;
     const vh = dragView.h;
     darkCam.aspect = vw / vh;
@@ -4289,21 +3860,11 @@ export function mountGardenScene(
    *  panel. */
   const roomLow = new THREE.Vector3();
   const rackMid = new THREE.Vector3(0, SHELF_RACK.h / 2 - RACK_DROP, 0);
-  function aimRoom(
-    w: number,
-    h: number,
-    kw: number,
-    kh: number,
-    wide: boolean,
-  ) {
+  function aimRoom(w: number, h: number, kw: number, kh: number, wide: boolean) {
     /* The window, or — once the days are done — the whole lit rack, the
        way the light step opens on it. */
     const r = ease(rackAim);
-    roomLow.set(
-      roomAt.x - RACK_AT.x,
-      roomAt.y - RACK_DROP,
-      roomAt.z - RACK_AT.z,
-    );
+    roomLow.set(roomAt.x - RACK_AT.x, roomAt.y - RACK_DROP, roomAt.z - RACK_AT.z);
     roomLow.lerp(rackMid, r);
     const radius = THREE.MathUtils.lerp(3.3, SHELF_RACK.h / 2 + 0.5, r);
     const elev = THREE.MathUtils.lerp(0.12, 0.06, r);
@@ -4372,9 +3933,7 @@ export function mountGardenScene(
       if (l === look) return;
       look = l;
       buildCrop(l);
-      (
-        seedsFall.points.material as THREE.ShaderMaterial
-      ).uniforms.uColor.value.set(LOOKS[l].seed);
+      (seedsFall.points.material as THREE.ShaderMaterial).uniforms.uColor.value.set(LOOKS[l].seed);
       if (step !== "sow") setStep(step);
     },
     select,

@@ -25,8 +25,7 @@ import { VarietyRow } from "./VarietyRow";
  * would lose any unsaved edits in the other rows. If this ever grows past a
  * few hundred, move it to a query — not before.
  */
-const COLUMNS =
-  "minmax(11rem,1.6fr) repeat(5, minmax(4.5rem, 0.7fr)) 6rem 5.5rem 4rem";
+const COLUMNS = "minmax(11rem,1.6fr) repeat(5, minmax(4.5rem, 0.7fr)) 6rem 5.5rem 4rem";
 
 /**
  * Below this the rows scroll sideways inside their own box rather than
@@ -44,11 +43,7 @@ const COLUMNS =
  */
 const MIN_WIDTH = "min-w-[52rem]";
 
-export function VarietyTable({
-  varieties,
-}: {
-  varieties: Array<{ variety: Variety; name: string | null }>;
-}) {
+export function VarietyTable({ varieties }: { varieties: Array<{ variety: Variety; name: string | null }> }) {
   const t = useTranslations("admin.varieties");
   const [query, setQuery] = useState("");
 
@@ -60,9 +55,7 @@ export function VarietyTable({
        `red-amaranth` even though the key has no space in it. */
     const asKey = sanitiseKey(q);
     return varieties.filter(
-      (v) =>
-        v.variety.contentKey.includes(asKey) ||
-        (v.name ?? "").toLowerCase().includes(q),
+      (v) => v.variety.contentKey.includes(asKey) || (v.name ?? "").toLowerCase().includes(q),
     );
   }, [varieties, query]);
 
@@ -123,43 +116,32 @@ export function VarietyTable({
         /* The scroll box wraps the header *and* the rows, so they scroll
            together and stay aligned. */
         <div className="overflow-x-auto">
-        <div className={`${MIN_WIDTH} space-y-2`}>
-          {/* Column headings, hidden below `lg` where the table is scrolled
+          <div className={`${MIN_WIDTH} space-y-2`}>
+            {/* Column headings, hidden below `lg` where the table is scrolled
               rather than stacked and every input carries its own label as its
               accessible name instead. */}
-          <div
-            style={{ gridTemplateColumns: COLUMNS }}
-            className="hidden gap-x-3 px-4 lg:grid"
-          >
-            {[
-              t("colVariety"),
-              t("colGrowDays"),
-              t("colYieldMin"),
-              t("colYieldMax"),
-              t("colPrice"),
-              t("colSeed"),
-              "",
-              t("colActive"),
-              "",
-            ].map((heading, i) => (
-              <span
-                key={i}
-                className="font-body text-[10px] uppercase tracking-wider text-stone"
-              >
-                {heading}
-              </span>
+            <div style={{ gridTemplateColumns: COLUMNS }} className="hidden gap-x-3 px-4 lg:grid">
+              {[
+                t("colVariety"),
+                t("colGrowDays"),
+                t("colYieldMin"),
+                t("colYieldMax"),
+                t("colPrice"),
+                t("colSeed"),
+                "",
+                t("colActive"),
+                "",
+              ].map((heading, i) => (
+                <span key={i} className="font-body text-[10px] uppercase tracking-wider text-stone">
+                  {heading}
+                </span>
+              ))}
+            </div>
+
+            {shown.map(({ variety, name }) => (
+              <VarietyRow key={variety.id} variety={variety} name={name} columns={COLUMNS} />
             ))}
           </div>
-
-          {shown.map(({ variety, name }) => (
-            <VarietyRow
-              key={variety.id}
-              variety={variety}
-              name={name}
-              columns={COLUMNS}
-            />
-          ))}
-        </div>
         </div>
       )}
     </div>

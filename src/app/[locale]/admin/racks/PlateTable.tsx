@@ -39,8 +39,7 @@ import { CheckField, NumberField } from "../fields";
  * drifted right of the input it named. Same reason
  * `varieties/VarietyTable.tsx` declares its widths.
  */
-const COLUMNS =
-  "repeat(7, minmax(4.5rem, 1fr)) 6rem 5.5rem 4rem";
+const COLUMNS = "repeat(7, minmax(4.5rem, 1fr)) 6rem 5.5rem 4rem";
 /** Below this the rows scroll sideways inside their own box rather than
  *  widening the page.
  *
@@ -114,13 +113,65 @@ function PlateRow({ plate }: { plate: ShelfPlate }) {
             forward rather than clearing it. */}
         <input type="hidden" name="active" value={plate.active ? "on" : "off"} />
 
-        <NumberField compact label={t("colDepth")} name="depthFt" min={0} defaultValue={plate.depthFt} error={errorFor("depthFt")} />
-        <NumberField compact label={t("colLength")} name="lengthFt" min={0} defaultValue={plate.lengthFt} error={errorFor("lengthFt")} />
-        <NumberField compact label={t("colThickness")} name="thicknessMm" min={0} defaultValue={plate.thicknessMm} error={errorFor("thicknessMm")} />
-        <NumberField compact label={t("colCapacity")} name="capacityKg" min={0} defaultValue={plate.capacityKg} error={errorFor("capacityKg")} />
-        <NumberField compact label={t("colPlatePrice")} name="price" min={0} defaultValue={plate.price} error={errorFor("price")} />
-        <NumberField compact label={t("colGramsPerShelf")} name="gramsPerShelf" min={0} defaultValue={plate.gramsPerShelf} error={errorFor("gramsPerShelf") ?? (plate.gramsPerShelf === undefined ? t("gramsMissing") : undefined)} />
-        <NumberField compact label={t("colPackedCm")} name="packedCm" min={0} step="any" defaultValue={plate.packedCm} error={errorFor("packedCm") ?? (plate.packedCm === undefined ? t("packedMissing") : undefined)} />
+        <NumberField
+          compact
+          label={t("colDepth")}
+          name="depthFt"
+          min={0}
+          defaultValue={plate.depthFt}
+          error={errorFor("depthFt")}
+        />
+        <NumberField
+          compact
+          label={t("colLength")}
+          name="lengthFt"
+          min={0}
+          defaultValue={plate.lengthFt}
+          error={errorFor("lengthFt")}
+        />
+        <NumberField
+          compact
+          label={t("colThickness")}
+          name="thicknessMm"
+          min={0}
+          defaultValue={plate.thicknessMm}
+          error={errorFor("thicknessMm")}
+        />
+        <NumberField
+          compact
+          label={t("colCapacity")}
+          name="capacityKg"
+          min={0}
+          defaultValue={plate.capacityKg}
+          error={errorFor("capacityKg")}
+        />
+        <NumberField
+          compact
+          label={t("colPlatePrice")}
+          name="price"
+          min={0}
+          defaultValue={plate.price}
+          error={errorFor("price")}
+        />
+        <NumberField
+          compact
+          label={t("colGramsPerShelf")}
+          name="gramsPerShelf"
+          min={0}
+          defaultValue={plate.gramsPerShelf}
+          error={
+            errorFor("gramsPerShelf") ?? (plate.gramsPerShelf === undefined ? t("gramsMissing") : undefined)
+          }
+        />
+        <NumberField
+          compact
+          label={t("colPackedCm")}
+          name="packedCm"
+          min={0}
+          step="any"
+          defaultValue={plate.packedCm}
+          error={errorFor("packedCm") ?? (plate.packedCm === undefined ? t("packedMissing") : undefined)}
+        />
 
         <button
           type="submit"
@@ -199,8 +250,19 @@ function AddPlateForm() {
         <NumberField label={t("colThickness")} name="thicknessMm" min={0} error={errorFor("thicknessMm")} />
         <NumberField label={t("colCapacity")} name="capacityKg" min={0} error={errorFor("capacityKg")} />
         <NumberField label={t("colPlatePrice")} name="price" min={0} error={errorFor("price")} />
-        <NumberField label={t("colGramsPerShelf")} name="gramsPerShelf" min={0} error={errorFor("gramsPerShelf")} />
-        <NumberField label={t("colPackedCm")} name="packedCm" min={0} step="any" error={errorFor("packedCm")} />
+        <NumberField
+          label={t("colGramsPerShelf")}
+          name="gramsPerShelf"
+          min={0}
+          error={errorFor("gramsPerShelf")}
+        />
+        <NumberField
+          label={t("colPackedCm")}
+          name="packedCm"
+          min={0}
+          step="any"
+          error={errorFor("packedCm")}
+        />
         <button
           type="submit"
           disabled={pending}

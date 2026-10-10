@@ -29,18 +29,14 @@ export default async function SettingsPage() {
   return (
     <div>
       <h1 className="font-display text-2xl font-bold text-forest">{t("title")}</h1>
-      <p className="mt-2 max-w-2xl font-body text-sm leading-relaxed text-stone">
-        {t("intro")}
-      </p>
+      <p className="mt-2 max-w-2xl font-body text-sm leading-relaxed text-stone">{t("intro")}</p>
 
       <ul className="mt-8 max-w-lg divide-y divide-forest/10 rounded-2xl border border-forest/12">
         {PRODUCT_TYPES.map((type) => {
           const visible = !disabled.has(type);
           return (
             <li key={type} className="flex items-center justify-between gap-4 px-5 py-3.5">
-              <span className="font-body text-sm font-semibold text-forest">
-                {label(type)}
-              </span>
+              <span className="font-body text-sm font-semibold text-forest">{label(type)}</span>
               <form action={toggleProductType}>
                 <input type="hidden" name="type" value={type} />
                 <button

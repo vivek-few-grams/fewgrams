@@ -110,7 +110,7 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                       of the card is the target, because a buyer aims at the
                       picture. */}
                   <Link href={`/shop/trays/${item.contentKey}`} className="group">
-                  {/* 3:2, not the square the other category grids use — and
+                    {/* 3:2, not the square the other category grids use — and
                       it is an asset decision rather than a layout one. The
                       detail page's gallery frame is `aspect-[3/2]`, so a square
                       master would be letterboxed there while a 3:2 master would
@@ -120,10 +120,10 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                       It also suits the subject. Every item in this category is
                       a wide flat object — a 60 × 30 cm tray, a 50 × 25 cm mat —
                       and a square frame around one is mostly margin. */}
-                  <div
-                    className={`mcard flex aspect-[3/2] items-center justify-center ${panel.panelClass}`}
-                  >
-                    {/* The same three treatments `Tile` has, for the same
+                    <div
+                      className={`mcard flex aspect-[3/2] items-center justify-center ${panel.panelClass}`}
+                    >
+                      {/* The same three treatments `Tile` has, for the same
                         reason: the photography arrives one product at a time,
                         and a cut-out is a different picture from a hero rather
                         than a better one. A hero dropped into the media box
@@ -135,12 +135,12 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                         a price, four spec rows and a dated promise under the
                         picture, and `Tile` is square with a name and one line
                         of meta. Only the panel is shared, via `Marquee`. */}
-                    {cutout ? (
-                      <>
-                        <Marquee
-                          words={words}
-                          toneClass={panel.marqueeClass}
-                          /* `cqw`, not the default's `vw` — 7% of the card
+                      {cutout ? (
+                        <>
+                          <Marquee
+                            words={words}
+                            toneClass={panel.marqueeClass}
+                            /* `cqw`, not the default's `vw` — 7% of the card
                              rather than of the window. A 3:2 panel is short
                              and wide, so capped `vw` type leaves a hole at
                              the loop seam once the grid drops to one column
@@ -148,15 +148,15 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                              twelve lines come to 1.2 panel heights at every
                              width, and the scroll speed stops changing with
                              the viewport. */
-                          sizeClass="text-[7cqw]"
-                          /* No `durationSeconds`: one half of the block is
+                            sizeClass="text-[7cqw]"
+                            /* No `durationSeconds`: one half of the block is
                              1.20 panel heights — 334px on the measured
                              419 x 279 card — so the CSS default of 8s already
                              runs it at 42px/s, inside 15% of the 48px/s house
                              speed. Not worth a number that would then need
                              maintaining. */
-                        />
-                        {/* 96%, as on a variety tile, and the cut-out is padded
+                          />
+                          {/* 96%, as on a variety tile, and the cut-out is padded
                             to 88% of its own 3:2 frame by `scripts/cutout.py` —
                             so the tray sits at ~84% of the card at rest and the
                             marquee keeps a legible band above and below it.
@@ -170,42 +170,42 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                             clearance each side. The height never binds; it comes
                             to two thirds of the card. Anything larger needs the
                             cut-out re-padded tighter than 88%, not a wider box. */}
-                        <div className="mcard__media relative aspect-[3/2] w-[96%]">
-                          <Image
-                            src={cutout.src}
-                            alt={cutout.alt}
-                            fill
-                            priority={i < 3}
-                            sizes="(min-width: 768px) 30vw, 92vw"
-                            className="object-contain"
-                          />
-                        </div>
-                      </>
-                    ) : photo ? (
-                      /* `priority` on the first row, which here is every card:
+                          <div className="mcard__media relative aspect-[3/2] w-[96%]">
+                            <Image
+                              src={cutout.src}
+                              alt={cutout.alt}
+                              fill
+                              priority={i < 3}
+                              sizes="(min-width: 768px) 30vw, 92vw"
+                              className="object-contain"
+                            />
+                          </div>
+                        </>
+                      ) : photo ? (
+                        /* `priority` on the first row, which here is every card:
                          three items, one row on desktop. The top-left is this
                          page's Largest Contentful Paint element and
                          lazy-loading it costs a round trip. */
-                      <Image
-                        src={photo.src}
-                        alt={photo.alt}
-                        fill
-                        priority={i < 3}
-                        sizes="(min-width: 768px) 30vw, 92vw"
-                        className="object-cover"
-                      />
-                    ) : (
-                      /* No photography yet, so the brand mark rather than a
+                        <Image
+                          src={photo.src}
+                          alt={photo.alt}
+                          fill
+                          priority={i < 3}
+                          sizes="(min-width: 768px) 30vw, 92vw"
+                          className="object-cover"
+                        />
+                      ) : (
+                        /* No photography yet, so the brand mark rather than a
                          broken image or an empty panel — with the specs still
                          scrolling, so the treatment does not appear and
                          disappear as shots land. `seed` varies the mark per
                          card so three cards are not three identical
                          drawings. */
-                      <>
-                        <Marquee
-                          words={words}
-                          toneClass={panel.marqueeClass}
-                          /* `cqw`, not the default's `vw` — 7% of the card
+                        <>
+                          <Marquee
+                            words={words}
+                            toneClass={panel.marqueeClass}
+                            /* `cqw`, not the default's `vw` — 7% of the card
                              rather than of the window. A 3:2 panel is short
                              and wide, so capped `vw` type leaves a hole at
                              the loop seam once the grid drops to one column
@@ -213,27 +213,27 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                              twelve lines come to 1.2 panel heights at every
                              width, and the scroll speed stops changing with
                              the viewport. */
-                          sizeClass="text-[7cqw]"
-                          /* No `durationSeconds`: one half of the block is
+                            sizeClass="text-[7cqw]"
+                            /* No `durationSeconds`: one half of the block is
                              1.20 panel heights — 334px on the measured
                              419 x 279 card — so the CSS default of 8s already
                              runs it at 42px/s, inside 15% of the 48px/s house
                              speed. Not worth a number that would then need
                              maintaining. */
-                        />
-                        <div className="mcard__media w-[38%]">
-                          <Sprout className="h-full w-full" stroke="#033923" seed={i + 3} />
-                        </div>
-                      </>
-                    )}
-                  </div>
+                          />
+                          <div className="mcard__media w-[38%]">
+                            <Sprout className="h-full w-full" stroke="#033923" seed={i + 3} />
+                          </div>
+                        </>
+                      )}
+                    </div>
 
-                  <h2 className="mt-4 font-display text-base font-semibold text-forest transition-colors group-hover:text-stone">
-                    {content.text.name}
-                  </h2>
-                  <p className="mt-1 font-display text-lg font-bold tabular-nums text-forest">
-                    {c("price", { price: item.price })}
-                  </p>
+                    <h2 className="mt-4 font-display text-base font-semibold text-forest transition-colors group-hover:text-stone">
+                      {content.text.name}
+                    </h2>
+                    <p className="mt-1 font-display text-lg font-bold tabular-nums text-forest">
+                      {c("price", { price: item.price })}
+                    </p>
                   </Link>
                   {/* An explicit link as well as the card. A linked image is
                       invisible to anyone scanning for something to click, and
@@ -246,9 +246,7 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                     >
                       {t("cardLink")}
                     </Link>
-                    <QuickAdd
-                      {...quickAdd("tray", item.contentKey, content.text.name)}
-                    />
+                    <QuickAdd {...quickAdd("tray", item.contentKey, content.text.name)} />
                   </div>
                 </li>
               );

@@ -35,8 +35,7 @@ const KEY = /^[a-z]+(?:-[a-z]+)*$/;
 
 /** Same pattern as `plan-contract.ts`, for the reasons recorded there
  *  (`\b` is ASCII-only, so the Kannada marker is anchored on the digit). */
-const MONEY =
-  /(?:₹|\brs\.?|\brupees?\b|ರೂ\.?)\s*[\d೦-೯]|[\d೦-೯][\d,.]*\s*(?:rupees?\b|ರೂ)/iu;
+const MONEY = /(?:₹|\brs\.?|\brupees?\b|ರೂ\.?)\s*[\d೦-೯]|[\d೦-೯][\d,.]*\s*(?:rupees?\b|ರೂ)/iu;
 
 /** A count of days, in figures or words, in either script. Same scope as the
  *  storybook's rule: a count, not the word. */
@@ -46,8 +45,7 @@ const DAY_COUNT =
 /** Stems, so inflected forms match too — ಬೆಂಗಳೂರಿನಲ್ಲಿ drops the final ು. */
 const CITY = /bengal[uo]r|bangalor|ಬೆಂಗಳೂರ/iu;
 
-const isFilledString = (v: unknown): v is string =>
-  typeof v === "string" && v.trim().length > 0;
+const isFilledString = (v: unknown): v is string => typeof v === "string" && v.trim().length > 0;
 
 const isObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);
@@ -120,12 +118,7 @@ function checkOrder(sections: unknown[], at: (msg: string) => void): Order {
   return order;
 }
 
-function checkTextBlock(
-  order: Order,
-  raw: unknown,
-  locale: string,
-  at: (msg: string) => void,
-) {
+function checkTextBlock(order: Order, raw: unknown, locale: string, at: (msg: string) => void) {
   if (!isObject(raw)) {
     at(`"${locale}" must be an object`);
     return;

@@ -43,8 +43,7 @@ export function AdminNav({
      highlighted on a detail page like `/admin/orders/123`.
      `/admin/racks` does not match `/admin/angle-racks`, so the two rack
      screens cannot both light up. */
-  const isActive = (href: string) =>
-    href === "/admin" ? pathname === href : pathname.startsWith(href);
+  const isActive = (href: string) => (href === "/admin" ? pathname === href : pathname.startsWith(href));
 
   return (
     <nav aria-label={navLabel} className="lg:mt-2">
@@ -74,9 +73,7 @@ export function AdminNav({
                          reports it. */
                       aria-current={active ? "page" : undefined}
                       className={`block whitespace-nowrap rounded-lg px-3 py-2 font-body text-sm transition-colors lg:w-full ${
-                        active
-                          ? "bg-forest font-semibold text-cream"
-                          : "text-forest hover:bg-sage/60"
+                        active ? "bg-forest font-semibold text-cream" : "text-forest hover:bg-sage/60"
                       }`}
                     >
                       {labels[item.label]}

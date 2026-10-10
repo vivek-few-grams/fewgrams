@@ -38,10 +38,7 @@ function refresh() {
   revalidatePath("/[locale]/checkout", "page");
 }
 
-export async function saveProfileAction(
-  _prev: FormState,
-  fd: FormData,
-): Promise<FormState> {
+export async function saveProfileAction(_prev: FormState, fd: FormData): Promise<FormState> {
   const actor = await assertRole("customer");
 
   const parsed = validateProfile(fd);
@@ -52,10 +49,7 @@ export async function saveProfileAction(
   return { status: "saved" };
 }
 
-export async function saveAddressAction(
-  _prev: FormState,
-  fd: FormData,
-): Promise<FormState> {
+export async function saveAddressAction(_prev: FormState, fd: FormData): Promise<FormState> {
   const actor = await assertRole("customer");
 
   /* India Post's place for the PIN fills a district or state the form sent
@@ -96,8 +90,7 @@ export async function saveAddressAction(
 /** What the address form learns about a PIN the moment it is complete. */
 export type PinLookup =
   /** `inArea`: the own run reaches it, so fresh greens can go there too. */
-  | { status: "found"; place: PinPlace | null; inArea: boolean }
-  | { status: "invalid" };
+  { status: "found"; place: PinPlace | null; inArea: boolean } | { status: "invalid" };
 
 /**
  * Called by the address form on the sixth digit — SPEC §7.

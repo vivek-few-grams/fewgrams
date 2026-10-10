@@ -12,7 +12,12 @@ describe("customerDelivery", () => {
   });
 
   it("charges what the courier costs when that is under the cap", () => {
-    expect(customerDelivery(150, null, [36])).toEqual({ total: 36, ownRun: null, parcels: [36], free: false });
+    expect(customerDelivery(150, null, [36])).toEqual({
+      total: 36,
+      ownRun: null,
+      parcels: [36],
+      free: false,
+    });
   });
 
   it("caps the courier cost, however dear", () => {

@@ -40,10 +40,7 @@ export function PipeRates({
   maxHeightFt: number;
 }) {
   const t = useTranslations("admin.pipeRacks");
-  const [state, action, pending] = useActionState<FormState, FormData>(
-    savePipeRates,
-    IDLE,
-  );
+  const [state, action, pending] = useActionState<FormState, FormData>(savePipeRates, IDLE);
 
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field
@@ -85,7 +82,10 @@ export function PipeRates({
             min={0}
             step="any"
             defaultValue={pipeSettings?.pipeDiameterCm ?? ""}
-            error={errorFor("pipeDiameterCm") ?? (pipeSettings && pipeSettings.pipeDiameterCm === undefined ? t("packMissing") : undefined)}
+            error={
+              errorFor("pipeDiameterCm") ??
+              (pipeSettings && pipeSettings.pipeDiameterCm === undefined ? t("packMissing") : undefined)
+            }
           />
         </div>
 
@@ -97,7 +97,10 @@ export function PipeRates({
             hint={t("gramsPerFtHint")}
             name="gramsPerFt"
             defaultValue={pipeSettings?.gramsPerFt ?? ""}
-            error={errorFor("gramsPerFt") ?? (pipeSettings && pipeSettings.gramsPerFt === undefined ? t("weightMissing") : undefined)}
+            error={
+              errorFor("gramsPerFt") ??
+              (pipeSettings && pipeSettings.gramsPerFt === undefined ? t("weightMissing") : undefined)
+            }
           />
           <NumberField
             label={t("connectorGrams")}

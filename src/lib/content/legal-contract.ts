@@ -37,11 +37,9 @@ const KEY = /^[a-z]+(?:-[a-z]+)*$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** As in `plan-contract.ts`. */
-const MONEY =
-  /(?:₹|\brs\.?|\brupees?\b|ರೂ\.?)\s*[\d೦-೯]|[\d೦-೯][\d,.]*\s*(?:rupees?\b|ರೂ)/iu;
+const MONEY = /(?:₹|\brs\.?|\brupees?\b|ರೂ\.?)\s*[\d೦-೯]|[\d೦-೯][\d,.]*\s*(?:rupees?\b|ರೂ)/iu;
 
-const isFilledString = (v: unknown): v is string =>
-  typeof v === "string" && v.trim().length > 0;
+const isFilledString = (v: unknown): v is string => typeof v === "string" && v.trim().length > 0;
 
 const isObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);

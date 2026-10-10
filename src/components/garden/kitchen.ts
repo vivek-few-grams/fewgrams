@@ -70,18 +70,9 @@ const DARK = { x0: -13.6, x1: -5.0, depth: 3.2, h: 6 };
  *  is no bare wall beyond. */
 export const CORNER_X = -16.6;
 /** Where a tray stands in the dark room, on its floor. */
-export const DARK_SPOT = new THREE.Vector3(
-  (DOOR.x0 + DOOR.x1) / 2,
-  0,
-  WALL_Z - 1.6,
-);
+export const DARK_SPOT = new THREE.Vector3((DOOR.x0 + DOOR.x1) / 2, 0, WALL_Z - 1.6);
 
-function paint(
-  w: number,
-  h: number,
-  draw: (g: CanvasRenderingContext2D) => void,
-  transparent = false,
-) {
+function paint(w: number, h: number, draw: (g: CanvasRenderingContext2D) => void, transparent = false) {
   const c = document.createElement("canvas");
   c.width = w;
   c.height = h;
@@ -93,15 +84,9 @@ function paint(
   return t;
 }
 
-export function kitchen(
-  bin: Bin,
-  rand: () => number,
-  doorLabel: string,
-  font: string,
-) {
+export function kitchen(bin: Bin, rand: () => number, doorLabel: string, font: string) {
   const g = new THREE.Group();
-  const std = (o: THREE.MeshStandardMaterialParameters) =>
-    bin.add(new THREE.MeshStandardMaterial(o));
+  const std = (o: THREE.MeshStandardMaterialParameters) => bin.add(new THREE.MeshStandardMaterial(o));
 
   /* ---- the wall, with the window and the doorway cut out ---- */
   const shape = new THREE.Shape();
@@ -124,10 +109,7 @@ export function kitchen(
   const wallGeo = bin.add(new THREE.ShapeGeometry(shape));
   /* Lambert, not standard: a flat matte plaster that keeps its colour
      rather than picking up the room's reflections. */
-  const wall = new THREE.Mesh(
-    wallGeo,
-    bin.add(new THREE.MeshLambertMaterial({ color: "#7f8a6c" })),
-  );
+  const wall = new THREE.Mesh(wallGeo, bin.add(new THREE.MeshLambertMaterial({ color: "#7f8a6c" })));
   wall.position.z = WALL_Z;
   g.add(wall);
 
@@ -201,10 +183,7 @@ export function kitchen(
   bar(0.07, H, cx, cy, 0.08);
   bar(W, 0.07, cx, WIN.y0 + H * 0.62, 0.08);
   /* The sill, standing proud of the wall over the counter. */
-  const sill = new THREE.Mesh(
-    bin.add(new THREE.BoxGeometry(W + 0.6, 0.1, 0.42)),
-    frameMat,
-  );
+  const sill = new THREE.Mesh(bin.add(new THREE.BoxGeometry(W + 0.6, 0.1, 0.42)), frameMat);
   sill.position.set(cx, WIN.y0 - 0.05, WALL_Z + 0.12);
   g.add(sill);
   /* Faint glass, catching the room's light. */
@@ -228,10 +207,7 @@ export function kitchen(
   /* Everything outside is unlit, so night is a tint on each material,
      from its own colour (kept here) toward a dark blue. */
   const outside: { mat: THREE.MeshBasicMaterial; base: THREE.Color }[] = [];
-  const basic = (
-    color: string,
-    extra: THREE.MeshBasicMaterialParameters = {},
-  ) => {
+  const basic = (color: string, extra: THREE.MeshBasicMaterialParameters = {}) => {
     const mat = bin.add(new THREE.MeshBasicMaterial({ color, ...extra }));
     outside.push({ mat, base: mat.color.clone() });
     return mat;
@@ -260,10 +236,7 @@ export function kitchen(
     basic("#fff4c8", { transparent: true, opacity: 0.35 }),
   );
   sunGlow.position.set(cx + 1.7, 3.9, OUT - 4.9);
-  const sunDisc = new THREE.Mesh(
-    bin.add(new THREE.CircleGeometry(0.42, 40)),
-    basic("#fff8e2"),
-  );
+  const sunDisc = new THREE.Mesh(bin.add(new THREE.CircleGeometry(0.42, 40)), basic("#fff8e2"));
   sunDisc.position.set(cx + 1.7, 3.9, OUT - 4.88);
   g.add(sunGlow, sunDisc);
   const SUN_AT = sunDisc.position.clone();
@@ -323,12 +296,7 @@ export function kitchen(
     return { c, speed };
   });
 
-  const hill = (
-    base: number,
-    amps: [number, number, number][],
-    color: string,
-    z: number,
-  ) => {
+  const hill = (base: number, amps: [number, number, number][], color: string, z: number) => {
     const sh = new THREE.Shape();
     sh.moveTo(-15, -2);
     for (let x = -15; x <= 15; x += 0.25) {
@@ -338,10 +306,7 @@ export function kitchen(
     }
     sh.lineTo(15, -2);
     sh.closePath();
-    const m = new THREE.Mesh(
-      bin.add(new THREE.ShapeGeometry(sh, 2)),
-      basic(color),
-    );
+    const m = new THREE.Mesh(bin.add(new THREE.ShapeGeometry(sh, 2)), basic(color));
     m.position.set(cx, 0, z);
     g.add(m);
   };
@@ -385,10 +350,7 @@ export function kitchen(
     [cx + 5.2, 0.2, 1.1, OUT - 2.8, 3.1],
   ].map(([x, y, sc, z, phase]) => {
     const t = new THREE.Group();
-    const trunk = new THREE.Mesh(
-      bin.add(new THREE.PlaneGeometry(0.14, 0.9)),
-      trunkMat,
-    );
+    const trunk = new THREE.Mesh(bin.add(new THREE.PlaneGeometry(0.14, 0.9)), trunkMat);
     trunk.position.y = 0.45;
     t.add(trunk);
     const crown = new THREE.Group();
@@ -470,10 +432,7 @@ export function kitchen(
   const wingGeo = bin.add(new THREE.BufferGeometry());
   wingGeo.setAttribute(
     "position",
-    new THREE.Float32BufferAttribute(
-      [0, 0, 0, 0.22, 0, 0.05, 0.1, 0, -0.07],
-      3,
-    ),
+    new THREE.Float32BufferAttribute([0, 0, 0, 0.22, 0, 0.05, 0.1, 0, -0.07], 3),
   );
   const bodyGeo = bin.add(new THREE.SphereGeometry(0.05, 8, 6));
   const birds = [
@@ -516,25 +475,16 @@ export function kitchen(
   const CH = H + 0.3;
   const curtains = [-1, 1].map((side) => {
     const geo = bin.add(new THREE.PlaneGeometry(CW, CH, 18, 14));
-    geo.userData.rest = Float32Array.from(
-      geo.getAttribute("position").array as Float32Array,
-    );
+    geo.userData.rest = Float32Array.from(geo.getAttribute("position").array as Float32Array);
     const m = new THREE.Mesh(geo, linen);
-    m.position.set(
-      side < 0 ? WIN.x0 - 0.25 : WIN.x1 + 0.25,
-      WIN.y1 + 0.3 - CH / 2,
-      WALL_Z + 0.16,
-    );
+    m.position.set(side < 0 ? WIN.x0 - 0.25 : WIN.x1 + 0.25, WIN.y1 + 0.3 - CH / 2, WALL_Z + 0.16);
     g.add(m);
     return { m, geo, side };
   });
 
   /* ---- a shelf of herbs, right of the window ---- */
   const wood = std({ color: "#b98c5f", roughness: 0.7, envMapIntensity: 0.2 });
-  const shelf = new THREE.Mesh(
-    bin.add(new THREE.BoxGeometry(SHELF_W, 0.09, 0.5)),
-    wood,
-  );
+  const shelf = new THREE.Mesh(bin.add(new THREE.BoxGeometry(SHELF_W, 0.09, 0.5)), wood);
   shelf.position.set(SHELF.x, SHELF.y, WALL_Z + 0.25);
   g.add(shelf);
   /* ---- plants: leaves, not balls. Each leaf is a painted outline on a
@@ -619,11 +569,7 @@ export function kitchen(
             }
             c.strokeStyle = "#d4c35a";
             c.lineWidth = 7;
-            c.stroke(
-              new Path2D(
-                `M6 ${h} Q0 ${h * 0.35} ${m} 2 Q${w} ${h * 0.35} ${w - 6} ${h}`,
-              ),
-            );
+            c.stroke(new Path2D(`M6 ${h} Q0 ${h * 0.35} ${m} 2 Q${w} ${h * 0.35} ${w - 6} ${h}`));
           } else {
             if (kind === "heart") {
               /* Pothos marbling. */
@@ -655,12 +601,7 @@ export function kitchen(
               for (const side of [-1, 1]) {
                 c.beginPath();
                 c.moveTo(m, y);
-                c.quadraticCurveTo(
-                  m + side * w * 0.22,
-                  y - 8,
-                  m + side * w * 0.42,
-                  y - 26,
-                );
+                c.quadraticCurveTo(m + side * w * 0.22, y - 8, m + side * w * 0.42, y - 26);
                 c.stroke();
               }
             }
@@ -735,12 +676,7 @@ export function kitchen(
   };
   const tube = (parent: THREE.Object3D, pts: THREE.Vector3[], r: number) => {
     const curve = new THREE.CatmullRomCurve3(pts);
-    parent.add(
-      new THREE.Mesh(
-        bin.add(new THREE.TubeGeometry(curve, 16, r, 5, false)),
-        stemMat,
-      ),
-    );
+    parent.add(new THREE.Mesh(bin.add(new THREE.TubeGeometry(curve, 16, r, 5, false)), stemMat));
     return curve;
   };
 
@@ -752,18 +688,10 @@ export function kitchen(
       const a = (k / n) * Math.PI * 2 + rand() * 0.5;
       const lean = 0.25 + rand() * 0.25;
       const L = 0.3 + rand() * 0.18;
-      const top = new THREE.Vector3(
-        Math.sin(a) * lean * L,
-        L,
-        Math.cos(a) * lean * L,
-      );
+      const top = new THREE.Vector3(Math.sin(a) * lean * L, L, Math.cos(a) * lean * L);
       const curve = tube(
         p,
-        [
-          new THREE.Vector3(0, 0, 0),
-          new THREE.Vector3(top.x * 0.4, L * 0.5, top.z * 0.4),
-          top,
-        ],
+        [new THREE.Vector3(0, 0, 0), new THREE.Vector3(top.x * 0.4, L * 0.5, top.z * 0.4), top],
         0.011,
       );
       [0.4, 0.68, 0.92].forEach((t, i) => {
@@ -781,8 +709,7 @@ export function kitchen(
             s * 1.35,
           );
       });
-      for (let q = 0; q < 3; q++)
-        leaf(p, geos.oval, "oval", top, a + q * 2.1, 1.1, 0.09, 0.15);
+      for (let q = 0; q < 3; q++) leaf(p, geos.oval, "oval", top, a + q * 2.1, 1.1, 0.09, 0.15);
     }
     return p;
   };
@@ -815,16 +742,7 @@ export function kitchen(
       }
     }
     for (let q = 0; q < 6; q++)
-      leaf(
-        p,
-        geos.heart,
-        "heart",
-        new THREE.Vector3(0, 0.03, 0),
-        q * 1.05,
-        0.9 + rand() * 0.3,
-        0.2,
-        0.24,
-      );
+      leaf(p, geos.heart, "heart", new THREE.Vector3(0, 0.03, 0), q * 1.05, 0.9 + rand() * 0.3, 0.2, 0.24);
     return p;
   };
   /** Snake plant: stiff banded blades fanning up from the soil. */
@@ -847,20 +765,13 @@ export function kitchen(
     }
     return p;
   };
-  const pot = (
-    x: number,
-    y: number,
-    z: number,
-    scale: number,
-    kind: "basil" | "pothos" | "snake",
-  ) => {
+  const pot = (x: number, y: number, z: number, scale: number, kind: "basil" | "pothos" | "snake") => {
     const p = new THREE.Group();
     p.add(new THREE.Mesh(potGeo, terracotta));
     const dirt = new THREE.Mesh(soilGeo, soil);
     dirt.position.y = 0.33;
     p.add(dirt);
-    const plant =
-      kind === "basil" ? basil() : kind === "pothos" ? pothos() : snake();
+    const plant = kind === "basil" ? basil() : kind === "pothos" ? pothos() : snake();
     plant.position.y = 0.33;
     p.add(plant);
     p.position.set(x, y, z);
@@ -889,10 +800,7 @@ export function kitchen(
   );
   seedFill.position.set(SHELF.x + 1, SHELF.y + 0.18, WALL_Z + 0.25);
   g.add(seedFill);
-  const lidMesh = new THREE.Mesh(
-    bin.add(new THREE.CylinderGeometry(0.18, 0.18, 0.06, 20)),
-    wood,
-  );
+  const lidMesh = new THREE.Mesh(bin.add(new THREE.CylinderGeometry(0.18, 0.18, 0.06, 20)), wood);
   lidMesh.position.set(SHELF.x + 1, SHELF.y + 0.5, WALL_Z + 0.25);
   g.add(lidMesh);
 
@@ -942,10 +850,7 @@ export function kitchen(
     [0.11, 1.6, -0.66, 0],
     [0.11, 1.6, 0.66, 0],
   ]) {
-    const m = new THREE.Mesh(
-      bin.add(new THREE.BoxGeometry(w, h, 0.08)),
-      frameWood,
-    );
+    const m = new THREE.Mesh(bin.add(new THREE.BoxGeometry(w, h, 0.08)), frameWood);
     m.position.set(WIN.x0 - 2.2 + x, 2.35 + y, WALL_Z + 0.06);
     g.add(m);
   }
@@ -960,15 +865,9 @@ export function kitchen(
   /* ---- a lamp on the counter, right of the window, lit at night ---- */
   const lamp = new THREE.Group();
   const brass = std({ color: "#b08a4e", roughness: 0.35, metalness: 0.6 });
-  const lampBase = new THREE.Mesh(
-    bin.add(new THREE.CylinderGeometry(0.2, 0.24, 0.06, 24)),
-    brass,
-  );
+  const lampBase = new THREE.Mesh(bin.add(new THREE.CylinderGeometry(0.2, 0.24, 0.06, 24)), brass);
   lampBase.position.y = 0.03;
-  const stem = new THREE.Mesh(
-    bin.add(new THREE.CylinderGeometry(0.025, 0.025, 0.9, 10)),
-    brass,
-  );
+  const stem = new THREE.Mesh(bin.add(new THREE.CylinderGeometry(0.025, 0.025, 0.9, 10)), brass);
   stem.position.y = 0.48;
   const shadeMat = std({
     color: "#f3e6c8",
@@ -977,10 +876,7 @@ export function kitchen(
     emissiveIntensity: 0,
     side: THREE.DoubleSide,
   });
-  const shade = new THREE.Mesh(
-    bin.add(new THREE.CylinderGeometry(0.24, 0.42, 0.42, 28, 1, true)),
-    shadeMat,
-  );
+  const shade = new THREE.Mesh(bin.add(new THREE.CylinderGeometry(0.24, 0.42, 0.42, 28, 1, true)), shadeMat);
   shade.position.y = 1.02;
   const bulb = new THREE.PointLight("#ffbf66", 0, 9, 1.4);
   bulb.position.y = 0.9;
@@ -992,8 +888,7 @@ export function kitchen(
   let fan: THREE.Group;
   let hinge: THREE.Group;
   {
-    const dark = (color: string) =>
-      bin.add(new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide }));
+    const dark = (color: string) => bin.add(new THREE.MeshLambertMaterial({ color, side: THREE.DoubleSide }));
     const W2 = DARK.x1 - DARK.x0;
     const mid = (DARK.x0 + DARK.x1) / 2;
     const back = WALL_Z - DARK.depth;
@@ -1020,14 +915,8 @@ export function kitchen(
     const vent = new THREE.Group();
     vent.position.set((DOOR.x0 + DOOR.x1) / 2, 4.2, back + 0.02);
     const grilleMat = dark("#3a3f42");
-    const rim = new THREE.Mesh(
-      bin.add(new THREE.RingGeometry(0.5, 0.6, 40)),
-      grilleMat,
-    );
-    const hollow = new THREE.Mesh(
-      bin.add(new THREE.CircleGeometry(0.5, 40)),
-      dark("#07080a"),
-    );
+    const rim = new THREE.Mesh(bin.add(new THREE.RingGeometry(0.5, 0.6, 40)), grilleMat);
+    const hollow = new THREE.Mesh(bin.add(new THREE.CircleGeometry(0.5, 40)), dark("#07080a"));
     hollow.position.z = -0.005;
     vent.add(hollow, rim);
     for (const y of [-0.3, -0.1, 0.1, 0.3]) {
@@ -1058,21 +947,13 @@ export function kitchen(
       envMapIntensity: 0.3,
     });
     const jamb = (w: number, h: number, x: number, y: number) => {
-      const m = new THREE.Mesh(
-        bin.add(new THREE.BoxGeometry(w, h, 0.18)),
-        frameMat,
-      );
+      const m = new THREE.Mesh(bin.add(new THREE.BoxGeometry(w, h, 0.18)), frameMat);
       m.position.set(x, y, WALL_Z + 0.02);
       g.add(m);
     };
     jamb(0.14, DOOR.h + 0.14, DOOR.x0 - 0.07, (DOOR.h + 0.14) / 2);
     jamb(0.14, DOOR.h + 0.14, DOOR.x1 + 0.07, (DOOR.h + 0.14) / 2);
-    jamb(
-      DOOR.x1 - DOOR.x0 + 0.28,
-      0.14,
-      (DOOR.x0 + DOOR.x1) / 2,
-      DOOR.h + 0.07,
-    );
+    jamb(DOOR.x1 - DOOR.x0 + 0.28, 0.14, (DOOR.x0 + DOOR.x1) / 2, DOOR.h + 0.07);
     hinge = new THREE.Group();
     hinge.position.set(DOOR.x0, 0, WALL_Z);
     const DW = DOOR.x1 - DOOR.x0;
@@ -1081,18 +962,12 @@ export function kitchen(
       roughness: 0.55,
       envMapIntensity: 0.3,
     });
-    const leaf = new THREE.Mesh(
-      bin.add(new THREE.BoxGeometry(DW - 0.02, DOOR.h - 0.02, 0.07)),
-      leafMat,
-    );
+    const leaf = new THREE.Mesh(bin.add(new THREE.BoxGeometry(DW - 0.02, DOOR.h - 0.02, 0.07)), leafMat);
     leaf.position.set(DW / 2, DOOR.h / 2, 0);
     hinge.add(leaf);
     /* Two raised panels, so it reads as a door. */
     for (const y of [DOOR.h * 0.27, DOOR.h * 0.7]) {
-      const panel = new THREE.Mesh(
-        bin.add(new THREE.BoxGeometry(DW - 0.5, DOOR.h * 0.32, 0.03)),
-        leafMat,
-      );
+      const panel = new THREE.Mesh(bin.add(new THREE.BoxGeometry(DW - 0.5, DOOR.h * 0.32, 0.03)), leafMat);
       panel.position.set(DW / 2, y, 0.045);
       hinge.add(panel);
     }
@@ -1135,16 +1010,13 @@ export function kitchen(
   let night = false;
   function update(time: number) {
     fan.rotation.z = -time * 6;
-    branchPivot.rotation.z =
-      Math.sin(time * 0.7) * 0.06 + Math.sin(time * 1.9) * 0.015;
+    branchPivot.rotation.z = Math.sin(time * 0.7) * 0.06 + Math.sin(time * 1.9) * 0.015;
     for (const { c, speed } of clouds) {
       c.position.x += speed * 0.016;
       if (c.position.x > cx + 9) c.position.x = cx - 9;
     }
     for (const { t, phase } of trees) {
-      t.children[1].rotation.z =
-        Math.sin(time * 0.9 + phase) * 0.05 +
-        Math.sin(time * 2.3 + phase) * 0.012;
+      t.children[1].rotation.z = Math.sin(time * 0.9 + phase) * 0.05 + Math.sin(time * 2.3 + phase) * 0.012;
     }
     for (const b of birds) {
       const u = ((time + b.offset) % b.cycle) / 4;
@@ -1156,11 +1028,7 @@ export function kitchen(
       b.bird.visible = true;
       const span = W + 3;
       const x = b.dir > 0 ? WIN.x0 - 1.5 + u * span : WIN.x1 + 1.5 - u * span;
-      b.bird.position.set(
-        x,
-        WIN.y0 + H * b.y + Math.sin(u * Math.PI * 2) * 0.22,
-        WALL_Z - 1.4,
-      );
+      b.bird.position.set(x, WIN.y0 + H * b.y + Math.sin(u * Math.PI * 2) * 0.22, WALL_Z - 1.4);
       b.bird.rotation.y = b.dir > 0 ? 0 : Math.PI;
       const flap = Math.sin(time * 16 + b.offset) * 0.7;
       b.wings[0].rotation.z = flap;
@@ -1175,9 +1043,7 @@ export function kitchen(
         const down = (CH / 2 - y) / CH;
         const breeze = down * down;
         a[k] = x + breeze * 0.05 * Math.sin(time * 0.8 + side);
-        a[k + 2] =
-          Math.sin(x * 15) * 0.045 +
-          breeze * 0.08 * Math.sin(time * 1.1 + x * 2.5 + side * 1.7);
+        a[k + 2] = Math.sin(x * 15) * 0.045 + breeze * 0.08 * Math.sin(time * 1.1 + x * 2.5 + side * 1.7);
       }
       geo.getAttribute("position").needsUpdate = true;
       geo.computeVertexNormals();
@@ -1189,8 +1055,7 @@ export function kitchen(
   const WHITE = new THREE.Color(1, 1, 1);
   const tint = new THREE.Color();
   /** How much daylight there is at `f` through the day, 0 to 1. */
-  const dayAt = (f: number) =>
-    THREE.MathUtils.smoothstep(Math.sin(f * 2 * Math.PI), -0.2, 0.3);
+  const dayAt = (f: number) => THREE.MathUtils.smoothstep(Math.sin(f * 2 * Math.PI), -0.2, 0.3);
   function daylight(f: number | null) {
     if (f === null) {
       for (const o of outside) o.mat.color.copy(o.base);

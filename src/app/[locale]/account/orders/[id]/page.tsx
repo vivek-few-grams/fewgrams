@@ -25,7 +25,9 @@ const JUST_PAID_MS = 15 * 60_000;
 /** True in the first minutes after payment. A server render reads the clock
  *  once per request, which is what this page is (`force-dynamic`). */
 function paidMomentsAgo(order: Order): boolean {
-  return order.status === "paid" && order.paidAt !== null && Date.now() - Date.parse(order.paidAt) < JUST_PAID_MS;
+  return (
+    order.status === "paid" && order.paidAt !== null && Date.now() - Date.parse(order.paidAt) < JUST_PAID_MS
+  );
 }
 
 /**
@@ -292,20 +294,20 @@ export default async function OrderPage({ params }: PageProps<"/[locale]/account
       {/* Phones and tablets only: from `lg` the address sits above the account
           menu (`@aside/orders/[id]`). */}
       <div className="lg:hidden">
-      <Card title={t("deliverTo")}>
-        <p className="font-body text-sm leading-relaxed text-forest">
-          {[
-            order.address.recipient,
-            order.address.line1,
-            order.address.line2,
-            order.address.landmark,
-            formatPlace(order.address),
-            formatPhone(order.address.phone),
-          ]
-            .filter(Boolean)
-            .join(", ")}
-        </p>
-      </Card>
+        <Card title={t("deliverTo")}>
+          <p className="font-body text-sm leading-relaxed text-forest">
+            {[
+              order.address.recipient,
+              order.address.line1,
+              order.address.line2,
+              order.address.landmark,
+              formatPlace(order.address),
+              formatPhone(order.address.phone),
+            ]
+              .filter(Boolean)
+              .join(", ")}
+          </p>
+        </Card>
       </div>
     </div>
   );

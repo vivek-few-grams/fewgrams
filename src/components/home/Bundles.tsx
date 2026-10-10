@@ -232,15 +232,12 @@ export function Bundles({
             deliberate: it is display type and a 1100px line of it would be
             unreadable. */}
         <div className="max-w-3xl">
-          <p className="font-body text-[11px] uppercase tracking-widest text-stone">
-            {tp("eyebrow")}
-          </p>
+          <p className="font-body text-[11px] uppercase tracking-widest text-stone">{tp("eyebrow")}</p>
           <h2 className="mt-3 font-display text-[clamp(1.6rem,3.4vw,2.6rem)] font-bold leading-tight tracking-tight text-forest">
             {tp("heading")}
           </h2>
           <p className="mt-4 font-body text-sm leading-relaxed text-stone">
-            {tp("firstDelivery")}{" "}
-            <strong className="font-semibold text-forest">{firstDelivery}</strong>.{" "}
+            {tp("firstDelivery")} <strong className="font-semibold text-forest">{firstDelivery}</strong>.{" "}
             {tp("cheaperNote")}
           </p>
         </div>
@@ -347,11 +344,7 @@ function BundleCard({
         aria-hidden="true"
         className={`pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[20px] ${p.mark}`}
       >
-        <Sprout
-          className="absolute -bottom-12 -right-10 h-56 w-56"
-          seed={stems}
-          stems={stems}
-        />
+        <Sprout className="absolute -bottom-12 -right-10 h-56 w-56" seed={stems} stems={stems} />
       </div>
       {/* Every plan gets a pill, and each says something different and true.
           Its **wording** is content — a claim about this plan, not UI chrome,
@@ -382,9 +375,7 @@ function BundleCard({
         {text.badge}
       </span>
 
-      <h3 className={`font-display text-2xl font-bold tracking-tight ${p.heading}`}>
-        {text.name}
-      </h3>
+      <h3 className={`font-display text-2xl font-bold tracking-tight ${p.heading}`}>{text.name}</h3>
       <p className={`mt-1.5 font-body text-sm ${p.body}`}>{text.tagline}</p>
 
       {/* Boxes and box weight on **one line**, not stacked.
@@ -395,14 +386,10 @@ function BundleCard({
           message file and must not be translated. `flex-wrap` lets it fall
           back to two lines rather than overflow, which matters in Kannada
           where both halves are longer. */}
-      <dl
-        className={`mt-5 flex flex-wrap items-baseline gap-x-2 font-body text-sm ${p.strong}`}
-      >
+      <dl className={`mt-5 flex flex-wrap items-baseline gap-x-2 font-body text-sm ${p.strong}`}>
         <dd>{tp("card.weeklyBoxes", { count: weekCount > 0 ? weekCount : 4 })}</dd>
         <dd className={`before:mr-2 before:content-['·'] ${p.body}`}>
-          {plan.gramsPerBox > 0
-            ? tp("card.perBox", { grams: plan.gramsPerBox })
-            : tp("card.gramsYouChoose")}
+          {plan.gramsPerBox > 0 ? tp("card.perBox", { grams: plan.gramsPerBox }) : tp("card.gramsYouChoose")}
         </dd>
       </dl>
 
@@ -410,11 +397,7 @@ function BundleCard({
         <ul className="mt-5 space-y-2">
           {text.highlights.map((h) => (
             <li key={h} className={`flex gap-2.5 font-body text-sm ${p.body}`}>
-              <Check
-                size={16}
-                strokeWidth={2}
-                className={`mt-0.5 shrink-0 ${p.tick}`}
-              />
+              <Check size={16} strokeWidth={2} className={`mt-0.5 shrink-0 ${p.tick}`} />
               <span>{h}</span>
             </li>
           ))}
@@ -427,21 +410,15 @@ function BundleCard({
           gap pulls the price and the CTA up by the full amount. */}
       <div className="mt-auto pt-6">
         {isByo ? (
-          <p className={`font-display text-xl font-bold ${p.strong}`}>
-            {tp("card.pricedByWeight")}
-          </p>
+          <p className={`font-display text-xl font-bold ${p.strong}`}>{tp("card.pricedByWeight")}</p>
         ) : (
           <>
             <p className={`font-display text-2xl font-bold ${p.strong}`}>
               ₹{plan.monthlyPrice!.toLocaleString("en-IN")}
-              <span className={`ml-1 font-body text-sm font-normal ${p.body}`}>
-                {tp("card.perMonth")}
-              </span>
+              <span className={`ml-1 font-body text-sm font-normal ${p.body}`}>{tp("card.perMonth")}</span>
             </p>
             {per100 !== null && (
-              <p className={`mt-0.5 font-body text-sm ${p.body}`}>
-                {tp("card.per100g", { price: per100 })}
-              </p>
+              <p className={`mt-0.5 font-body text-sm ${p.body}`}>{tp("card.per100g", { price: per100 })}</p>
             )}
           </>
         )}
@@ -538,8 +515,7 @@ function RotationModal({
 }) {
   const tp = useTranslations("plans");
   const dialog = useRef<HTMLDialogElement>(null);
-  const growDaysOf = (key: string) =>
-    varieties.find((v) => v.contentKey === key)?.growDays;
+  const growDaysOf = (key: string) => varieties.find((v) => v.contentKey === key)?.growDays;
 
   /* `showModal()` cannot be an attribute — the top layer and the focus trap
      only happen through the method, so opening is an effect. */
@@ -617,10 +593,7 @@ function RotationModal({
         </div>
 
         <div className="p-6 md:p-9">
-          <h3
-            id="rotation-heading"
-            className="font-display text-xl font-bold tracking-tight text-forest"
-          >
+          <h3 id="rotation-heading" className="font-display text-xl font-bold tracking-tight text-forest">
             {tp("rotationHeading", { plan: entry.text.name })}
           </h3>
           {/* The plan's own paragraph, then the rule that applies to every
@@ -634,12 +607,8 @@ function RotationModal({
               paragraphs of supporting copy in a dialog the reader opened
               deliberately, and four lines at 576px is worse than two at 768px.
               The timeline below already sets the panel's width. */}
-          <p className="mt-2 font-body text-sm leading-relaxed text-stone">
-            {entry.text.description}
-          </p>
-          <p className="mt-2 font-body text-sm leading-relaxed text-stone">
-            {tp("rotationNote")}
-          </p>
+          <p className="mt-2 font-body text-sm leading-relaxed text-stone">{entry.text.description}</p>
+          <p className="mt-2 font-body text-sm leading-relaxed text-stone">{tp("rotationNote")}</p>
 
           {/* The timeline runs **across**, not down (15 Sep 2026).
               Four Saturdays in a row read as a month at a glance, which is the
@@ -659,44 +628,44 @@ function RotationModal({
             {schedule.map((box, i) => {
               const w = entry.weeks.find((x) => x.week === box.week) ?? { week: box.week, varietyKeys: [] };
               return (
-              <li
-                key={box.date.toISOString()}
-                /* `--i` drives every delay in this column — see `.rot-week`
+                <li
+                  key={box.date.toISOString()}
+                  /* `--i` drives every delay in this column — see `.rot-week`
                    and friends in globals.css. Set here rather than computed
                    into a delay string so the timing lives in one file. */
-                style={{ "--i": i } as React.CSSProperties}
-                className="rot-week relative border-t border-forest/20 pr-4 pt-5 sm:pr-6"
-              >
-                <span
-                  aria-hidden="true"
-                  className="rot-dot absolute -top-[5px] left-0 size-2.5 rounded-full bg-forest ring-2 ring-cream"
-                />
-                <p className="font-body text-[11px] uppercase tracking-widest text-stone">
-                  {tp("card.week", { n: w.week })}
-                </p>
-                <p className="mt-0.5 font-display text-base font-semibold text-forest">
-                  {formatDeliveryDate(box.date)}
-                </p>
-                {/* No panel behind the list any more. On sand it needed one to
+                  style={{ "--i": i } as React.CSSProperties}
+                  className="rot-week relative border-t border-forest/20 pr-4 pt-5 sm:pr-6"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="rot-dot absolute -top-[5px] left-0 size-2.5 rounded-full bg-forest ring-2 ring-cream"
+                  />
+                  <p className="font-body text-[11px] uppercase tracking-widest text-stone">
+                    {tp("card.week", { n: w.week })}
+                  </p>
+                  <p className="mt-0.5 font-display text-base font-semibold text-forest">
+                    {formatDeliveryDate(box.date)}
+                  </p>
+                  {/* No panel behind the list any more. On sand it needed one to
                     separate itself; on this ground it would just be a second
                     near-white rectangle. */}
-                <ul className="mt-3 space-y-1.5">
-                  {w.varietyKeys.map((key, j) => (
-                    <li
-                      key={key}
-                      style={{ "--j": j } as React.CSSProperties}
-                      className="rot-item font-body text-sm text-stone"
-                    >
-                      {nameOf(key)}
-                      {growDaysOf(key) && (
-                        <span className="ml-1.5 text-xs tabular-nums text-stone/60">
-                          {growDaysOf(key)}d
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </li>
+                  <ul className="mt-3 space-y-1.5">
+                    {w.varietyKeys.map((key, j) => (
+                      <li
+                        key={key}
+                        style={{ "--j": j } as React.CSSProperties}
+                        className="rot-item font-body text-sm text-stone"
+                      >
+                        {nameOf(key)}
+                        {growDaysOf(key) && (
+                          <span className="ml-1.5 text-xs tabular-nums text-stone/60">
+                            {growDaysOf(key)}d
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </li>
               );
             })}
           </ol>

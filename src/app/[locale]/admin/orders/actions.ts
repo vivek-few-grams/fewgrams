@@ -90,7 +90,8 @@ export async function setTracking(fd: FormData): Promise<void> {
 
   const order = await getOrder(id);
   if (!order) throw new Error(`No order ${id}`);
-  if (order.shipments[index]?.method !== "courier") throw new Error("Only a courier parcel has a tracking number");
+  if (order.shipments[index]?.method !== "courier")
+    throw new Error("Only a courier parcel has a tracking number");
   await setShipmentTracking(order, index, raw === "" ? null : raw);
 
   revalidatePath(`/[locale]/admin/orders/${id}`, "page");

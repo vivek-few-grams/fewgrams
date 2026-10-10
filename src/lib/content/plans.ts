@@ -139,10 +139,7 @@ export function resolvePlanText(file: PlanContentFile, locale: Locale): PlanText
   return merged;
 }
 
-export async function getPlanContent(
-  key: string,
-  locale: string,
-): Promise<PlanContent | null> {
+export async function getPlanContent(key: string, locale: string): Promise<PlanContent | null> {
   const file = await readPlanFile(key);
   if (!file) return null;
   return { key, text: resolvePlanText(file, asLocale(locale)) };

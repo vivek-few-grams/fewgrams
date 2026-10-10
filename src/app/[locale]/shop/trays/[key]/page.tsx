@@ -70,16 +70,11 @@ async function load(key: string, locale: string) {
   /* Both reads are cheap and independent, so they run together rather than
      gating the file read on the row. `getTrayContent` is `cache`d per request,
      so generateMetadata and the page share one file read. */
-  const [row, content] = await Promise.all([
-    getTrayByKey(key),
-    getTrayContent(key, locale),
-  ]);
+  const [row, content] = await Promise.all([getTrayByKey(key), getTrayContent(key, locale)]);
   return row?.active && content ? { row, content } : null;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/shop/trays/[key]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/shop/trays/[key]">) {
   const { locale, key } = await params;
   const found = await load(key, locale);
   if (!found) return {};
@@ -92,9 +87,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function TrayPage({
-  params,
-}: PageProps<"/[locale]/shop/trays/[key]">) {
+export default async function TrayPage({ params }: PageProps<"/[locale]/shop/trays/[key]">) {
   const { locale, key } = await params;
   setRequestLocale(locale);
   await guardProductTypeEnabled("trays", locale);

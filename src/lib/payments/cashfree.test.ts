@@ -71,9 +71,7 @@ describe("webhook as a trigger", () => {
   });
 
   it.each(["PAYMENT_FAILED_WEBHOOK", "PAYMENT_USER_DROPPED_WEBHOOK"])("names it for %s too", (type) => {
-    expect(provider.webhookOrderId(successBody.replace("PAYMENT_SUCCESS_WEBHOOK", type))).toBe(
-      "FGABC123",
-    );
+    expect(provider.webhookOrderId(successBody.replace("PAYMENT_SUCCESS_WEBHOOK", type))).toBe("FGABC123");
   });
 
   it("ignores event types this app does not act on", () => {

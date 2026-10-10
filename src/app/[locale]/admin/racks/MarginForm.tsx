@@ -65,9 +65,7 @@ export function MarginForm({
           {t("save")}
         </button>
         {state.status === "error" && !state.field && (
-          <p className="font-body text-xs text-terracotta">
-            {t(`errors.${state.code}`, state.values ?? {})}
-          </p>
+          <p className="font-body text-xs text-terracotta">{t(`errors.${state.code}`, state.values ?? {})}</p>
         )}
       </div>
     </form>

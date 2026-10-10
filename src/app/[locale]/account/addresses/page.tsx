@@ -5,9 +5,7 @@ import { AddressBook } from "./AddressBook";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/account/addresses">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/account/addresses">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "account.addresses" });
   return { title: t("title"), robots: { index: false, follow: false } };
@@ -21,19 +19,14 @@ export async function generateMetadata({
  * "we don't deliver to 110001 yet" while the customer is browsing and the
  * same message appearing on the payment screen.
  */
-export default async function AddressesPage({
-  params,
-}: PageProps<"/[locale]/account/addresses">) {
+export default async function AddressesPage({ params }: PageProps<"/[locale]/account/addresses">) {
   const { locale } = await params;
   setRequestLocale(locale);
 
   const t = await getTranslations("account.addresses");
   const actor = await requireRole("customer");
 
-  const [addresses, profile] = await Promise.all([
-    listAddresses(actor.userId),
-    getProfile(actor.userId),
-  ]);
+  const [addresses, profile] = await Promise.all([listAddresses(actor.userId), getProfile(actor.userId)]);
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -41,9 +34,7 @@ export default async function AddressesPage({
       <div data-account-intro>
         <h2 className="font-display text-xl font-semibold text-forest">{t("heading")}</h2>
         <p className="mt-2 font-body text-sm text-stone">{t("body")}</p>
-        <p className="mt-1 font-body text-xs text-stone/80">
-          {t("serviceNote")}
-        </p>
+        <p className="mt-1 font-body text-xs text-stone/80">{t("serviceNote")}</p>
       </div>
 
       <AddressBook

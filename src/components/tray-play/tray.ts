@@ -43,10 +43,7 @@ export const MEDIUM_COLOR = "#21160f";
  * row ("one with drain holes in white, one solid in green"). A tray key with no finish here has no model and is not offered
  * in the garden.
  */
-export const TRAY_FINISHES: Record<
-  TrayFinish,
-  { grow: string; water: string; floor: string }
-> = {
+export const TRAY_FINISHES: Record<TrayFinish, { grow: string; water: string; floor: string }> = {
   "tray-pair": { grow: "#0d0d0c", water: "#0d0d0c", floor: "#121211" },
   "tray-pair-food-grade": {
     grow: "#e9ebe6",
@@ -74,10 +71,7 @@ export function roundedRect(hw: number, hd: number, r: number) {
 
 /** Inner face of the wall at height `y`, as an offset from the base outline. */
 export function innerWallAt(y: number, height: number) {
-  return (
-    -SKIN +
-    FLARE * 0.97 * THREE.MathUtils.clamp((y - 0.01) / (height - 0.016), 0, 1)
-  );
+  return -SKIN + FLARE * 0.97 * THREE.MathUtils.clamp((y - 0.01) / (height - 0.016), 0, 1);
 }
 
 /** Half-extents of the grow tray's inside at the height of the coco peat —
@@ -166,8 +160,7 @@ export function trayGeometry(outerW: number, outerD: number, height: number) {
   const lip = 5;
   if (n.getX(lip) * ring[0].dx + n.getZ(lip) * ring[0].dz < 0) {
     const flipped: number[] = [];
-    for (let k = 0; k < idx.length; k += 3)
-      flipped.push(idx[k], idx[k + 2], idx[k + 1]);
+    for (let k = 0; k < idx.length; k += 3) flipped.push(idx[k], idx[k + 2], idx[k + 1]);
     g.setIndex(flipped);
     g.computeVertexNormals();
   }
@@ -255,10 +248,7 @@ function growFloorTextures(base: string, hole: string) {
   return { map: tex(colour, true), bumpMap: tex(bump, false) };
 }
 
-export function trayMaterials(
-  finish: TrayFinish,
-  withGrowFloor = false,
-): TrayMaterials {
+export function trayMaterials(finish: TrayFinish, withGrowFloor = false): TrayMaterials {
   const f = TRAY_FINISHES[finish];
   const light = finish === "tray-pair-food-grade";
   const grow = new THREE.MeshStandardMaterial({
@@ -299,9 +289,7 @@ export function disposeTrayMaterials(m: TrayMaterials) {
     m.growFloor.map?.dispose();
     m.growFloor.bumpMap?.dispose();
   }
-  new Set([m.grow, m.water, m.floor, m.growFloor].filter(Boolean)).forEach(
-    (x) => x!.dispose(),
-  );
+  new Set([m.grow, m.water, m.floor, m.growFloor].filter(Boolean)).forEach((x) => x!.dispose());
 }
 
 /** The nested pair at `x`: the water tray on the surface, the grow tray
@@ -310,11 +298,7 @@ export function disposeTrayMaterials(m: TrayMaterials) {
  *  water tray is `water` and `waterFloor`, for one that takes it away. */
 export function trayPair(x: number, m: TrayMaterials) {
   const group = new THREE.Group();
-  const water = trayGeometry(
-    TRAY_W + 2 * WATER_MARGIN,
-    TRAY_D + 2 * WATER_MARGIN,
-    TRAY_H,
-  );
+  const water = trayGeometry(TRAY_W + 2 * WATER_MARGIN, TRAY_D + 2 * WATER_MARGIN, TRAY_H);
   const waterTray = new THREE.Mesh(water, m.water);
   waterTray.name = "water";
   group.add(waterTray);

@@ -61,9 +61,7 @@ export function VarietyRow({
       }`}
     >
       <div className="min-w-0">
-        <p className="truncate font-body text-sm font-semibold text-forest">
-          {name ?? variety.contentKey}
-        </p>
+        <p className="truncate font-body text-sm font-semibold text-forest">{name ?? variety.contentKey}</p>
         <code className="font-body text-[11px] text-stone">{variety.contentKey}</code>
       </div>
 

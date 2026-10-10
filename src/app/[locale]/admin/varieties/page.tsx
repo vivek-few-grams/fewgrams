@@ -27,10 +27,7 @@ export const dynamic = "force-dynamic";
 export default async function VarietiesAdmin() {
   const t = await getTranslations("admin.varieties");
 
-  const [rows, content] = await Promise.all([
-    listVarieties(),
-    listVarietyContent(routing.defaultLocale),
-  ]);
+  const [rows, content] = await Promise.all([listVarieties(), listVarietyContent(routing.defaultLocale)]);
 
   const withContent = await attachContent(rows, routing.defaultLocale);
   /* Suggestions only — content files that exist but are not yet priced. The

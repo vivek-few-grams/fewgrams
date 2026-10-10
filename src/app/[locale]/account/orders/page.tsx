@@ -8,9 +8,7 @@ import { Card } from "../ui";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/account/orders">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/account/orders">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "account.orders" });
   return { title: t("title"), robots: { index: false, follow: false } };
@@ -20,9 +18,7 @@ export async function generateMetadata({
  * `/account/orders` — SPEC §12. Paid orders only: an abandoned checkout never
  * enters the index this reads (see `OrderEntity`).
  */
-export default async function OrdersPage({
-  params,
-}: PageProps<"/[locale]/account/orders">) {
+export default async function OrdersPage({ params }: PageProps<"/[locale]/account/orders">) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -74,31 +70,24 @@ export default async function OrdersPage({
             <table className="w-full min-w-[34rem] border-collapse text-left">
               <thead>
                 <tr className="border-b border-forest/15">
-                  {[
-                    t("colOrder"),
-                    t("colPlaced"),
-                    t("colDelivery"),
-                    t("colStatus"),
-                    t("colTotal"),
-                  ].map((heading) => (
-                    <th
-                      key={heading}
-                      scope="col"
-                      className="pb-3 font-body text-xs font-medium uppercase tracking-wider text-stone"
-                    >
-                      {heading}
-                    </th>
-                  ))}
+                  {[t("colOrder"), t("colPlaced"), t("colDelivery"), t("colStatus"), t("colTotal")].map(
+                    (heading) => (
+                      <th
+                        key={heading}
+                        scope="col"
+                        className="pb-3 font-body text-xs font-medium uppercase tracking-wider text-stone"
+                      >
+                        {heading}
+                      </th>
+                    ),
+                  )}
                 </tr>
               </thead>
               <tbody>
                 {orders.map((order) => (
                   <tr key={order.id} className="border-b border-forest/10 last:border-0">
                     <td className="py-3 font-body text-sm font-semibold text-forest">
-                      <Link
-                        href={`/account/orders/${order.id}`}
-                        className="underline underline-offset-4"
-                      >
+                      <Link href={`/account/orders/${order.id}`} className="underline underline-offset-4">
                         {order.receiptNo !== null ? formatReceiptNo(order.receiptNo) : order.id}
                       </Link>
                       <span className="mt-0.5 block font-normal text-xs text-stone">
@@ -115,9 +104,7 @@ export default async function OrdersPage({
                           })
                         : t("notScheduled")}
                     </td>
-                    <td className="py-3 font-body text-sm text-forest">
-                      {status(order.status)}
-                    </td>
+                    <td className="py-3 font-body text-sm text-forest">{status(order.status)}</td>
                     <td className="py-3 font-body text-sm tabular-nums text-forest">
                       {format.number(order.total, {
                         style: "currency",

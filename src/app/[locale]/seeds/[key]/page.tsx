@@ -51,16 +51,11 @@ async function load(key: string, locale: string) {
   /* Both reads are cheap and independent, so they run together rather than
      gating the file read on the row. `getSeedContent` is `cache`d per request,
      so generateMetadata and the page share one file read. */
-  const [row, content] = await Promise.all([
-    getSeedByKey(key),
-    getSeedContent(key, locale),
-  ]);
+  const [row, content] = await Promise.all([getSeedByKey(key), getSeedContent(key, locale)]);
   return row?.active && content ? { row, content } : null;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/seeds/[key]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/seeds/[key]">) {
   const { locale, key } = await params;
   const found = await load(key, locale);
   if (!found) return {};
@@ -209,9 +204,7 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
             }
           : null
       }
-      cautions={
-        text.cautions?.length ? { heading: d("cautions"), items: text.cautions } : null
-      }
+      cautions={text.cautions?.length ? { heading: d("cautions"), items: text.cautions } : null}
       prose={text.sowing ? { heading: d("sowing"), body: text.sowing } : null}
       faq={text.faq?.length ? { heading: d("faq"), items: text.faq } : null}
       footer={

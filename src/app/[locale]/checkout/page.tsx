@@ -114,10 +114,7 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
   const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
   const reachable = splitByArea(cart.items, false);
   const line = (item: (typeof cart.items)[number]) => (
-    <li
-      key={lineId(item)}
-      className="flex items-center justify-between gap-4 border-b border-cream/15 py-3"
-    >
+    <li key={lineId(item)} className="flex items-center justify-between gap-4 border-b border-cream/15 py-3">
       <span className="flex min-w-0 items-center gap-3.5">
         {/* The product's own photo where it has one — a picture says
             "these greens" faster than a name — and its kind's icon
@@ -152,51 +149,51 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
        of address, and it swaps them in one slot: without a key React logs a
        missing-key warning for the pair (seen in dev, 26 Sep 2026). */
     return (
-    <section key={inArea ? "in-area" : "outside"} aria-labelledby="order-summary">
-      <h2 id="order-summary" className="font-display text-lg font-bold text-cream">
-        {t("summaryHeading")}
-      </h2>
-      <p className="mt-1 font-body text-sm text-cream/70">
-        {t("summaryLine", { count: items.length, amount: subtotal })}
-      </p>
-      {groups.length > 1 ? (
-        <div className="mt-4 border-t border-cream/15">
-          {groups.map((g) => (
-            <div key={g.iso} className="border-b border-cream/15 pb-1 pt-3">
-              <p className="flex flex-wrap items-baseline gap-x-2 font-body text-[11px] uppercase tracking-widest text-cream/60">
-                <span className="font-semibold text-cream">
-                  {t("groupReady", { date: formatDeliveryDate(g.date, dateLocale) })}
-                </span>
-                <span>{g.reasons.map((r) => t(r)).join(" · ")}</span>
-              </p>
-              <ul className="[&>li:last-child]:border-b-0">{g.items.map(line)}</ul>
-            </div>
-          ))}
-          <p className="pt-3 font-body text-xs leading-relaxed text-cream/65">{t("groupsNote")}</p>
+      <section key={inArea ? "in-area" : "outside"} aria-labelledby="order-summary">
+        <h2 id="order-summary" className="font-display text-lg font-bold text-cream">
+          {t("summaryHeading")}
+        </h2>
+        <p className="mt-1 font-body text-sm text-cream/70">
+          {t("summaryLine", { count: items.length, amount: subtotal })}
+        </p>
+        {groups.length > 1 ? (
+          <div className="mt-4 border-t border-cream/15">
+            {groups.map((g) => (
+              <div key={g.iso} className="border-b border-cream/15 pb-1 pt-3">
+                <p className="flex flex-wrap items-baseline gap-x-2 font-body text-[11px] uppercase tracking-widest text-cream/60">
+                  <span className="font-semibold text-cream">
+                    {t("groupReady", { date: formatDeliveryDate(g.date, dateLocale) })}
+                  </span>
+                  <span>{g.reasons.map((r) => t(r)).join(" · ")}</span>
+                </p>
+                <ul className="[&>li:last-child]:border-b-0">{g.items.map(line)}</ul>
+              </div>
+            ))}
+            <p className="pt-3 font-body text-xs leading-relaxed text-cream/65">{t("groupsNote")}</p>
+          </div>
+        ) : (
+          <ul className="mt-4 border-t border-cream/15">{items.map(line)}</ul>
+        )}
+        <div className="flex items-baseline justify-between gap-4 pt-4">
+          <span className="font-body text-sm font-semibold text-cream">{t("itemsTotal")}</span>
+          <span className="font-display text-xl font-bold tabular-nums text-cream">
+            {tc("subtotalValue", { amount: subtotal })}
+          </span>
         </div>
-      ) : (
-        <ul className="mt-4 border-t border-cream/15">{items.map(line)}</ul>
-      )}
-      <div className="flex items-baseline justify-between gap-4 pt-4">
-        <span className="font-body text-sm font-semibold text-cream">{t("itemsTotal")}</span>
-        <span className="font-display text-xl font-bold tabular-nums text-cream">
-          {tc("subtotalValue", { amount: subtotal })}
-        </span>
-      </div>
-      {/* Greens the chosen address is outside the area for: shown, greyed,
+        {/* Greens the chosen address is outside the area for: shown, greyed,
           and not counted — they stay in the cart after this order. */}
-      {setAside.length > 0 && (
-        <div className="mt-5 rounded-xl border border-cream/15 bg-cream/5 p-3.5">
-          <p className="font-body text-[11px] font-semibold uppercase tracking-widest text-cream/70">
-            {t("setAsideHeading")}
-          </p>
-          <ul className="mt-1 opacity-55 grayscale [&>li:last-child]:border-b-0 [&_.line-price]:line-through">
-            {setAside.map(line)}
-          </ul>
-          <p className="mt-2 font-body text-xs leading-relaxed text-cream/70">{t("setAsideBody")}</p>
-        </div>
-      )}
-    </section>
+        {setAside.length > 0 && (
+          <div className="mt-5 rounded-xl border border-cream/15 bg-cream/5 p-3.5">
+            <p className="font-body text-[11px] font-semibold uppercase tracking-widest text-cream/70">
+              {t("setAsideHeading")}
+            </p>
+            <ul className="mt-1 opacity-55 grayscale [&>li:last-child]:border-b-0 [&_.line-price]:line-through">
+              {setAside.map(line)}
+            </ul>
+            <p className="mt-2 font-body text-xs leading-relaxed text-cream/70">{t("setAsideBody")}</p>
+          </div>
+        )}
+      </section>
     );
   };
 
@@ -273,9 +270,7 @@ function Notice({
 }) {
   return (
     <div>
-      <h2 className="font-display text-base font-semibold text-forest">
-        {heading}
-      </h2>
+      <h2 className="font-display text-base font-semibold text-forest">{heading}</h2>
       <p className="mt-2 font-body text-sm leading-relaxed text-stone">{body}</p>
       {href && cta && (
         <Link

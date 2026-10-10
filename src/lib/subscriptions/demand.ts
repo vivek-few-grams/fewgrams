@@ -75,7 +75,12 @@ export function demandFor(
     subscribers += 1;
 
     for (const line of sub.lines) {
-      const p = plans.get(line.planId) ?? { planId: line.planId, planKey: line.planKey, boxes: 0, week: delivery.week };
+      const p = plans.get(line.planId) ?? {
+        planId: line.planId,
+        planKey: line.planKey,
+        boxes: 0,
+        week: delivery.week,
+      };
       p.boxes += line.boxes;
       plans.set(line.planId, p);
 

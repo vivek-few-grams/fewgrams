@@ -1,0 +1,52 @@
+# Deploys to production on every push to main, or by the "Run workflow"
+# button — SPEC §2.2. Signs in to AWS through OIDC: the only thing stored in
+# GitHub is the role's ARN, never a key.
+#
+# Repository settings it needs (Settings → Secrets and variables → Actions):
+#   variable  AWS_DEPLOY_ROLE_ARN  output DeployRoleArn of the FewgramsOps stack
+#   secret    SITE_GATE            user:password while the site is private
+#   variable  SITE_PUBLIC          "true" once it is opened (then SITE_GATE can go)
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # for the OIDC sign-in
+
+# One deploy at a time, and never cancel one half way through a CloudFormation update.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # No `environment:` — it would change the OIDC subject to
+    # `environment:production`, which the deploy role's trust policy does not
+    # accept (it accepts `ref:refs/heads/main` only; ops-stack.ts).
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npx tsc -p infra/tsconfig.json
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ap-south-1
+      - name: Deploy every stack
+        run: npx cdk deploy --all --require-approval never
+        env:
+          SITE_GATE: ${{ secrets.SITE_GATE }}
+          SITE_PUBLIC: ${{ vars.SITE_PUBLIC }}
+          # Makes every deploy re-read the Parameter Store values (web-stack.ts).
+          DEPLOY_REVISION: ${{ github.run_id }}

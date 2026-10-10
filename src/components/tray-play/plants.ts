@@ -219,9 +219,7 @@ function leafProfile(shape: LeafShape, u: number) {
       /* Widest two-thirds of the way out and still broad at the tip, where
          the notch is cut — a radish cotyledon is wider than it is long. */
       return (
-        (u < 0.65
-          ? Math.sin(((Math.PI / 2) * u) / 0.65) ** 0.7
-          : 1 - 0.32 * ((u - 0.65) / 0.35) ** 2) * stalk
+        (u < 0.65 ? Math.sin(((Math.PI / 2) * u) / 0.65) ** 0.7 : 1 - 0.32 * ((u - 0.65) / 0.35) ** 2) * stalk
       );
     case "long":
       return Math.sin(Math.PI * u) ** 0.8 * stalk;
@@ -236,12 +234,7 @@ type Mesh = {
   idx: number[];
 };
 
-function addMesh(
-  into: Mesh,
-  from: THREE.BufferGeometry,
-  part: number,
-  mirror = false,
-) {
+function addMesh(into: Mesh, from: THREE.BufferGeometry, part: number, mirror = false) {
   const base = into.pos.length / 3;
   const p = from.getAttribute("position");
   const n = from.getAttribute("normal");
@@ -315,8 +308,7 @@ function leafGeometry(v: Variety) {
   for (let k = 0; k < n.count; k++) up += n.getY(k);
   if (up < 0) {
     const flipped: number[] = [];
-    for (let k = 0; k < idx.length; k += 3)
-      flipped.push(idx[k], idx[k + 2], idx[k + 1]);
+    for (let k = 0; k < idx.length; k += 3) flipped.push(idx[k], idx[k + 2], idx[k + 1]);
     g.setIndex(flipped);
     g.computeVertexNormals();
   }
@@ -640,12 +632,7 @@ const FRAGMENT = /* glsl */ `
 
 /** A 1 × 1 mask: sown everywhere, cut nowhere — the home page's trays. */
 export function fullMask() {
-  const t = new THREE.DataTexture(
-    new Uint8Array([255, 0, 0, 255]),
-    1,
-    1,
-    THREE.RGBAFormat,
-  );
+  const t = new THREE.DataTexture(new Uint8Array([255, 0, 0, 255]), 1, 1, THREE.RGBAFormat);
   t.needsUpdate = true;
   return t;
 }
@@ -734,22 +721,10 @@ const linear = (hex: string) => new THREE.Color(hex);
  * The instanced mesh for one tray of `v`, standing at `y`. The caller adds it
  * to the scene and disposes `mesh.geometry` and `mesh.material`.
  */
-export function plantMesh(
-  v: Variety,
-  stems: Stems,
-  extra: Float32Array,
-  y: number,
-  shared: Shared,
-) {
+export function plantMesh(v: Variety, stems: Stems, extra: Float32Array, y: number, shared: Shared) {
   const geometry = plantGeometry(v);
-  geometry.setAttribute(
-    "iData",
-    new THREE.InstancedBufferAttribute(stems.data, 4),
-  );
-  geometry.setAttribute(
-    "iMore",
-    new THREE.InstancedBufferAttribute(stems.more, 3),
-  );
+  geometry.setAttribute("iData", new THREE.InstancedBufferAttribute(stems.data, 4));
+  geometry.setAttribute("iMore", new THREE.InstancedBufferAttribute(stems.more, 3));
   geometry.setAttribute("iExtra", new THREE.InstancedBufferAttribute(extra, 2));
   geometry.instanceCount = stems.count;
 
@@ -774,10 +749,7 @@ export function plantMesh(
       uSway: { value: v.sway },
       uBounce: { value: v.bounce },
       uHeights: {
-        value: new THREE.Vector2(
-          v.height - v.heightJitter,
-          v.height + v.heightJitter,
-        ),
+        value: new THREE.Vector2(v.height - v.heightJitter, v.height + v.heightJitter),
       },
       uStemBase: { value: linear(v.stemBase) },
       uStemTop: { value: linear(v.stemTop) },
@@ -867,14 +839,8 @@ export function seedMesh(v: Variety, stems: Stems, y: number, shared: Shared) {
   geometry.index = shape.index;
   geometry.setAttribute("position", shape.getAttribute("position"));
   geometry.setAttribute("normal", shape.getAttribute("normal"));
-  geometry.setAttribute(
-    "iData",
-    new THREE.InstancedBufferAttribute(stems.data, 4),
-  );
-  geometry.setAttribute(
-    "iMore",
-    new THREE.InstancedBufferAttribute(stems.more, 3),
-  );
+  geometry.setAttribute("iData", new THREE.InstancedBufferAttribute(stems.data, 4));
+  geometry.setAttribute("iMore", new THREE.InstancedBufferAttribute(stems.more, 3));
   geometry.instanceCount = stems.count;
   const r = shared.fieldRect;
   const material = new THREE.ShaderMaterial({
@@ -919,10 +885,7 @@ export function sprigGeometry(v: Variety, length: number) {
 
   const stemTop = new THREE.Color(v.stemTop);
   const stemBase = new THREE.Color(v.stemBase);
-  const leafColor = new THREE.Color(v.leafA).lerp(
-    new THREE.Color(v.leafB),
-    0.5,
-  );
+  const leafColor = new THREE.Color(v.leafA).lerp(new THREE.Color(v.leafB), 0.5);
   const under = new THREE.Color(v.leafBase);
   const colors: number[] = [];
   const pos = m.pos;
@@ -945,9 +908,7 @@ export function sprigGeometry(v: Variety, length: number) {
       pos[k * 3] = side * (r * ca - y * sa);
       pos[k * 3 + 1] = length + r * sa + y * ca;
       pos[k * 3 + 2] = z;
-      const c = under
-        .clone()
-        .lerp(leafColor, Math.min(1, (r / v.leafLength) * 6));
+      const c = under.clone().lerp(leafColor, Math.min(1, (r / v.leafLength) * 6));
       colors.push(c.r, c.g, c.b);
     }
   }

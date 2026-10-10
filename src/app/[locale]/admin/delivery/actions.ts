@@ -27,10 +27,7 @@ import { HOME_ORIGIN } from "@/lib/shipping/origin";
  * and the owner pays for.
  */
 const TEXT = ["pickupName", "pickupAddress", "pickupCity"] as const;
-const NUMBERS = [
-  "greenRunFee",
-  "seedPackingGrams",
-] as const;
+const NUMBERS = ["greenRunFee", "seedPackingGrams"] as const;
 
 export async function saveShippingSettings(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
@@ -75,7 +72,14 @@ export async function saveShippingSettings(_prev: FormState, fd: FormData): Prom
     if (!originPhone) return err("phoneInvalid", `origin.${i}.phone`);
     const originPin = get("pincode");
     if (!/^[1-9]\d{5}$/.test(originPin)) return err("pincodeInvalid", `origin.${i}.pincode`);
-    origins.push({ id, name: row.name, phone: originPhone, address: row.address, city: row.city, pincode: originPin });
+    origins.push({
+      id,
+      name: row.name,
+      phone: originPhone,
+      address: row.address,
+      city: row.city,
+      pincode: originPin,
+    });
   }
 
   /* What ships from where is set on each product's own screen and kept as

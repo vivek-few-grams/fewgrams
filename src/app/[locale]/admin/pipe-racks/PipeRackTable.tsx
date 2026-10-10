@@ -6,12 +6,7 @@ import { AlertTriangle, RefreshCw } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { PipeRackModel, PipeSize, RackSettings } from "@/lib/types";
-import {
-  addPipeRack,
-  removePipeRack,
-  republishPipeRack,
-  togglePipeRack,
-} from "./actions";
+import { addPipeRack, removePipeRack, republishPipeRack, togglePipeRack } from "./actions";
 import { CheckField, SelectField } from "../fields";
 
 /**
@@ -69,8 +64,7 @@ export type PipeRackView = {
  * none `auto` — the header and the rows are separate grids and only line up if
  * both resolve to the same widths.
  */
-const COLUMNS =
-  "3.5rem 3.5rem 5rem 4.5rem 4.5rem 4rem 5rem 5.5rem 6rem 4.5rem 3.5rem";
+const COLUMNS = "3.5rem 3.5rem 5rem 4.5rem 4.5rem 4rem 5rem 5.5rem 6rem 4.5rem 3.5rem";
 
 /** Below this the table scrolls rather than compressing: a squeezed price
  *  column is worse than a scrollbar. */
@@ -154,9 +148,7 @@ export function PipeRackTable({
 /** A figure, or an em dash where its part has left the rates, so a retired
  *  footprint shows as a gap rather than a zero that looks like a real price. */
 function Cell({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="font-body text-sm tabular-nums text-forest">{children ?? "—"}</span>
-  );
+  return <span className="font-body text-sm tabular-nums text-forest">{children ?? "—"}</span>;
 }
 
 function PipeRackRow({ view }: { view: PipeRackView }) {
@@ -263,7 +255,6 @@ function PipeRackRow({ view }: { view: PipeRackView }) {
           )}
         </div>
       )}
-
     </div>
   );
 }
@@ -344,9 +335,7 @@ function AddPipeRackForm({
               depth: s.depthFt,
               length: s.lengthFt,
               feet: 2 * (s.lengthFt + s.depthFt),
-              legs:
-                settings.legsPerRack +
-                (s.lengthFt >= midSupportFromLengthFt ? midSupportLegs : 0),
+              legs: settings.legsPerRack + (s.lengthFt >= midSupportFromLengthFt ? midSupportLegs : 0),
             }),
           }))}
           error={errorFor("pipeSizeId")}

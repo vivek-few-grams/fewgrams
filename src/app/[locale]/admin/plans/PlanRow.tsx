@@ -53,9 +53,7 @@ export function PlanRow({
      ever have it on. */
   const isByo = plan !== null && plan.monthlyPrice === null;
   const orphan = name === null;
-  const rotation = Object.fromEntries(
-    ROTATION_WEEKS.map((week) => [week, weeks[week] ?? []]),
-  );
+  const rotation = Object.fromEntries(ROTATION_WEEKS.map((week) => [week, weeks[week] ?? []]));
 
   return (
     <article
@@ -121,9 +119,7 @@ export function PlanRow({
           {t("orphanHint", { key: contentKey })}
         </p>
       ) : (
-        !plan && (
-          <p className="mt-2 font-body text-xs text-stone">{t("notConfigured")}</p>
-        )
+        !plan && <p className="mt-2 font-body text-xs text-stone">{t("notConfigured")}</p>
       )}
 
       <form action={action} className="mt-5 space-y-5">
@@ -157,11 +153,7 @@ export function PlanRow({
         <RotationPicker choices={choices} weeks={rotation} />
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-          <CheckField
-            label={t("activeLabel")}
-            name="active"
-            defaultChecked={plan?.active ?? true}
-          />
+          <CheckField label={t("activeLabel")} name="active" defaultChecked={plan?.active ?? true} />
           <CheckField
             label={t("recommendedLabel")}
             name="recommended"

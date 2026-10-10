@@ -55,12 +55,8 @@ export default async function AdminHome() {
           href={c.href}
           className="rounded-2xl border border-forest/15 p-6 transition-colors hover:border-forest"
         >
-          <p className="font-display text-4xl font-bold tabular-nums text-forest">
-            {c.count}
-          </p>
-          <p className="mt-1 font-display text-base font-semibold text-forest">
-            {c.label}
-          </p>
+          <p className="font-display text-4xl font-bold tabular-nums text-forest">{c.count}</p>
+          <p className="mt-1 font-display text-base font-semibold text-forest">{c.label}</p>
           <p className="mt-2 font-body text-xs leading-relaxed text-stone">{c.hint}</p>
         </Link>
       ))}

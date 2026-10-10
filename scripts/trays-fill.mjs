@@ -54,8 +54,7 @@ export const PRICE_LIST = [
     key: "drain-cell-mat",
     listed: "Heavy Duty Drain Cell Mat (20 MM) (Pack of 5)",
     price: 300,
-    source:
-      "pasumaithottakalai.com/products/heavy-duty-drain-cell-mat-20-mm-pack-of-5-...",
+    source: "pasumaithottakalai.com/products/heavy-duty-drain-cell-mat-20-mm-pack-of-5-...",
   },
   {
     key: "tray-pair",
@@ -99,9 +98,7 @@ async function main() {
   const ddb = DynamoDBDocument.from(
     new DynamoDBClient({
       region: process.env.DYNAMODB_REGION ?? "ap-south-1",
-      ...(endpoint
-        ? { endpoint, credentials: { accessKeyId: "local", secretAccessKey: "local" } }
-        : {}),
+      ...(endpoint ? { endpoint, credentials: { accessKeyId: "local", secretAccessKey: "local" } } : {}),
     }),
   );
 

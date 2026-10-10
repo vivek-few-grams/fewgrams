@@ -9,18 +9,8 @@ import {
   putPipeRackModel,
   putRackModel,
 } from "@/lib/repo/racks";
-import {
-  angleRackCost,
-  pipeRackCost,
-  rackCost,
-  repricedRows,
-  type RateCard,
-} from "./pricing";
-import type {
-  AngleRackConfig,
-  PipeRackConfig,
-  RackConfig,
-} from "@/lib/types";
+import { angleRackCost, pipeRackCost, rackCost, repricedRows, type RateCard } from "./pricing";
+import type { AngleRackConfig, PipeRackConfig, RackConfig } from "@/lib/types";
 
 /**
  * The rate cascade — SPEC §19.3.1.
@@ -111,21 +101,9 @@ export async function repriceAllRacks(): Promise<RepriceSummary> {
      a bare `(c) => ...` TypeScript resolves `C` from the callback's parameter
      and lands on `unknown`, which compiles the wrong cost function in without
      complaint. */
-  const platedRows = repricedRows(
-    plated,
-    (c: RackConfig) => rackCost(c, card),
-    card.margins.plated,
-  );
-  const angleRows = repricedRows(
-    angle,
-    (c: AngleRackConfig) => angleRackCost(c, card),
-    card.margins.angle,
-  );
-  const pipeRows = repricedRows(
-    pipe,
-    (c: PipeRackConfig) => pipeRackCost(c, card),
-    card.margins.pipe,
-  );
+  const platedRows = repricedRows(plated, (c: RackConfig) => rackCost(c, card), card.margins.plated);
+  const angleRows = repricedRows(angle, (c: AngleRackConfig) => angleRackCost(c, card), card.margins.angle);
+  const pipeRows = repricedRows(pipe, (c: PipeRackConfig) => pipeRackCost(c, card), card.margins.pipe);
 
   /* One timestamp for the whole cascade, so every row it touched carries the
      same `publishedAt` and the sweep is legible as one event in the data

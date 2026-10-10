@@ -65,11 +65,7 @@ const COLUMNS =
  */
 const MIN_WIDTH = "min-w-[64rem]";
 
-export function SeedTable({
-  seeds,
-}: {
-  seeds: Array<{ seed: Seed; name: string | null }>;
-}) {
+export function SeedTable({ seeds }: { seeds: Array<{ seed: Seed; name: string | null }> }) {
   const t = useTranslations("admin.seeds");
   const [query, setQuery] = useState("");
 
@@ -79,10 +75,7 @@ export function SeedTable({
     /* Matches the display name and the key, normalising the query the same way
        a key is normalised — so typing "China Rose" finds `china-rose`. */
     const asKey = sanitiseKey(q);
-    return seeds.filter(
-      (s) =>
-        s.seed.contentKey.includes(asKey) || (s.name ?? "").toLowerCase().includes(q),
-    );
+    return seeds.filter((s) => s.seed.contentKey.includes(asKey) || (s.name ?? "").toLowerCase().includes(q));
   }, [seeds, query]);
 
   return (
@@ -142,30 +135,32 @@ export function SeedTable({
         /* The scroll box wraps the header *and* the rows, so they scroll
            together and stay aligned. */
         <div className="overflow-x-auto">
-        <div className={`${MIN_WIDTH} space-y-2`}>
-          {/* Column headings, hidden below `lg` where the table is scrolled
+          <div className={`${MIN_WIDTH} space-y-2`}>
+            {/* Column headings, hidden below `lg` where the table is scrolled
               rather than stacked and every input carries its own label as its
               accessible name instead. */}
-          <div
-            style={{ gridTemplateColumns: COLUMNS }}
-            className="hidden gap-x-3 px-4 lg:grid"
-          >
-            {[t("colSeed"), t("colCost"), t("colPrice"), t("colMargin"), t("colStock"), t("colPacks"), "", t("colActive"), ""].map(
-              (heading, i) => (
-                <span
-                  key={i}
-                  className="font-body text-[10px] uppercase tracking-wider text-stone"
-                >
+            <div style={{ gridTemplateColumns: COLUMNS }} className="hidden gap-x-3 px-4 lg:grid">
+              {[
+                t("colSeed"),
+                t("colCost"),
+                t("colPrice"),
+                t("colMargin"),
+                t("colStock"),
+                t("colPacks"),
+                "",
+                t("colActive"),
+                "",
+              ].map((heading, i) => (
+                <span key={i} className="font-body text-[10px] uppercase tracking-wider text-stone">
                   {heading}
                 </span>
-              ),
-            )}
-          </div>
+              ))}
+            </div>
 
-          {shown.map(({ seed, name }) => (
-            <SeedRow key={seed.id} seed={seed} name={name} />
-          ))}
-        </div>
+            {shown.map(({ seed, name }) => (
+              <SeedRow key={seed.id} seed={seed} name={name} />
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -193,9 +188,7 @@ function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
       }`}
     >
       <div className="min-w-0">
-        <p className="truncate font-body text-sm font-semibold text-forest">
-          {name ?? seed.contentKey}
-        </p>
+        <p className="truncate font-body text-sm font-semibold text-forest">{name ?? seed.contentKey}</p>
         <code className="font-body text-[11px] text-stone">{seed.contentKey}</code>
       </div>
 
@@ -326,9 +319,5 @@ function PacksCell({ grams }: { grams: number }) {
     );
   }
 
-  return (
-    <p className="font-body text-xs tabular-nums text-stone">
-      {t("packs", { count: packs })}
-    </p>
-  );
+  return <p className="font-body text-xs tabular-nums text-stone">{t("packs", { count: packs })}</p>;
 }

@@ -1,11 +1,7 @@
 import Image from "next/image";
 import { MarqueeCard } from "@/components/ui/MarqueeCard";
 import { ScrollRow } from "@/components/ui/ScrollRow";
-import {
-  CategoryMedia,
-  categoryMediaClass,
-  categoryPhoto,
-} from "@/components/catalogue/CategoryMedia";
+import { CategoryMedia, categoryMediaClass, categoryPhoto } from "@/components/catalogue/CategoryMedia";
 import { getTranslations } from "next-intl/server";
 import type { Category } from "@/lib/types";
 import { CATEGORY_COUNT, CATEGORY_HREF, CATEGORY_PANELS } from "@/lib/shop";
@@ -66,75 +62,71 @@ export async function OtherProducts({
   return (
     <section className="mx-auto max-w-[1400px] px-6 py-14 md:px-12 md:py-20">
       <div className="max-w-2xl">
-        <p className="font-body text-[11px] uppercase tracking-widest text-stone">
-          {t("eyebrow")}
-        </p>
+        <p className="font-body text-[11px] uppercase tracking-widest text-stone">{t("eyebrow")}</p>
         <h2 className="mt-3 font-display text-[clamp(1.6rem,3.4vw,2.6rem)] font-bold leading-tight tracking-tight text-forest">
           {t("heading")}
         </h2>
-        <p className="mt-4 font-body text-sm text-stone">
-          {t("body")}
-        </p>
+        <p className="mt-4 font-body text-sm text-stone">{t("body")}</p>
       </div>
 
       {/* One sideways-scrolling row (the owner, 25 Sep 2026; /shop keeps its grid).
           The basis subtracts the gaps so four tiles fill the width from md. */}
       <div className="mt-12">
-      <ScrollRow
-        itemClass="basis-[calc((100%-1.25rem)/2)] md:basis-[calc((100%-4.5rem)/4)]"
-        gapClass="gap-5 md:gap-6"
-        prevLabel={row("prev")}
-        nextLabel={row("next")}
-      >
-        {microgreensOn && (
-          <MarqueeCard
-            href="/microgreens"
-            label={label("microgreens")}
-            note={counted("varieties", { count: varietyCount })}
-            words={microgreenNames}
-            scatter
-            panelClass="bg-mint/40"
-            marqueeClass="text-forest/25"
-            photo={categoryPhoto("microgreens")}
-            media={
-              <Image
-                src="/shop/microgreens-cutout.webp"
-                alt=""
-                fill
-                sizes="(min-width: 768px) 22vw, 42vw"
-                className="object-contain"
-              />
-            }
-            mediaClass="aspect-[3/2] w-[93%]"
-          />
-        )}
-
-        {categories.map((c, i) => {
-          const n = counts[c] ?? 0;
-          const WORDS: Record<typeof c, string[]> = {
-            racks: rackRangeNames,
-            seeds: seedNames,
-            trays: trayItemNames,
-            media: mediumNames,
-            snacks: [label(c), label(c)],
-          };
-          return (
+        <ScrollRow
+          itemClass="basis-[calc((100%-1.25rem)/2)] md:basis-[calc((100%-4.5rem)/4)]"
+          gapClass="gap-5 md:gap-6"
+          prevLabel={row("prev")}
+          nextLabel={row("next")}
+        >
+          {microgreensOn && (
             <MarqueeCard
-              key={c}
-              href={CATEGORY_HREF[c]}
-              label={label(c)}
-              note={counted(CATEGORY_COUNT[c], { count: n })}
-              words={WORDS[c]}
-              scatter={c !== "snacks"}
-              panelClass={CATEGORY_PANELS[c].panelClass}
-              marqueeClass={CATEGORY_PANELS[c].marqueeClass}
-              photo={categoryPhoto(c)}
-              media={<CategoryMedia category={c} index={i} />}
-              mediaClass={categoryMediaClass(c)}
+              href="/microgreens"
+              label={label("microgreens")}
+              note={counted("varieties", { count: varietyCount })}
+              words={microgreenNames}
+              scatter
+              panelClass="bg-mint/40"
+              marqueeClass="text-forest/25"
+              photo={categoryPhoto("microgreens")}
+              media={
+                <Image
+                  src="/shop/microgreens-cutout.webp"
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 22vw, 42vw"
+                  className="object-contain"
+                />
+              }
+              mediaClass="aspect-[3/2] w-[93%]"
             />
-          );
-        })}
-      </ScrollRow>
+          )}
+
+          {categories.map((c, i) => {
+            const n = counts[c] ?? 0;
+            const WORDS: Record<typeof c, string[]> = {
+              racks: rackRangeNames,
+              seeds: seedNames,
+              trays: trayItemNames,
+              media: mediumNames,
+              snacks: [label(c), label(c)],
+            };
+            return (
+              <MarqueeCard
+                key={c}
+                href={CATEGORY_HREF[c]}
+                label={label(c)}
+                note={counted(CATEGORY_COUNT[c], { count: n })}
+                words={WORDS[c]}
+                scatter={c !== "snacks"}
+                panelClass={CATEGORY_PANELS[c].panelClass}
+                marqueeClass={CATEGORY_PANELS[c].marqueeClass}
+                photo={categoryPhoto(c)}
+                media={<CategoryMedia category={c} index={i} />}
+                mediaClass={categoryMediaClass(c)}
+              />
+            );
+          })}
+        </ScrollRow>
       </div>
     </section>
   );

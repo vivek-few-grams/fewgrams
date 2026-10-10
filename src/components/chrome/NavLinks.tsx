@@ -86,8 +86,7 @@ export function NavLinks({
       className="col-start-2 row-start-2 flex min-w-0 items-center gap-5 overflow-x-auto lg:order-2 lg:ml-auto lg:w-auto lg:overflow-visible"
     >
       {items.map((item) => {
-        const active =
-          pathname === item.match || pathname.startsWith(`${item.match}/`);
+        const active = pathname === item.match || pathname.startsWith(`${item.match}/`);
         return (
           <Link
             key={item.href}
@@ -99,26 +98,17 @@ export function NavLinks({
                the home page, because the rule also skips a same-pathname
                link. */
             {...{ [CURTAIN_ATTR]: "" }}
-            onClick={
-              "hash" in item
-                ? (event) => onSectionClick(event, item.hash)
-                : undefined
-            }
+            onClick={"hash" in item ? (event) => onSectionClick(event, item.hash) : undefined}
             aria-current={active ? "page" : undefined}
             className={`ui-label nav-sprout whitespace-nowrap border-b-2 pb-0.5 pt-1 font-body font-medium transition-colors [--label-size:12px] md:[--label-size:13px] ${
-              active
-                ? "border-forest text-forest"
-                : "border-transparent text-forest/70 hover:text-forest"
+              active ? "border-forest text-forest" : "border-transparent text-forest/70 hover:text-forest"
             }`}
           >
             {/* The link's name is the first face; the hover word is
                 `aria-hidden`, so a screen reader hears one label. */}
             <span className="nav-sprout__inner">
               <span className="nav-sprout__face">{t(item.key)}</span>
-              <span
-                className="nav-sprout__face nav-sprout__face--back"
-                aria-hidden="true"
-              >
+              <span className="nav-sprout__face nav-sprout__face--back" aria-hidden="true">
                 {t(item.hover)}
               </span>
             </span>

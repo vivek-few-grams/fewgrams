@@ -129,15 +129,32 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
         <input type="hidden" name="id" value={angle.id} />
         <input type="hidden" name="active" value={angle.active ? "on" : "off"} />
 
-        <NumberField compact label={t("colThickness")} name="thicknessMm" min={0} defaultValue={angle.thicknessMm} error={errorFor("thicknessMm")} />
-        <ColourSelect
+        <NumberField
           compact
-          label={t("colColours")}
-          initial={angle.colours}
-          texts={colourTexts(t)}
+          label={t("colThickness")}
+          name="thicknessMm"
+          min={0}
+          defaultValue={angle.thicknessMm}
+          error={errorFor("thicknessMm")}
         />
-        <NumberField compact label={t("colRatePerFt")} name="ratePerFt" min={0} defaultValue={angle.ratePerFt} error={errorFor("ratePerFt")} />
-        <NumberField compact label={t("colGramsPerFt")} name="gramsPerFt" defaultValue={angle.gramsPerFt} error={errorFor("gramsPerFt") ?? (angle.gramsPerFt === undefined ? t("gramsPerFtMissing") : undefined)} />
+        <ColourSelect compact label={t("colColours")} initial={angle.colours} texts={colourTexts(t)} />
+        <NumberField
+          compact
+          label={t("colRatePerFt")}
+          name="ratePerFt"
+          min={0}
+          defaultValue={angle.ratePerFt}
+          error={errorFor("ratePerFt")}
+        />
+        <NumberField
+          compact
+          label={t("colGramsPerFt")}
+          name="gramsPerFt"
+          defaultValue={angle.gramsPerFt}
+          error={
+            errorFor("gramsPerFt") ?? (angle.gramsPerFt === undefined ? t("gramsPerFtMissing") : undefined)
+          }
+        />
 
         <button
           type="submit"

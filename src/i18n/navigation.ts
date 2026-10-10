@@ -8,5 +8,4 @@ import { routing } from "./routing";
  * the active locale, so a Kannada visitor clicking a link stays in Kannada.
  * A raw `next/link` silently drops them back to English.
  */
-export const { Link, redirect, usePathname, useRouter, getPathname } =
-  createNavigation(routing);
+export const { Link, redirect, usePathname, useRouter, getPathname } = createNavigation(routing);

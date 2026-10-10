@@ -3,11 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getGrowMediumByKey } from "@/lib/repo/grow-media";
-import {
-  getGrowMediumContent,
-  growMediumHero,
-  growMediumImageUrl,
-} from "@/lib/content/grow-media";
+import { getGrowMediumContent, growMediumHero, growMediumImageUrl } from "@/lib/content/grow-media";
 import { DetailPage } from "@/components/catalogue/DetailPage";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import { RecommendedBadge } from "@/components/catalogue/RecommendedBadge";
@@ -37,16 +33,11 @@ import { fromShelf, heldReadyDate } from "@/lib/trays/lead-time";
 export const dynamic = "force-dynamic";
 
 async function load(key: string, locale: string) {
-  const [row, content] = await Promise.all([
-    getGrowMediumByKey(key),
-    getGrowMediumContent(key, locale),
-  ]);
+  const [row, content] = await Promise.all([getGrowMediumByKey(key), getGrowMediumContent(key, locale)]);
   return row?.active && content ? { row, content } : null;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/shop/grow-media/[key]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/shop/grow-media/[key]">) {
   const { locale, key } = await params;
   const found = await load(key, locale);
   if (!found) return {};
@@ -59,9 +50,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function GrowMediumPage({
-  params,
-}: PageProps<"/[locale]/shop/grow-media/[key]">) {
+export default async function GrowMediumPage({ params }: PageProps<"/[locale]/shop/grow-media/[key]">) {
   const { locale, key } = await params;
   setRequestLocale(locale);
   await guardProductTypeEnabled("media", locale);

@@ -6,12 +6,7 @@ import { Check } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { PipeSize } from "@/lib/types";
-import {
-  addPipeSize,
-  removePipeSize,
-  savePipeSize,
-  togglePipeSize,
-} from "./actions";
+import { addPipeSize, removePipeSize, savePipeSize, togglePipeSize } from "./actions";
 import { CheckField, NumberField } from "../fields";
 
 /**
@@ -97,12 +92,7 @@ export function PipeSizeTable({
             </div>
 
             {sizes.map((size) => (
-              <PipeSizeRow
-                key={size.id}
-                size={size}
-                legs={legsFor(size.lengthFt)}
-                cornerLegs={cornerLegs}
-              />
+              <PipeSizeRow key={size.id} size={size} legs={legsFor(size.lengthFt)} cornerLegs={cornerLegs} />
             ))}
           </div>
         </div>
@@ -125,21 +115,10 @@ function LegsCell({ legs, cornerLegs }: { legs: number; cornerLegs: number }) {
   );
 }
 
-function PipeSizeRow({
-  size,
-  legs,
-  cornerLegs,
-}: {
-  size: PipeSize;
-  legs: number;
-  cornerLegs: number;
-}) {
+function PipeSizeRow({ size, legs, cornerLegs }: { size: PipeSize; legs: number; cornerLegs: number }) {
   const t = useTranslations("admin.pipeRacks");
   const tc = useTranslations("admin.common");
-  const [state, action, pending] = useActionState<FormState, FormData>(
-    savePipeSize,
-    IDLE,
-  );
+  const [state, action, pending] = useActionState<FormState, FormData>(savePipeSize, IDLE);
 
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field
@@ -157,8 +136,22 @@ function PipeSizeRow({
             forward rather than clearing it. */}
         <input type="hidden" name="active" value={size.active ? "on" : "off"} />
 
-        <NumberField compact label={t("colDepth")} name="depthFt" min={0} defaultValue={size.depthFt} error={errorFor("depthFt")} />
-        <NumberField compact label={t("colLength")} name="lengthFt" min={0} defaultValue={size.lengthFt} error={errorFor("lengthFt")} />
+        <NumberField
+          compact
+          label={t("colDepth")}
+          name="depthFt"
+          min={0}
+          defaultValue={size.depthFt}
+          error={errorFor("depthFt")}
+        />
+        <NumberField
+          compact
+          label={t("colLength")}
+          name="lengthFt"
+          min={0}
+          defaultValue={size.lengthFt}
+          error={errorFor("lengthFt")}
+        />
 
         {/* Both derived from what is **stored**, not from the inputs beside
             them. An unsaved edit showing its own consequence would state a
@@ -304,9 +297,7 @@ function AddPipeSizeForm({
 function Readout({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
-        {label}
-      </span>
+      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">{label}</span>
       <output className="mt-1.5 block rounded-lg border border-forest/15 bg-sand px-3 py-2 font-body text-sm tabular-nums text-forest">
         {children}
       </output>

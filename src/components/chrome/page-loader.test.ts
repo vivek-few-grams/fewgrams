@@ -31,12 +31,7 @@ function run(
 
   /* The script body is `(function(){...})()`, so its bare `sessionStorage`,
      `matchMedia` and `document` references resolve to these parameters. */
-  new Function(
-    "sessionStorage",
-    "matchMedia",
-    "document",
-    loaderInitScript,
-  )(
+  new Function("sessionStorage", "matchMedia", "document", loaderInitScript)(
     {
       getItem: (k: string) => (k in store ? store[k] : null),
       setItem: (k: string, v: string) => {
@@ -119,18 +114,13 @@ describe("loaderInitScript — what is decided before first paint", () => {
   describe("prefers-reduced-motion", () => {
     it("never covers the page", () => {
       expect(run({}, { reducedMotion: true }).state).toBeNull();
-      expect(
-        run({ "fg:curtain": fresh() }, { reducedMotion: true }).state,
-      ).toBeNull();
+      expect(run({ "fg:curtain": fresh() }, { reducedMotion: true }).state).toBeNull();
     });
 
     /* Both keys are consumed before the bail, so turning motion back on
        mid-session does not then produce an intro. */
     it("still consumes both keys", () => {
-      const { session } = run(
-        { "fg:curtain": fresh() },
-        { reducedMotion: true },
-      );
+      const { session } = run({ "fg:curtain": fresh() }, { reducedMotion: true });
       expect(session["fg:curtain"]).toBeUndefined();
       expect(session["fg:loader"]).toBe("1");
     });

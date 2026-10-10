@@ -3,11 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { MarqueeCard } from "@/components/ui/MarqueeCard";
-import {
-  CategoryMedia,
-  categoryMediaClass,
-  categoryPhoto,
-} from "@/components/catalogue/CategoryMedia";
+import { CategoryMedia, categoryMediaClass, categoryPhoto } from "@/components/catalogue/CategoryMedia";
 import { categoryCounts } from "@/lib/catalogue/counts";
 import { enabledCategories, isProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { listVarieties } from "@/lib/repo/varieties";
@@ -60,18 +56,18 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
     categories,
     microgreensOn,
   ] = await Promise.all([
-      categoryCounts(),
-      listVarieties({ activeOnly: true }),
-      varietyNameMap(locale),
-      listSeeds({ activeOnly: true }),
-      seedNameMap(locale),
-      listTrays({ activeOnly: true }),
-      trayNameMap(locale),
-      listGrowMedia({ activeOnly: true }),
-      growMediumNameMap(locale),
-      enabledCategories(),
-      isProductTypeEnabled("microgreens"),
-    ]);
+    categoryCounts(),
+    listVarieties({ activeOnly: true }),
+    varietyNameMap(locale),
+    listSeeds({ activeOnly: true }),
+    seedNameMap(locale),
+    listTrays({ activeOnly: true }),
+    trayNameMap(locale),
+    listGrowMedia({ activeOnly: true }),
+    growMediumNameMap(locale),
+    enabledCategories(),
+    isProductTypeEnabled("microgreens"),
+  ]);
   /* Every variety on the shelf, for the microgreens tile's marquee — see
      `MarqueeCard`'s `scatter` prop. Named through the content file, same as
      the card the count above already reads: a row without one is skipped
@@ -100,10 +96,9 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
      instead — labels, never a claim or a tuned figure (CLAUDE.md, marquee
      rules). Still empty when nothing is on sale, like every other tile. */
   const growMediaWords = await getTranslations({ locale, namespace: "shop.growMedia.tileWords" });
-  const mediumNames =
-    media.some((m) => mediumNameById[m.contentKey])
-      ? GROW_MEDIA_TILE_WORDS.map((w) => growMediaWords(w))
-      : [];
+  const mediumNames = media.some((m) => mediumNameById[m.contentKey])
+    ? GROW_MEDIA_TILE_WORDS.map((w) => growMediaWords(w))
+    : [];
 
   return (
     <section className="mx-auto max-w-[1400px] px-6 pb-16 pt-6 md:px-12 md:pb-24 md:pt-8">

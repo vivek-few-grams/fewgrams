@@ -17,7 +17,6 @@ export type Pickup = {
  *  supplier who ships straight to the customer (the owner, 24 Sep 2026). */
 export type Origin = Pickup & { id: string };
 
-
 export type ShippingSettings = {
   pickup: Pickup;
   /** The other pickups, suppliers' — never `home`. */

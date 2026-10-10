@@ -156,7 +156,6 @@ function prefersReducedMotion(): boolean {
   return matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-
 export function PageLoader() {
   /**
    * Deliberately `next/navigation`, not `@/i18n/navigation`.

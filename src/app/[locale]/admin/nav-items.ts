@@ -41,6 +41,8 @@ export const ADMIN_NAV_GROUPS: {
       { label: "subscriptions", href: "/admin/subscriptions" },
       /* Everyone who has signed in, and what they have bought (27 Sep 2026). */
       { label: "customers", href: "/admin/customers" },
+      /* What was sown each day and what it gave at harvest (10 Oct 2026). */
+      { label: "sowing", href: "/admin/sowing" },
     ],
   },
   {

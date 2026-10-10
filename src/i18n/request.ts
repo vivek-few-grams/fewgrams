@@ -40,16 +40,12 @@ function deepMerge(base: Messages, override: Messages): Messages {
   const out: Messages = { ...base };
   for (const [key, value] of Object.entries(override)) {
     const existing = out[key];
-    out[key] =
-      isPlainObject(existing) && isPlainObject(value)
-        ? deepMerge(existing, value)
-        : value;
+    out[key] = isPlainObject(existing) && isPlainObject(value) ? deepMerge(existing, value) : value;
   }
   return out;
 }
 
-const isPlainObject = (v: unknown): v is Messages =>
-  typeof v === "object" && v !== null && !Array.isArray(v);
+const isPlainObject = (v: unknown): v is Messages => typeof v === "object" && v !== null && !Array.isArray(v);
 
 async function load(locale: string, namespace: string): Promise<Messages> {
   try {
@@ -62,9 +58,7 @@ async function load(locale: string, namespace: string): Promise<Messages> {
 
 export default getRequestConfig(async ({ requestLocale }) => {
   const requested = await requestLocale;
-  const locale = hasLocale(routing.locales, requested)
-    ? requested
-    : routing.defaultLocale;
+  const locale = hasLocale(routing.locales, requested) ? requested : routing.defaultLocale;
 
   const entries = await Promise.all(
     NAMESPACES.map(async (ns) => {

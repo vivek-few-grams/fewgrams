@@ -1,11 +1,5 @@
 import { paymentProvider, type PaymentProvider } from "@/lib/payments";
-import {
-  getOrder,
-  markOrderPaid,
-  nextSequence,
-  recordPayment,
-  setReceiptNo,
-} from "@/lib/repo/orders";
+import { getOrder, markOrderPaid, nextSequence, recordPayment, setReceiptNo } from "@/lib/repo/orders";
 import { takeFromShelf } from "@/lib/repo/seeds";
 import { takeFromStock as takeTraysFromStock } from "@/lib/repo/trays";
 import { takeFromStock as takeMediaFromStock } from "@/lib/repo/grow-media";
@@ -64,12 +58,19 @@ export async function settleOrder(
       if (line.kind === "seed" && line.grams !== null) {
         const taken = await takeFromShelf(line.key, line.grams);
         if (taken < line.grams) {
-          console.warn(`[stock] ${orderId}: ${line.key} shelf held ${taken} g of ${line.grams} g — short, sort it out by hand`);
+          console.warn(
+            `[stock] ${orderId}: ${line.key} shelf held ${taken} g of ${line.grams} g — short, sort it out by hand`,
+          );
         }
       } else if (line.kind === "tray" || line.kind === "media") {
-        const taken = await (line.kind === "tray" ? takeTraysFromStock : takeMediaFromStock)(line.key, line.units);
+        const taken = await (line.kind === "tray" ? takeTraysFromStock : takeMediaFromStock)(
+          line.key,
+          line.units,
+        );
         if (taken < line.units) {
-          console.info(`[stock] ${orderId}: ${line.key} held ${taken} of ${line.units}; order ${line.units - taken} from the vendor`);
+          console.info(
+            `[stock] ${orderId}: ${line.key} held ${taken} of ${line.units}; order ${line.units - taken} from the vendor`,
+          );
         }
       }
     } catch (e) {

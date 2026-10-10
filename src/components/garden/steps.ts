@@ -6,17 +6,7 @@
  * `touch` is the home page's grown tray, to run a hand over; every step after
  * it is one job on one tray, from an empty one on the bench to a harvest.
  */
-export const STEPS = [
-  "touch",
-  "pick",
-  "clean",
-  "soak",
-  "fill",
-  "sow",
-  "dark",
-  "light",
-  "harvest",
-] as const;
+export const STEPS = ["touch", "pick", "clean", "soak", "fill", "sow", "dark", "light", "harvest"] as const;
 export type StepId = (typeof STEPS)[number];
 
 /** The steps drawn by the garden scene — every one but the first. */

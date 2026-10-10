@@ -200,10 +200,7 @@ const EMPTY: HydratedCart = {
  * hold none of is still sellable; it just arrives on the vendor's date rather
  * than tomorrow (SPEC §22.2). A tray has no stock to test at all (§23.1).
  */
-export async function hydrateCart(
-  locale: string,
-  now: Date = new Date(),
-): Promise<HydratedCart> {
+export async function hydrateCart(locale: string, now: Date = new Date()): Promise<HydratedCart> {
   const lines = await readCartLines();
   if (lines.length === 0) return EMPTY;
 
@@ -217,13 +214,12 @@ export async function hydrateCart(
     wants("tray") ? listTrays({ activeOnly: true }) : [],
     wants("media") ? listGrowMedia({ activeOnly: true }) : [],
   ]);
-  const [withVarietyContent, withSeedContent, withTrayContent, withMediumContent] =
-    await Promise.all([
-      attachContent(varieties, locale),
-      attachSeedContent(seeds, locale),
-      attachTrayContent(trays, locale),
-      attachGrowMediumContent(media, locale),
-    ]);
+  const [withVarietyContent, withSeedContent, withTrayContent, withMediumContent] = await Promise.all([
+    attachContent(varieties, locale),
+    attachSeedContent(seeds, locale),
+    attachTrayContent(trays, locale),
+    attachGrowMediumContent(media, locale),
+  ]);
 
   /**
    * How a kind's delivery date is worked out. **Internal — never reaches a

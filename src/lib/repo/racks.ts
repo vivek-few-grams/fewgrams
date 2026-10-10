@@ -62,16 +62,15 @@ export type StoredRateCard = {
 };
 
 export async function loadRateCard(): Promise<StoredRateCard> {
-  const [settings, plates, angles, frames, pipes, pipeSettings, marginRows] =
-    await Promise.all([
-      getRackSettings(),
-      listShelfPlates(),
-      listAngleGrades(),
-      listFrameSizes(),
-      listPipeSizes(),
-      getPipeSettings(),
-      listRackMargins(),
-    ]);
+  const [settings, plates, angles, frames, pipes, pipeSettings, marginRows] = await Promise.all([
+    getRackSettings(),
+    listShelfPlates(),
+    listAngleGrades(),
+    listFrameSizes(),
+    listPipeSizes(),
+    getPipeSettings(),
+    listRackMargins(),
+  ]);
   const margins = resolveMargins(settings, marginRows);
   return { settings, plates, angles, frames, pipes, pipeSettings, margins };
 }
@@ -97,9 +96,7 @@ export async function ensureRackMargins(): Promise<void> {
   const [settings, rows] = await Promise.all([getRackSettings(), listRackMargins()]);
   const margins = resolveMargins(settings, rows);
   const have = new Set(rows.map((r) => r.range));
-  await Promise.all(
-    RACK_RANGES.filter((r) => !have.has(r)).map((r) => putRackMargin(r, margins[r])),
-  );
+  await Promise.all(RACK_RANGES.filter((r) => !have.has(r)).map((r) => putRackMargin(r, margins[r])));
 }
 
 /** Narrows a stored card to the shape the pure pricing functions take, or
@@ -127,9 +124,7 @@ export async function putRackSettings(s: RackSettings): Promise<void> {
  *  identifier and not an order anyone means. */
 export async function listShelfPlates(): Promise<ShelfPlate[]> {
   const { data } = await ShelfPlateEntity.query.byId({}).go(LIST_OPTS);
-  return [...data].sort(
-    (a, b) => a.lengthFt - b.lengthFt || a.depthFt - b.depthFt,
-  );
+  return [...data].sort((a, b) => a.lengthFt - b.lengthFt || a.depthFt - b.depthFt);
 }
 
 export async function putShelfPlate(p: ShelfPlate): Promise<void> {
@@ -186,9 +181,7 @@ export async function seedRateCard(): Promise<void> {
     ...VENDOR_SEED.angles.filter((a) => !angleIds.has(a.id)).map(putAngleGrade),
     ...VENDOR_SEED.frames.filter((f) => !frameIds.has(f.id)).map(putFrameSize),
     ...VENDOR_SEED.pipes.filter((p) => !pipeIds.has(p.id)).map(putPipeSize),
-    ...(current.pipeSettings || !VENDOR_SEED.pipeSettings
-      ? []
-      : [putPipeSettings(VENDOR_SEED.pipeSettings)]),
+    ...(current.pipeSettings || !VENDOR_SEED.pipeSettings ? [] : [putPipeSettings(VENDOR_SEED.pipeSettings)]),
   ]);
 }
 
@@ -205,9 +198,7 @@ export async function seedRateCard(): Promise<void> {
  * across footprints or gauges. That is deliberate: they are stable tiebreaks
  * inside one height-and-shelf-count group, not a ranking anyone reads.
  */
-export async function listRackModels(
-  opts: { activeOnly?: boolean } = {},
-): Promise<RackModel[]> {
+export async function listRackModels(opts: { activeOnly?: boolean } = {}): Promise<RackModel[]> {
   const { data } = await RackModelEntity.query.byId({}).go(LIST_OPTS);
   const rows = opts.activeOnly ? data.filter((m) => m.active) : data;
   return [...rows].sort(
@@ -238,9 +229,7 @@ export async function getRackModel(id: string): Promise<RackModel | null> {
  *  which is an identifier and not an order anyone means. */
 export async function listFrameSizes(): Promise<FrameSize[]> {
   const { data } = await FrameSizeEntity.query.byId({}).go(LIST_OPTS);
-  return [...data].sort(
-    (a, b) => a.lengthFt - b.lengthFt || a.depthFt - b.depthFt,
-  );
+  return [...data].sort((a, b) => a.lengthFt - b.lengthFt || a.depthFt - b.depthFt);
 }
 
 export async function putFrameSize(f: FrameSize): Promise<void> {
@@ -254,9 +243,7 @@ export async function deleteFrameSize(id: string): Promise<void> {
 /** Open-frame racks, **shortest first** — same derived order as
  *  `listRackModels`, and the same reason for the tie-breaks: two racks of one
  *  height must come back in the same sequence every load. */
-export async function listAngleRackModels(
-  opts: { activeOnly?: boolean } = {},
-): Promise<AngleRackModel[]> {
+export async function listAngleRackModels(opts: { activeOnly?: boolean } = {}): Promise<AngleRackModel[]> {
   const { data } = await AngleRackModelEntity.query.byId({}).go(LIST_OPTS);
   const rows = opts.activeOnly ? data.filter((m) => m.active) : data;
   return [...rows].sort(
@@ -298,9 +285,7 @@ export async function putPipeSettings(s: PipeSettings): Promise<void> {
  *  `PIPESIZE#<id>`, which is an identifier and not an order anyone means. */
 export async function listPipeSizes(): Promise<PipeSize[]> {
   const { data } = await PipeSizeEntity.query.byId({}).go(LIST_OPTS);
-  return [...data].sort(
-    (a, b) => a.lengthFt - b.lengthFt || a.depthFt - b.depthFt,
-  );
+  return [...data].sort((a, b) => a.lengthFt - b.lengthFt || a.depthFt - b.depthFt);
 }
 
 export async function putPipeSize(p: PipeSize): Promise<void> {
@@ -313,9 +298,7 @@ export async function deletePipeSize(id: string): Promise<void> {
 
 /** Pipe racks, **shortest first** — same derived order as the other two
  *  ranges. One tiebreak fewer, because there is no gauge to vary. */
-export async function listPipeRackModels(
-  opts: { activeOnly?: boolean } = {},
-): Promise<PipeRackModel[]> {
+export async function listPipeRackModels(opts: { activeOnly?: boolean } = {}): Promise<PipeRackModel[]> {
   const { data } = await PipeRackModelEntity.query.byId({}).go(LIST_OPTS);
   const rows = opts.activeOnly ? data.filter((m) => m.active) : data;
   return [...rows].sort(

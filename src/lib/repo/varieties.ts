@@ -15,9 +15,7 @@ import type { Variety } from "@/lib/types";
  * them with `attachContent`.
  */
 
-export async function listVarieties(
-  opts: { activeOnly?: boolean } = {},
-): Promise<Variety[]> {
+export async function listVarieties(opts: { activeOnly?: boolean } = {}): Promise<Variety[]> {
   const { data } = await VarietyEntity.query.byCatalogue({}).go(LIST_OPTS);
   return opts.activeOnly ? data.filter((v) => v.active) : data;
 }

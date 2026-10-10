@@ -168,9 +168,7 @@ describe("checkGrowMediumFile", () => {
   it("requires the preparation steps", () => {
     const { howToUse: _omit, ...noSteps } = text;
     void _omit;
-    expect(checkGrowMediumFile("bad", { ...valid, en: noSteps })).toContain(
-      "bad: en.howToUse is required",
-    );
+    expect(checkGrowMediumFile("bad", { ...valid, en: noSteps })).toContain("bad: en.howToUse is required");
     expect(
       checkGrowMediumFile("bad", { ...valid, en: { ...text, howToUse: ["soak"] } }).length,
     ).toBeGreaterThan(0);
@@ -180,9 +178,7 @@ describe("checkGrowMediumFile", () => {
   it("requires our own note", () => {
     const { ourNote: _omit, ...noNote } = text;
     void _omit;
-    expect(checkGrowMediumFile("bad", { ...valid, en: noNote })).toContain(
-      "bad: en.ourNote is required",
-    );
+    expect(checkGrowMediumFile("bad", { ...valid, en: noNote })).toContain("bad: en.ourNote is required");
   });
 
   it.each(["description", "faq", "sowing", "specsNote", "cautions"])(

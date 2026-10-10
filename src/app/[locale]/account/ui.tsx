@@ -26,9 +26,7 @@ export function Card({
     <section className="rounded-2xl border border-forest/15 bg-cream p-6 md:p-7">
       {(title || action) && (
         <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3">
-          {title && (
-            <h2 className="font-display text-lg font-semibold text-forest">{title}</h2>
-          )}
+          {title && <h2 className="font-display text-lg font-semibold text-forest">{title}</h2>}
           {action}
         </div>
       )}
@@ -39,21 +37,11 @@ export function Card({
 
 /** A read-only label/value pair. `value` falls back to a muted placeholder so
  *  an empty profile reads as "not added yet" rather than as a broken row. */
-export function Detail({
-  label,
-  value,
-  empty,
-}: {
-  label: string;
-  value?: string | null;
-  empty: string;
-}) {
+export function Detail({ label, value, empty }: { label: string; value?: string | null; empty: string }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-forest/10 py-3 last:border-0">
       <dt className="font-body text-xs uppercase tracking-wider text-stone">{label}</dt>
-      <dd
-        className={`font-body text-sm ${value ? "text-forest" : "italic text-stone/70"}`}
-      >
+      <dd className={`font-body text-sm ${value ? "text-forest" : "italic text-stone/70"}`}>
         {value || empty}
       </dd>
     </div>
@@ -69,15 +57,11 @@ type FieldProps = {
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
 export function Field({ label, name, hint, error, className, ...input }: FieldProps) {
-  const describedBy = [hint && `${name}-hint`, error && `${name}-error`]
-    .filter(Boolean)
-    .join(" ");
+  const describedBy = [hint && `${name}-hint`, error && `${name}-error`].filter(Boolean).join(" ");
 
   return (
     <label className={`block ${className ?? ""}`}>
-      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
-        {label}
-      </span>
+      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">{label}</span>
       <input
         name={name}
         aria-invalid={error ? true : undefined}
@@ -93,10 +77,7 @@ export function Field({ label, name, hint, error, className, ...input }: FieldPr
         </span>
       )}
       {error && (
-        <span
-          id={`${name}-error`}
-          className="mt-1 block font-body text-xs text-terracotta"
-        >
+        <span id={`${name}-error`} className="mt-1 block font-body text-xs text-terracotta">
           {error}
         </span>
       )}
@@ -117,9 +98,7 @@ export function TextareaField({
 } & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <label className="block">
-      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
-        {label}
-      </span>
+      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">{label}</span>
       <textarea
         name={name}
         rows={2}
@@ -136,10 +115,7 @@ export function TextareaField({
   );
 }
 
-export function PrimaryButton({
-  children,
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+export function PrimaryButton({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
@@ -188,9 +164,7 @@ export function AddressLines({ address }: { address: Address }) {
           {line}
         </span>
       ))}
-      {address.notes && (
-        <span className="mt-2 block text-xs text-stone">“{address.notes}”</span>
-      )}
+      {address.notes && <span className="mt-2 block text-xs text-stone">“{address.notes}”</span>}
     </address>
   );
 }

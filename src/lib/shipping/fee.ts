@@ -49,7 +49,12 @@ export function customerDelivery(
   courierCosts: readonly number[],
 ): CustomerDelivery {
   if (goods >= FREE_DELIVERY_FROM) {
-    return { total: 0, ownRun: ownRunFee === null ? null : 0, parcels: courierCosts.map(() => 0), free: true };
+    return {
+      total: 0,
+      ownRun: ownRunFee === null ? null : 0,
+      parcels: courierCosts.map(() => 0),
+      free: true,
+    };
   }
   const cost = courierCosts.reduce((sum, c) => sum + c, 0);
   const fee = Math.min(cost, COURIER_FEE_CAP);

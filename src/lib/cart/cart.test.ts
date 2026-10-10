@@ -22,10 +22,7 @@ const medium = (key: string, units: number): CartLine => ({ kind: "media", key, 
 
 describe("parseCart — the cookie is untrusted input", () => {
   it("reads a well-formed cookie", () => {
-    expect(parseCart("v:broccoli:3|s:radish:2")).toEqual([
-      green("broccoli", 3),
-      seed("radish", 2),
-    ]);
+    expect(parseCart("v:broccoli:3|s:radish:2")).toEqual([green("broccoli", 3), seed("radish", 2)]);
   });
 
   /**
@@ -34,10 +31,7 @@ describe("parseCart — the cookie is untrusted input", () => {
    * run. A two-part chunk is therefore read as a variety, which is what it was.
    */
   it("reads a pre-kind cookie as varieties rather than dropping it", () => {
-    expect(parseCart("broccoli:3|mustard:2")).toEqual([
-      green("broccoli", 3),
-      green("mustard", 2),
-    ]);
+    expect(parseCart("broccoli:3|mustard:2")).toEqual([green("broccoli", 3), green("mustard", 2)]);
   });
 
   it("treats absent, empty and whitespace as an empty cart", () => {
@@ -90,10 +84,7 @@ describe("parseCart — the cookie is untrusted input", () => {
    * eat and a seed you sow, at two different prices. They are two lines.
    */
   it("keeps a seed and a variety that share a content key apart", () => {
-    expect(parseCart("v:radish:2|s:radish:5")).toEqual([
-      green("radish", 2),
-      seed("radish", 5),
-    ]);
+    expect(parseCart("v:radish:2|s:radish:5")).toEqual([green("radish", 2), seed("radish", 5)]);
   });
 
   it("stops at MAX_LINES so a crafted cookie cannot fan out the hydrate", () => {
@@ -111,9 +102,7 @@ describe("serialiseCart", () => {
   });
 
   it("writes the kind code, not the word", () => {
-    expect(serialiseCart([green("broccoli", 3), seed("radish", 2)])).toBe(
-      "v:broccoli:3|s:radish:2",
-    );
+    expect(serialiseCart([green("broccoli", 3), seed("radish", 2)])).toBe("v:broccoli:3|s:radish:2");
   });
 
   it("omits empty lines instead of writing a zero", () => {
@@ -151,9 +140,7 @@ describe("upsertLine — absolute, never a delta", () => {
   });
 
   it("clamps above the per-line cap", () => {
-    expect(upsertLine([], "seed", "radish", 500)).toEqual([
-      seed("radish", MAX_UNITS_PER_LINE),
-    ]);
+    expect(upsertLine([], "seed", "radish", 500)).toEqual([seed("radish", MAX_UNITS_PER_LINE)]);
   });
 
   it("refuses an invalid key", () => {
@@ -206,10 +193,7 @@ describe("upsertLine — absolute, never a delta", () => {
 
   it("leaves other lines untouched", () => {
     const lines = [green("broccoli", 3), green("mustard", 1)];
-    expect(upsertLine(lines, "variety", "broccoli", 7)).toEqual([
-      green("broccoli", 7),
-      green("mustard", 1),
-    ]);
+    expect(upsertLine(lines, "variety", "broccoli", 7)).toEqual([green("broccoli", 7), green("mustard", 1)]);
   });
 
   it("preserves position when updating, so a line does not jump", () => {
@@ -254,10 +238,7 @@ describe("removeFromCart", () => {
   const lines = [green("broccoli", 3), seed("radish", 1), green("radish", 2)];
 
   it("removes the named line and leaves the rest", () => {
-    expect(removeFromCart(lines, "seed", "radish")).toEqual([
-      green("broccoli", 3),
-      green("radish", 2),
-    ]);
+    expect(removeFromCart(lines, "seed", "radish")).toEqual([green("broccoli", 3), green("radish", 2)]);
   });
 
   it("ignores a key that is not in the cart", () => {
@@ -290,12 +271,9 @@ describe("asCartKind — the only way a string becomes a kind", () => {
 
   /* A form field is not a security boundary (SPEC §8), so a missing or
      invented kind has to be refusable rather than cast. */
-  it.each([null, undefined, "", "seeds", "Variety", "v", "racks"])(
-    "refuses %p",
-    (bad) => {
-      expect(asCartKind(bad)).toBeNull();
-    },
-  );
+  it.each([null, undefined, "", "seeds", "Variety", "v", "racks"])("refuses %p", (bad) => {
+    expect(asCartKind(bad)).toBeNull();
+  });
 });
 
 describe("totals", () => {

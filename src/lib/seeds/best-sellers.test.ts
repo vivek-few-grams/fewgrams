@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { rankBySales, seedGramsByKey } from "./best-sellers";
 
-const seeds = ["basil", "kale", "mustard", "radish", "rocket", "sunflower"].map((contentKey) => ({ contentKey }));
+const seeds = ["basil", "kale", "mustard", "radish", "rocket", "sunflower"].map((contentKey) => ({
+  contentKey,
+}));
 const keys = (xs: { contentKey: string }[]) => xs.map((x) => x.contentKey);
 
 describe("rankBySales", () => {
@@ -31,8 +33,18 @@ describe("rankBySales", () => {
 describe("seedGramsByKey", () => {
   it("sums seed grams across orders and skips other kinds sharing the key", () => {
     const orders = [
-      { lines: [{ kind: "seed", key: "radish", grams: 100 }, { kind: "variety", key: "radish", grams: 300 }] },
-      { lines: [{ kind: "seed", key: "radish", grams: 50 }, { kind: "tray", key: "tray-pair", grams: null }] },
+      {
+        lines: [
+          { kind: "seed", key: "radish", grams: 100 },
+          { kind: "variety", key: "radish", grams: 300 },
+        ],
+      },
+      {
+        lines: [
+          { kind: "seed", key: "radish", grams: 50 },
+          { kind: "tray", key: "tray-pair", grams: null },
+        ],
+      },
     ];
     expect(seedGramsByKey(orders)).toEqual({ radish: 150 });
   });

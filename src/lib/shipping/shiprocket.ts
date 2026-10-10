@@ -173,7 +173,11 @@ export class ShiprocketProvider implements ShippingProvider {
     return kept.slice(0, SHIPROCKET_MAX_OPTIONS);
   }
 
-  private async call<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<{ ok: boolean; status: number; body: T }> {
+  private async call<T>(
+    method: "GET" | "POST",
+    path: string,
+    body?: unknown,
+  ): Promise<{ ok: boolean; status: number; body: T }> {
     const res = await fetch(`${HOST}${path}`, {
       method,
       headers: {
@@ -192,7 +196,10 @@ export class ShiprocketProvider implements ShippingProvider {
   /** The shipment an earlier attempt already created for `reference`, with
    *  its AWB if one was assigned. */
   private async findShipment(reference: string): Promise<{ id: number; awb: string | null } | null> {
-    const { body } = await this.call<OrderList>("GET", `/v1/external/orders?${new URLSearchParams({ search: reference })}`);
+    const { body } = await this.call<OrderList>(
+      "GET",
+      `/v1/external/orders?${new URLSearchParams({ search: reference })}`,
+    );
     const order = body.data?.find((o) => o.channel_order_id === reference);
     const shipment = order?.shipments?.[0];
     return shipment?.id ? { id: shipment.id, awb: shipment.awb || null } : null;
@@ -240,7 +247,9 @@ export class ShiprocketProvider implements ShippingProvider {
       shipment = await this.findShipment(input.reference);
     }
     if (!shipment) {
-      throw new Error(`Shiprocket refused the order: ${created.status} ${reason(created.body)}`.slice(0, 500));
+      throw new Error(
+        `Shiprocket refused the order: ${created.status} ${reason(created.body)}`.slice(0, 500),
+      );
     }
 
     let awb = shipment.awb;
@@ -262,10 +271,14 @@ export class ShiprocketProvider implements ShippingProvider {
     let pickupError: string | null = null;
     let labelUrl: string | null = null;
     try {
-      const pick = await this.call<Envelope & { pickup_status?: number }>("POST", "/v1/external/courier/generate/pickup", {
-        shipment_id: [shipment.id],
-        pickup_date: [input.pickupDate],
-      });
+      const pick = await this.call<Envelope & { pickup_status?: number }>(
+        "POST",
+        "/v1/external/courier/generate/pickup",
+        {
+          shipment_id: [shipment.id],
+          pickup_date: [input.pickupDate],
+        },
+      );
       if (pick.body.pickup_status !== 1) pickupError = `${pick.status} ${reason(pick.body)}`;
     } catch (e) {
       pickupError = e instanceof Error ? e.message : String(e);

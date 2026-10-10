@@ -45,10 +45,7 @@ export function LocaleSwitch() {
           The switch always shows the *other* language, so this span is
           Kannada exactly when the page is English, which is why it cannot
           rely on the page's own `:lang`. */}
-      <span
-        lang={next}
-        className="ui-label"
-      >
+      <span lang={next} className="ui-label">
         {LOCALE_LABELS[next].short}
       </span>
     </Link>

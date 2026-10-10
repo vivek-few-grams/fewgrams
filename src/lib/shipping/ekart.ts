@@ -38,7 +38,13 @@ const TIMEOUT_MS = 10_000;
 const REFRESH_MARGIN_MS = 5 * 60_000;
 
 type Token = { access_token?: string; expires_in?: number };
-type Created = { status?: boolean; remark?: string; tracking_id?: string; message?: string; description?: string };
+type Created = {
+  status?: boolean;
+  remark?: string;
+  tracking_id?: string;
+  message?: string;
+  description?: string;
+};
 type Serviceable = {
   tat?: { min?: number; max?: number };
   forwardDeliveredCharges?: { deliveredTotalTax?: string; totalForwardDeliveredEstimate?: string };
@@ -102,7 +108,8 @@ export class EkartProvider implements ShippingProvider {
     const [e] = ((await res.json()) as Serviceable[] | null) ?? [];
     const total = Number(e?.forwardDeliveredCharges?.totalForwardDeliveredEstimate);
     /* A quote with no total is a refusal, not a free delivery. */
-    if (!(total > 0)) throw new Error(`Ekart returned no price for ${input.originPin} → ${input.destinationPin}`);
+    if (!(total > 0))
+      throw new Error(`Ekart returned no price for ${input.originPin} → ${input.destinationPin}`);
     const days = Number(e?.tat?.max);
     return [
       {
@@ -141,7 +148,10 @@ export class EkartProvider implements ShippingProvider {
         ...(gstin ? { seller_gst_tin: gstin } : {}),
         consignee_name: input.drop.name,
         consignee_gst_amount: 0,
-        products_desc: input.items.map((i) => i.name).join(", ").slice(0, 200),
+        products_desc: input.items
+          .map((i) => i.name)
+          .join(", ")
+          .slice(0, 200),
         payment_mode: "Prepaid",
         cod_amount: 0,
         total_amount: input.value,

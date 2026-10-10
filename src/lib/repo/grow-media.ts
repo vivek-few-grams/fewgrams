@@ -23,9 +23,7 @@ function fromRow({ leadDays: _retired, stockPacks, ...r }: Row): GrowMedium {
  */
 
 /** Every grow medium, ordered by content key — GSI1's sort key. */
-export async function listGrowMedia(
-  opts: { activeOnly?: boolean } = {},
-): Promise<GrowMedium[]> {
+export async function listGrowMedia(opts: { activeOnly?: boolean } = {}): Promise<GrowMedium[]> {
   const { data } = await GrowMediumEntity.query.byCatalogue({}).go(LIST_OPTS);
   const rows = data.map(fromRow);
   return opts.activeOnly ? rows.filter((m) => m.active) : rows;

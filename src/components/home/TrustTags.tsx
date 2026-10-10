@@ -52,7 +52,9 @@ export async function TrustTags() {
               <h3 className="mt-2.5 font-display text-base font-bold text-forest md:text-lg">
                 {tr(`${t.key}.title`)}
               </h3>
-              <p className="mt-1 max-w-[30ch] font-body text-xs text-stone md:text-sm lg:max-w-none">{tr(`${t.key}.note`)}</p>
+              <p className="mt-1 max-w-[30ch] font-body text-xs text-stone md:text-sm lg:max-w-none">
+                {tr(`${t.key}.note`)}
+              </p>
             </li>
           ))}
         </ul>

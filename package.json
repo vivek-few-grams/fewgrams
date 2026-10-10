@@ -12,7 +12,9 @@
     "db:tables": "aws dynamodb list-tables --endpoint-url http://localhost:8000 --region ap-south-1",
     "db:create": "node --env-file=.env.local scripts/create-tables.mjs",
     "test": "vitest run",
-    "db:gui": "DYNAMO_ENDPOINT=http://localhost:8000 AWS_REGION=ap-south-1 AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local npx --yes dynamodb-admin@5 --port 8001"
+    "db:gui": "DYNAMO_ENDPOINT=http://localhost:8000 AWS_REGION=ap-south-1 AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local npx --yes dynamodb-admin@5 --port 8001",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@auth/dynamodb-adapter": "^2.11.3",
@@ -34,9 +36,15 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/three": "^0.186.0",
+    "aws-cdk": "2.1145.0",
+    "aws-cdk-lib": "2.273.0",
+    "cdk-nextjs": "0.7.10",
+    "constructs": "10.5.1",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
+    "prettier": "3.9.10",
     "tailwindcss": "^4",
+    "tsx": "4.23.15",
     "typescript": "^5",
     "vitest": "^4.1.11"
   }

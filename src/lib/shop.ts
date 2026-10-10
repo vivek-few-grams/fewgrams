@@ -5,10 +5,7 @@ import type { Category } from "@/lib/types";
  * the /shop index so a category keeps the same colour wherever it appears,
  * which is what makes the grid readable at a glance.
  */
-export const CATEGORY_PANELS: Record<
-  Category,
-  { panelClass: string; marqueeClass: string }
-> = {
+export const CATEGORY_PANELS: Record<Category, { panelClass: string; marqueeClass: string }> = {
   racks: { panelClass: "bg-sand", marqueeClass: "text-forest/15" },
   /* Light, not dark forest — changed 20 Sep 2026 so the packet photo
      (`CategoryMedia`'s `seeds` cut-out) reads the way the microgreens tile's

@@ -6,11 +6,7 @@
  *
  * Starts invisible at the canvas's top left; the scene places it.
  */
-export function GhostHand({
-  ghostRef,
-}: {
-  ghostRef: (el: HTMLDivElement | null) => void;
-}) {
+export function GhostHand({ ghostRef }: { ghostRef: (el: HTMLDivElement | null) => void }) {
   return (
     <div
       ref={ghostRef}

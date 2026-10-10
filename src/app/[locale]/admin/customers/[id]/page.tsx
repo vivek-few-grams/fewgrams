@@ -34,14 +34,17 @@ export default async function CustomerAdmin({ params }: PageProps<"/[locale]/adm
   const orderStatus = await getTranslations("admin.orders.status");
   const subState = await getTranslations("admin.subscriptions.state");
   const format = await getFormatter();
-  const money = (n: number) => format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+  const money = (n: number) =>
+    format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
   const day = (iso: string) => format.dateTime(new Date(iso), { dateStyle: "medium" });
 
   return (
     <div className="space-y-8">
       <section className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
-          <h1 className="font-display text-2xl font-bold text-forest">{customer.name ?? customer.email ?? t("noName")}</h1>
+          <h1 className="font-display text-2xl font-bold text-forest">
+            {customer.name ?? customer.email ?? t("noName")}
+          </h1>
           <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 font-body text-sm text-forest">
             {customer.email && (
               <a href={`mailto:${customer.email}`} className="underline underline-offset-4 hover:text-stone">
@@ -49,7 +52,10 @@ export default async function CustomerAdmin({ params }: PageProps<"/[locale]/adm
               </a>
             )}
             {customer.phone && (
-              <a href={`tel:${customer.phone}`} className="tabular-nums underline underline-offset-4 hover:text-stone">
+              <a
+                href={`tel:${customer.phone}`}
+                className="tabular-nums underline underline-offset-4 hover:text-stone"
+              >
                 {formatPhone(customer.phone)}
               </a>
             )}
@@ -83,8 +89,12 @@ export default async function CustomerAdmin({ params }: PageProps<"/[locale]/adm
                     <span className="block text-xs text-stone">{day(o.placedAt)}</span>
                   </td>
                   <td className="py-2.5 pr-4 font-body text-sm text-forest">{orderStatus(o.status)}</td>
-                  <td className="py-2.5 pr-4 font-body text-sm text-stone">{t("items", { count: o.itemCount })}</td>
-                  <td className="py-2.5 text-right font-body text-sm tabular-nums text-forest">{money(o.total)}</td>
+                  <td className="py-2.5 pr-4 font-body text-sm text-stone">
+                    {t("items", { count: o.itemCount })}
+                  </td>
+                  <td className="py-2.5 text-right font-body text-sm tabular-nums text-forest">
+                    {money(o.total)}
+                  </td>
                 </tr>
               ))}
             </tbody>

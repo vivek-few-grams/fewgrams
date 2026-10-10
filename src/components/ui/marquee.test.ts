@@ -90,7 +90,10 @@ const CALLERS: Caller[] = [
 describe("marquee loop invariant", () => {
   for (const c of CALLERS) {
     it(`one half overflows its panel: ${c.what}`, () => {
-      const lines = marqueeLines(Array.from({ length: c.words }, (_, i) => `w${i}`), c.minLines);
+      const lines = marqueeLines(
+        Array.from({ length: c.words }, (_, i) => `w${i}`),
+        c.minLines,
+      );
       /* In units of panel width, so it is comparable to `panelAspect`. */
       const halfHeight = lines.length * LINE_HEIGHT * c.fontFraction;
       expect(halfHeight).toBeGreaterThan(c.panelAspect * HEADROOM);
@@ -103,7 +106,10 @@ describe("marquee loop invariant", () => {
        noticed it on the rack card — "Text should scroll bit slow" — and the
        cause was a duration being treated as a speed. */
     for (const c of CALLERS) {
-      const lines = marqueeLines(Array.from({ length: c.words }, (_, i) => `w${i}`), c.minLines);
+      const lines = marqueeLines(
+        Array.from({ length: c.words }, (_, i) => `w${i}`),
+        c.minLines,
+      );
       const halfPx = lines.length * LINE_HEIGHT * c.fontFraction * c.panelWidthPx;
       const speed = halfPx / c.durationSeconds;
       /* Within 20% of the house speed — the durations are whole seconds, so
@@ -133,7 +139,10 @@ describe("marqueeLines", () => {
   it("never returns fewer lines than asked for", () => {
     for (const words of [1, 2, 3, 4, 5, 7, 8, 11]) {
       for (const min of [10, 26, 32]) {
-        const lines = marqueeLines(Array.from({ length: words }, (_, i) => `w${i}`), min);
+        const lines = marqueeLines(
+          Array.from({ length: words }, (_, i) => `w${i}`),
+          min,
+        );
         expect(lines.length).toBeGreaterThanOrEqual(min);
       }
     }

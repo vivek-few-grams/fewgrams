@@ -27,12 +27,7 @@ import { checkContentFile, type ContentTemplate } from "./content-contract";
  */
 
 /** Every field an `en` block must carry. Order is the order they are written. */
-export const TRAY_EN_REQUIRED = [
-  "name",
-  "shortDescription",
-  "specs",
-  "imageAlt",
-] as const;
+export const TRAY_EN_REQUIRED = ["name", "shortDescription", "specs", "imageAlt"] as const;
 
 /** Kannada must translate everything English has — derived, never restated. */
 export const TRAY_KN_REQUIRED = TRAY_EN_REQUIRED;

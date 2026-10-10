@@ -5,8 +5,8 @@ import { DynamoDBDocument } from "@aws-sdk/lib-dynamodb";
  * One DynamoDB document client for the whole app — see docs/LOCAL_DEV.md.
  *
  * A single conditional switches between DynamoDB Local and real AWS. Drop
- * DYNAMODB_ENDPOINT and the same code talks to ap-south-1 using the Amplify
- * service role's credentials from the instance metadata.
+ * DYNAMODB_ENDPOINT and the same code talks to ap-south-1 using the Lambda
+ * execution role's credentials (infra/lib/web-stack.ts grants it the tables).
  *
  * Caution (docs/LOCAL_DEV.md): DynamoDB Local does not enforce IAM at all, so
  * the role isolation required by SPEC §8 cannot be verified here.

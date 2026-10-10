@@ -6,8 +6,18 @@ import { fetchPinPlace, parseDirectory, placeCase } from "./india-post";
 const PIN_560001 = {
   total: 9,
   records: [
-    { officename: "Dr. Ambedkar Veedhi S.O", pincode: "560001", district: "BENGALURU URBAN", statename: "KARNATAKA" },
-    { officename: "Vidhana Soudha S.O", pincode: "560001", district: "BENGALURU URBAN", statename: "KARNATAKA" },
+    {
+      officename: "Dr. Ambedkar Veedhi S.O",
+      pincode: "560001",
+      district: "BENGALURU URBAN",
+      statename: "KARNATAKA",
+    },
+    {
+      officename: "Vidhana Soudha S.O",
+      pincode: "560001",
+      district: "BENGALURU URBAN",
+      statename: "KARNATAKA",
+    },
   ],
 };
 
@@ -70,7 +80,10 @@ describe("fetchPinPlace", () => {
   /* A failure must throw, not return null: null means "the directory does
      not know this PIN", and only that is safe to act on. */
   it("throws when the directory does not answer properly", async () => {
-    vi.stubGlobal("fetch", vi.fn<typeof fetch>(async () => new Response("", { status: 429 })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn<typeof fetch>(async () => new Response("", { status: 429 })),
+    );
     await expect(fetchPinPlace("560001", "k")).rejects.toThrow(/429/);
   });
 

@@ -1,0 +1,29 @@
+FEWGRAMS POUCH LABELS — PRINT SPEC
+
+Files
+  fewgrams-front-label-85x60mm.pdf   Front label (logo), 85 x 60 mm
+  fewgrams-back-label-95x94mm.pdf    Back label (seed info), 95 x 94 mm
+  *-dieline.pdf                      Cut line only (spot colour "CutContour"), same size and position
+  *-preview.png                      Previews only, do not print from these
+
+File setup
+  - CMYK, all text converted to outlines, logo is vector
+  - 3 mm bleed on every side (TrimBox and BleedBox set in the PDF)
+  - Artwork files contain no cut line. The cut line is in the matching
+    *-dieline.pdf: spot colour "CutContour", 0.25 pt, rounded corners 3 mm.
+    Do not print it. If you use your own die, ignore the dieline files.
+
+Material and finish
+  - White BOPP or vinyl (waterproof), permanent adhesive
+  - Matte lamination preferred
+  - Quantity per pouch: 1 front + 1 back
+
+Brand colours (please match)
+  Leaf green  #8CBF4B  ~ C45 M0 Y85 K0
+  Bark brown  #5A3E22  ~ C35 M60 Y90 K50
+  Forest      #3A6122  ~ C75 M30 Y100 K25
+
+Sizes can be adjusted slightly to fit an existing die. Please tell us
+your nearest die size before printing.
+
+Please send a printed proof before the full run.

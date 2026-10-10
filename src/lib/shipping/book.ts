@@ -34,8 +34,7 @@ export type BookFailure =
   | "courier";
 
 export type BookOutcome =
-  | { ok: true; result: BookingResult }
-  | { ok: false; reason: BookFailure; detail?: string };
+  { ok: true; result: BookingResult } | { ok: false; reason: BookFailure; detail?: string };
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 

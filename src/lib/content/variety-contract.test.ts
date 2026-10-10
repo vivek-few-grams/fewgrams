@@ -1,12 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import {
-  EN_REQUIRED,
-  FAQ_COUNT,
-  KN_REQUIRED,
-  checkVarietyFile,
-} from "./variety-contract";
+import { EN_REQUIRED, FAQ_COUNT, KN_REQUIRED, checkVarietyFile } from "./variety-contract";
 
 /**
  * The template guard.
@@ -164,8 +159,14 @@ describe("checkVarietyFile", () => {
   it("catches four or six FAQs", () => {
     for (const n of [4, 6]) {
       const bad = { ...valid, en: { ...valid.en, faq: valid.en.faq.slice(0, n) } };
-      const problems = checkVarietyFile("bad", { ...bad, en: { ...bad.en, faq: Array.from({ length: n }, () => ({ question: "q", answer: "a" })) } });
-      expect(problems.some((p) => p.includes("exactly 5")), `n=${n}`).toBe(true);
+      const problems = checkVarietyFile("bad", {
+        ...bad,
+        en: { ...bad.en, faq: Array.from({ length: n }, () => ({ question: "q", answer: "a" })) },
+      });
+      expect(
+        problems.some((p) => p.includes("exactly 5")),
+        `n=${n}`,
+      ).toBe(true);
     }
   });
 

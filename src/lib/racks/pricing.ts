@@ -129,9 +129,7 @@ export function resolveMargins(
   };
   const pick = (range: RackRange): RackMargin => {
     const row = rows.find((r) => r.range === range);
-    return row
-      ? { markupPercent: row.markupPercent, roundUpToNearest: row.roundUpToNearest }
-      : legacy;
+    return row ? { markupPercent: row.markupPercent, roundUpToNearest: row.roundUpToNearest } : legacy;
   };
   return { plated: pick("plated"), angle: pick("angle"), pipe: pick("pipe") };
 }
@@ -205,11 +203,7 @@ export function rackCapacityKg(config: RackConfig, card: RateCard): number | nul
  *
  *  No colour segment: colour is chosen at purchase, not published, so it
  *  belongs on the order line rather than in the model's identifier. */
-export function rackSku(
-  config: RackConfig,
-  plate: ShelfPlate,
-  angle: AngleGrade,
-): string {
+export function rackSku(config: RackConfig, plate: ShelfPlate, angle: AngleGrade): string {
   return [
     "RK",
     `${config.heightFt}F`,
@@ -251,16 +245,10 @@ export const ANGLE_PIECES_PER_SHELF = 5;
  *  the framing. Shown in the admin table because it is the one figure that can
  *  be checked straight against a vendor invoice: the rack is angle and almost
  *  nothing else. */
-export function angleRackFeet(
-  config: AngleRackConfig,
-  card: RateCard,
-): number | null {
+export function angleRackFeet(config: AngleRackConfig, card: RateCard): number | null {
   const frame = card.frames.find((f) => f.id === config.frameId);
   if (!frame) return null;
-  return (
-    card.settings.legsPerRack * config.heightFt +
-    config.shelves * frameFeetPerShelf(frame)
-  );
+  return card.settings.legsPerRack * config.heightFt + config.shelves * frameFeetPerShelf(frame);
 }
 
 /**
@@ -286,10 +274,7 @@ export function angleRackFeet(
  * `null` on a retired footprint or grade, never a substituted zero — see
  * `rackCost`.
  */
-export function angleRackCost(
-  config: AngleRackConfig,
-  card: RateCard,
-): RackCost | null {
+export function angleRackCost(config: AngleRackConfig, card: RateCard): RackCost | null {
   const frame = card.frames.find((f) => f.id === config.frameId);
   const angle = card.angles.find((a) => a.id === config.angleId);
   if (!frame || !angle) return null;
@@ -327,11 +312,7 @@ export function allAngleRackConfigs(card: RateCard): AngleRackConfig[] {
 /** `AR-6F-5S-1x4-1.4`. The `AR` prefix rather than `RK` so a packing slip
  *  never confuses an open frame with a plated rack of the same footprint —
  *  they look similar on paper and cost very differently. */
-export function angleRackSku(
-  config: AngleRackConfig,
-  frame: FrameSize,
-  angle: AngleGrade,
-): string {
+export function angleRackSku(config: AngleRackConfig, frame: FrameSize, angle: AngleGrade): string {
   return [
     "AR",
     `${config.heightFt}F`,
@@ -379,8 +360,7 @@ export function pipeRackLegs(
   settings: Pick<RackSettings, "legsPerRack">,
 ): number {
   return (
-    settings.legsPerRack +
-    (size.lengthFt >= PIPE_MID_SUPPORT_FROM_LENGTH_FT ? PIPE_MID_SUPPORT_LEGS : 0)
+    settings.legsPerRack + (size.lengthFt >= PIPE_MID_SUPPORT_FROM_LENGTH_FT ? PIPE_MID_SUPPORT_LEGS : 0)
   );
 }
 
@@ -399,9 +379,7 @@ export function pipeRackLegs(
  * the existing long rails at their midpoint. It cuts each of them into two
  * pieces, but two halves of a 4 ft rail are still 4 ft of pipe.
  */
-export function pipeFeetPerShelf(
-  size: Pick<PipeSize, "depthFt" | "lengthFt">,
-): number {
+export function pipeFeetPerShelf(size: Pick<PipeSize, "depthFt" | "lengthFt">): number {
   return 2 * (size.lengthFt + size.depthFt);
 }
 
@@ -433,16 +411,10 @@ export function pipeRackPiecesFt(
  *  Shown in the admin table for the same reason `angleRackFeet` is: on a rack
  *  that is pipe and fittings, this is the figure that checks straight against
  *  a vendor invoice. */
-export function pipeRackFeet(
-  config: PipeRackConfig,
-  card: RateCard,
-): number | null {
+export function pipeRackFeet(config: PipeRackConfig, card: RateCard): number | null {
   const size = card.pipes.find((p) => p.id === config.pipeSizeId);
   if (!size) return null;
-  return (
-    pipeRackLegs(size, card.settings) * config.heightFt +
-    config.shelves * pipeFeetPerShelf(size)
-  );
+  return pipeRackLegs(size, card.settings) * config.heightFt + config.shelves * pipeFeetPerShelf(size);
 }
 
 /** Four-way connectors in a finished rack: **one per leg, per shelf level.**
@@ -453,10 +425,7 @@ export function pipeRackFeet(
  *  goes unused. A corner takes two rails plus the leg above and below it; a
  *  middle-support junction takes the rail continuing each way plus the same
  *  two leg segments. Both are four ways, which is why one count covers them. */
-export function pipeRackConnectors(
-  config: PipeRackConfig,
-  card: RateCard,
-): number | null {
+export function pipeRackConnectors(config: PipeRackConfig, card: RateCard): number | null {
   const size = card.pipes.find((p) => p.id === config.pipeSizeId);
   if (!size) return null;
   return pipeRackLegs(size, card.settings) * config.shelves;
@@ -493,10 +462,7 @@ export function pipeRackConnectors(
  * `null` on a retired footprint, or before the pipe rates have been entered.
  * Never a substituted zero — see `rackCost`.
  */
-export function pipeRackCost(
-  config: PipeRackConfig,
-  card: RateCard,
-): PipeRackCost | null {
+export function pipeRackCost(config: PipeRackConfig, card: RateCard): PipeRackCost | null {
   const size = card.pipes.find((p) => p.id === config.pipeSizeId);
   const pipe = card.pipeSettings;
   if (!size || !pipe) return null;
@@ -546,12 +512,7 @@ export function allPipeRackConfigs(card: RateCard): PipeRackConfig[] {
  *  also means a pipe rack's SKU is shorter than the other two ranges' and
  *  cannot be confused with either. */
 export function pipeRackSku(config: PipeRackConfig, size: PipeSize): string {
-  return [
-    "PR",
-    `${config.heightFt}F`,
-    `${config.shelves}S`,
-    `${size.depthFt}x${size.lengthFt}`,
-  ].join("-");
+  return ["PR", `${config.heightFt}F`, `${config.shelves}S`, `${size.depthFt}x${size.lengthFt}`].join("-");
 }
 
 /* ──────────────────────── weight: for the courier ──────────────────── */
@@ -578,10 +539,7 @@ export function pipeRackSku(config: PipeRackConfig, size: PipeSize): string {
  * fixings default to nothing instead, for the reason on `boltSetGrams`.
  */
 function fixingsGrams(shelves: number, s: RackSettings): number {
-  return (
-    shelves * s.boltSetsPerShelf * (s.boltSetGrams ?? 0) +
-    s.bushesPerRack * (s.bushGrams ?? 0)
-  );
+  return shelves * s.boltSetsPerShelf * (s.boltSetGrams ?? 0) + s.bushesPerRack * (s.bushGrams ?? 0);
 }
 
 export function rackGrams(config: RackConfig, card: RateCard): number | null {
@@ -662,10 +620,7 @@ export type Repriced<M> = {
  *   it was. Skipping these is what stops a bolt price of ₹2 → ₹2.01 rewriting
  *   a hundred rows and stamping a new `publishedAt` on every one of them.
  */
-export function repricedRows<
-  C,
-  M extends { config: C; price: number; costAtPublish: number },
->(
+export function repricedRows<C, M extends { config: C; price: number; costAtPublish: number }>(
   models: M[],
   cost: (config: C) => { total: number } | null,
   margin: RackMargin,
@@ -709,7 +664,15 @@ export const VENDOR_SEED: RateCard = {
   },
   plates: [
     { id: "p-1x3", depthFt: 1, lengthFt: 3, thicknessMm: 0.4, capacityKg: 10, price: 200, active: true },
-    { id: "p-1.25x3", depthFt: 1.25, lengthFt: 3, thicknessMm: 0.6, capacityKg: 20, price: 250, active: true },
+    {
+      id: "p-1.25x3",
+      depthFt: 1.25,
+      lengthFt: 3,
+      thicknessMm: 0.6,
+      capacityKg: 20,
+      price: 250,
+      active: true,
+    },
     { id: "p-1.5x3", depthFt: 1.5, lengthFt: 3, thicknessMm: 0.6, capacityKg: 30, price: 350, active: true },
     { id: "p-2x3", depthFt: 2, lengthFt: 3, thicknessMm: 1, capacityKg: 40, price: 550, active: true },
     { id: "p-1x2", depthFt: 1, lengthFt: 2, thicknessMm: 0.4, capacityKg: 20, price: 180, active: true },

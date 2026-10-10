@@ -155,9 +155,7 @@ function readGeo(fd: FormData): Validated<AddressInput["geo"]> {
     value: {
       lat: latN,
       lng: lngN,
-      ...(Number.isFinite(accuracy) && accuracy > 0
-        ? { accuracyM: Math.round(accuracy) }
-        : {}),
+      ...(Number.isFinite(accuracy) && accuracy > 0 ? { accuracyM: Math.round(accuracy) } : {}),
     },
   };
 }

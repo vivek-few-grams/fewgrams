@@ -77,7 +77,12 @@ describe("rackBox", () => {
   /* The owner's numbers, 24 Sep 2026: 2 in slotted angle, 1 cm a piece.
      A 6 ft, 5-shelf open-frame rack is 4 legs + 5 × 5 frame pieces = 29. */
   it("packs an angle rack as a bundle of pieces, not a stack of shelves", () => {
-    const angle: RackPacking = { ...rack, depthFt: 1, lengthFt: 4, stack: { kind: "bundle", pieces: 29, widthCm: 5, stackCm: 1 } };
+    const angle: RackPacking = {
+      ...rack,
+      depthFt: 1,
+      lengthFt: 4,
+      stack: { kind: "bundle", pieces: 29, widthCm: 5, stackCm: 1 },
+    };
     const r = rackBox(angle);
     expect(r.box).toEqual({ length: expect.closeTo(182.88), width: 5, height: 29 });
     /* 182.88 × 5 × 29 ÷ 5000 = 5.3 kg — against 111 kg as a box of shelves. */
@@ -87,7 +92,12 @@ describe("rackBox", () => {
   /* The owner's rule for pipe: it does not nest, and cut pieces lie end to
      end. Four 4 ft legs of 1 in pipe are a 2 × 2 in bundle. */
   it("groups four legs of pipe two by two", () => {
-    const pipe: RackPacking = { ...rack, heightFt: 4, lengthFt: 2, stack: { kind: "pipes", piecesFt: [4, 4, 4, 4], diameterCm: 2.54 } };
+    const pipe: RackPacking = {
+      ...rack,
+      heightFt: 4,
+      lengthFt: 2,
+      stack: { kind: "pipes", piecesFt: [4, 4, 4, 4], diameterCm: 2.54 },
+    };
     expect(rackBox(pipe).box).toEqual({ length: expect.closeTo(121.92), width: 5.08, height: 5.08 });
   });
 

@@ -5,8 +5,7 @@ import { assertRole } from "@/lib/auth/guard";
 import { getDisabledProductTypes, setProductTypeEnabled } from "@/lib/repo/catalogue-visibility";
 import { PRODUCT_TYPES, type ProductType } from "@/lib/types";
 
-const isProductType = (v: string): v is ProductType =>
-  (PRODUCT_TYPES as readonly string[]).includes(v);
+const isProductType = (v: string): v is ProductType => (PRODUCT_TYPES as readonly string[]).includes(v);
 
 /** Every public route this switch can change what renders on. */
 function refresh() {

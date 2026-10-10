@@ -141,8 +141,8 @@ export default async function RacksPage({ params }: PageProps<"/[locale]/shop/ra
           if (inRange.length === 0) return null;
           const from = Math.min(...inRange.map((x) => x.price));
           return (
-          <li key={range} className="flex flex-col">
-            {/* 4:5 portrait, against the 3:2 the tray grid uses. It is the
+            <li key={range} className="flex flex-col">
+              {/* 4:5 portrait, against the 3:2 the tray grid uses. It is the
                 subject again: a rack is 4 ft tall in 3 ft of width, and a
                 landscape frame around one is two bands of empty panel.
 
@@ -150,21 +150,19 @@ export default async function RacksPage({ params }: PageProps<"/[locale]/shop/ra
                 picture. The copy below stays outside it: a range description
                 is text somebody may want to select, and wrapping it in an
                 anchor turns drag-to-select into drag-to-navigate. */}
-            <Link href={`/shop/racks/${range}`} className="group block">
-            <div
-              className={`mcard flex aspect-[4/5] items-center justify-center ${panel.panelClass}`}
-            >
-              {/* Six properties of this range — see `PROPS`. Values, not
+              <Link href={`/shop/racks/${range}`} className="group block">
+                <div className={`mcard flex aspect-[4/5] items-center justify-center ${panel.panelClass}`}>
+                  {/* Six properties of this range — see `PROPS`. Values, not
                   labels, which is the opposite of the tray card (§23.5): a
                   tray's specs are two-column pairs whose labels are the short
                   half, whereas a rack has no figures to pair here at all. The
                   §17.4 rule these are checked against is about *claims*, not
                   about labels — "Powder coated" is a statement of what the
                   steel is, not an unsubstantiated nutrient claim. */}
-              <Marquee
-                words={PROPS.map((n) => t(`ranges.${range}.prop${n}`))}
-                toneClass={panel.marqueeClass}
-                /* `cqw` for the same reason the tray card uses it — a panel
+                  <Marquee
+                    words={PROPS.map((n) => t(`ranges.${range}.prop${n}`))}
+                    toneClass={panel.marqueeClass}
+                    /* `cqw` for the same reason the tray card uses it — a panel
                    this tall needs the type to scale with the card, or the
                    marquee's block stops overflowing it and the loop shows a
                    seam. 6% rather than the tray card's 7% because this is one
@@ -179,9 +177,9 @@ export default async function RacksPage({ params }: PageProps<"/[locale]/shop/ra
                    height. 26 puts one half at 1.19 panel heights, and six
                    words round up to 30 lines. Ten, the default, measured 0.38
                    here before the properties landed. */
-                sizeClass="text-[6cqw]"
-                minLines={26}
-                /* Six words round 26 up to 30 lines, which makes one half of
+                    sizeClass="text-[6cqw]"
+                    minLines={26}
+                    /* Six words round 26 up to 30 lines, which makes one half of
                    the block 1.37 panel heights — 715px on the 419px card. At
                    the house speed of 48px/s that is 15s, against the 8s the
                    CSS defaults to.
@@ -191,55 +189,51 @@ export default async function RacksPage({ params }: PageProps<"/[locale]/shop/ra
                    slow"*. The cause was a duration being shared where a speed
                    was meant — a taller block covers more ground in the same
                    time. */
-                durationSeconds={15}
-              />
-              {/* 88% of the media box, and the media box at 82% of the card's
+                    durationSeconds={15}
+                  />
+                  {/* 88% of the media box, and the media box at 82% of the card's
                   height. The cut-out is padded to 88% of its own 4:5 frame by
                   `scripts/cutout.py`, normalised on **height** — all three
                   subjects are narrower than 4:5, so they come out the same
                   height with their widths varying by the rack, which is the
                   object rather than the photography. */}
-              <div className="mcard__media relative aspect-[4/5] h-[82%]">
-                <Image
-                  src={`/racks/${range}/cutout.webp`}
-                  alt={t(`ranges.${range}.imageAlt`)}
-                  fill
-                  priority={i === 0}
-                  sizes="(min-width: 768px) 30vw, 92vw"
-                  className="object-contain"
-                />
-              </div>
-            </div>
-            </Link>
+                  <div className="mcard__media relative aspect-[4/5] h-[82%]">
+                    <Image
+                      src={`/racks/${range}/cutout.webp`}
+                      alt={t(`ranges.${range}.imageAlt`)}
+                      fill
+                      priority={i === 0}
+                      sizes="(min-width: 768px) 30vw, 92vw"
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+              </Link>
 
-            <h2 className="mt-4 font-display text-base font-semibold text-forest">
-              {t(`ranges.${range}.name`)}
-            </h2>
-            {/* "From ₹1,250" rather than a price, because a range is not one
+              <h2 className="mt-4 font-display text-base font-semibold text-forest">
+                {t(`ranges.${range}.name`)}
+              </h2>
+              {/* "From ₹1,250" rather than a price, because a range is not one
                 product: the figure is the cheapest published model in it, and
                 the height and shelf size the customer picks are what decide
                 the real one. The shared `shop.category.from` string, which is
                 already the site's word for this. */}
-            <p className="mt-1 font-display text-lg font-bold tabular-nums text-forest">
-              {c("from", { price: from })}
-            </p>
-            <p className="mt-2 font-body text-sm leading-relaxed text-stone">
-              {t(`ranges.${range}.line`)}
-            </p>
-            <p className="mt-4 font-body text-xs font-semibold text-forest">
-              {ready}
-            </p>
-            {/* An explicit link as well as the card, for the reason the tray
+              <p className="mt-1 font-display text-lg font-bold tabular-nums text-forest">
+                {c("from", { price: from })}
+              </p>
+              <p className="mt-2 font-body text-sm leading-relaxed text-stone">{t(`ranges.${range}.line`)}</p>
+              <p className="mt-4 font-body text-xs font-semibold text-forest">{ready}</p>
+              {/* An explicit link as well as the card, for the reason the tray
                 grid has one: a linked picture is invisible to anyone scanning
                 for something to click, and `mt-auto` lines this row up across
                 three cards whose copy runs to different lengths. */}
-            <Link
-              href={`/shop/racks/${range}`}
-              className="mt-auto pt-4 font-body text-xs font-semibold text-forest underline underline-offset-4 transition-colors hover:text-stone"
-            >
-              {t("cardLink")}
-            </Link>
-          </li>
+              <Link
+                href={`/shop/racks/${range}`}
+                className="mt-auto pt-4 font-body text-xs font-semibold text-forest underline underline-offset-4 transition-colors hover:text-stone"
+              >
+                {t("cardLink")}
+              </Link>
+            </li>
           );
         })}
       </ul>

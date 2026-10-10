@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  CURTAIN_SELECTOR,
-  curtainAnchor,
-  type CurtainAnchor,
-  type CurtainClick,
-} from "./curtain-anchor";
+import { CURTAIN_SELECTOR, curtainAnchor, type CurtainAnchor, type CurtainClick } from "./curtain-anchor";
 
 /**
  * Which clicks raise the brand curtain — SPEC §17.5.

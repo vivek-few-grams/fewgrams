@@ -93,8 +93,7 @@ export async function addSeed(_prev: FormState, fd: FormData): Promise<FormState
   /* Validated rather than sanitised: the key is both a filename and a URL
      segment, so quietly rewriting it would break the link between this row and
      the file the operator is about to create. */
-  if (!isValidContentKey(contentKey))
-    return err("keyInvalid", "contentKey", { key: contentKey });
+  if (!isValidContentKey(contentKey)) return err("keyInvalid", "contentKey", { key: contentKey });
 
   /* One row per key — the key is the GSI1 sort key and the public URL, so two
      rows sharing one would make /seeds/<key> ambiguous. Seed keys are checked

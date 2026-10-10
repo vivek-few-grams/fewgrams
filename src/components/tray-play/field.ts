@@ -93,10 +93,8 @@ export function stepField(field: Field, dt: number) {
       const d = ((j < nz - 1 ? j + 1 : j) * nx + i) * 2;
       for (let k = 0; k < 2; k++) {
         const x = bend[c + k];
-        const lap =
-          bend[l + k] + bend[r + k] + bend[u + k] + bend[d + k] - 4 * x;
-        vel[c + k] +=
-          (-STIFFNESS * x - DAMPING * vel[c + k] + COUPLING * lap) * dt;
+        const lap = bend[l + k] + bend[r + k] + bend[u + k] + bend[d + k] - 4 * x;
+        vel[c + k] += (-STIFFNESS * x - DAMPING * vel[c + k] + COUPLING * lap) * dt;
       }
     }
   }
@@ -126,27 +124,14 @@ export function stepField(field: Field, dt: number) {
  * and pushed outward from the centre; both fall off smoothly to nothing at
  * {@link BRUSH_RADIUS}.
  */
-export function brush(
-  field: Field,
-  x: number,
-  z: number,
-  vx: number,
-  vz: number,
-  dt: number,
-) {
+export function brush(field: Field, x: number, z: number, vx: number, vz: number, dt: number) {
   const { nx, nz, rect, vel } = field;
   const cellW = rect.width / nx;
   const cellD = rect.depth / nz;
   const i0 = Math.max(0, Math.floor((x - BRUSH_RADIUS - rect.minX) / cellW));
-  const i1 = Math.min(
-    nx - 1,
-    Math.ceil((x + BRUSH_RADIUS - rect.minX) / cellW),
-  );
+  const i1 = Math.min(nx - 1, Math.ceil((x + BRUSH_RADIUS - rect.minX) / cellW));
   const j0 = Math.max(0, Math.floor((z - BRUSH_RADIUS - rect.minZ) / cellD));
-  const j1 = Math.min(
-    nz - 1,
-    Math.ceil((z + BRUSH_RADIUS - rect.minZ) / cellD),
-  );
+  const j1 = Math.min(nz - 1, Math.ceil((z + BRUSH_RADIUS - rect.minZ) / cellD));
   if (i0 > i1 || j0 > j1) return;
 
   const speed = Math.hypot(vx, vz);
@@ -214,14 +199,7 @@ export function wave(
     const cz = rect.minZ + (j + 0.5) * cellD;
     for (let i = i0; i <= i1; i++) {
       const cx = rect.minX + (i + 0.5) * cellW;
-      if (
-        bounds &&
-        (cx < bounds.minX ||
-          cx > bounds.maxX ||
-          cz < bounds.minZ ||
-          cz > bounds.maxZ)
-      )
-        continue;
+      if (bounds && (cx < bounds.minX || cx > bounds.maxX || cz < bounds.minZ || cz > bounds.maxZ)) continue;
       const dx = cx - x;
       const dz = cz - z;
       const dist = Math.hypot(dx, dz);
@@ -243,8 +221,7 @@ export function isSettled(field: Field) {
   const { bend, vel } = field;
   const omega = 2 * Math.PI * FREQUENCY;
   for (let c = 0; c < bend.length; c++) {
-    if (Math.abs(bend[c]) > REST || Math.abs(vel[c]) / omega > REST)
-      return false;
+    if (Math.abs(bend[c]) > REST || Math.abs(vel[c]) / omega > REST) return false;
   }
   return true;
 }
@@ -260,9 +237,7 @@ export function packField(field: Field, out: Uint8Array) {
   for (let c = 0, p = 0; c < bend.length; c += 2, p += 4) {
     out[p] = Math.round((bend[c] + 1) * 127.5);
     out[p + 1] = Math.round((bend[c + 1] + 1) * 127.5);
-    out[p + 2] = Math.round(
-      Math.min(1, Math.hypot(vel[c], vel[c + 1]) / 4) * 255,
-    );
+    out[p + 2] = Math.round(Math.min(1, Math.hypot(vel[c], vel[c + 1]) / 4) * 255);
     out[p + 3] = 255;
   }
 }

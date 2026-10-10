@@ -136,9 +136,7 @@ describe("resolveMargins", () => {
   it("gives a range with its own row that row, and leaves the others alone", () => {
     /* The owner, 3 Oct 2026: changing one range's margin must not move the
        other two. An angle row is the angle range's and nobody else's. */
-    const m = resolveMargins(legacy, [
-      { range: "angle", markupPercent: 35, roundUpToNearest: 100 },
-    ]);
+    const m = resolveMargins(legacy, [{ range: "angle", markupPercent: 35, roundUpToNearest: 100 }]);
     expect(m.angle).toEqual({ markupPercent: 35, roundUpToNearest: 100 });
     expect(m.plated).toEqual({ markupPercent: 20, roundUpToNearest: 50 });
     expect(m.pipe).toEqual({ markupPercent: 20, roundUpToNearest: 50 });
@@ -212,8 +210,7 @@ describe("allRackConfigs", () => {
       ...VENDOR_SEED,
       settings: { ...VENDOR_SEED.settings, heightsFt: [2, 3, 4, 5, 6] },
     };
-    for (const c of allRackConfigs(card))
-      expect(c.shelves).toBe(shelvesForHeight(c.heightFt));
+    for (const c of allRackConfigs(card)) expect(c.shelves).toBe(shelvesForHeight(c.heightFt));
   });
 
   it("leaves out inactive parts", () => {
@@ -223,9 +220,7 @@ describe("allRackConfigs", () => {
        resurrected as a rack. */
     const card = {
       ...VENDOR_SEED,
-      plates: VENDOR_SEED.plates.map((p) =>
-        p.id === "p-2x3" ? { ...p, active: false } : p,
-      ),
+      plates: VENDOR_SEED.plates.map((p) => (p.id === "p-2x3" ? { ...p, active: false } : p)),
     };
     expect(allRackConfigs(card).some((c) => c.plateId === "p-2x3")).toBe(false);
     expect(allRackConfigs(card)).toHaveLength(VENDOR_SEED.settings.heightsFt.length * 4);
@@ -235,8 +230,6 @@ describe("allRackConfigs", () => {
     const heights = allRackConfigs(VENDOR_SEED).map((c) => c.heightFt);
     expect(heights).toEqual([...heights].sort((a, b) => a - b));
   });
-
-
 });
 
 /**
@@ -297,14 +290,8 @@ describe("angleRackCost", () => {
   it("differs from a plated rack in the shelf line and nothing else", () => {
     /* The whole reason both categories share this module. If a future edit
        moves the legs, bolts or bushes on one and not the other, this fails. */
-    const plated = rackCost(
-      { heightFt: 6, shelves: 5, plateId: "p-1x3", angleId: "a-1.4" },
-      VENDOR_SEED,
-    );
-    const open = angleRackCost(
-      { heightFt: 6, shelves: 5, frameId: "f-1x3", angleId: "a-1.4" },
-      VENDOR_SEED,
-    );
+    const plated = rackCost({ heightFt: 6, shelves: 5, plateId: "p-1x3", angleId: "a-1.4" }, VENDOR_SEED);
+    const open = angleRackCost({ heightFt: 6, shelves: 5, frameId: "f-1x3", angleId: "a-1.4" }, VENDOR_SEED);
     expect(open?.legs).toBe(plated?.legs);
     expect(open?.bolts).toBe(plated?.bolts);
     expect(open?.bushes).toBe(plated?.bushes);
@@ -327,14 +314,8 @@ describe("angleRackCost", () => {
        opposite: dropping the steel deck saves the plate's ₹200 but buys 11 ft
        of angle at ₹40 to replace it. The figures are the vendor's, so if this
        ever flips it is because a rate moved and not because the model changed. */
-    const plated = rackCost(
-      { heightFt: 6, shelves: 5, plateId: "p-1x3", angleId: "a-1.4" },
-      VENDOR_SEED,
-    )!;
-    const open = angleRackCost(
-      { heightFt: 6, shelves: 5, frameId: "f-1x3", angleId: "a-1.4" },
-      VENDOR_SEED,
-    )!;
+    const plated = rackCost({ heightFt: 6, shelves: 5, plateId: "p-1x3", angleId: "a-1.4" }, VENDOR_SEED)!;
+    const open = angleRackCost({ heightFt: 6, shelves: 5, frameId: "f-1x3", angleId: "a-1.4" }, VENDOR_SEED)!;
     expect(open.total).toBeGreaterThan(plated.total);
   });
 });
@@ -375,16 +356,13 @@ describe("allAngleRackConfigs", () => {
       ...VENDOR_SEED,
       settings: { ...VENDOR_SEED.settings, heightsFt: [2, 3, 4, 5, 6] },
     };
-    for (const c of allAngleRackConfigs(card))
-      expect(c.shelves).toBe(shelvesForHeight(c.heightFt));
+    for (const c of allAngleRackConfigs(card)) expect(c.shelves).toBe(shelvesForHeight(c.heightFt));
   });
 
   it("leaves out inactive parts", () => {
     const card = {
       ...VENDOR_SEED,
-      frames: VENDOR_SEED.frames.map((f) =>
-        f.id === "f-1x4" ? { ...f, active: false } : f,
-      ),
+      frames: VENDOR_SEED.frames.map((f) => (f.id === "f-1x4" ? { ...f, active: false } : f)),
     };
     expect(allAngleRackConfigs(card).some((c) => c.frameId === "f-1x4")).toBe(false);
   });
@@ -407,11 +385,8 @@ describe("the frame seed", () => {
   });
 
   it("covers every plated footprint, so the two ranges are comparable", () => {
-    const frames = new Set(
-      VENDOR_SEED.frames.map((f) => `${f.depthFt}x${f.lengthFt}`),
-    );
-    for (const p of VENDOR_SEED.plates)
-      expect(frames.has(`${p.depthFt}x${p.lengthFt}`)).toBe(true);
+    const frames = new Set(VENDOR_SEED.frames.map((f) => `${f.depthFt}x${f.lengthFt}`));
+    for (const p of VENDOR_SEED.plates) expect(frames.has(`${p.depthFt}x${p.lengthFt}`)).toBe(true);
   });
 });
 
@@ -472,9 +447,7 @@ describe("pipeFeetPerShelf", () => {
   it("weighs length and depth equally, which the angle frame does not", () => {
     /* So unlike the angle range, pipe cost per shelf *is* a function of
        perimeter — 1 × 4 and 2 × 3 come out the same. */
-    expect(pipeFeetPerShelf({ depthFt: 1, lengthFt: 4 })).toBe(
-      pipeFeetPerShelf({ depthFt: 2, lengthFt: 3 }),
-    );
+    expect(pipeFeetPerShelf({ depthFt: 1, lengthFt: 4 })).toBe(pipeFeetPerShelf({ depthFt: 2, lengthFt: 3 }));
     expect(frameFeetPerShelf({ depthFt: 1, lengthFt: 4 })).not.toBe(
       frameFeetPerShelf({ depthFt: 2, lengthFt: 3 }),
     );
@@ -538,14 +511,8 @@ describe("pipeRackCost", () => {
        surprised them in this direction, so the order is pinned. A flip means
        a rate moved, not that the model changed. */
     const config = { heightFt: 6, shelves: 5 };
-    const plated = rackCost(
-      { ...config, plateId: "p-1.5x3", angleId: "a-1.4" },
-      VENDOR_SEED,
-    )!.total;
-    const angle = angleRackCost(
-      { ...config, frameId: "f-1.5x3", angleId: "a-1.4" },
-      VENDOR_SEED,
-    )!.total;
+    const plated = rackCost({ ...config, plateId: "p-1.5x3", angleId: "a-1.4" }, VENDOR_SEED)!.total;
+    const angle = angleRackCost({ ...config, frameId: "f-1.5x3", angleId: "a-1.4" }, VENDOR_SEED)!.total;
     const pipe = pipeRackCost({ ...config, pipeSizeId: "pp-1.5x3" }, VENDOR_SEED)!.total;
 
     expect(plated).toBe(2810);
@@ -586,13 +553,9 @@ describe("pipeRackFeet", () => {
 describe("allPipeRackConfigs", () => {
   it("is one rack per height and footprint — no gauge to vary", () => {
     const configs = allPipeRackConfigs(VENDOR_SEED);
-    const heights = VENDOR_SEED.settings.heightsFt.filter(
-      (h) => h <= PIPE_MAX_HEIGHT_FT,
-    );
+    const heights = VENDOR_SEED.settings.heightsFt.filter((h) => h <= PIPE_MAX_HEIGHT_FT);
     expect(configs).toHaveLength(heights.length * VENDOR_SEED.pipes.length);
-    expect(new Set(configs.map((c) => c.pipeSizeId)).size).toBe(
-      VENDOR_SEED.pipes.length,
-    );
+    expect(new Set(configs.map((c) => c.pipeSizeId)).size).toBe(VENDOR_SEED.pipes.length);
   });
 
   it("stops at the height the pipe can carry", () => {
@@ -602,22 +565,16 @@ describe("allPipeRackConfigs", () => {
       ...VENDOR_SEED,
       settings: { ...VENDOR_SEED.settings, heightsFt: [3, 6, 8, 10] },
     };
-    expect(allPipeRackConfigs(card).map((c) => c.heightFt)).toEqual(
-      expect.arrayContaining([3, 6]),
-    );
+    expect(allPipeRackConfigs(card).map((c) => c.heightFt)).toEqual(expect.arrayContaining([3, 6]));
     expect(allPipeRackConfigs(card).some((c) => c.heightFt > 6)).toBe(false);
   });
 
   it("leaves out inactive footprints", () => {
     const card = {
       ...VENDOR_SEED,
-      pipes: VENDOR_SEED.pipes.map((p) =>
-        p.id === "pp-1x3" ? { ...p, active: false } : p,
-      ),
+      pipes: VENDOR_SEED.pipes.map((p) => (p.id === "pp-1x3" ? { ...p, active: false } : p)),
     };
-    expect(allPipeRackConfigs(card).some((c) => c.pipeSizeId === "pp-1x3")).toBe(
-      false,
-    );
+    expect(allPipeRackConfigs(card).some((c) => c.pipeSizeId === "pp-1x3")).toBe(false);
   });
 
   it("enumerates nothing at all before the pipe rates exist", () => {
@@ -640,12 +597,8 @@ describe("pipeRackSku", () => {
 describe("the pipe seed", () => {
   it("is the owner's grid: three depths by three lengths", () => {
     expect(VENDOR_SEED.pipes).toHaveLength(9);
-    expect([...new Set(VENDOR_SEED.pipes.map((p) => p.depthFt))].sort()).toEqual([
-      1, 1.5, 2,
-    ]);
-    expect([...new Set(VENDOR_SEED.pipes.map((p) => p.lengthFt))].sort()).toEqual([
-      2.5, 3, 4,
-    ]);
+    expect([...new Set(VENDOR_SEED.pipes.map((p) => p.depthFt))].sort()).toEqual([1, 1.5, 2]);
+    expect([...new Set(VENDOR_SEED.pipes.map((p) => p.lengthFt))].sort()).toEqual([2.5, 3, 4]);
   });
 
   it("drops the 1¼ ft depth the plated range offers", () => {
@@ -679,9 +632,7 @@ describe("rack weight", () => {
     ...VENDOR_SEED,
     settings: { ...VENDOR_SEED.settings, boltSetGrams: 8, bushGrams: 10 },
     angles: VENDOR_SEED.angles.map((a) => ({ ...a, gramsPerFt: 230 })),
-    plates: VENDOR_SEED.plates.map((p) =>
-      p.id === "p-1.25x3" ? { ...p, gramsPerShelf: 1500 } : p,
-    ),
+    plates: VENDOR_SEED.plates.map((p) => (p.id === "p-1.25x3" ? { ...p, gramsPerShelf: 1500 } : p)),
   };
 
   it("weighs a shelf rack as legs by the foot, plates, and fixings", () => {
@@ -758,11 +709,7 @@ describe("repricedRows", () => {
   it("moves a price when a material rate moves", () => {
     const model = published(OWNERS_RACK);
     const dearer = { ...card, settings: { ...card.settings, boltSetPrice: 10 } };
-    const rows = repricedRows(
-      [model],
-      (c: RackConfig) => rackCost(c, dearer),
-      margin,
-    );
+    const rows = repricedRows([model], (c: RackConfig) => rackCost(c, dearer), margin);
     expect(rows).toHaveLength(1);
     /* 5 shelves × 8 pairs × (₹10 − ₹2) = ₹320 more. */
     expect(rows[0].costAtPublish).toBe(model.costAtPublish + 320);
@@ -794,11 +741,7 @@ describe("repricedRows", () => {
     const rounded = { ...margin, roundUpToNearest: 500 };
     const model = published(OWNERS_RACK, { price: 2499 });
     const dearer = { ...card, settings: { ...card.settings, boltSetPrice: 3 } };
-    const rows = repricedRows(
-      [model],
-      (c: RackConfig) => rackCost(c, dearer),
-      rounded,
-    );
+    const rows = repricedRows([model], (c: RackConfig) => rackCost(c, dearer), rounded);
     expect(rows).toHaveLength(1);
     expect(rows[0].price).toBe(2499);
     expect(rows[0].costAtPublish).not.toBe(model.costAtPublish);
@@ -828,16 +771,17 @@ describe("repricedRows", () => {
 
 describe("pipeRackPiecesFt", () => {
   it("lists four uprights and four rails a level on a short shelf", () => {
-    expect(pipeRackPiecesFt({ heightFt: 4, shelves: 3 }, { depthFt: 1, lengthFt: 3 }, { legsPerRack: 4 })).toEqual([
-      4, 4, 4, 4,
-      1, 1, 3, 3,
-      1, 1, 3, 3,
-      1, 1, 3, 3,
-    ]);
+    expect(
+      pipeRackPiecesFt({ heightFt: 4, shelves: 3 }, { depthFt: 1, lengthFt: 3 }, { legsPerRack: 4 }),
+    ).toEqual([4, 4, 4, 4, 1, 1, 3, 3, 1, 1, 3, 3, 1, 1, 3, 3]);
   });
 
   it("adds the middle supports and splits the long rails from 4 ft", () => {
-    const pieces = pipeRackPiecesFt({ heightFt: 6, shelves: 5 }, { depthFt: 2, lengthFt: 4 }, { legsPerRack: 4 });
+    const pieces = pipeRackPiecesFt(
+      { heightFt: 6, shelves: 5 },
+      { depthFt: 2, lengthFt: 4 },
+      { legsPerRack: 4 },
+    );
     expect(pieces.filter((p) => p === 6)).toHaveLength(6);
     expect(pieces.filter((p) => p === 2)).toHaveLength(30); // 2 across + 4 halves, × 5
   });

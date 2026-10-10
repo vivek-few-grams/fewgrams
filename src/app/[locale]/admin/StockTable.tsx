@@ -67,10 +67,14 @@ export function StockTable({
 
   return (
     <div className="space-y-2">
-      <h2 className="font-display text-lg font-semibold text-forest">{t("savedCount", { count: items.length })}</h2>
+      <h2 className="font-display text-lg font-semibold text-forest">
+        {t("savedCount", { count: items.length })}
+      </h2>
       <p className="font-body text-xs text-stone">{t("packingNote")}</p>
       <div className="overflow-x-auto rounded-xl border border-forest/15 bg-white">
-        <table className={`w-full min-w-[80rem] border-collapse [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0 [&_thead_th]:border-t-0`}>
+        <table
+          className={`w-full min-w-[80rem] border-collapse [&_tr>*:first-child]:border-l-0 [&_tr>*:last-child]:border-r-0 [&_thead_th]:border-t-0`}
+        >
           <thead>
             <tr className="bg-sand text-left">
               <Th className="w-64">{t("colItem")}</Th>
@@ -160,7 +164,9 @@ function Row({
     <Fragment>
       <tr className={`align-middle even:bg-cream/40 ${name ? "" : "bg-terracotta/5"}`}>
         <td className={`${CELL} px-3 py-2`}>
-          <p className="font-body text-sm font-semibold leading-snug text-forest">{name ?? item.contentKey}</p>
+          <p className="font-body text-sm font-semibold leading-snug text-forest">
+            {name ?? item.contentKey}
+          </p>
           <code className="font-body text-[11px] text-stone">{item.contentKey}</code>
           {Number.isInteger(stock) && stock >= 0 && (
             <p className="mt-1 flex items-center gap-1.5 font-body text-[11px] text-stone">
@@ -179,7 +185,10 @@ function Row({
           {input("markupPercent", { "aria-label": t("markupPercent"), defaultValue: item.markupPercent })}
         </td>
         <td className={`${CELL} p-0`}>
-          {input("roundUpToNearest", { "aria-label": t("roundUpToNearest"), defaultValue: item.roundUpToNearest })}
+          {input("roundUpToNearest", {
+            "aria-label": t("roundUpToNearest"),
+            defaultValue: item.roundUpToNearest,
+          })}
         </td>
         {/* Worked out from the cost and margin on save, never typed (the owner,
             3 Oct 2026: "sell price is based on cost + margin"). */}

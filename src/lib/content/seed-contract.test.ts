@@ -1,12 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import {
-  SEED_EN_REQUIRED,
-  SEED_FAQ_COUNT,
-  SEED_KN_REQUIRED,
-  checkSeedFile,
-} from "./seed-contract";
+import { SEED_EN_REQUIRED, SEED_FAQ_COUNT, SEED_KN_REQUIRED, checkSeedFile } from "./seed-contract";
 
 /**
  * The seed template guard — the same contract test the varieties have, run

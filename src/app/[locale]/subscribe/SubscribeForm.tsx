@@ -36,7 +36,6 @@ export type SubscribeBox = {
   plans: Record<string, { name: string; growDays: number | null }[]>;
 };
 
-
 /**
  * The subscribe form: bundle counts, the four Saturdays, an address, pay.
  *
@@ -180,7 +179,10 @@ export function SubscribeForm({
                     >
                       <Minus size={16} aria-hidden />
                     </button>
-                    <span className="min-w-[4.5rem] text-center font-body text-sm font-semibold tabular-nums text-forest" aria-live="polite">
+                    <span
+                      className="min-w-[4.5rem] text-center font-body text-sm font-semibold tabular-nums text-forest"
+                      aria-live="polite"
+                    >
                       {t("boxesCount", { count: n })}
                     </span>
                     <button
@@ -246,7 +248,6 @@ export function SubscribeForm({
             ))}
           </ol>
         </section>
-
       </div>
 
       {/* The summary and the pay button. */}
@@ -264,7 +265,10 @@ export function SubscribeForm({
           ) : (
             <ul className="mt-4 border-t border-cream/15">
               {chosen.map((p) => (
-                <li key={p.key} className="flex items-baseline justify-between gap-4 border-b border-cream/15 py-3">
+                <li
+                  key={p.key}
+                  className="flex items-baseline justify-between gap-4 border-b border-cream/15 py-3"
+                >
                   <span className="font-body text-sm text-cream">
                     {t("planTimes", { plan: p.name, count: boxes[p.key] })}
                   </span>

@@ -87,10 +87,7 @@ export function MarqueeCard({
   const lines = (
     <div className="ta-c px-2">
       {words.map((w, i) => (
-        <span
-          key={i}
-          className="mcard__marquee-line text-[clamp(2rem,4.5vw,3.4rem)] tracking-tight"
-        >
+        <span key={i} className="mcard__marquee-line text-[clamp(2rem,4.5vw,3.4rem)] tracking-tight">
           {w}
         </span>
       ))}
@@ -101,7 +98,8 @@ export function MarqueeCard({
     <Link
       href={href}
       className={`group block ${className}`}
-      aria-label={`${label}${note ? ` — ${note}` : ""}`}>
+      aria-label={`${label}${note ? ` — ${note}` : ""}`}
+    >
       <div
         className={`mcard flex aspect-[580/660] items-center justify-center ${panelClass}`}
         data-cursor={cursorLabel}
@@ -116,29 +114,17 @@ export function MarqueeCard({
             </div>
           </div>
         )}
-        <div className={`mcard__media flex items-center justify-center ${mediaClass}`}>
-          {media}
-        </div>
+        <div className={`mcard__media flex items-center justify-center ${mediaClass}`}>{media}</div>
         {photo && (
           <div className="mcard__photo" aria-hidden="true">
-            <Image
-              src={photo}
-              alt=""
-              fill
-              sizes="(min-width: 768px) 20vw, 50vw"
-              className="object-cover"
-            />
+            <Image src={photo} alt="" fill sizes="(min-width: 768px) 20vw, 50vw" className="object-cover" />
           </div>
         )}
       </div>
 
       <div className="mt-4 flex items-baseline justify-between gap-3">
-        <h3 className={`font-display text-lg font-semibold tracking-tight ${labelClass}`}>
-          {label}
-        </h3>
-        {note && (
-          <span className="shrink-0 font-body text-xs text-stone tabular-nums">{note}</span>
-        )}
+        <h3 className={`font-display text-lg font-semibold tracking-tight ${labelClass}`}>{label}</h3>
+        {note && <span className="shrink-0 font-body text-xs text-stone tabular-nums">{note}</span>}
       </div>
     </Link>
   );

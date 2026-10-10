@@ -3,12 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
 import { isRackColour } from "@/lib/racks/colours";
-import {
-  rackCost,
-  retailPrice,
-  shelvesForHeight,
-  type RateCard,
-} from "@/lib/racks/pricing";
+import { rackCost, retailPrice, shelvesForHeight, type RateCard } from "@/lib/racks/pricing";
 import {
   deleteAngleGrade,
   deleteRackModel,
@@ -109,8 +104,7 @@ export async function saveSettings(_prev: FormState, fd: FormData): Promise<Form
     .filter((n) => Number.isFinite(n) && n > 0)
     .sort((a, b) => a - b);
   if (heightsFt.length === 0) return err("heightsInvalid", "heightsFt");
-  if (heightsFt.some((h) => shelvesForHeight(h) < 1))
-    return err("heightTooShort", "heightsFt");
+  if (heightsFt.some((h) => shelvesForHeight(h) < 1)) return err("heightTooShort", "heightsFt");
 
   /* Optional, like a plate's grams: flagged while blank, and an angle rack
      cannot go by courier until both are set (SPEC §7). */
@@ -174,7 +168,9 @@ function isRackRange(value: string): value is RackRange {
 
 /* ──────────────────────────── shelf plates ─────────────────────────── */
 
-function readPlate(fd: FormData): { ok: true; value: Omit<ShelfPlate, "id"> } | { ok: false; state: FormState } {
+function readPlate(
+  fd: FormData,
+): { ok: true; value: Omit<ShelfPlate, "id"> } | { ok: false; state: FormState } {
   const depthFt = money(fd, "depthFt");
   if (depthFt === null) return { ok: false, state: err("dimensionInvalid", "depthFt") };
   const lengthFt = money(fd, "lengthFt");
@@ -255,7 +251,9 @@ export async function removePlate(fd: FormData): Promise<void> {
 
 /* ──────────────────────────── angle grades ─────────────────────────── */
 
-function readAngle(fd: FormData): { ok: true; value: Omit<AngleGrade, "id"> } | { ok: false; state: FormState } {
+function readAngle(
+  fd: FormData,
+): { ok: true; value: Omit<AngleGrade, "id"> } | { ok: false; state: FormState } {
   const thicknessMm = money(fd, "thicknessMm");
   if (thicknessMm === null) return { ok: false, state: err("dimensionInvalid", "thicknessMm") };
   const ratePerFt = money(fd, "ratePerFt");
@@ -273,8 +271,7 @@ function readAngle(fd: FormData): { ok: true; value: Omit<AngleGrade, "id"> } | 
   /* The palette is enforced here as well as in the picker: a server action is
      addressable over HTTP without the form that renders it, and a colour off
      the palette has no swatch, so a rack built on it would show a blank dot. */
-  if (!colours.every(isRackColour))
-    return { ok: false, state: err("colourInvalid", "colours") };
+  if (!colours.every(isRackColour)) return { ok: false, state: err("colourInvalid", "colours") };
 
   /* No `finish`: every rack is powder-coated (17 Sep 2026), so the field was
      removed rather than left as a select with one right answer. */
@@ -345,10 +342,7 @@ export async function removeAngle(fd: FormData): Promise<void> {
  * grade already lists what it comes in and that list applies to every rack
  * built on it.
  */
-function validateConfig(
-  config: RackConfig,
-  card: RateCard,
-): { ok: true } | { ok: false; state: FormState } {
+function validateConfig(config: RackConfig, card: RateCard): { ok: true } | { ok: false; state: FormState } {
   const plate = card.plates.find((p) => p.id === config.plateId);
   if (!plate) return { ok: false, state: err("plateUnknown", "plateId") };
   if (!card.angles.some((a) => a.id === config.angleId))
@@ -399,8 +393,7 @@ export async function addModel(_prev: FormState, fd: FormData): Promise<FormStat
   if (!valid.ok) return valid.state;
 
   const existing = await listRackModels();
-  if (existing.some((m) => sameConfig(m.config, read.value)))
-    return err("duplicateRack", "plateId");
+  if (existing.some((m) => sameConfig(m.config, read.value))) return err("duplicateRack", "plateId");
 
   const cost = rackCost(read.value, card);
   if (!cost) return err("notFound");
@@ -421,10 +414,7 @@ export async function addModel(_prev: FormState, fd: FormData): Promise<FormStat
 
 function sameConfig(a: RackConfig, b: RackConfig): boolean {
   return (
-    a.heightFt === b.heightFt &&
-    a.shelves === b.shelves &&
-    a.plateId === b.plateId &&
-    a.angleId === b.angleId
+    a.heightFt === b.heightFt && a.shelves === b.shelves && a.plateId === b.plateId && a.angleId === b.angleId
   );
 }
 

@@ -36,13 +36,19 @@ export function VendorPickupPanel({
 
   const options = [
     { value: "", label: t("none") },
-    ...vendors.map((v) => ({ value: v.id, label: t("vendorOption", { name: v.name, city: v.city, pincode: v.pincode }) })),
+    ...vendors.map((v) => ({
+      value: v.id,
+      label: t("vendorOption", { name: v.name, city: v.city, pincode: v.pincode }),
+    })),
   ];
   const addError = (f: string) => (added.status === "error" && added.field === f ? e(added.code) : undefined);
 
   return (
     <section aria-labelledby="vendor-pickup" className="rounded-2xl border border-forest/15 p-6">
-      <h2 id="vendor-pickup" className="flex items-center gap-2 font-display text-lg font-semibold text-forest">
+      <h2
+        id="vendor-pickup"
+        className="flex items-center gap-2 font-display text-lg font-semibold text-forest"
+      >
         <Truck aria-hidden size={18} strokeWidth={1.75} />
         {t("heading")}
       </h2>
@@ -79,8 +85,16 @@ export function VendorPickupPanel({
               >
                 {saving ? t("saving") : t("save")}
               </button>
-              {state.status === "saved" && <span role="status" className="font-body text-sm text-forest">{t("saved")}</span>}
-              {state.status === "error" && <span role="alert" className="font-body text-sm text-terracotta">{e(state.code)}</span>}
+              {state.status === "saved" && (
+                <span role="status" className="font-body text-sm text-forest">
+                  {t("saved")}
+                </span>
+              )}
+              {state.status === "error" && (
+                <span role="alert" className="font-body text-sm text-terracotta">
+                  {e(state.code)}
+                </span>
+              )}
             </div>
           </form>
 
@@ -97,7 +111,13 @@ export function VendorPickupPanel({
             {open && (
               <form action={add} className="mt-4 grid max-w-3xl gap-4 sm:grid-cols-2">
                 <TextField label={t("field.name")} name="name" required error={addError("name")} />
-                <TextField label={t("field.phone")} name="phone" inputMode="tel" required error={addError("phone")} />
+                <TextField
+                  label={t("field.phone")}
+                  name="phone"
+                  inputMode="tel"
+                  required
+                  error={addError("phone")}
+                />
                 <div className="sm:col-span-2">
                   <TextField label={t("field.address")} name="address" required error={addError("address")} />
                 </div>
@@ -118,9 +138,15 @@ export function VendorPickupPanel({
                   >
                     {adding ? t("saving") : t("addVendorSave")}
                   </button>
-                  {added.status === "saved" && <span role="status" className="font-body text-sm text-forest">{t("vendorAdded")}</span>}
+                  {added.status === "saved" && (
+                    <span role="status" className="font-body text-sm text-forest">
+                      {t("vendorAdded")}
+                    </span>
+                  )}
                   {added.status === "error" && !added.field && (
-                    <span role="alert" className="font-body text-sm text-terracotta">{e(added.code)}</span>
+                    <span role="alert" className="font-body text-sm text-terracotta">
+                      {e(added.code)}
+                    </span>
                   )}
                 </div>
               </form>

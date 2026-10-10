@@ -1,11 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { listGrowMedia } from "@/lib/repo/grow-media";
-import {
-  attachGrowMediumContent,
-  growMediumCutout,
-  growMediumHero,
-} from "@/lib/content/grow-media";
+import { attachGrowMediumContent, growMediumCutout, growMediumHero } from "@/lib/content/grow-media";
 import { CATEGORY_PANELS } from "@/lib/shop";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Sprout } from "@/components/ui/Sprout";
@@ -59,10 +55,7 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
   const collator = new Intl.Collator(locale === "kn" ? "kn-IN" : "en-IN");
   const items = rows
     .filter((row) => row.content !== null)
-    .sort(
-      (a, b) =>
-        a.price - b.price || collator.compare(a.content!.text.name, b.content!.text.name),
-    );
+    .sort((a, b) => a.price - b.price || collator.compare(a.content!.text.name, b.content!.text.name));
 
   const panel = CATEGORY_PANELS.media;
 
@@ -99,59 +92,52 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
                         the label. Every item here carries it — see
                         `RecommendedBadge` for why that is earned. */}
                     <div className="relative">
-                    <RecommendedBadge
-                      label={t("badge")}
-                      className="absolute left-3 top-3 z-10 shadow-sm"
-                    />
-                    <div
-                      className={`mcard flex aspect-[3/2] items-center justify-center ${panel.panelClass}`}
-                    >
-                      {cutout ? (
-                        <>
-                          <Marquee
-                            words={words}
-                            toneClass={panel.marqueeClass}
-                            /* The tray card's sizing exactly — same 3:2 panel,
+                      <RecommendedBadge label={t("badge")} className="absolute left-3 top-3 z-10 shadow-sm" />
+                      <div
+                        className={`mcard flex aspect-[3/2] items-center justify-center ${panel.panelClass}`}
+                      >
+                        {cutout ? (
+                          <>
+                            <Marquee
+                              words={words}
+                              toneClass={panel.marqueeClass}
+                              /* The tray card's sizing exactly — same 3:2 panel,
                                same `cqw` type, so the same measured speed.
                                See `shop/trays/page.tsx`. */
-                            sizeClass="text-[7cqw]"
-                          />
-                          <div className="mcard__media relative aspect-[3/2] w-[96%]">
-                            <Image
-                              src={cutout.src}
-                              alt={cutout.alt}
-                              fill
-                              priority={i < 3}
-                              sizes="(min-width: 768px) 30vw, 92vw"
-                              className="object-contain"
+                              sizeClass="text-[7cqw]"
                             />
-                          </div>
-                        </>
-                      ) : photo ? (
-                        /* The launch state: the maker's own photograph, which
+                            <div className="mcard__media relative aspect-[3/2] w-[96%]">
+                              <Image
+                                src={cutout.src}
+                                alt={cutout.alt}
+                                fill
+                                priority={i < 3}
+                                sizes="(min-width: 768px) 30vw, 92vw"
+                                className="object-contain"
+                              />
+                            </div>
+                          </>
+                        ) : photo ? (
+                          /* The launch state: the maker's own photograph, which
                            has its background, so it fills the card flat rather
                            than tilting as a rectangle (SPEC §17.4). */
-                        <Image
-                          src={photo.src}
-                          alt={photo.alt}
-                          fill
-                          priority={i < 3}
-                          sizes="(min-width: 768px) 30vw, 92vw"
-                          className="object-cover"
-                        />
-                      ) : (
-                        <>
-                          <Marquee
-                            words={words}
-                            toneClass={panel.marqueeClass}
-                            sizeClass="text-[7cqw]"
+                          <Image
+                            src={photo.src}
+                            alt={photo.alt}
+                            fill
+                            priority={i < 3}
+                            sizes="(min-width: 768px) 30vw, 92vw"
+                            className="object-cover"
                           />
-                          <div className="mcard__media w-[38%]">
-                            <Sprout className="h-full w-full" stroke="#5a3e22" seed={i + 5} />
-                          </div>
-                        </>
-                      )}
-                    </div>
+                        ) : (
+                          <>
+                            <Marquee words={words} toneClass={panel.marqueeClass} sizeClass="text-[7cqw]" />
+                            <div className="mcard__media w-[38%]">
+                              <Sprout className="h-full w-full" stroke="#5a3e22" seed={i + 5} />
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
 
                     <h2 className="mt-4 font-display text-base font-semibold text-forest transition-colors group-hover:text-stone">
@@ -168,9 +154,7 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
                     >
                       {t("cardLink")}
                     </Link>
-                    <QuickAdd
-                      {...quickAdd("media", item.contentKey, content.text.name)}
-                    />
+                    <QuickAdd {...quickAdd("media", item.contentKey, content.text.name)} />
                   </div>
                 </li>
               );

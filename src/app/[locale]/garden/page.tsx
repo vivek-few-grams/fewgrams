@@ -15,16 +15,9 @@ import { listGrowMedia } from "@/lib/repo/grow-media";
 import { listSeeds } from "@/lib/repo/seeds";
 import { listVarieties } from "@/lib/repo/varieties";
 import { attachTrayContent, trayCutout } from "@/lib/content/trays";
-import {
-  attachGrowMediumContent,
-  growMediumCutout,
-  growMediumHero,
-} from "@/lib/content/grow-media";
+import { attachGrowMediumContent, growMediumCutout, growMediumHero } from "@/lib/content/grow-media";
 import { attachSeedContent, seedCutout } from "@/lib/content/seeds";
-import {
-  attachContent as attachVarietyContent,
-  varietyCutout,
-} from "@/lib/content/varieties";
+import { attachContent as attachVarietyContent, varietyCutout } from "@/lib/content/varieties";
 import { listSellableRacks } from "@/lib/racks/catalogue";
 import { isProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { seedMaxUnits } from "@/lib/seeds/stock";
@@ -54,9 +47,7 @@ const SEED_FOR: Record<Look, string> = {
   mustard: "mustard",
 };
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/garden">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/garden">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "garden.meta" });
   return {
@@ -66,25 +57,17 @@ export async function generateMetadata({
   };
 }
 
-export default async function GardenPage({
-  params,
-  searchParams,
-}: PageProps<"/[locale]/garden">) {
+export default async function GardenPage({ params, searchParams }: PageProps<"/[locale]/garden">) {
   const { locale } = await params;
   setRequestLocale(locale);
   /* Where the visitor was: the step, the tray and the seed are in the URL
      (see GardenJourney). Anything unknown falls back to the start. */
   const q = await searchParams;
-  const one = (v: string | string[] | undefined) =>
-    Array.isArray(v) ? v[0] : v;
+  const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
   const initial = {
     step: stepFrom(one(q.step)),
-    tray: isTrayFinish(one(q.tray))
-      ? (one(q.tray) as TrayFinish)
-      : TRAY_FINISH_KEYS[0],
-    greens: isLook(one(q.greens))
-      ? (one(q.greens) as Look)
-      : ("radish" as Look),
+    tray: isTrayFinish(one(q.tray)) ? (one(q.tray) as TrayFinish) : TRAY_FINISH_KEYS[0],
+    greens: isLook(one(q.greens)) ? (one(q.greens) as Look) : ("radish" as Look),
   };
 
   const [traysOn, mediaOn, seedsOn, greensOn, racksOn] = await Promise.all([
@@ -94,16 +77,7 @@ export default async function GardenPage({
     isProductTypeEnabled("microgreens"),
     isProductTypeEnabled("racks"),
   ]);
-  const [
-    trayRows,
-    mediaRows,
-    seedRows,
-    varietyRows,
-    racks,
-    quickAdd,
-    t,
-    rackText,
-  ] = await Promise.all([
+  const [trayRows, mediaRows, seedRows, varietyRows, racks, quickAdd, t, rackText] = await Promise.all([
     traysOn ? listTrays({ activeOnly: true }) : [],
     mediaOn ? listGrowMedia({ activeOnly: true }) : [],
     seedsOn ? listSeeds({ activeOnly: true }) : [],
@@ -141,7 +115,10 @@ export default async function GardenPage({
      3 Oct 2026) sorts after the 5 kg `horti-coir`. */
   const block = media
     .filter((m) => m.content)
-    .reduce<(typeof media)[number] | undefined>((min, m) => (!min || m.price < min.price ? m : min), undefined);
+    .reduce<(typeof media)[number] | undefined>(
+      (min, m) => (!min || m.price < min.price ? m : min),
+      undefined,
+    );
   const medium: GardenProduct | null = block?.content
     ? {
         kind: "media",

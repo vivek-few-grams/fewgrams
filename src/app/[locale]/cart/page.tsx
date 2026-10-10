@@ -60,12 +60,8 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
         <h1 className="font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
           {t("heading")}
         </h1>
-        <p className="mt-4 font-display text-lg font-semibold text-forest">
-          {t("empty")}
-        </p>
-        <p className="mt-2 max-w-md font-body text-sm text-stone">
-          {t("emptyBody")}
-        </p>
+        <p className="mt-4 font-display text-lg font-semibold text-forest">{t("empty")}</p>
+        <p className="mt-2 max-w-md font-body text-sm text-stone">{t("emptyBody")}</p>
         <Link
           href="/microgreens"
           className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-forest px-7 py-3 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
@@ -114,7 +110,10 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                   {/* Three catalogues, three routes. The kind is what decides,
                       which is also why it is part of a line's identity in the
                       cookie: a seed and a green can share a content key. */}
-                  <Link href={lineHref(item)} className="group flex min-w-0 flex-1 basis-64 items-center gap-4">
+                  <Link
+                    href={lineHref(item)}
+                    className="group flex min-w-0 flex-1 basis-64 items-center gap-4"
+                  >
                     <span className="relative block size-20 shrink-0 overflow-hidden rounded-xl bg-sand md:size-24">
                       {item.image ? (
                         <Image
@@ -125,7 +124,10 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                           className="object-contain transition-transform duration-300 group-hover:scale-105"
                         />
                       ) : (
-                        <KindIcon kind={item.kind} className="absolute inset-0 m-auto size-11 bg-forest text-cream" />
+                        <KindIcon
+                          kind={item.kind}
+                          className="absolute inset-0 m-auto size-11 bg-forest text-cream"
+                        />
                       )}
                     </span>
                     <span className="min-w-0">
@@ -142,7 +144,10 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                           Checkout waits until it is reduced; how much is
                           left is never said. */}
                       {item.units > item.maxUnits && (
-                        <span role="status" className="mt-1 block font-body text-xs font-semibold text-terracotta">
+                        <span
+                          role="status"
+                          className="mt-1 block font-body text-xs font-semibold text-terracotta"
+                        >
                           {item.maxUnits === 0 ? t("lineSoldOut") : t("lineOverStock")}
                         </span>
                       )}

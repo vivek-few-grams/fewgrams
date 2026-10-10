@@ -27,6 +27,7 @@ import {
   ShippingSettingsEntity,
   TrayEntity,
   ShelfPlateEntity,
+  SowingEntity,
   SubscriptionEntity,
   VarietyEntity,
 } from "@/lib/db/entities";
@@ -69,11 +70,7 @@ describe("table routing — SPEC §4.6", () => {
   });
 
   it("names the three tables from one prefix", () => {
-    expect(Object.values(TABLES)).toEqual([
-      "fewgrams-users",
-      "fewgrams-catalogue",
-      "fewgrams-orders",
-    ]);
+    expect(Object.values(TABLES)).toEqual(["fewgrams-users", "fewgrams-catalogue", "fewgrams-orders"]);
   });
 });
 
@@ -125,16 +122,14 @@ describe("variety keys", () => {
       send: () => Promise.resolve({ Items: [unstamped], Count: 1 }),
     } as never;
 
-    const kept = await VarietyEntity.query
-      .byCatalogue({})
-      .go({ ...LIST_OPTS, client: stub });
+    const kept = await VarietyEntity.query.byCatalogue({}).go({ ...LIST_OPTS, client: stub });
     expect(kept.data.map((v) => v.contentKey)).toEqual(["radish"]);
 
     // The other arm, so this test proves the mechanism rather than just the
     // happy path: drop the option and ElectroDB silently returns nothing,
     // even though the entity config sets `ignoreOwnership` at the entity level.
     const dropped = await VarietyEntity.query.byCatalogue({}).go({ client: stub });
-    expect(dropped.data).toEqual([])
+    expect(dropped.data).toEqual([]);
   });
 });
 
@@ -251,9 +246,7 @@ describe("tray keys", () => {
 
     /* Exact-match partitions, never `begins_with`, so "TRAY" cannot catch a
        "SEED" row or the reverse. */
-    expect(
-      TrayEntity.query.byCatalogue({}).params().KeyConditionExpression,
-    ).not.toContain("begins_with");
+    expect(TrayEntity.query.byCatalogue({}).params().KeyConditionExpression).not.toContain("begins_with");
   });
 
   /** Zero packs held is a real count (every order a day later), so it must
@@ -434,10 +427,7 @@ describe("profile and address keys — SPEC §4", () => {
    * would be returned by the adapter's getUserByEmail query.
    */
   it("keeps both entities out of the adapter's email index", () => {
-    for (const { Item } of [
-      ProfileEntity.put(profile).params(),
-      AddressEntity.put(address).params(),
-    ]) {
+    for (const { Item } of [ProfileEntity.put(profile).params(), AddressEntity.put(address).params()]) {
       expect(Item.GSI1PK).toBeUndefined();
       expect(Item.GSI1SK).toBeUndefined();
     }
@@ -639,16 +629,7 @@ describe("rack rate card keys — SPEC §19", () => {
       "PMODEL#p1",
       "MARGIN#plated",
     ];
-    const prefixes = [
-      "PLATE#",
-      "ANGLE#",
-      "FRAME#",
-      "MODEL#",
-      "AMODEL#",
-      "PIPESIZE#",
-      "PMODEL#",
-      "MARGIN#",
-    ];
+    const prefixes = ["PLATE#", "ANGLE#", "FRAME#", "MODEL#", "AMODEL#", "PIPESIZE#", "PMODEL#", "MARGIN#"];
 
     for (const prefix of prefixes) {
       const matched = keys.filter((k) => k.startsWith(prefix));
@@ -895,5 +876,36 @@ describe("subscription keys — SPEC §4, §5", () => {
     /* Same partition as the customer's orders; the prefixes keep them apart. */
     expect("SUB#x".startsWith("ORDER#")).toBe(false);
     expect(item.GSI1PK).toBeUndefined();
+  });
+});
+
+describe("sowing log keys — /admin/sowing", () => {
+  const sowing = {
+    id: "s1",
+    sowDate: "2026-10-09",
+    lines: [{ varietyKey: "radish", seedGrams: 40, trays: 2 }],
+    createdAt: "2026-10-09T03:00:00.000Z",
+    updatedAt: "2026-10-09T03:00:00.000Z",
+  };
+
+  it("writes PK=SOWING#<id> SK=META in the orders table", () => {
+    const params = SowingEntity.put(sowing).params();
+    expect(params.TableName).toBe(TABLES.orders);
+    expect(params.Item.PK).toBe("SOWING#s1");
+    expect(params.Item.SK).toBe("META");
+  });
+
+  it("lists on GSI1 under SOWING, sorted by date, apart from the delivery run", () => {
+    const item = SowingEntity.put(sowing).params().Item;
+    expect(item.GSI1PK).toBe("SOWING");
+    expect(item.GSI1SK).toBe("2026-10-09#s1");
+    expect("SOWING".startsWith("DELIVERY#")).toBe(false);
+    expect("SOWING".startsWith("ORDER#")).toBe(false);
+  });
+
+  it("reads newest first", () => {
+    const params = SowingEntity.query.byDate({}).params({ ...LIST_OPTS, order: "desc" });
+    expect(params.IndexName).toBe("GSI1");
+    expect(params.ScanIndexForward).toBe(false);
   });
 });

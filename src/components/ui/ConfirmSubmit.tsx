@@ -69,10 +69,7 @@ export function ConfirmSubmit({
         className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl border border-forest/15 bg-cream p-0 text-ink shadow-xl backdrop:bg-ink/40 backdrop:backdrop-blur-sm"
       >
         <div className="p-6">
-          <h2
-            id="confirm-title"
-            className="font-display text-lg font-bold tracking-tight text-forest"
-          >
+          <h2 id="confirm-title" className="font-display text-lg font-bold tracking-tight text-forest">
             {title}
           </h2>
           <p className="mt-2 font-body text-sm leading-relaxed text-stone">{message}</p>

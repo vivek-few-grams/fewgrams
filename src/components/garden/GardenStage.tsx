@@ -198,10 +198,7 @@ export function GardenStage({
     const root = labelsRef.current;
     if (!scene || !root) return;
     for (const name of ANCHORS) {
-      scene.bindAnchor(
-        name,
-        root.querySelector<HTMLElement>(`[data-anchor="${name}"]`),
-      );
+      scene.bindAnchor(name, root.querySelector<HTMLElement>(`[data-anchor="${name}"]`));
     }
   }, [labelKeys, live, sceneRef]);
 

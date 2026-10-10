@@ -23,9 +23,7 @@ export async function Footer() {
           <div>
             <p className="font-display text-2xl font-bold tracking-tight">{brand.name}</p>
             <p className="mt-3 max-w-xs font-body text-sm text-mint">{b("subline")}</p>
-            <p className="mt-6 font-body text-sm text-mint/70">
-              {t("deliveryNote")}
-            </p>
+            <p className="mt-6 font-body text-sm text-mint/70">{t("deliveryNote")}</p>
           </div>
 
           <FooterCol title={t("shop")}>
@@ -82,11 +80,7 @@ export async function Footer() {
             <span className="group-hover:hidden">{t("b2bPrompt")}</span>
             <span className="hidden group-hover:inline">{t("b2bHover")}</span>
           </Link>
-          <p>
-            {brand.fssai
-              ? t("fssaiLicence", { number: brand.fssai })
-              : t("fssaiPending")}
-          </p>
+          <p>{brand.fssai ? t("fssaiLicence", { number: brand.fssai }) : t("fssaiPending")}</p>
         </div>
       </div>
     </footer>

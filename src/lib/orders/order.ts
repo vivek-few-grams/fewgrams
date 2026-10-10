@@ -245,9 +245,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * Without this it would be promised a day nobody can meet.
  */
 export function shiftForPaymentDay(deliveryDate: string, createdAt: Date, paidAt: Date): string {
-  const days = Math.round(
-    (Date.parse(istDateISO(paidAt)) - Date.parse(istDateISO(createdAt))) / DAY_MS,
-  );
+  const days = Math.round((Date.parse(istDateISO(paidAt)) - Date.parse(istDateISO(createdAt))) / DAY_MS);
   if (days <= 0) return deliveryDate;
   return new Date(Date.parse(deliveryDate) + days * DAY_MS).toISOString().slice(0, 10);
 }

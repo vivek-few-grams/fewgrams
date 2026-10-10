@@ -1,0 +1,32 @@
+# Checks on every pull request — SPEC §2.2. No AWS access: `cdk synth` runs
+# `next build` through cdk-nextjs's adapter and assembles every stack, which
+# is the same build the deploy ships, without deploying it.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npx tsc -p infra/tsconfig.json
+      - name: Synthesize (builds the app)
+        run: npx cdk synth --quiet
+        env:
+          # Synth needs an account number to address resources; nothing is deployed.
+          CDK_DEFAULT_ACCOUNT: "000000000000"
+          SITE_GATE: ci:ci

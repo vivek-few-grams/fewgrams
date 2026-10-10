@@ -80,7 +80,10 @@ export function PinStep({
     return (
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-forest/10 bg-sage/25 px-4 py-3 md:px-5">
         <p className="flex items-center gap-3 font-body text-sm text-forest">
-          <span aria-hidden className="flex size-7 shrink-0 items-center justify-center rounded-full bg-forest text-cream">
+          <span
+            aria-hidden
+            className="flex size-7 shrink-0 items-center justify-center rounded-full bg-forest text-cream"
+          >
             <Check size={14} strokeWidth={2.5} />
           </span>
           <span>
@@ -111,12 +114,7 @@ export function PinStep({
 
   /* Outside the area is not an input error, so it is not shown as one: it
      gets its own card below, with a way to order anyway. */
-  const error =
-    status === "invalid"
-        ? e("pincodeInvalid")
-        : status === "failed"
-          ? t("pinCheckFailed")
-          : null;
+  const error = status === "invalid" ? e("pincodeInvalid") : status === "failed" ? t("pinCheckFailed") : null;
 
   return (
     <form
@@ -231,12 +229,17 @@ function OutsideArea({
         <X size={16} strokeWidth={2} />
       </button>
       <p className="flex items-center gap-3 pr-8 font-display text-base font-semibold text-forest">
-        <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-terracotta text-cream shadow-sm">
+        <span
+          aria-hidden
+          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-terracotta text-cream shadow-sm"
+        >
           <Heart size={16} strokeWidth={2} fill="currentColor" />
         </span>
         {t("heading", { pincode })}
       </p>
-      <p className="mt-3 font-body text-sm leading-relaxed text-stone">{t(forSubscription ? "bodySubscription" : "body")}</p>
+      <p className="mt-3 font-body text-sm leading-relaxed text-stone">
+        {t(forSubscription ? "bodySubscription" : "body")}
+      </p>
       <div className="mt-4 flex flex-wrap gap-2.5">
         {whatsapp && (
           <a

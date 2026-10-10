@@ -1,9 +1,7 @@
 {
   "images": {
     "hero": "",
-    "gallery": [
-      ""
-    ]
+    "gallery": [""]
   },
   "en": {
     "name": "",
@@ -29,13 +27,8 @@
       }
     ],
     "specsNote": "",
-    "uses": [
-      "",
-      ""
-    ],
-    "cautions": [
-      ""
-    ],
+    "uses": ["", ""],
+    "cautions": [""],
     "faq": [
       {
         "question": "",
@@ -84,13 +77,8 @@
       }
     ],
     "specsNote": "",
-    "uses": [
-      "",
-      ""
-    ],
-    "cautions": [
-      ""
-    ],
+    "uses": ["", ""],
+    "cautions": [""],
     "faq": [
       {
         "question": "",

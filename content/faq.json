@@ -29,33 +29,15 @@
     },
     {
       "key": "plans",
-      "questions": [
-        "plan-works",
-        "plan-contents",
-        "first-box",
-        "choose-varieties",
-        "renewal",
-        "plan-area"
-      ]
+      "questions": ["plan-works", "plan-contents", "first-box", "choose-varieties", "renewal", "plan-area"]
     },
     {
       "key": "ordering",
-      "questions": [
-        "account",
-        "payment",
-        "confirmed",
-        "track-order",
-        "change-order"
-      ]
+      "questions": ["account", "payment", "confirmed", "track-order", "change-order"]
     },
     {
       "key": "growing",
-      "questions": [
-        "seed-packs",
-        "seed-dispatch",
-        "trays-media-dispatch",
-        "racks"
-      ]
+      "questions": ["seed-packs", "seed-dispatch", "trays-media-dispatch", "racks"]
     }
   ],
   "en": {
@@ -236,9 +218,7 @@
       },
       "track-order": {
         "question": "Where can I see my orders?",
-        "answer": [
-          "Under Account → Orders. Every order is listed there with its delivery date and receipt."
-        ]
+        "answer": ["Under Account → Orders. Every order is listed there with its delivery date and receipt."]
       },
       "change-order": {
         "question": "Can I change or cancel an order?",

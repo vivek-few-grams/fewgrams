@@ -30,9 +30,7 @@ import { StoryBook } from "@/components/story/StoryBook";
  * of them is in DynamoDB: nothing on this page is a number the business
  * tunes, so there is nothing for a row to hold and no admin screen to build.
  */
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/how-we-grow">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/how-we-grow">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "story" });
   return {
@@ -42,9 +40,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function HowWeGrowPage({
-  params,
-}: PageProps<"/[locale]/how-we-grow">) {
+export default async function HowWeGrowPage({ params }: PageProps<"/[locale]/how-we-grow">) {
   const { locale } = await params;
   setRequestLocale(locale);
 

@@ -63,7 +63,12 @@ describe("skip, pause, resume, cancel — admin, 27 Sep 2026", () => {
 
   it("skip moves the box to the Saturday after the last, on that Saturday's rotation week", () => {
     const next = skipDelivery(sub, "2026-10-17", at("2026-10-12"))!;
-    expect(next.deliveries.map((d) => d.date)).toEqual(["2026-10-10", "2026-10-24", "2026-10-31", "2026-11-07"]);
+    expect(next.deliveries.map((d) => d.date)).toEqual([
+      "2026-10-10",
+      "2026-10-24",
+      "2026-10-31",
+      "2026-11-07",
+    ]);
     // 7 Nov is four weeks after the 10 Oct anchor: week 1 again.
     expect(next.deliveries.at(-1)!.week).toBe(1);
     expect(next.skipped).toEqual(["2026-10-17"]);

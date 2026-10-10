@@ -32,9 +32,12 @@ describe("seedMaxUnits — the shelf is the limit (the owner, 25 Sep 2026)", () 
 
   /* A bad stock figure must never allow an order: that would sell seed that
      may not exist. */
-  it.each([NaN, Infinity, -Infinity, -100, undefined as unknown as number])("reads %p as nothing held", (bad) => {
-    expect(seedMaxUnits(bad)).toBe(0);
-  });
+  it.each([NaN, Infinity, -Infinity, -100, undefined as unknown as number])(
+    "reads %p as nothing held",
+    (bad) => {
+      expect(seedMaxUnits(bad)).toBe(0);
+    },
+  );
 });
 
 describe("seedSoldOut", () => {

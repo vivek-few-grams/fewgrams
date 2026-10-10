@@ -43,7 +43,11 @@ export function PaymentConfirming({ title, body }: { title: string; body: string
   }, []);
 
   return createPortal(
-    <div role="status" aria-live="assertive" className="fixed inset-0 z-[90] grid place-items-center bg-cream px-6">
+    <div
+      role="status"
+      aria-live="assertive"
+      className="fixed inset-0 z-[90] grid place-items-center bg-cream px-6"
+    >
       <div className="flex max-w-sm flex-col items-center text-center">
         <span className="grid size-56 place-items-center rounded-full bg-sage/20">
           <svg aria-hidden viewBox="20 -8 120 92" className="confirm-tray w-44" focusable="false">

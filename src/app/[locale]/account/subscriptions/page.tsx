@@ -85,7 +85,9 @@ export default async function SubscriptionsPage({
                 <p className="font-body text-[11px] uppercase tracking-widest text-stone">
                   {t("week", { n: d.week })}
                 </p>
-                <p className={`mt-0.5 font-body text-sm font-semibold ${past ? "text-stone" : "text-forest"}`}>
+                <p
+                  className={`mt-0.5 font-body text-sm font-semibold ${past ? "text-stone" : "text-forest"}`}
+                >
                   {formatDeliveryDate(fromIstDateISO(d.date), dateLocale)}
                 </p>
                 {past && <p className="font-body text-xs text-stone">{t("delivered")}</p>}
@@ -129,7 +131,9 @@ export default async function SubscriptionsPage({
           </p>
           <p className="mt-1 text-cream/80">
             {landed.status === "active" && landed.deliveries[0]
-              ? t("paidBody", { date: formatDeliveryDate(fromIstDateISO(landed.deliveries[0].date), dateLocale) })
+              ? t("paidBody", {
+                  date: formatDeliveryDate(fromIstDateISO(landed.deliveries[0].date), dateLocale),
+                })
               : t("confirmingBody")}
           </p>
         </div>

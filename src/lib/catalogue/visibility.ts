@@ -39,10 +39,7 @@ export async function enabledCategories(): Promise<Category[]> {
  * serve: the category's own list page, its detail page, and (for racks and
  * trays) the range/model pages underneath it.
  */
-export async function guardProductTypeEnabled(
-  type: ProductType,
-  locale: string,
-): Promise<void> {
+export async function guardProductTypeEnabled(type: ProductType, locale: string): Promise<void> {
   if (!(await isProductTypeEnabled(type))) {
     redirect({ href: "/shop", locale });
   }

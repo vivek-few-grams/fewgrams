@@ -92,29 +92,19 @@ export function VarietyMultiSelect({
     /* Matches the display name and the key, normalising the query the same way
        a key is, so "Red Amaranth" finds `red-amaranth`. */
     const asKey = sanitiseKey(q);
-    return choices.filter(
-      (c) => c.name.toLowerCase().includes(q) || c.key.includes(asKey),
-    );
+    return choices.filter((c) => c.name.toLowerCase().includes(q) || c.key.includes(asKey));
   }, [choices, query]);
 
   const picked = new Set(selected);
   const toggle = (key: string) =>
-    setSelected((current) =>
-      current.includes(key) ? current.filter((k) => k !== key) : [...current, key],
-    );
+    setSelected((current) => (current.includes(key) ? current.filter((k) => k !== key) : [...current, key]));
 
   /* The summary names what is in the week rather than counting it, because
      "Mustard, Red Amaranthus" is the thing being decided and "2 varieties" is
      not. It falls back to the count once the list would no longer fit. */
-  const names = selected
-    .map((key) => choices.find((c) => c.key === key)?.name ?? key)
-    .filter(Boolean);
+  const names = selected.map((key) => choices.find((c) => c.key === key)?.name ?? key).filter(Boolean);
   const summary =
-    names.length === 0
-      ? texts.none
-      : names.length <= 2
-        ? names.join(", ")
-        : texts.summary(names.length);
+    names.length === 0 ? texts.none : names.length <= 2 ? names.join(", ") : texts.summary(names.length);
 
   return (
     <div ref={wrapper} className="relative">
@@ -168,9 +158,7 @@ export function VarietyMultiSelect({
 
           <ul className="max-h-56 overflow-y-auto p-1">
             {shown.length === 0 ? (
-              <li className="px-2 py-3 font-body text-xs text-stone">
-                {texts.noMatch(query.trim())}
-              </li>
+              <li className="px-2 py-3 font-body text-xs text-stone">{texts.noMatch(query.trim())}</li>
             ) : (
               shown.map((choice) => (
                 <li key={choice.key}>

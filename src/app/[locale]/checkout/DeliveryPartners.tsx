@@ -51,7 +51,13 @@ export function DeliveryPartners({
   /** Null while scanning. */
   scan: DeliveryScan | null;
   /** The step heading, rendered by `PayForm` so the numbering matches. */
-  heading: (props: { id: string; n: number; done: boolean; muted: boolean; children: ReactNode }) => ReactNode;
+  heading: (props: {
+    id: string;
+    n: number;
+    done: boolean;
+    muted: boolean;
+    children: ReactNode;
+  }) => ReactNode;
 }) {
   const t = useTranslations("checkout");
   const tc = useTranslations("cart");
@@ -74,7 +80,12 @@ export function DeliveryPartners({
       ) : scan === null ? (
         <div className="mt-4">
           <p className="flex items-center gap-2 font-body text-sm font-semibold text-forest">
-            <Radar aria-hidden size={16} strokeWidth={1.75} className="motion-safe:animate-spin [animation-duration:2.4s]" />
+            <Radar
+              aria-hidden
+              size={16}
+              strokeWidth={1.75}
+              className="motion-safe:animate-spin [animation-duration:2.4s]"
+            />
             {t("scanning")}
           </p>
           <p className="mt-1 font-body text-xs text-stone">{t("scanningBody")}</p>
@@ -154,12 +165,19 @@ export function DeliveryPartners({
               {split && <ParcelHeading n={1} items={scan.ownRun.items} />}
               <div className="flex items-center justify-between gap-3 rounded-xl border border-l-4 border-forest/10 border-l-sage bg-cream px-4 py-3 shadow-sm">
                 <span className="flex items-start gap-3">
-                  <span aria-hidden className="grid size-9 shrink-0 place-items-center rounded-full bg-forest text-cream">
+                  <span
+                    aria-hidden
+                    className="grid size-9 shrink-0 place-items-center rounded-full bg-forest text-cream"
+                  >
                     <Bike size={16} strokeWidth={1.75} />
                   </span>
                   <span>
-                    <span className="block font-body text-sm font-semibold text-forest">{t("ownRunTitle")}</span>
-                    <span className="mt-0.5 block font-body text-xs leading-relaxed text-stone">{t("ownRunBody")}</span>
+                    <span className="block font-body text-sm font-semibold text-forest">
+                      {t("ownRunTitle")}
+                    </span>
+                    <span className="mt-0.5 block font-body text-xs leading-relaxed text-stone">
+                      {t("ownRunBody")}
+                    </span>
                   </span>
                 </span>
                 <span className="shrink-0 font-display text-base font-bold tabular-nums text-forest">
@@ -178,7 +196,10 @@ export function DeliveryPartners({
           ))}
         </div>
       ) : scan.operatorNote ? (
-        <div role="status" className="mt-4 rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta">
+        <div
+          role="status"
+          className="mt-4 rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta"
+        >
           <p>{scan.operatorNote.body}</p>
           <Link
             href="/admin/delivery"
@@ -188,7 +209,10 @@ export function DeliveryPartners({
           </Link>
         </div>
       ) : (
-        <p role="status" className="mt-4 rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta">
+        <p
+          role="status"
+          className="mt-4 rounded-xl bg-terracotta/[0.07] p-4 font-body text-sm text-terracotta"
+        >
           {t("deliveryUnavailableBody")}
         </p>
       )}
@@ -266,7 +290,9 @@ function OptionBody({ option: o, charge, free }: { option: Option; charge: numbe
       <CourierLogo courier={o.courier} />
       <span className="min-w-0 flex-1">
         <span className="block font-body text-sm font-semibold text-forest">
-          {o.carrier ? t("via", { carrier: o.carrier, partner: t(`partners.${o.courier}`) }) : t(`partners.${o.courier}`)}
+          {o.carrier
+            ? t("via", { carrier: o.carrier, partner: t(`partners.${o.courier}`) })
+            : t(`partners.${o.courier}`)}
         </span>
         {o.arrives && (
           <span className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">

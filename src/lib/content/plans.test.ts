@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  getPlanContent,
-  listPlanKeys,
-  resolvePlanText,
-  type PlanContentFile,
-} from "./plans";
+import { getPlanContent, listPlanKeys, resolvePlanText, type PlanContentFile } from "./plans";
 
 /**
  * The plan content loader — SPEC §4.3 / §4.4.
@@ -53,10 +48,7 @@ describe("resolvePlanText", () => {
      they would render as blank space on the card, which is worse than English
      because nothing on screen says anything is missing. */
   it("treats blank and empty values as missing", () => {
-    const text = resolvePlanText(
-      { en: file.en, kn: { name: "   ", tagline: "", highlights: [] } },
-      "kn",
-    );
+    const text = resolvePlanText({ en: file.en, kn: { name: "   ", tagline: "", highlights: [] } }, "kn");
     expect(text.name).toBe("Essential");
     expect(text.tagline).toBe("The everyday greens.");
     expect(text.highlights).toEqual(file.en.highlights);

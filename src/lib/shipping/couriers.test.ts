@@ -25,9 +25,27 @@ const SR_TOKEN = { token: "sr-tok" };
 const SR_COMPANIES = {
   data: {
     available_courier_companies: [
-      { courier_company_id: 55, courier_name: "Blue Dart Surface", rate: 93.96, estimated_delivery_days: "7", charge_weight: 0.5 },
-      { courier_company_id: 43, courier_name: "Xpressbees Surface 2kg", rate: 65.72, estimated_delivery_days: "5", charge_weight: 0.5 },
-      { courier_company_id: 44, courier_name: "Xpressbees Surface", rate: 70.1, estimated_delivery_days: "5", charge_weight: 0.5 },
+      {
+        courier_company_id: 55,
+        courier_name: "Blue Dart Surface",
+        rate: 93.96,
+        estimated_delivery_days: "7",
+        charge_weight: 0.5,
+      },
+      {
+        courier_company_id: 43,
+        courier_name: "Xpressbees Surface 2kg",
+        rate: 65.72,
+        estimated_delivery_days: "5",
+        charge_weight: 0.5,
+      },
+      {
+        courier_company_id: 44,
+        courier_name: "Xpressbees Surface",
+        rate: 70.1,
+        estimated_delivery_days: "5",
+        charge_weight: 0.5,
+      },
       { courier_company_id: 99, courier_name: "Blocked Air", rate: 10, blocked: 1 },
     ],
   },
@@ -71,7 +89,13 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-const INPUT = { originPin: "560001", destinationPin: "110001", grams: 500, speed: "surface" as const, value: 400 };
+const INPUT = {
+  originPin: "560001",
+  destinationPin: "110001",
+  grams: 500,
+  speed: "surface" as const,
+  value: 400,
+};
 
 describe("courier dates", () => {
   /* The owner's example, 24 Sep 2026: seed ordered on the 24th is ready off
@@ -103,13 +127,32 @@ describe("Ekart", () => {
     const f = stubFetchSequence({ body: EKART_TOKEN }, { body: EKART_500G });
     const [o] = await new EkartProvider("EKART_x", "u@x.in", "pw").options(INPUT);
 
-    expect(String(f.mock.calls[0]![0])).toBe("https://app.elite.ekartlogistics.in/integrations/v2/auth/token/EKART_x");
+    expect(String(f.mock.calls[0]![0])).toBe(
+      "https://app.elite.ekartlogistics.in/integrations/v2/auth/token/EKART_x",
+    );
     expect(String(f.mock.calls[1]![0])).toBe("https://app.elite.ekartlogistics.in/data/v3/serviceability");
     const sent = JSON.parse(String(f.mock.calls[1]![1]!.body));
-    expect(sent).toMatchObject({ pickupPincode: "560001", dropPincode: "110001", weight: "500", paymentType: "Prepaid", serviceType: "SURFACE", invoiceAmount: "400" });
+    expect(sent).toMatchObject({
+      pickupPincode: "560001",
+      dropPincode: "110001",
+      weight: "500",
+      paymentType: "Prepaid",
+      serviceType: "SURFACE",
+      invoiceAmount: "400",
+    });
     expect(new Headers(f.mock.calls[1]![1]!.headers).get("authorization")).toBe("Bearer ek-tok");
     /* The later of Ekart's two days, so the date promised is never its best case. */
-    expect(o).toEqual({ id: "ekart", courier: "ekart", carrier: null, serviceId: null, total: 106.2, beforeTax: 90, chargedGrams: 500, zone: "", days: 5 });
+    expect(o).toEqual({
+      id: "ekart",
+      courier: "ekart",
+      carrier: null,
+      serviceId: null,
+      total: 106.2,
+      beforeTax: 90,
+      chargedGrams: 500,
+      zone: "",
+      days: 5,
+    });
   });
 
   it("reuses its token for the next quote", async () => {
@@ -121,7 +164,10 @@ describe("Ekart", () => {
   });
 
   it("treats a quote with no total as a refusal, never as free", async () => {
-    stubFetchSequence({ body: EKART_TOKEN }, { body: [{ ...EKART_500G[0], forwardDeliveredCharges: { totalForwardDeliveredEstimate: "0.00" } }] });
+    stubFetchSequence(
+      { body: EKART_TOKEN },
+      { body: [{ ...EKART_500G[0], forwardDeliveredCharges: { totalForwardDeliveredEstimate: "0.00" } }] },
+    );
     await expect(new EkartProvider("c", "u", "p").options(INPUT)).rejects.toThrow(/no price/);
   });
 
@@ -201,7 +247,10 @@ describe("Velocity", () => {
 
   it("throws when only air carriers answer", async () => {
     stubFetchSequence({
-      body: { ...VEL_RATES, result: { ...VEL_RATES.result, serviceable_couriers: [VEL_COURIER("A", "Bluedart Air", 30, "air")] } },
+      body: {
+        ...VEL_RATES,
+        result: { ...VEL_RATES.result, serviceable_couriers: [VEL_COURIER("A", "Bluedart Air", 30, "air")] },
+      },
     });
     await expect(new VelocityProvider("key").options(INPUT)).rejects.toThrow(/no carrier/);
   });
@@ -249,7 +298,8 @@ describe("shippingProviders()", () => {
   });
 
   it("is empty with nothing configured", () => {
-    for (const k of ["DELHIVERY_API_TOKEN", "EKART_CLIENT_ID", "SHIPROCKET_EMAIL", "VELOCITY_API_KEY"]) vi.stubEnv(k, "");
+    for (const k of ["DELHIVERY_API_TOKEN", "EKART_CLIENT_ID", "SHIPROCKET_EMAIL", "VELOCITY_API_KEY"])
+      vi.stubEnv(k, "");
     expect(shippingProviders()).toEqual([]);
   });
 });

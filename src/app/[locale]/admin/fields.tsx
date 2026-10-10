@@ -48,16 +48,10 @@ export function NumberField({
 
   return (
     <label className="block">
-      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
-        {label}
-      </span>
+      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">{label}</span>
       {field}
-      {hint && !error && (
-        <span className="mt-1 block font-body text-[11px] text-stone">{hint}</span>
-      )}
-      {error && (
-        <span className="mt-1 block font-body text-[11px] text-terracotta">{error}</span>
-      )}
+      {hint && !error && <span className="mt-1 block font-body text-[11px] text-stone">{hint}</span>}
+      {error && <span className="mt-1 block font-body text-[11px] text-terracotta">{error}</span>}
     </label>
   );
 }
@@ -122,16 +116,10 @@ export function TextField({
 
   return (
     <label className="block">
-      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
-        {label}
-      </span>
+      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">{label}</span>
       {field}
-      {hint && !error && (
-        <span className="mt-1 block font-body text-[11px] text-stone">{hint}</span>
-      )}
-      {error && (
-        <span className="mt-1 block font-body text-[11px] text-terracotta">{error}</span>
-      )}
+      {hint && !error && <span className="mt-1 block font-body text-[11px] text-stone">{hint}</span>}
+      {error && <span className="mt-1 block font-body text-[11px] text-terracotta">{error}</span>}
     </label>
   );
 }
@@ -198,16 +186,10 @@ export function SelectField({
 
   return (
     <label className="block">
-      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
-        {label}
-      </span>
+      <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">{label}</span>
       {field}
-      {hint && !error && (
-        <span className="mt-1 block font-body text-[11px] text-stone">{hint}</span>
-      )}
-      {error && (
-        <span className="mt-1 block font-body text-[11px] text-terracotta">{error}</span>
-      )}
+      {hint && !error && <span className="mt-1 block font-body text-[11px] text-stone">{hint}</span>}
+      {error && <span className="mt-1 block font-body text-[11px] text-terracotta">{error}</span>}
     </label>
   );
 }

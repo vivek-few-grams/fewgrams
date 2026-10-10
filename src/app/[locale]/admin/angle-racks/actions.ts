@@ -2,12 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
-import {
-  angleRackCost,
-  retailPrice,
-  shelvesForHeight,
-  type RateCard,
-} from "@/lib/racks/pricing";
+import { angleRackCost, retailPrice, shelvesForHeight, type RateCard } from "@/lib/racks/pricing";
 import {
   deleteAngleRackModel,
   deleteFrameSize,
@@ -144,9 +139,7 @@ function validateConfig(
   return { ok: true };
 }
 
-function readConfig(
-  fd: FormData,
-): { ok: true; value: AngleRackConfig } | { ok: false; state: FormState } {
+function readConfig(fd: FormData): { ok: true; value: AngleRackConfig } | { ok: false; state: FormState } {
   const heightFt = money(fd, "heightFt");
   if (heightFt === null) return { ok: false, state: err("dimensionInvalid", "heightFt") };
 
@@ -165,10 +158,7 @@ function readConfig(
 
 function sameConfig(a: AngleRackConfig, b: AngleRackConfig): boolean {
   return (
-    a.heightFt === b.heightFt &&
-    a.shelves === b.shelves &&
-    a.frameId === b.frameId &&
-    a.angleId === b.angleId
+    a.heightFt === b.heightFt && a.shelves === b.shelves && a.frameId === b.frameId && a.angleId === b.angleId
   );
 }
 
@@ -186,8 +176,7 @@ export async function addAngleRack(_prev: FormState, fd: FormData): Promise<Form
   if (!valid.ok) return valid.state;
 
   const existing = await listAngleRackModels();
-  if (existing.some((m) => sameConfig(m.config, read.value)))
-    return err("duplicateRack", "frameId");
+  if (existing.some((m) => sameConfig(m.config, read.value))) return err("duplicateRack", "frameId");
 
   const cost = angleRackCost(read.value, card);
   if (!cost) return err("notFound");

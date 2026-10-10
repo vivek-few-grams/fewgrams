@@ -34,8 +34,8 @@ const QUOTE_2KG = [
 const TAT = { success: true, msg: "", data: { tat: 6, expected_delivery_date: "2026-09-30" } };
 
 function stubFetch(body: unknown, status = 200) {
-  const fetchMock = vi.fn<typeof fetch>(async () =>
-    new Response(typeof body === "string" ? body : JSON.stringify(body), { status }),
+  const fetchMock = vi.fn<typeof fetch>(
+    async () => new Response(typeof body === "string" ? body : JSON.stringify(body), { status }),
   );
   vi.stubGlobal("fetch", fetchMock);
   return fetchMock;
@@ -99,7 +99,12 @@ describe("serviceability", () => {
 describe("quote", () => {
   it("asks for a prepaid, delivered, surface price and reads the total", async () => {
     const f = stubFetch(QUOTE_2KG);
-    const q = await prod.quote({ originPin: "160017", destinationPin: "560001", grams: 2000, speed: "surface" });
+    const q = await prod.quote({
+      originPin: "160017",
+      destinationPin: "560001",
+      grams: 2000,
+      speed: "surface",
+    });
     expect(q).toEqual({ total: 211.36, beforeTax: 179.12, chargedGrams: 2000, zone: "D2" });
     const p = calledUrl(f).searchParams;
     expect(Object.fromEntries(p)).toEqual({

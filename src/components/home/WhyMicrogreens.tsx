@@ -136,7 +136,11 @@ export async function WhyMicrogreens({ growDays }: { growDays: GrowDayRange }) {
                 >
                   {/* A warning, not a cross (the owner, 26 Sep 2026): the left column
                       is what to watch out for, not a list of wrong answers. */}
-                  <TriangleAlert className="mt-px size-4 shrink-0 text-terracotta" strokeWidth={2} aria-hidden="true" />
+                  <TriangleAlert
+                    className="mt-px size-4 shrink-0 text-terracotta"
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  />
                   <span>
                     <span className="sr-only">{themName}: </span>
                     {t(`rows.${key}.them`)}
@@ -198,7 +202,17 @@ function Panel({ id, label, children }: { id: string; label: string; children: R
 }
 
 /** A full-grown leafy plant: broad leaves fanned out from one base. */
-function MaturePlant({ x, base, scale = 1, delay }: { x: number; base: number; scale?: number; delay: string }) {
+function MaturePlant({
+  x,
+  base,
+  scale = 1,
+  delay,
+}: {
+  x: number;
+  base: number;
+  scale?: number;
+  delay: string;
+}) {
   const leaves = [-62, -34, -10, 14, 38, 64];
   /* The shiver goes on an inner group: a CSS `transform` on the outer one
      would replace its `translate`/`scale` attribute rather than add to it. */
@@ -246,7 +260,16 @@ function FieldPanel({ label }: { label: string }) {
       <circle cx={290} cy={48} r={24} fill="var(--color-tan)" />
       <rect y={soil} width={PW} height={PH - soil} fill="var(--color-bark)" />
       {[236, 258].map((y) => (
-        <line key={y} x1={0} y1={y} x2={PW} y2={y} stroke="var(--color-tan)" strokeOpacity={0.35} strokeWidth={3} />
+        <line
+          key={y}
+          x1={0}
+          y1={y}
+          x2={PW}
+          y2={y}
+          stroke="var(--color-tan)"
+          strokeOpacity={0.35}
+          strokeWidth={3}
+        />
       ))}
       <MaturePlant x={70} base={soil + 6} scale={0.8} delay="0s" />
       <MaturePlant x={176} base={soil + 6} scale={0.95} delay="0.3s" />
@@ -255,8 +278,24 @@ function FieldPanel({ label }: { label: string }) {
       {/* The sprayer sweeps from its handle, and the mist and droplets go
           with it; each droplet streams out of the nozzle on its own delay. */}
       <g className="why-lance">
-        <line x1={-10} y1={34} x2={84} y2={70} stroke="var(--color-stone)" strokeWidth={6} strokeLinecap="round" />
-        <rect x={78} y={62} width={20} height={13} rx={3} transform="rotate(22 88 68)" fill="var(--color-ink)" />
+        <line
+          x1={-10}
+          y1={34}
+          x2={84}
+          y2={70}
+          stroke="var(--color-stone)"
+          strokeWidth={6}
+          strokeLinecap="round"
+        />
+        <rect
+          x={78}
+          y={62}
+          width={20}
+          height={13}
+          rx={3}
+          transform="rotate(22 88 68)"
+          fill="var(--color-ink)"
+        />
         <path
           className="why-mist"
           d="M 98 76 L 232 104 L 178 162 Z"
@@ -297,7 +336,14 @@ function FieldPanel({ label }: { label: string }) {
         [80, 180],
         [282, 178],
       ].map(([cx, cy]) => (
-        <circle key={`r-${cx}-${cy}`} cx={cx} cy={cy} r={3.6} fill="var(--color-terracotta)" fillOpacity={0.55} />
+        <circle
+          key={`r-${cx}-${cy}`}
+          cx={cx}
+          cy={cy}
+          r={3.6}
+          fill="var(--color-terracotta)"
+          fillOpacity={0.55}
+        />
       ))}
     </Panel>
   );
@@ -394,12 +440,23 @@ function TrayPanel({ label }: { label: string }) {
           (the owner, 26 Sep 2026), each on its own delay and speed so they never fall in a row.
           Drawn before the sprouts, so a photon lands behind the leaf it hits. */}
       {PHOTONS.map(([dx, delay, dur], i) => (
-        <g key={i} className="why-photon" style={{ animationDelay: `${delay}s`, animationDuration: `${dur}s` }}>
+        <g
+          key={i}
+          className="why-photon"
+          style={{ animationDelay: `${delay}s`, animationDuration: `${dur}s` }}
+        >
           <circle cx={left + dx} cy={56} r={1.1} fill="#eab308" />
         </g>
       ))}
       {/* Medium, then the sprouts in it, then the tray's lip over the roots. */}
-      <rect x={left + 6} y={trayTop - 10} width={right - left - 12} height={16} rx={4} fill="var(--color-bark)" />
+      <rect
+        x={left + 6}
+        y={trayTop - 10}
+        width={right - left - 12}
+        height={16}
+        rx={4}
+        fill="var(--color-bark)"
+      />
       {Array.from({ length: count }, (_, i) => (
         <Sprout key={i} i={i} x={left + 12 + i * step} base={trayTop - 4} />
       ))}

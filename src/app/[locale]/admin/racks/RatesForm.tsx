@@ -110,9 +110,7 @@ export function RatesForm({
      It is worth keeping even though `height − 1` is trivial arithmetic: it is
      the one place the screen states the rule, which is what stops someone
      wondering where the shelf count on a rack row came from. */
-  const caps = settings
-    ? settings.heightsFt.map((h) => ({ h, shelves: shelvesForHeight(h) }))
-    : [];
+  const caps = settings ? settings.heightsFt.map((h) => ({ h, shelves: shelvesForHeight(h) })) : [];
 
   const partsRow = shown("boltSetPrice") || shown("bushPrice") || shown("fixingWeights");
   const buildRow =
@@ -221,13 +219,19 @@ export function RatesForm({
               label={t("angleWidthCm")}
               name="angleWidthCm"
               defaultValue={settings?.angleWidthCm ?? ""}
-              error={errorFor("angleWidthCm") ?? (settings && settings.angleWidthCm === undefined ? t("packMissing") : undefined)}
+              error={
+                errorFor("angleWidthCm") ??
+                (settings && settings.angleWidthCm === undefined ? t("packMissing") : undefined)
+              }
             />
             <NumberField
               label={t("angleStackCm")}
               name="angleStackCm"
               defaultValue={settings?.angleStackCm ?? ""}
-              error={errorFor("angleStackCm") ?? (settings && settings.angleStackCm === undefined ? t("packMissing") : undefined)}
+              error={
+                errorFor("angleStackCm") ??
+                (settings && settings.angleStackCm === undefined ? t("packMissing") : undefined)
+              }
             />
           </div>
         </div>
@@ -236,10 +240,7 @@ export function RatesForm({
       {shown("heightsFt") && caps.length > 0 && (
         <ul className="flex flex-wrap gap-2">
           {caps.map(({ h, shelves }) => (
-            <li
-              key={h}
-              className="rounded-full bg-sage/50 px-3 py-1 font-body text-[11px] text-forest"
-            >
+            <li key={h} className="rounded-full bg-sage/50 px-3 py-1 font-body text-[11px] text-forest">
               {t("shelfCap", { height: h, shelves })}
             </li>
           ))}

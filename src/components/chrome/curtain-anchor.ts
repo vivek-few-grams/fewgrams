@@ -85,10 +85,7 @@ export type CurtainLocation = {
  * Returns the anchor rather than a boolean so a caller can read the href it
  * matched — useful when debugging why a link did or did not animate.
  */
-export function curtainAnchor(
-  event: CurtainClick,
-  here: CurtainLocation,
-): CurtainAnchor | null {
+export function curtainAnchor(event: CurtainClick, here: CurtainLocation): CurtainAnchor | null {
   if (event.defaultPrevented || event.button !== 0) return null;
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return null;
 

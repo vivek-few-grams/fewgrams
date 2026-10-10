@@ -134,9 +134,7 @@ describe("checkPlanFile", () => {
       en: { ...valid.en, description: "   ", highlights: ["only one"] },
     });
     expect(problems).toContain("bad: en.description must be a non-empty string");
-    expect(problems).toContain(
-      `bad: en.highlights needs at least ${MIN_HIGHLIGHTS} entries`,
-    );
+    expect(problems).toContain(`bad: en.highlights needs at least ${MIN_HIGHLIGHTS} entries`);
   });
 
   it("requires Kannada to carry every field English carries", () => {
@@ -164,7 +162,10 @@ describe("checkPlanFile", () => {
         ...valid,
         en: { ...valid.en, tagline: bad },
       });
-      expect(problems.some((p) => p.includes("states a price")), bad).toBe(true);
+      expect(
+        problems.some((p) => p.includes("states a price")),
+        bad,
+      ).toBe(true);
     }
     // Kannada too, in Kannada digits and its own currency word.
     const kn = checkPlanFile("bad", {
@@ -180,7 +181,10 @@ describe("checkPlanFile", () => {
         ...valid,
         en: { ...valid.en, highlights: [bad, "b", "c"] },
       });
-      expect(problems.some((p) => p.includes("states a gram weight")), bad).toBe(true);
+      expect(
+        problems.some((p) => p.includes("states a gram weight")),
+        bad,
+      ).toBe(true);
     }
     const kn = checkPlanFile("bad", {
       ...valid,

@@ -37,15 +37,16 @@ story-led scroll, generous whitespace.
 | Concern | Decision |
 |---|---|
 | Framework | Next.js (App Router), TypeScript |
-| Hosting | **AWS Amplify Hosting** for the Next.js app (AWS-built Next.js compute, not OpenNext) |
-| Infrastructure as code | **AWS CDK** for the three DynamoDB tables, S3, SES and IAM — see §2.2 |
+| Hosting | **Lambda behind CloudFront**, static files in S3, deployed by CDK (`cdklabs/cdk-nextjs`, `NextjsGlobalFunctions`) — see §2.2. Not Amplify. |
+| Infrastructure as code | **AWS CDK, end to end** — the site, the three DynamoDB tables, S3, SES, IAM, budgets — see §2.2 |
+| CI/CD | **GitHub Actions** → `cdk deploy`, signed in to AWS by OIDC (no stored keys) — see §2.2 |
 | Region | `ap-south-1` (Mumbai) |
 | Database | DynamoDB, **three tables** grouped by operational policy (§4, §4.6), with **ElectroDB** as the schema/key layer (§4.5) |
 | Images | S3 + CloudFront, served through `next/image` |
 | Auth | **Auth.js (NextAuth)** with DynamoDB adapter — Google SSO + email/password |
 | Payments | **Cashfree**, behind a provider-agnostic adapter (§9) |
 | Email | AWS SES (or Resend), behind a notification-provider interface (§11) |
-| DNS | Cloudflare DNS → Amplify custom domain (Amplify provisions and renews its own certificate). Set the Cloudflare record to **DNS-only** (grey cloud), not proxied — proxying breaks Amplify's domain validation and double-CDNs the site. |
+| DNS | Cloudflare DNS → CNAME to the CloudFront distribution. The certificate is ACM (free, auto-renewed), validated by a one-time CNAME added in Cloudflare. Set the records to **DNS-only** (grey cloud), not proxied — proxying double-CDNs the site and interferes with certificate validation. |
 | UI | Tailwind CSS + shadcn/ui |
 | i18n | `next-intl`. English default, Kannada secondary. UI strings in `messages/*.json` (§4.3) |
 | Fonts | Latin display/body pair + **Noto Sans Kannada** |
@@ -61,41 +62,100 @@ each sits behind one interface with a single adapter implementation today:
 
 Business logic never calls a vendor SDK directly.
 
-### 2.2 Hosting & IaC: Amplify Hosting + CDK
+### 2.2 Hosting & IaC: Lambda + CloudFront, CDK end to end
 
-**Decided: AWS Amplify Hosting for the app, AWS CDK for everything else.** No third-party
-deployment framework. Rationale:
+**Decided (the owner, 10 Oct 2026): the app runs on Lambda behind CloudFront, and one CDK app
+deploys everything.** Not Amplify. This reverses the 14 Sep choice of Amplify Hosting + CDK; the
+reasons are below so the next person does not reverse it back without them.
 
-- Amplify Hosting's Next.js compute is **AWS-built**, so this route does not depend on OpenNext at all.
-- CDK is AWS-native, Apache-2.0, stable, and already in use on this machine — no new tooling.
-- Managed hosting means git-push deploys, branch previews and CI without maintaining deployment
-  plumbing. The right trade for a solo operator.
+**Why not Amplify.** Its free tier lasts 12 months; after that it bills $0.15/GB served, server
+time and $0.01 per build minute. Lambda (1M requests + 400k GB-seconds) and CloudFront (1 TB +
+10M requests + 2M Function invocations) have **always-free** monthly allowances that do not
+expire. At launch traffic the site costs cents a month; at ~1,000 visitors a day roughly $2,
+against ~$50 on Amplify. Amplify's convenience — push-to-deploy, previews, one-click rollback —
+is replaced by the GitHub Actions workflow below.
 
-**Important distinction — Amplify Hosting is not Amplify Gen 2 backend.** Only the *hosting* product
-is being used. Amplify Gen 2's `defineData` provisions AppSync + GraphQL and generates DynamoDB
-tables to its own schema conventions, which would fight the hand-designed key model in §4,
-and it assumes Cognito rather than Auth.js. **Do not use it.** Amplify Hosting has no opinion about
-the data layer.
+**The construct: `cdklabs/cdk-nextjs`, `NextjsGlobalFunctions`.** Lambda for rendering and image
+optimisation, S3 for static files, CloudFront in front. It is built on **Next.js's official
+Deployment Adapter API** (stable since Next 16.2), not OpenNext — which was the objection to the
+CDK-construct route when Amplify was chosen. It requires **Next.js 16.3 or later**.
+
+- **It is labelled experimental.** Pin an exact version and upgrade it deliberately, reading the
+  release notes, the same way Next.js itself is upgraded.
+- **Use the `…Functions` constructs only.** The `…Containers` variants put Fargate behind an ALB
+  with a NAT Gateway — about $120–140 a month before any traffic.
+- Fallback if it stalls: `cdk-opennext` (OpenNext-based). Not `cdk-nextjs-standalone`, which has
+  no stated Next 16 support.
+
+**Layout.** One CDK app in `infra/`, deployed with `cdk deploy --all`:
+
+| Stack | Holds |
+|---|---|
+| Data | The three DynamoDB tables (on-demand; point-in-time recovery on `orders`) |
+| Web | The site; IAM grants to the tables, SES and Parameter Store; log retention |
+| Cert | The ACM certificate — **must be in `us-east-1`** for CloudFront. A certificate only, no data |
+| Ops | The GitHub OIDC deploy role; a zero-spend budget and a $10 budget alarm |
+
+**Everything else in `ap-south-1`, and this is a rule, not a latency preference.** CERT-In's
+Cyber Security Directions (28 Apr 2022, IT Act s.70B) apply to a body corporate, which under
+the IT Act includes a sole proprietorship. Their FAQ Q36: a service provider serving users in
+India must keep "records of financial transactions in Indian jurisdiction" — the `orders` table.
+With the database in India, a server elsewhere would pay the ocean round trip once per query.
+The US region was checked (10 Oct 2026) and saves under ₹10 a month at 1,000 visitors a day;
+Lambda, CloudFront and SES cost the same in both regions. Hyderabad (`ap-south-2`) costs the
+same as Mumbai and buys nothing.
+
+**Logs are kept 180 days.** CERT-In direction (iv). Set on every log group by the Web stack;
+do not shorten it to save money — storage is $0.03/GB-month.
+
+**No VPC.** DynamoDB, SES, S3 and Parameter Store are reached over AWS's public endpoints with
+IAM. A Lambda in a VPC needs a NAT Gateway to reach the internet (Razorpay, couriers) — about
+$45 a month in Mumbai, the classic surprise bill. Likewise no WAF ($5 + $1/rule), no Secrets
+Manager (Parameter Store standard tier is free), no Route 53 zone (DNS is Cloudflare).
+
+**CI/CD — GitHub Actions.** `ci.yml` on every pull request: `npm ci`, tests, lint, `cdk diff`.
+`deploy.yml` on push to `main` (or by its manual button): the same checks, then OIDC sign-in and
+`cdk deploy --all`, which builds the app, uploads static files, updates the Lambda and
+invalidates CloudFront. About 6–10 minutes. Rollback is `git revert` and push. Seed and fill
+scripts (`scripts/*-fill.mjs`) stay manual — CI never writes business data.
+
+**Cost of a deploy: effectively nil.** GitHub Free includes 2,000 Actions minutes a month for a
+private repo (~200 deploys); CloudFormation, the Lambda update and one `/*` invalidation (1,000
+paths a month free) cost nothing; the S3 uploads cost a fraction of a cent. CDK keeps every old
+Lambda bundle in its staging bucket, so run `cdk gc` or give that bucket a lifecycle rule.
+
+**While the site is private,** HTTP Basic Auth is checked at the edge, before Lambda runs. It has
+to be: behind a Function URL the viewer's `Authorization` header never reaches the app (Origin
+Access Control overwrites it to sign the request). cdk-nextjs already owns the one viewer-request
+function slot, so the check is prepended to its code (`infra/lib/site-gate.ts`, which fails synth
+if the construct's function changes shape). Synth refuses to run with neither `SITE_GATE` nor
+`SITE_PUBLIC=true` set, so a forgotten secret cannot publish the site.
+
+**Webhooks need a body hash.** CloudFront signs requests to the Function URL but does not hash the
+body, so a POST without `x-amz-content-sha256` gets a 403. The site's own pages get it from a
+fetch wrapper cdk-nextjs injects; Razorpay and Cashfree do not send it. A Lambda@Edge function on
+`/api/payments/*` only adds it (`infra/lib/webhook-signing.ts`) — fractions of a cent, never on a
+page view.
+
+**Runtime settings** are String parameters under `/fewgrams/prod/` in Parameter Store, resolved
+into the Lambda's environment at deploy time; the list is `RUNTIME_PARAMETERS` in
+`infra/lib/config.ts`. Every deploy re-reads them (CloudFormation would otherwise ignore an edited
+parameter). First-time setup, in order: `infra/README.md`.
 
 **How the app reaches data:** Next.js server actions and route handlers call DynamoDB **directly via
-the AWS SDK**. No AppSync, no API Gateway, no GraphQL layer.
-
-**Known costs of this choice, accepted:**
-- Two deploy surfaces — Amplify for the app, CDK for resources — so table names, bucket names and
-  the Amplify service role's IAM permissions must be wired across by hand. Export them as CDK
-  stack outputs and set them as Amplify environment variables.
-- Amplify's managed Next.js support has historically lagged new Next.js releases. Check Amplify's
-  supported version before upgrading Next.js, not after.
-- Amplify Hosting bills build minutes and data served once the introductory free tier lapses.
-  Plain CloudFront + Lambda (the CDK-only route) would be effectively free at this scale on
-  perpetual free tiers. Revisit if hosting cost becomes material.
+the AWS SDK**, with the Lambda's IAM role. No AppSync, no API Gateway, no GraphQL layer, no keys in
+environment variables.
 
 **Rejected alternatives, for the record:**
-- *CDK + OpenNext construct* — full control and near-zero cost, but you own the Next.js hosting
-  plumbing, and it still depends on OpenNext (MIT, maintained by the SST team).
+- *Amplify Hosting* — the original choice; see "Why not Amplify" above. (Amplify Gen 2's
+  `defineData` was never an option: it generates AppSync and its own table conventions, which
+  would fight the key model in §4, and assumes Cognito rather than Auth.js.)
 - *SST v3* — best developer experience via resource linking and `sst dev`, but a Pulumi-based
-  third-party framework sitting outside the CDK/SAM tooling already in use, and carrying a
+  third-party framework sitting outside the CDK tooling already in use, and carrying a
   relicensing risk (MIT today; HashiCorp's 2023 Terraform move to BSL is the precedent).
+- *Cloudflare Workers* — $5 a month minimum (the free plan's 10 ms CPU and 3 MiB bundle cannot
+  render this app), no `fs` for the `content/**` loaders, and every DynamoDB query leaves AWS.
+- *A VPS (Lightsail, Hetzner)* — a flat $5–12 a month for a server to patch, against ~$0.
 
 ### 2.3 Repository & two-GitHub-account setup
 
@@ -1595,7 +1655,10 @@ grams held — §22.3, replaced `/admin/products`) · `/admin/trays` (pack price
 §23.4) · `/admin/racks`, `/admin/angle-racks`,
 `/admin/pipe-racks` (the three computed rack ranges, §19–§21) · `/admin/cycles` (list, lock a cycle) · `/admin/sow-plan/[sowDate]` (the
 sow sheet) · `/admin/deliveries/[date]` (pick-pack, route, status) · `/admin/orders` ·
-`/admin/orders/[id]` · `/admin/subscriptions` · `/admin/customers` · `/admin/coupons` ·
+`/admin/orders/[id]` · `/admin/subscriptions` · `/admin/customers` · `/admin/sowing` (the sowing
+log — built 10 Oct 2026: a dated card per sowing day, seed grams and trays per variety, harvest
+grams recorded against each row later, and yield per variety as harvest g ÷ seed g; `SOWING#<id>`
+in the orders table, newest first on GSI1; logic in `src/lib/sowing/sowing.ts`; touches no stock) · `/admin/coupons` ·
 `/admin/sales` · `/admin/pincodes` · `/admin/payments` (reconciliation, refunds) · `/admin/reports` ·
 `/admin/settings` (brand, cutoff times, delivery rates)
 
@@ -1640,9 +1703,9 @@ Each phase is a session's worth of work and leaves something usable.
 
 Then:
 
-1. **Foundation** — CDK stack (DynamoDB table + GSIs, S3, SES, IAM) with stack outputs wired into
-   Amplify environment variables; Amplify Hosting app connected to the repo; Auth.js with Google +
-   password, roles in middleware, Tailwind/shadcn, brand config file, Cloudflare → Amplify DNS, **`next-intl` with
+1. **Foundation** — CDK app (the site on Lambda + CloudFront, DynamoDB tables + GSIs, S3, SES,
+   IAM) with a GitHub Actions deploy (§2.2); Auth.js with Google +
+   password, roles in middleware, Tailwind/shadcn, brand config file, Cloudflare → CloudFront DNS, **`next-intl` with
    locale routing and the `LocalisedString` helper wired in from day one** (cheap now, a migration
    later).
 2. **Catalogue (admin first)** — `/admin/varieties` with yield and grow days, `/admin/seeds` with
@@ -1713,10 +1776,10 @@ Then:
   only arises if you later sell 14-day varieties to non-subscribers.
 - **Trademark work never run** on any brand name, including Fewgrams: Class 31 search at
   `tmrsearch.ipindia.gov.in`, MCA company-name check, and social handle availability.
-- **Amplify's Next.js version support** must be checked before any Next.js major upgrade. Pin the
-  version and verify Amplify supports it first.
-- **Amplify Hosting cost** is billed on build minutes and data served. Harmless at launch; if it
-  becomes material, the CDK + OpenNext route is effectively free at this scale (§2.2).
+- **`cdk-nextjs` support must be checked before any Next.js upgrade.** The construct is
+  experimental and pinned (§2.2); confirm its release supports the new Next.js version first.
+- **Free allowances are per AWS account.** Keep Fewgrams in its own account so nothing else draws
+  on its Lambda and CloudFront allowances, and keep the zero-spend budget alarm on (§2.2).
 - **Mixed-cart delivery dates unresolved (§18.6).** Ad-hoc orders spanning 7-day and 14-day
   varieties are ready on different Saturdays. Needs a rule before the variety page is built.
 - **Ad-hoc vs subscription price gap not set (§18.6).** Without a deliberate gap, one-off 100 g

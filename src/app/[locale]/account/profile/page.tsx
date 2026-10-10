@@ -5,9 +5,7 @@ import { ProfileForm } from "./ProfileForm";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/account/profile">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/account/profile">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "account.profile" });
   return { title: t("title"), robots: { index: false, follow: false } };
@@ -20,9 +18,7 @@ export async function generateMetadata({
  * component means the saved values are in the served HTML, so the fields are
  * filled before hydration instead of flashing empty.
  */
-export default async function ProfilePage({
-  params,
-}: PageProps<"/[locale]/account/profile">) {
+export default async function ProfilePage({ params }: PageProps<"/[locale]/account/profile">) {
   const { locale } = await params;
   setRequestLocale(locale);
 

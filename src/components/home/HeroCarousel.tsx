@@ -134,7 +134,6 @@ export function HeroCarousel({
             />
           </div>
         ))}
-
       </div>
 
       {/* The cream panel, `md` and up only — on a phone the copy sits in its own

@@ -43,7 +43,8 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
   const state = subscriptionState(sub, now);
   const gateway = GATEWAY_LABEL[sub.provider];
   const date = (iso: string) => formatDeliveryDate(fromIstDateISO(iso));
-  const money = (n: number) => format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+  const money = (n: number) =>
+    format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 
   const changeable = new Set(changeableDeliveries(sub, now).map((d) => d.date));
   const canSkip = sub.status === "active";
@@ -66,7 +67,8 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
           </h1>
           <p className="mt-2 font-body text-sm text-forest">
             {t(`state.${state}`)}
-            {sub.paidAt && ` · ${t("detail.paidOn", { date: format.dateTime(new Date(sub.paidAt), { dateStyle: "medium" }) })}`}
+            {sub.paidAt &&
+              ` · ${t("detail.paidOn", { date: format.dateTime(new Date(sub.paidAt), { dateStyle: "medium" }) })}`}
           </p>
         </div>
         <div className="order-first flex flex-col items-start gap-3 md:order-none md:shrink-0 md:items-end">
@@ -115,7 +117,9 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
             )}
           </div>
           {canResume && (
-            <p className="font-body text-xs text-stone">{t("detail.resume.hint", { date: date(openDate) })}</p>
+            <p className="font-body text-xs text-stone">
+              {t("detail.resume.hint", { date: date(openDate) })}
+            </p>
           )}
         </div>
       </section>
@@ -136,16 +140,22 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
           <h2 className="font-display text-lg font-semibold text-forest">{t("detail.customerHeading")}</h2>
           <p className="mt-2 font-body text-sm text-forest">{sub.address.recipient}</p>
           <p className="font-body text-sm text-stone">
-            <a href={`tel:${sub.address.phone}`} className="hover:text-forest">{formatPhone(sub.address.phone)}</a>
+            <a href={`tel:${sub.address.phone}`} className="hover:text-forest">
+              {formatPhone(sub.address.phone)}
+            </a>
             {sub.email && (
               <>
                 {" · "}
-                <a href={`mailto:${sub.email}`} className="hover:text-forest">{sub.email}</a>
+                <a href={`mailto:${sub.email}`} className="hover:text-forest">
+                  {sub.email}
+                </a>
               </>
             )}
           </p>
           <p className="mt-1 font-body text-xs text-stone">
-            {[sub.address.line1, sub.address.line2, sub.address.landmark, sub.address.pincode].filter(Boolean).join(", ")}
+            {[sub.address.line1, sub.address.line2, sub.address.landmark, sub.address.pincode]
+              .filter(Boolean)
+              .join(", ")}
           </p>
           <Link
             href={`/admin/customers/${sub.userId}`}
@@ -169,7 +179,9 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
             <span>{t("detail.total")}</span>
             <span className="tabular-nums">{money(sub.total)}</span>
           </p>
-          <p className="mt-1 font-body text-xs text-stone">{t("boxesPerWeek", { count: boxesPerWeek(sub) })}</p>
+          <p className="mt-1 font-body text-xs text-stone">
+            {t("boxesPerWeek", { count: boxesPerWeek(sub) })}
+          </p>
         </section>
       </div>
 

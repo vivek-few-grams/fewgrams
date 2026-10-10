@@ -189,9 +189,7 @@ export class RazorpayProvider implements PaymentProvider {
     const status: ProviderOrderStatus = order.status === "paid" ? "paid" : "active";
     return {
       status,
-      attempts: payments
-        .map((p) => toAttempt(p, ref.orderId))
-        .filter((a): a is PaymentAttempt => a !== null),
+      attempts: payments.map((p) => toAttempt(p, ref.orderId)).filter((a): a is PaymentAttempt => a !== null),
     };
   }
 

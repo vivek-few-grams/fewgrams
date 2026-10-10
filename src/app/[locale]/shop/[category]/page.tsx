@@ -29,12 +29,9 @@ import { CategoryStrip } from "@/components/chrome/CategoryStrip";
  */
 export const dynamic = "force-dynamic";
 
-const isCategory = (v: string): v is Category =>
-  (CATEGORIES as readonly string[]).includes(v);
+const isCategory = (v: string): v is Category => (CATEGORIES as readonly string[]).includes(v);
 
-export async function generateMetadata({
-  params,
-}: PageProps<"/[locale]/shop/[category]">) {
+export async function generateMetadata({ params }: PageProps<"/[locale]/shop/[category]">) {
   const { locale, category } = await params;
   const t = await getTranslations({ locale, namespace: "common.categories" });
   const shop = await getTranslations({ locale, namespace: "shop" });
@@ -44,9 +41,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function CategoryPage({
-  params,
-}: PageProps<"/[locale]/shop/[category]">) {
+export default async function CategoryPage({ params }: PageProps<"/[locale]/shop/[category]">) {
   const { locale, category } = await params;
   setRequestLocale(locale);
 
@@ -92,9 +87,7 @@ export default async function CategoryPage({
         <ul className="mt-12 grid grid-cols-2 gap-5 md:grid-cols-4 md:gap-6">
           {products.map((p, i) => {
             const active = p.variants.filter((v) => v.active);
-            const from = active.length
-              ? Math.min(...active.map((v) => v.price))
-              : p.basePrice;
+            const from = active.length ? Math.min(...active.map((v) => v.price)) : p.basePrice;
             return (
               <li key={p.id}>
                 <div

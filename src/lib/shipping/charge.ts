@@ -95,7 +95,13 @@ export type DeliveryCharge =
   | { ok: false; reason: DeliveryFailure | "optionGone" };
 
 /** What checkout and the order hold for a line — enough to find its packing. */
-export type ChargeLine = { kind: CartKind; key: string; units: number; grams: number | null; lineTotal: number };
+export type ChargeLine = {
+  kind: CartKind;
+  key: string;
+  units: number;
+  grams: number | null;
+  lineTotal: number;
+};
 
 /** A tray's or a grow medium's six packing figures, or null until all six
  *  are measured. Both rows carry the same fields (SPEC §24). */
@@ -138,7 +144,9 @@ function rackPacking(r: SellableRack): RackPacking | null {
     return p.shelfCm === null ? null : { ...base, stack: { kind: "plates", shelfCm: p.shelfCm } };
   }
   if (p.kind === "pipes") {
-    return p.diameterCm === null ? null : { ...base, stack: { kind: "pipes", piecesFt: p.piecesFt, diameterCm: p.diameterCm } };
+    return p.diameterCm === null
+      ? null
+      : { ...base, stack: { kind: "pipes", piecesFt: p.piecesFt, diameterCm: p.diameterCm } };
   }
   if (p.widthCm === null || p.stackCm === null) return null;
   return { ...base, stack: { kind: "bundle", pieces: p.pieces, widthCm: p.widthCm, stackCm: p.stackCm } };
@@ -202,7 +210,13 @@ async function scanCouriers(originPin: string, destinationPin: string, grams: nu
   return scan;
 }
 
-async function askCouriers(key: string, originPin: string, destinationPin: string, grams: number, value: number) {
+async function askCouriers(
+  key: string,
+  originPin: string,
+  destinationPin: string,
+  grams: number,
+  value: number,
+) {
   const providers = shippingProviders();
   const settled = await Promise.allSettled(
     providers.map((p) => p.options({ originPin, destinationPin, grams, speed: "surface", value })),
@@ -210,7 +224,10 @@ async function askCouriers(key: string, originPin: string, destinationPin: strin
   const options = settled
     .flatMap((r, i) => {
       if (r.status === "fulfilled") return r.value;
-      console.error(`[shipping] ${providers[i].name} gave no price to ${destinationPin} for ${grams} g`, r.reason);
+      console.error(
+        `[shipping] ${providers[i].name} gave no price to ${destinationPin} for ${grams} g`,
+        r.reason,
+      );
       return [];
     })
     .sort((a, b) => a.total - b.total);
@@ -278,15 +295,27 @@ async function planFor(
      ask for a declared value. */
   const scanned = await Promise.all(
     parcels.map((p) =>
-      scanCouriers(p.origin.pincode, pincode, p.grams, p.lines.reduce((sum, l) => sum + l.lineTotal, 0)),
+      scanCouriers(
+        p.origin.pincode,
+        pincode,
+        p.grams,
+        p.lines.reduce((sum, l) => sum + l.lineTotal, 0),
+      ),
     ),
   );
   if (scanned.some((found) => found.length === 0)) return { ok: false, reason: "unavailable" };
 
   return {
     ok: true,
-    ownRun: own ? { amount: settings.greenRunFee, origin: origins.get(HOME_ORIGIN)!, lines: own.lines } : null,
-    parcels: parcels.map((p, i) => ({ id: p.id, origin: p.origin, lines: p.lines, options: scanned[i].map(toOption) })),
+    ownRun: own
+      ? { amount: settings.greenRunFee, origin: origins.get(HOME_ORIGIN)!, lines: own.lines }
+      : null,
+    parcels: parcels.map((p, i) => ({
+      id: p.id,
+      origin: p.origin,
+      lines: p.lines,
+      options: scanned[i].map(toOption),
+    })),
   };
 }
 
@@ -312,10 +341,7 @@ function toOption(o: CourierOption): DeliveryOption {
  * What a plan costs the customer, with the cheapest option on every parcel
  * — the courier checkout books (SPEC §7.4). `goods` is the lines' total.
  */
-export function planDelivery(
-  plan: Extract<DeliveryPlan, { ok: true }>,
-  goods: number,
-): CustomerDelivery {
+export function planDelivery(plan: Extract<DeliveryPlan, { ok: true }>, goods: number): CustomerDelivery {
   return customerDelivery(
     goods,
     plan.ownRun?.amount ?? null,

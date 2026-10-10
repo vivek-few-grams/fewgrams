@@ -50,10 +50,7 @@ const ACCOUNT_STATE = {
     dot: "bg-sage",
     key: "account",
   },
-} as const satisfies Record<
-  Role,
-  { href: string; tone: string; dot: string; key: string }
->;
+} as const satisfies Record<Role, { href: string; tone: string; dot: string; key: string }>;
 
 export async function Header({
   actor,
@@ -135,11 +132,7 @@ export async function Header({
 
           <Link
             href="/cart"
-            aria-label={
-              cartCount > 0
-                ? t("cartWithCount", { count: cartCount })
-                : t("cart")
-            }
+            aria-label={cartCount > 0 ? t("cartWithCount", { count: cartCount }) : t("cart")}
             className="relative text-forest hover:text-stone"
           >
             <ShoppingBag size={20} strokeWidth={1.5} />

@@ -63,12 +63,7 @@ describe("timezone independence", () => {
 describe("four-week schedule — SPEC §5.2", () => {
   it("returns four consecutive Saturdays", () => {
     const weeks = deliverySchedule(ist("2026-09-17T10:00:00"));
-    expect(weeks.map(fmt)).toEqual([
-      "2026-09-26",
-      "2026-10-03",
-      "2026-10-10",
-      "2026-10-17",
-    ]);
+    expect(weeks.map(fmt)).toEqual(["2026-09-26", "2026-10-03", "2026-10-10", "2026-10-17"]);
   });
 });
 
@@ -94,9 +89,7 @@ describe("display formatting", () => {
 
   it("formats in IST even when the process clock is elsewhere", () => {
     // 23:00 UTC on the 25th is already 04:30 IST on the 26th.
-    expect(formatDeliveryDate(new Date("2026-09-25T23:00:00Z"))).toBe(
-      "Sat 26 Sept",
-    );
+    expect(formatDeliveryDate(new Date("2026-09-25T23:00:00Z"))).toBe("Sat 26 Sept");
   });
 });
 
@@ -155,9 +148,7 @@ describe("one-off orders sow next day, not Sunday — SPEC §18.6", () => {
     const slowest = latestDate([adhocReadyDate(7, now), adhocReadyDate(10, now)]);
     expect(fmt(slowest!)).toBe("2026-09-26");
     // Order of the list must not matter.
-    expect(fmt(latestDate([adhocReadyDate(10, now), adhocReadyDate(7, now)])!)).toBe(
-      "2026-09-26",
-    );
+    expect(fmt(latestDate([adhocReadyDate(10, now), adhocReadyDate(7, now)])!)).toBe("2026-09-26");
   });
 });
 

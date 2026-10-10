@@ -19,19 +19,17 @@ function toOrder(row: OrderRow): Order {
     userId: row.userId,
     email: row.email ?? null,
     status: row.status,
-    lines: row.lines.map(
-      (l): OrderLine => ({
-        kind: l.kind,
-        key: l.key,
-        name: l.name,
-        units: l.units,
-        unitPrice: l.unitPrice,
-        lineTotal: l.lineTotal,
-        grams: l.grams ?? null,
-        readyDate: l.readyDate,
-        sourcing: l.sourcing ?? null,
-      }),
-    ),
+    lines: row.lines.map((l): OrderLine => ({
+      kind: l.kind,
+      key: l.key,
+      name: l.name,
+      units: l.units,
+      unitPrice: l.unitPrice,
+      lineTotal: l.lineTotal,
+      grams: l.grams ?? null,
+      readyDate: l.readyDate,
+      sourcing: l.sourcing ?? null,
+    })),
     total: row.total,
     deliveryCharge: row.deliveryCharge ?? 0,
     deliveryMethod: row.deliveryMethod ?? null,
@@ -79,9 +77,7 @@ function toRow(o: Order) {
     deliveryCharge: o.deliveryCharge,
     ...(o.deliveryMethod ? { deliveryMethod: o.deliveryMethod } : {}),
     ...(o.shippingQuote ? { shippingQuote: o.shippingQuote } : {}),
-    ...(o.shipments.length > 0
-      ? { shipments: o.shipments.map(toShipmentRow) }
-      : {}),
+    ...(o.shipments.length > 0 ? { shipments: o.shipments.map(toShipmentRow) } : {}),
     deliveryDate: o.deliveryDate,
     address: o.address,
     locale: o.locale,
@@ -107,9 +103,7 @@ export async function getOrder(id: string): Promise<Order | null> {
 }
 
 export async function setProviderOrderId(id: string, providerOrderId: string): Promise<void> {
-  await OrderEntity.patch({ id })
-    .set({ providerOrderId, updatedAt: new Date().toISOString() })
-    .go();
+  await OrderEntity.patch({ id }).set({ providerOrderId, updatedAt: new Date().toISOString() }).go();
 }
 
 /**
@@ -182,11 +176,7 @@ export async function listPayments(orderId: string): Promise<StoredPayment[]> {
  * `pending_payment` is what puts the order into the sparse delivery-run and
  * customer-history indexes (see `OrderEntity`).
  */
-export async function markOrderPaid(
-  order: Order,
-  paidAt: string,
-  deliveryDate: string,
-): Promise<boolean> {
+export async function markOrderPaid(order: Order, paidAt: string, deliveryDate: string): Promise<boolean> {
   try {
     await OrderEntity.patch({ id: order.id })
       .set({
@@ -207,17 +197,13 @@ export async function markOrderPaid(
 }
 
 export async function setReceiptNo(id: string, receiptNo: number): Promise<void> {
-  await OrderEntity.patch({ id })
-    .set({ receiptNo, updatedAt: new Date().toISOString() })
-    .go();
+  await OrderEntity.patch({ id }).set({ receiptNo, updatedAt: new Date().toISOString() }).go();
 }
 
 /** The next number in a sequence, from an atomic `ADD`. The first call on a
  *  fresh table returns 1. */
 export async function nextSequence(name: string): Promise<number> {
-  const { data } = await CounterEntity.update({ name })
-    .add({ value: 1 })
-    .go({ response: "all_new" });
+  const { data } = await CounterEntity.update({ name }).add({ value: 1 }).go({ response: "all_new" });
   if (typeof data.value !== "number") throw new Error(`Counter ${name} returned no value`);
   return data.value;
 }
@@ -226,11 +212,7 @@ export async function nextSequence(name: string): Promise<number> {
  * Operator status move, conditional on the status still being `from` — two
  * admins pressing "picked" at once move it once.
  */
-export async function advanceOrderStatus(
-  order: Order,
-  from: OrderStatus,
-  to: OrderStatus,
-): Promise<boolean> {
+export async function advanceOrderStatus(order: Order, from: OrderStatus, to: OrderStatus): Promise<boolean> {
   try {
     await OrderEntity.patch({ id: order.id })
       .set({
@@ -249,7 +231,13 @@ export async function advanceOrderStatus(
   }
 }
 
-function toShipmentRow({ quote, trackingNumber, bookingStartedAt, booking, ...x }: Order["shipments"][number]) {
+function toShipmentRow({
+  quote,
+  trackingNumber,
+  bookingStartedAt,
+  booking,
+  ...x
+}: Order["shipments"][number]) {
   return {
     ...x,
     ...(quote ? { quote } : {}),
@@ -300,17 +288,13 @@ function summarise(o: Order): OrderSummary {
  * opened the payment screen.
  */
 export async function listOrdersForUser(userId: string): Promise<OrderSummary[]> {
-  const { data } = await OrderEntity.query
-    .byUser({ userId })
-    .go({ ...LIST_OPTS, order: "desc" });
+  const { data } = await OrderEntity.query.byUser({ userId }).go({ ...LIST_OPTS, order: "desc" });
   return data.map((row) => summarise(toOrder(row)));
 }
 
 /** The admin list for one status, newest first, from GSI2. */
 export async function listOrdersByStatus(status: OrderStatus): Promise<Order[]> {
-  const { data } = await OrderEntity.query
-    .byStatus({ status })
-    .go({ ...LIST_OPTS, order: "desc" });
+  const { data } = await OrderEntity.query.byStatus({ status }).go({ ...LIST_OPTS, order: "desc" });
   return data.map(toOrder);
 }
 

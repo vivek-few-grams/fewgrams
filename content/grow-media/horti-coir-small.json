@@ -1,9 +1,7 @@
 {
   "images": {
     "hero": "hero.webp",
-    "gallery": [
-      "on-bench.webp"
-    ]
+    "gallery": ["on-bench.webp"]
   },
   "en": {
     "name": "Horti-Coir cocopeat — 1 kg block",

@@ -88,9 +88,7 @@ export async function Process() {
         <h2 className="font-display text-[clamp(1.6rem,3.1vw,2.5rem)] font-bold leading-tight tracking-tight text-forest">
           {t("heading")}
         </h2>
-        <p className="shrink-0 font-display text-lg font-semibold text-forest lg:text-xl">
-          {t("aside")}
-        </p>
+        <p className="shrink-0 font-display text-lg font-semibold text-forest lg:text-xl">{t("aside")}</p>
       </div>
 
       <Reveal>
@@ -135,9 +133,7 @@ export async function Process() {
                     do, it is the four above happening again, and numbering it
                     invited the reader to look for a fifth step. */}
                 {!s.marker && (
-                  <span className="reveal-rise font-body text-xs tabular-nums text-stone">
-                    0{i + 1}
-                  </span>
+                  <span className="reveal-rise font-body text-xs tabular-nums text-stone">0{i + 1}</span>
                 )}
               </div>
               {/* `min-h` of two lines: at five columns some titles wrap and

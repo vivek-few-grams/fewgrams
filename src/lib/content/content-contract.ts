@@ -59,8 +59,7 @@ export type ContentTemplate = {
 /** Language-independent keys allowed at the top level of any content file. */
 const ALLOWED_TOP_LEVEL = new Set(["images", "recipeSlugs", "en", "kn"]);
 
-const isFilledString = (v: unknown): boolean =>
-  typeof v === "string" && v.trim().length > 0;
+const isFilledString = (v: unknown): boolean => typeof v === "string" && v.trim().length > 0;
 
 /**
  * Prose must not restate a day count that lives in DynamoDB.
@@ -88,11 +87,7 @@ const DAY_COUNT =
  * Returns rather than throws so the test can report every fault in every file
  * at once — fixing ten files one thrown error at a time is miserable.
  */
-export function checkContentFile(
-  template: ContentTemplate,
-  key: string,
-  raw: unknown,
-): string[] {
+export function checkContentFile(template: ContentTemplate, key: string, raw: unknown): string[] {
   const problems: string[] = [];
   const at = (msg: string) => problems.push(`${key}: ${msg}`);
 
@@ -119,11 +114,7 @@ export function checkContentFile(
   return problems;
 }
 
-function checkImages(
-  template: ContentTemplate,
-  raw: unknown,
-  at: (msg: string) => void,
-) {
+function checkImages(template: ContentTemplate, raw: unknown, at: (msg: string) => void) {
   const optional = template.images === "optional";
   if (raw === undefined || typeof raw !== "object" || raw === null) {
     if (!optional) at('missing "images"');
@@ -147,12 +138,7 @@ function checkImages(
   }
 }
 
-function checkText(
-  template: ContentTemplate,
-  raw: unknown,
-  locale: string,
-  at: (msg: string) => void,
-) {
+function checkText(template: ContentTemplate, raw: unknown, locale: string, at: (msg: string) => void) {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
     at(`"${locale}" must be an object`);
     return;

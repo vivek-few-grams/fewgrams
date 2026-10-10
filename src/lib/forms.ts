@@ -92,10 +92,6 @@ export function csv(fd: FormData, key: string): string[] {
 
 /** An error `FormState`, as a message key plus its ICU arguments — never a
  *  sentence. See the note on `FormState`. */
-export function err(
-  code: string,
-  field?: string,
-  values?: Record<string, string>,
-): FormState {
+export function err(code: string, field?: string, values?: Record<string, string>): FormState {
   return { status: "error", code, ...(field ? { field } : {}), ...(values ? { values } : {}) };
 }

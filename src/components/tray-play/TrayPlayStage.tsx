@@ -35,8 +35,7 @@ const NARROW = {
 /* The panel is the 1400px container less its padding, and at `lg` the
    wide still is the only one in play. */
 const WIDE_SIZES = "(min-width: 1400px) 1304px, calc(100vw - 96px)";
-const NARROW_SIZES =
-  "(min-width: 768px) calc(100vw - 96px), calc(100vw - 48px)";
+const NARROW_SIZES = "(min-width: 768px) calc(100vw - 96px), calc(100vw - 48px)";
 
 export function TrayPlayStage({
   alt,
@@ -48,13 +47,7 @@ export function TrayPlayStage({
   /** One per tray, in row order (amaranth, radish, sunflower), drawn once
    *  the scene is live over the whole panel, given that tray's anchors and
    *  the panel's size to place itself by. A null leaves a tray unlabelled. */
-  tags?: (
-    | ((
-        anchor: TrayAnchor,
-        panel: { width: number; height: number },
-      ) => ReactNode)
-    | null
-  )[];
+  tags?: (((anchor: TrayAnchor, panel: { width: number; height: number }) => ReactNode) | null)[];
   /** Frame the trays tightly (see `mountTrayScene`). */
   snug?: boolean;
   /** Told when the scene takes over from the photograph. */
@@ -154,11 +147,7 @@ export function TrayPlayStage({
              JavaScript (the noscript rule below) and when the scene
              fails. */
           className={`tray-still absolute inset-0 size-full object-cover transition-opacity duration-700 ${
-            live
-              ? "opacity-0"
-              : snug && !failed
-                ? "opacity-0 motion-reduce:opacity-100"
-                : "opacity-100"
+            live ? "opacity-0" : snug && !failed ? "opacity-0 motion-reduce:opacity-100" : "opacity-100"
           }`}
         />
       </picture>
@@ -178,13 +167,7 @@ export function TrayPlayStage({
       />
       {live && tags && anchors.length > 0 && (
         <div className="pointer-events-none absolute inset-0 z-20">
-          {tags.map(
-            (tag, n) =>
-              tag &&
-              anchors[n] && (
-                <Fragment key={n}>{tag(anchors[n], panel)}</Fragment>
-              ),
-          )}
+          {tags.map((tag, n) => tag && anchors[n] && <Fragment key={n}>{tag(anchors[n], panel)}</Fragment>)}
         </div>
       )}
       {/* No written instruction (the owner, 2 Oct 2026: "let ghost hand

@@ -108,10 +108,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
      instead — labels, never a claim or a tuned figure (CLAUDE.md, marquee
      rules). Still empty when nothing is on sale, like every other tile. */
   const growMediaWords = await getTranslations({ locale, namespace: "shop.growMedia.tileWords" });
-  const mediumNames =
-    media.some((m) => mediumNameById[m.contentKey])
-      ? GROW_MEDIA_TILE_WORDS.map((w) => growMediaWords(w))
-      : [];
+  const mediumNames = media.some((m) => mediumNameById[m.contentKey])
+    ? GROW_MEDIA_TILE_WORDS.map((w) => growMediaWords(w))
+    : [];
 
   /* The seed strip above the footer (the owner, 25 Sep 2026): the five that
      sell the most grams, filled out from the /seeds grid order — by name, in
@@ -120,7 +119,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const seedCollator = new Intl.Collator(locale, { sensitivity: "base" });
   const shelf = seedsOn
     ? (await attachSeedContent(seeds, locale))
-        .filter((s): s is (typeof seeds)[number] & { content: NonNullable<typeof s.content> } => s.content !== null)
+        .filter(
+          (s): s is (typeof seeds)[number] & { content: NonNullable<typeof s.content> } => s.content !== null,
+        )
         .sort((a, b) => seedCollator.compare(a.content.text.name, b.content.text.name))
     : [];
   const topSeeds = rankBySales(shelf, gramsSold, 5);
@@ -159,12 +160,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <Hero />
       <Process />
       <WhyMicrogreens growDays={growDays} />
-      <Bundles
-        plans={plans}
-        varieties={varieties}
-        varietyNames={varietyNames}
-        adminEmpty={adminEmpty}
-      />
+      <Bundles plans={plans} varieties={varieties} varietyNames={varietyNames} adminEmpty={adminEmpty} />
       <OtherProducts
         counts={counts}
         categories={categories}

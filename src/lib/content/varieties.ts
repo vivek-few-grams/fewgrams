@@ -1,4 +1,10 @@
-import { createContentSource, type ContentFile, type ContentImages, type ContentRow, type ResolvedContent } from "./source";
+import {
+  createContentSource,
+  type ContentFile,
+  type ContentImages,
+  type ContentRow,
+  type ResolvedContent,
+} from "./source";
 import type { Locale } from "@/i18n/routing";
 
 /**

@@ -36,4 +36,3 @@ export const CHARM_PRICE_ABOVE = 300;
 /** What a range prices at before anyone has set a margin: cost, to the rupee.
  *  Zero for the reason on `Margin.markupPercent`. */
 export const NO_MARGIN: Margin = { markupPercent: 0, roundUpToNearest: 1 };
-

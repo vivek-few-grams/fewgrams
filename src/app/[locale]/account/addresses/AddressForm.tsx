@@ -52,10 +52,7 @@ export function AddressForm({
 }) {
   const t = useTranslations("account.addresses");
   const e = useTranslations("account.errors");
-  const [state, action, pending] = useActionState<FormState, FormData>(
-    saveAddressAction,
-    IDLE,
-  );
+  const [state, action, pending] = useActionState<FormState, FormData>(saveAddressAction, IDLE);
 
   /* The pinned location is component state, not an input the customer types,
      so it rides along in hidden fields. Initialised from the saved address so
@@ -81,9 +78,7 @@ export function AddressForm({
         setGeo({
           lat: Number(pos.coords.latitude.toFixed(6)),
           lng: Number(pos.coords.longitude.toFixed(6)),
-          ...(Number.isFinite(pos.coords.accuracy)
-            ? { accuracyM: Math.round(pos.coords.accuracy) }
-            : {}),
+          ...(Number.isFinite(pos.coords.accuracy) ? { accuracyM: Math.round(pos.coords.accuracy) } : {}),
         });
         setLocating("idle");
       },
@@ -95,9 +90,7 @@ export function AddressForm({
   }
 
   const errorFor = (field: string) =>
-    state.status === "error" && state.field === field
-      ? e(state.code, state.values ?? {})
-      : undefined;
+    state.status === "error" && state.field === field ? e(state.code, state.values ?? {}) : undefined;
 
   return (
     <form action={action} className="space-y-5">
@@ -196,9 +189,7 @@ export function AddressForm({
           <>
             <input type="hidden" name="lat" value={geo.lat} />
             <input type="hidden" name="lng" value={geo.lng} />
-            {geo.accuracyM !== undefined && (
-              <input type="hidden" name="accuracyM" value={geo.accuracyM} />
-            )}
+            {geo.accuracyM !== undefined && <input type="hidden" name="accuracyM" value={geo.accuracyM} />}
           </>
         )}
 
@@ -228,9 +219,7 @@ export function AddressForm({
           {geo ? (
             <>
               <MapPin size={14} strokeWidth={1.75} className="mt-px shrink-0 text-forest" />
-              {geo.accuracyM !== undefined
-                ? t("located", { metres: geo.accuracyM })
-                : t("locatedNoAccuracy")}
+              {geo.accuracyM !== undefined ? t("located", { metres: geo.accuracyM }) : t("locatedNoAccuracy")}
             </>
           ) : locating === "denied" ? (
             t("locationDenied")
@@ -280,4 +269,3 @@ export function AddressForm({
     </form>
   );
 }
-

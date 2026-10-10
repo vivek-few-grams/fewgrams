@@ -97,8 +97,7 @@ export type RackModelView = {
  * money keeps its width because a five-digit price with a rupee sign and a
  * thousands separator is the widest thing on the row.
  */
-const COLUMNS =
-  "3.5rem 3.5rem 5rem 3.5rem 4.5rem 4rem 4rem 5rem 5.5rem 6rem 4.5rem 3.5rem";
+const COLUMNS = "3.5rem 3.5rem 5rem 3.5rem 4.5rem 4rem 4rem 5rem 5.5rem 6rem 4.5rem 3.5rem";
 
 /** Below this the table scrolls rather than compressing. Matches the track sum
  *  plus gaps and padding, so at the shell's full width there is nothing to
@@ -171,9 +170,7 @@ export function ModelTable({
  *  computed cell goes through this so a retired plate shows as a gap rather
  *  than as a zero that looks like a real price. */
 function Cell({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="font-body text-sm tabular-nums text-forest">{children ?? "—"}</span>
-  );
+  return <span className="font-body text-sm tabular-nums text-forest">{children ?? "—"}</span>;
 }
 
 function ModelRow({ view }: { view: RackModelView }) {
@@ -183,8 +180,7 @@ function ModelRow({ view }: { view: RackModelView }) {
 
   /* Resolved from stored slugs. A slug that has left the palette has no
      message, so it falls back to itself rather than rendering a raw key. */
-  const colourName = (slug: string) =>
-    t.has(`colours.${slug}`) ? t(`colours.${slug}`) : slug;
+  const colourName = (slug: string) => (t.has(`colours.${slug}`) ? t(`colours.${slug}`) : slug);
 
   const unpriceable = costNow === null;
   const isStale = costNow !== null && costNow !== model.costAtPublish;
@@ -228,9 +224,7 @@ function ModelRow({ view }: { view: RackModelView }) {
         {view.colours.length === 0 ? (
           <span className="font-body text-sm text-stone">—</span>
         ) : (
-          view.colours.map((slug) => (
-            <Swatch key={slug} slug={slug} title={colourName(slug)} />
-          ))
+          view.colours.map((slug) => <Swatch key={slug} slug={slug} title={colourName(slug)} />)
         )}
       </span>
 
@@ -304,7 +298,6 @@ function ModelRow({ view }: { view: RackModelView }) {
           )}
         </div>
       )}
-
     </div>
   );
 }
@@ -416,4 +409,3 @@ function AddModelForm({
     </form>
   );
 }
-

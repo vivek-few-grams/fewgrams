@@ -166,9 +166,7 @@ export async function removePlan(fd: FormData): Promise<void> {
 
   const keys = await listPlanKeys();
   if (keys.includes(plan.contentKey)) {
-    throw new Error(
-      `Plan ${plan.contentKey} still has a content file and is not deletable`,
-    );
+    throw new Error(`Plan ${plan.contentKey} still has a content file and is not deletable`);
   }
 
   await deletePlan(id);

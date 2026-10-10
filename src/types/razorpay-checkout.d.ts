@@ -11,7 +11,11 @@ type RazorpayCheckoutOptions = {
   theme?: { color?: string };
   /** Seconds. */
   timeout?: number;
-  handler?: (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => void;
+  handler?: (response: {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+  }) => void;
   modal?: { ondismiss?: () => void };
 };
 

@@ -9,13 +9,7 @@ import { BadgeCheck } from "lucide-react";
  * `ourNote` saying how we use the product ourselves — so the badge is always
  * backed by the note on the same page. The label arrives translated.
  */
-export function RecommendedBadge({
-  label,
-  className = "",
-}: {
-  label: string;
-  className?: string;
-}) {
+export function RecommendedBadge({ label, className = "" }: { label: string; className?: string }) {
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full bg-forest px-3 py-1 font-body text-[11px] font-semibold uppercase tracking-wider text-cream ${className}`}

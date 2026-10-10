@@ -96,9 +96,7 @@ describe("English fallback — SPEC §4.4", () => {
 
 describe("images", () => {
   it("builds a path under the variety's own folder", () => {
-    expect(varietyImageUrl("red-amaranth", "hero.jpg")).toBe(
-      "/varieties/red-amaranth/hero.jpg",
-    );
+    expect(varietyImageUrl("red-amaranth", "hero.jpg")).toBe("/varieties/red-amaranth/hero.jpg");
   });
 
   it("falls back to the name for alt text rather than leaving it empty", () => {
@@ -112,9 +110,7 @@ describe("images", () => {
   });
 
   it("returns null when the photography has not been shot", () => {
-    expect(
-      varietyHero({ key: "radish", text: { name: "Radish" }, images: {}, recipeSlugs: [] }),
-    ).toBeNull();
+    expect(varietyHero({ key: "radish", text: { name: "Radish" }, images: {}, recipeSlugs: [] })).toBeNull();
   });
 });
 
@@ -133,10 +129,7 @@ describe("reading the content directory", () => {
 
   beforeAll(async () => {
     await mkdir(dir, { recursive: true });
-    await writeFile(
-      file,
-      JSON.stringify({ en: { name: "Test Green" }, kn: { name: "ಪರೀಕ್ಷೆ" } }),
-    );
+    await writeFile(file, JSON.stringify({ en: { name: "Test Green" }, kn: { name: "ಪರೀಕ್ಷೆ" } }));
   });
   afterAll(async () => {
     await rm(file, { force: true });

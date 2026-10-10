@@ -85,9 +85,7 @@ async function main() {
   const ddb = DynamoDBDocument.from(
     new DynamoDBClient({
       region: process.env.DYNAMODB_REGION ?? "ap-south-1",
-      ...(endpoint
-        ? { endpoint, credentials: { accessKeyId: "local", secretAccessKey: "local" } }
-        : {}),
+      ...(endpoint ? { endpoint, credentials: { accessKeyId: "local", secretAccessKey: "local" } } : {}),
     }),
   );
 
@@ -118,9 +116,7 @@ async function main() {
       /* Kept, not reset: the count is what the owner last typed on admin. */
       stockPacks: prior?.stockPacks ?? 0,
       active: prior?.active ?? true,
-      ...Object.fromEntries(
-        PACKING.filter((f) => prior?.[f] !== undefined).map((f) => [f, prior[f]]),
-      ),
+      ...Object.fromEntries(PACKING.filter((f) => prior?.[f] !== undefined).map((f) => [f, prior[f]])),
     };
 
     const change = prior

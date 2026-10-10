@@ -46,3 +46,6 @@ next-env.d.ts
 .screens/
 .playwright-mcp/
 .claude/skills/
+
+# CDK synth output (infra/, SPEC §2.2)
+/infra/cdk.out/

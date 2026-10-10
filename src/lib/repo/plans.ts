@@ -19,9 +19,7 @@ const toDomain = (p: Omit<Plan, "monthlyPrice"> & { monthlyPrice?: number }): Pl
   monthlyPrice: p.monthlyPrice ?? null,
 });
 
-export async function listPlans(
-  opts: { activeOnly?: boolean } = {},
-): Promise<Plan[]> {
+export async function listPlans(opts: { activeOnly?: boolean } = {}): Promise<Plan[]> {
   const { data } = await PlanEntity.query.byCatalogue({}).go(LIST_OPTS);
   const all = data.map(toDomain);
   return opts.activeOnly ? all.filter((p) => p.active) : all;
@@ -43,9 +41,7 @@ export async function getPlanWeeks(planId: string): Promise<PlanWeek[]> {
  *  Query; see the note in src/lib/db/entities.ts for why we do not use one. */
 export async function listPlansWithWeeks(opts: { activeOnly?: boolean } = {}) {
   const plans = await listPlans(opts);
-  return Promise.all(
-    plans.map(async (plan) => ({ plan, weeks: await getPlanWeeks(plan.id) })),
-  );
+  return Promise.all(plans.map(async (plan) => ({ plan, weeks: await getPlanWeeks(plan.id) })));
 }
 
 /**
@@ -72,9 +68,7 @@ export async function putPlan(plan: Plan, weeks: PlanWeek[]): Promise<void> {
     await PlanWeekEntity.put(weeks.map((w) => ({ ...w, planId: plan.id }))).go();
   }
   if (stale.length > 0) {
-    await PlanWeekEntity.delete(
-      stale.map((w) => ({ planId: plan.id, week: w.week })),
-    ).go();
+    await PlanWeekEntity.delete(stale.map((w) => ({ planId: plan.id, week: w.week }))).go();
   }
 }
 
@@ -82,7 +76,5 @@ export async function deletePlan(id: string): Promise<void> {
   const weeks = await getPlanWeeks(id);
   await PlanEntity.delete({ id }).go();
   if (weeks.length === 0) return;
-  await PlanWeekEntity.delete(
-    weeks.map((w) => ({ planId: id, week: w.week })),
-  ).go();
+  await PlanWeekEntity.delete(weeks.map((w) => ({ planId: id, week: w.week }))).go();
 }

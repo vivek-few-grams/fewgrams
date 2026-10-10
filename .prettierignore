@@ -1,0 +1,17 @@
+# Build output and dependencies
+.next/
+node_modules/
+cdk.out/
+.dynamodb/
+package-lock.json
+next-env.d.ts
+
+# Assets and tool state
+public/
+print/
+.claude/
+.playwright-mcp/
+
+# Prose: Prettier pads every table row to its widest cell, which makes a
+# one-cell edit a whole-table diff. Docs stay hand-formatted.
+*.md

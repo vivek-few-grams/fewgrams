@@ -33,9 +33,7 @@ function fromRow({ leadDays: _retired, stockPacks, ...r }: Row): Tray {
 
 /** Every tray, ordered by content key — GSI1's sort key, so the order comes
  *  from DynamoDB rather than from a sort here. */
-export async function listTrays(
-  opts: { activeOnly?: boolean } = {},
-): Promise<Tray[]> {
+export async function listTrays(opts: { activeOnly?: boolean } = {}): Promise<Tray[]> {
   const { data } = await TrayEntity.query.byCatalogue({}).go(LIST_OPTS);
   const rows = data.map(fromRow);
   return opts.activeOnly ? rows.filter((t) => t.active) : rows;
@@ -100,4 +98,3 @@ export async function returnToStock(contentKey: string, units: number): Promise<
   if (!row) return;
   await TrayEntity.patch({ id: row.id }).add({ stockPacks: units }).go();
 }
-

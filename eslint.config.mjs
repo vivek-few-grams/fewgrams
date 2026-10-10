@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // CDK synth output: staged copies of the app build.
+    "infra/cdk.out/**",
   ]),
 ]);
 

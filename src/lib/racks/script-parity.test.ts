@@ -48,8 +48,7 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
   });
 
   it("measures a frame the same way", () => {
-    for (const f of card.frames)
-      expect(script.frameFeetPerShelf(f)).toBe(frameFeetPerShelf(f));
+    for (const f of card.frames) expect(script.frameFeetPerShelf(f)).toBe(frameFeetPerShelf(f));
   });
 
   it("enumerates the same plated range", () => {
@@ -64,9 +63,7 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
     for (const config of allRackConfigs(card)) {
       const total = rackCost(config, card)!.total;
       expect(script.rackCost(config, card)).toBe(total);
-      expect(script.retailPrice(total, card.margins.plated)).toBe(
-        retailPrice(total, card.margins.plated),
-      );
+      expect(script.retailPrice(total, card.margins.plated)).toBe(retailPrice(total, card.margins.plated));
     }
   });
 
@@ -74,15 +71,12 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
     for (const config of allAngleRackConfigs(card)) {
       const total = angleRackCost(config, card)!.total;
       expect(script.angleRackCost(config, card)).toBe(total);
-      expect(script.retailPrice(total, card.margins.angle)).toBe(
-        retailPrice(total, card.margins.angle),
-      );
+      expect(script.retailPrice(total, card.margins.angle)).toBe(retailPrice(total, card.margins.angle));
     }
   });
 
   it("measures a pipe shelf the same way", () => {
-    for (const p of card.pipes)
-      expect(script.pipeFeetPerShelf(p)).toBe(pipeFeetPerShelf(p));
+    for (const p of card.pipes) expect(script.pipeFeetPerShelf(p)).toBe(pipeFeetPerShelf(p));
   });
 
   it("agrees on the pipe range's own three constants", () => {
@@ -91,9 +85,7 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
        screen refuses to build, and a mid-support threshold that differed
        would price every 4 ft rack wrong — by ₹710 on a 6 ft one. */
     expect(script.PIPE_MAX_HEIGHT_FT).toBe(PIPE_MAX_HEIGHT_FT);
-    expect(script.PIPE_MID_SUPPORT_FROM_LENGTH_FT).toBe(
-      PIPE_MID_SUPPORT_FROM_LENGTH_FT,
-    );
+    expect(script.PIPE_MID_SUPPORT_FROM_LENGTH_FT).toBe(PIPE_MID_SUPPORT_FROM_LENGTH_FT);
     expect(script.PIPE_MID_SUPPORT_LEGS).toBe(PIPE_MID_SUPPORT_LEGS);
   });
 
@@ -114,9 +106,7 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
     for (const config of allPipeRackConfigs(card)) {
       const total = pipeRackCost(config, card)!.total;
       expect(script.pipeRackCost(config, card)).toBe(total);
-      expect(script.retailPrice(total, card.margins.pipe)).toBe(
-        retailPrice(total, card.margins.pipe),
-      );
+      expect(script.retailPrice(total, card.margins.pipe)).toBe(retailPrice(total, card.margins.pipe));
     }
   });
 
@@ -152,9 +142,7 @@ describe("scripts/racks-fill.mjs agrees with pricing.ts", () => {
   it("resolves each range's margin the same way", () => {
     /* The script reads raw items, so the legacy figures arrive under their
        stored names; pricing.ts reads them through the entity's renamed ones. */
-    const rows = [
-      { range: "angle" as const, markupPercent: 35, roundUpToNearest: 100 },
-    ];
+    const rows = [{ range: "angle" as const, markupPercent: 35, roundUpToNearest: 100 }];
     for (const legacy of [null, { markupPercent: 20, roundUpToNearest: 50 }]) {
       expect(script.resolveMargins(legacy, rows)).toEqual(
         resolveMargins(

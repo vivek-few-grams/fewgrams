@@ -6,12 +6,7 @@ import { AlertTriangle, RefreshCw } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { AngleGrade, AngleRackModel, FrameSize, RackSettings } from "@/lib/types";
-import {
-  addAngleRack,
-  removeAngleRack,
-  republishAngleRack,
-  toggleAngleRack,
-} from "./actions";
+import { addAngleRack, removeAngleRack, republishAngleRack, toggleAngleRack } from "./actions";
 import { Swatch } from "../racks/ColourSelect";
 import { CheckField, SelectField } from "../fields";
 
@@ -68,8 +63,7 @@ export type AngleRackView = {
  * read as one system. Every track explicit, none `auto` — the header and the
  * rows are separate grids and only line up if both resolve to the same widths.
  */
-const COLUMNS =
-  "3.5rem 3.5rem 5rem 3.5rem 4.5rem 4rem 4rem 5rem 5.5rem 6rem 4.5rem 3.5rem";
+const COLUMNS = "3.5rem 3.5rem 5rem 3.5rem 4.5rem 4rem 4rem 5rem 5.5rem 6rem 4.5rem 3.5rem";
 
 /** Below this the table scrolls rather than compressing: a squeezed price
  *  column is worse than a scrollbar. */
@@ -140,9 +134,7 @@ export function AngleRackTable({
 /** A figure, or an em dash where its part has left the rate card, so a retired
  *  footprint shows as a gap rather than a zero that looks like a real price. */
 function Cell({ children }: { children: React.ReactNode }) {
-  return (
-    <span className="font-body text-sm tabular-nums text-forest">{children ?? "—"}</span>
-  );
+  return <span className="font-body text-sm tabular-nums text-forest">{children ?? "—"}</span>;
 }
 
 function AngleRackRow({ view }: { view: AngleRackView }) {
@@ -156,8 +148,7 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
 
   /* Resolved from stored slugs. A slug that has left the palette has no
      message, so it falls back to itself rather than rendering a raw key. */
-  const colourName = (slug: string) =>
-    tr.has(`colours.${slug}`) ? tr(`colours.${slug}`) : slug;
+  const colourName = (slug: string) => (tr.has(`colours.${slug}`) ? tr(`colours.${slug}`) : slug);
 
   const unpriceable = costNow === null;
   const isStale = costNow !== null && costNow !== model.costAtPublish;
@@ -198,9 +189,7 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
         {view.colours.length === 0 ? (
           <span className="font-body text-sm text-stone">—</span>
         ) : (
-          view.colours.map((slug) => (
-            <Swatch key={slug} slug={slug} title={colourName(slug)} />
-          ))
+          view.colours.map((slug) => <Swatch key={slug} slug={slug} title={colourName(slug)} />)
         )}
       </span>
 
@@ -273,7 +262,6 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
           )}
         </div>
       )}
-
     </div>
   );
 }

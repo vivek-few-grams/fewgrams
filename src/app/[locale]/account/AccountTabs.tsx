@@ -1,7 +1,15 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { CalendarDays, ChevronRight, LayoutGrid, MapPin, Package, UserRound, type LucideIcon } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronRight,
+  LayoutGrid,
+  MapPin,
+  Package,
+  UserRound,
+  type LucideIcon,
+} from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 
 /**
@@ -80,7 +88,12 @@ export function AccountTabs() {
                     : "font-medium text-stone hover:bg-sand hover:text-forest"
                 }`}
               >
-                <Icon aria-hidden size={18} strokeWidth={1.75} className={active ? "text-forest" : "text-stone/80"} />
+                <Icon
+                  aria-hidden
+                  size={18}
+                  strokeWidth={1.75}
+                  className={active ? "text-forest" : "text-stone/80"}
+                />
                 <span className="flex-1">{t(tab.key)}</span>
                 {active && <ChevronRight aria-hidden size={16} strokeWidth={2} />}
               </Link>

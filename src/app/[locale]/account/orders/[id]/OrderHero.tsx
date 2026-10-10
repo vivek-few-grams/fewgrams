@@ -41,7 +41,15 @@ export type HeroCopy = {
   stepNow: string;
 };
 
-export function OrderHero({ stage, celebrate, copy }: { stage: HeroStage; celebrate: boolean; copy: HeroCopy }) {
+export function OrderHero({
+  stage,
+  celebrate,
+  copy,
+}: {
+  stage: HeroStage;
+  celebrate: boolean;
+  copy: HeroCopy;
+}) {
   return (
     /* `data-side-align`: the account column is stretched to this block's
        height, so the two end level (SideColumn). */
@@ -96,7 +104,10 @@ function Tracker({ stage, copy }: { stage: HeroStage; copy: HeroCopy }) {
   const keys = ["placed", "prepare", "onTheWay", "delivered"] as const;
   const current = CURRENT[stage];
   return (
-    <ol aria-label={copy.progressLabel} className="relative grid grid-cols-4 border-t border-cream/10 px-4 py-5 md:px-8">
+    <ol
+      aria-label={copy.progressLabel}
+      className="relative grid grid-cols-4 border-t border-cream/10 px-4 py-5 md:px-8"
+    >
       {keys.map((key, i) => {
         const done = i < current;
         const now = i === current;
@@ -116,10 +127,16 @@ function Tracker({ stage, copy }: { stage: HeroStage; copy: HeroCopy }) {
             )}
             <span
               className={`relative grid size-10 place-items-center rounded-full transition-colors ${
-                done ? "bg-sage text-forest" : now ? "bg-forest-deep text-cream ring-2 ring-sage" : "bg-forest-deep text-cream/40"
+                done
+                  ? "bg-sage text-forest"
+                  : now
+                    ? "bg-forest-deep text-cream ring-2 ring-sage"
+                    : "bg-forest-deep text-cream/40"
               }`}
             >
-              {now && <span aria-hidden className="order-ping absolute inset-0 rounded-full ring-2 ring-sage" />}
+              {now && (
+                <span aria-hidden className="order-ping absolute inset-0 rounded-full ring-2 ring-sage" />
+              )}
               <Icon aria-hidden size={18} strokeWidth={done ? 2.5 : 1.75} />
             </span>
             <span
@@ -235,7 +252,12 @@ function PackScene({ still }: { still: boolean }) {
         <rect x="51" y="154" width="26" height="6" rx="2" className="fill-terracotta" />
         <rect x="53" y="160" width="22" height="2" className="fill-bark/25" />
 
-        <path d="M251 169 V174 A11 4.5 0 0 0 273 174 V169 Z" fill="#8fb877" className="stroke-forest" strokeWidth="1.4" />
+        <path
+          d="M251 169 V174 A11 4.5 0 0 0 273 174 V169 Z"
+          fill="#8fb877"
+          className="stroke-forest"
+          strokeWidth="1.4"
+        />
         <ellipse cx="262" cy="169" rx="11" ry="4.5" className="fill-sage stroke-forest" strokeWidth="1.4" />
         <ellipse cx="262" cy="169" rx="5" ry="2" fill="#ecdfcc" className="stroke-forest" strokeWidth="1" />
 
@@ -244,7 +266,17 @@ function PackScene({ still }: { still: boolean }) {
 
         <g className="pack-box">
           {/* Back flap, standing open behind whatever drops in. */}
-          <rect x="118" y="76" width="120" height="20" rx="1" fill={url("flap")} {...outline} vectorEffect="non-scaling-stroke" className="pack-flap pack-flap--back-open stroke-bark" />
+          <rect
+            x="118"
+            y="76"
+            width="120"
+            height="20"
+            rx="1"
+            fill={url("flap")}
+            {...outline}
+            vectorEffect="non-scaling-stroke"
+            className="pack-flap pack-flap--back-open stroke-bark"
+          />
 
           {/* The open top, looking in. */}
           <path d="M100 110 L118 96 H238 L220 110 Z" fill={url("inside")} />
@@ -253,60 +285,160 @@ function PackScene({ still }: { still: boolean }) {
               the opening, so it shows over the rim until the flaps shut. */}
           <g className="pack-item pack-item--0">
             {FILLER.map(([x0, x1, y, amp, colour]) => (
-              <path key={`${x0}-${y}`} d={zigzag(x0, x1, y, amp)} stroke={colour} strokeWidth="1.8" fill="none" strokeLinejoin="round" strokeLinecap="round" />
+              <path
+                key={`${x0}-${y}`}
+                d={zigzag(x0, x1, y, amp)}
+                stroke={colour}
+                strokeWidth="1.8"
+                fill="none"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
             ))}
           </g>
           {/* A punnet of microgreens: a clear box, sprouts showing through. */}
           <g className="pack-item pack-item--1">
-            <rect x="122" y="101" width="30" height="42" rx="3" className="fill-mint/40 stroke-forest" strokeWidth="1.5" />
+            <rect
+              x="122"
+              y="101"
+              width="30"
+              height="42"
+              rx="3"
+              className="fill-mint/40 stroke-forest"
+              strokeWidth="1.5"
+            />
             {[126, 130.5, 135, 139.5, 144, 148].map((x, i) => {
               const top = 110 + (i % 3) * 1.5;
               return (
                 <g key={x}>
                   <path d={`M${x} 131 V${top}`} className="stroke-forest" strokeWidth="1.1" />
-                  <path d={LEAF} transform={`translate(${x} ${top}) rotate(-55) scale(0.36)`} className="fill-sage stroke-forest" strokeWidth="1.6" />
-                  <path d={LEAF} transform={`translate(${x} ${top}) rotate(55) scale(0.36)`} className="fill-sage stroke-forest" strokeWidth="1.6" />
+                  <path
+                    d={LEAF}
+                    transform={`translate(${x} ${top}) rotate(-55) scale(0.36)`}
+                    className="fill-sage stroke-forest"
+                    strokeWidth="1.6"
+                  />
+                  <path
+                    d={LEAF}
+                    transform={`translate(${x} ${top}) rotate(55) scale(0.36)`}
+                    className="fill-sage stroke-forest"
+                    strokeWidth="1.6"
+                  />
                 </g>
               );
             })}
             <rect x="124" y="130" width="26" height="11" rx="2" className="fill-bark/70" />
-            <rect x="121" y="100" width="32" height="3" rx="1.5" className="fill-cream/80 stroke-forest" strokeWidth="1" />
+            <rect
+              x="121"
+              y="100"
+              width="32"
+              height="3"
+              rx="1.5"
+              className="fill-cream/80 stroke-forest"
+              strokeWidth="1"
+            />
           </g>
           {/* A growing tray, stood on its edge: black, with drainage holes. */}
           <g className="pack-item pack-item--2">
             <rect x="157" y="100" width="26" height="50" rx="2" className="fill-ink" />
-            <rect x="160" y="103" width="20" height="44" rx="1" fill="none" className="stroke-stone" strokeWidth="0.8" />
+            <rect
+              x="160"
+              y="103"
+              width="20"
+              height="44"
+              rx="1"
+              fill="none"
+              className="stroke-stone"
+              strokeWidth="0.8"
+            />
             {[106, 113, 120, 127, 134, 141].flatMap((y) =>
-              [164, 170, 176].map((x) => <circle key={`${x}-${y}`} cx={x} cy={y} r="1.2" className="fill-stone" />),
+              [164, 170, 176].map((x) => (
+                <circle key={`${x}-${y}`} cx={x} cy={y} r="1.2" className="fill-stone" />
+              )),
             )}
           </g>
           {/* Two packets of seeds, leaning together. */}
           <g className="pack-item pack-item--3">
             <g transform="rotate(-6 194 118)">
-              <rect x="186" y="101" width="18" height="32" rx="1.5" className="fill-cream stroke-forest" strokeWidth="1.5" />
+              <rect
+                x="186"
+                y="101"
+                width="18"
+                height="32"
+                rx="1.5"
+                className="fill-cream stroke-forest"
+                strokeWidth="1.5"
+              />
               <rect x="186" y="101" width="18" height="4" className="fill-tan" />
               <circle cx="195" cy="120" r="4" className="fill-tan/70" />
             </g>
             <g transform="rotate(8 204 118)">
-              <rect x="196" y="100" width="18" height="34" rx="1.5" className="fill-cream stroke-forest" strokeWidth="1.5" />
+              <rect
+                x="196"
+                y="100"
+                width="18"
+                height="34"
+                rx="1.5"
+                className="fill-cream stroke-forest"
+                strokeWidth="1.5"
+              />
               <rect x="196" y="100" width="18" height="4" className="fill-sage" />
-              <path d={LEAF} transform="translate(205 126) scale(0.45)" className="fill-sage stroke-forest" strokeWidth="1.2" />
+              <path
+                d={LEAF}
+                transform="translate(205 126) scale(0.45)"
+                className="fill-sage stroke-forest"
+                strokeWidth="1.2"
+              />
             </g>
           </g>
 
           {/* Front face, with a few paper fibres and "this way up". */}
           <rect x="100" y="110" width="120" height="68" rx="2" fill={url("front")} {...outline} />
-          {["M112 146 l10 1", "M150 121 l8 -0.5", "M166 168 l12 0.5", "M204 129 l7 0.4", "M130 170 l7 -0.3", "M186 118 l6 0.3"].map((d) => (
+          {[
+            "M112 146 l10 1",
+            "M150 121 l8 -0.5",
+            "M166 168 l12 0.5",
+            "M204 129 l7 0.4",
+            "M130 170 l7 -0.3",
+            "M186 118 l6 0.3",
+          ].map((d) => (
             <path key={d} d={d} className="stroke-bark/15" strokeWidth="1" strokeLinecap="round" />
           ))}
-          <path d="M110 128 V117 M107 120 L110 116.5 L113 120 M118 128 V117 M115 120 L118 116.5 L121 120 M106 131 H122" className="stroke-bark/45" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M110 128 V117 M107 120 L110 116.5 L113 120 M118 128 V117 M115 120 L118 116.5 L121 120 M106 131 H122"
+            className="stroke-bark/45"
+            strokeWidth="1.4"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
 
           {/* Right side, in shade. */}
           <path d="M220 110 L238 96 V164 L220 178 Z" fill={url("side")} {...outline} />
 
           {/* The flaps, closing over the parcels. */}
-          <rect x="118" y="76" width="120" height="20" rx="1" fill={url("flap")} {...outline} vectorEffect="non-scaling-stroke" className="pack-flap pack-flap--back stroke-bark" />
-          <rect x="100" y="90" width="120" height="20" rx="1" fill={url("flap")} {...outline} vectorEffect="non-scaling-stroke" className="pack-flap pack-flap--front stroke-bark" />
+          <rect
+            x="118"
+            y="76"
+            width="120"
+            height="20"
+            rx="1"
+            fill={url("flap")}
+            {...outline}
+            vectorEffect="non-scaling-stroke"
+            className="pack-flap pack-flap--back stroke-bark"
+          />
+          <rect
+            x="100"
+            y="90"
+            width="120"
+            height="20"
+            rx="1"
+            fill={url("flap")}
+            {...outline}
+            vectorEffect="non-scaling-stroke"
+            className="pack-flap pack-flap--front stroke-bark"
+          />
 
           {/* Tape along the seam and down the side. */}
           <path d="M106.8 104.7 H226.8 L231.2 101.3 H111.2 Z" className="pack-tape fill-sage/90" />
@@ -315,11 +447,23 @@ function PackScene({ still }: { still: boolean }) {
           {/* Shipping label. */}
           <g className="pack-label">
             <g transform="rotate(-2 129 146)">
-              <rect x="108" y="133" width="42" height="27" rx="1.5" className="fill-cream stroke-bark/50" strokeWidth="1" />
+              <rect
+                x="108"
+                y="133"
+                width="42"
+                height="27"
+                rx="1.5"
+                className="fill-cream stroke-bark/50"
+                strokeWidth="1"
+              />
               <rect x="113" y="137" width="20" height="3" rx="1" className="fill-forest" />
               <rect x="113" y="143" width="30" height="2" rx="1" className="fill-stone/50" />
               <rect x="113" y="147" width="24" height="2" rx="1" className="fill-stone/50" />
-              <path d="M113 151 V156 M115 151 V156 M118 151 V156 M119.5 151 V156 M122 151 V156 M125 151 V156 M126.5 151 V156 M129 151 V156 M132 151 V156 M133.5 151 V156 M136 151 V156 M139 151 V156 M141 151 V156 M143 151 V156" className="stroke-ink" strokeWidth="1" />
+              <path
+                d="M113 151 V156 M115 151 V156 M118 151 V156 M119.5 151 V156 M122 151 V156 M125 151 V156 M126.5 151 V156 M129 151 V156 M132 151 V156 M133.5 151 V156 M136 151 V156 M139 151 V156 M141 151 V156 M143 151 V156"
+                className="stroke-ink"
+                strokeWidth="1"
+              />
             </g>
           </g>
 
@@ -327,7 +471,15 @@ function PackScene({ still }: { still: boolean }) {
           <g className="pack-stamp">
             <g transform="rotate(-8 192 150)" opacity="0.85">
               <circle cx="192" cy="150" r="12.5" fill="none" className="stroke-forest" strokeWidth="1.8" />
-              <circle cx="192" cy="150" r="10" fill="none" className="stroke-forest" strokeWidth="0.7" strokeDasharray="1.4 1.2" />
+              <circle
+                cx="192"
+                cy="150"
+                r="10"
+                fill="none"
+                className="stroke-forest"
+                strokeWidth="0.7"
+                strokeDasharray="1.4 1.2"
+              />
               <FgMark transform="translate(183.5 141.5) scale(0.17)" className="fill-forest" />
             </g>
           </g>
@@ -387,23 +539,57 @@ function GrowScene() {
       <g className="grow-sun" transform="translate(262 46)">
         <circle r="13" className="fill-tan" />
         {Array.from({ length: 8 }, (_, i) => (
-          <rect key={i} x="-1.5" y="-24" width="3" height="7" rx="1.5" className="fill-tan" transform={`rotate(${i * 45})`} />
+          <rect
+            key={i}
+            x="-1.5"
+            y="-24"
+            width="3"
+            height="7"
+            rx="1.5"
+            className="fill-tan"
+            transform={`rotate(${i * 45})`}
+          />
         ))}
       </g>
 
       {/* Droplets from above the tray. */}
       {[132, 160, 188].map((x, i) => (
-        <path key={x} d="M0 0 C-4 6 -4 10 0 10 C4 10 4 6 0 0 Z" transform={`translate(${x} 40)`} className={`grow-drop grow-drop--${i} fill-mint`} />
+        <path
+          key={x}
+          d="M0 0 C-4 6 -4 10 0 10 C4 10 4 6 0 0 Z"
+          transform={`translate(${x} 40)`}
+          className={`grow-drop grow-drop--${i} fill-mint`}
+        />
       ))}
 
       {/* Sprouts, each growing up from the soil and then swaying. */}
       {SPROUTS.map((x, i) => {
         const h = 34 + ((i * 7) % 14);
         return (
-          <g key={i} className="grow-sprout" style={{ animationDelay: `${(i % 5) * 0.18 + Math.floor(i / 5) * 0.4}s` }}>
-            <path d={`M${x} 158 C${x - 2} ${158 - h / 2} ${x + 2} ${158 - h / 1.4} ${x} ${158 - h}`} className="stroke-forest" strokeWidth="2" fill="none" strokeLinecap="round" />
-            <path d={LEAF} transform={`translate(${x} ${158 - h}) rotate(-55) scale(0.62)`} className="fill-sage stroke-forest" strokeWidth="1.5" />
-            <path d={LEAF} transform={`translate(${x} ${158 - h}) rotate(55) scale(0.62)`} className="fill-sage stroke-forest" strokeWidth="1.5" />
+          <g
+            key={i}
+            className="grow-sprout"
+            style={{ animationDelay: `${(i % 5) * 0.18 + Math.floor(i / 5) * 0.4}s` }}
+          >
+            <path
+              d={`M${x} 158 C${x - 2} ${158 - h / 2} ${x + 2} ${158 - h / 1.4} ${x} ${158 - h}`}
+              className="stroke-forest"
+              strokeWidth="2"
+              fill="none"
+              strokeLinecap="round"
+            />
+            <path
+              d={LEAF}
+              transform={`translate(${x} ${158 - h}) rotate(-55) scale(0.62)`}
+              className="fill-sage stroke-forest"
+              strokeWidth="1.5"
+            />
+            <path
+              d={LEAF}
+              transform={`translate(${x} ${158 - h}) rotate(55) scale(0.62)`}
+              className="fill-sage stroke-forest"
+              strokeWidth="1.5"
+            />
           </g>
         );
       })}

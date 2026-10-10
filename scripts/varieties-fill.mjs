@@ -64,9 +64,7 @@ async function main() {
   const ddb = DynamoDBDocument.from(
     new DynamoDBClient({
       region: process.env.DYNAMODB_REGION ?? "ap-south-1",
-      ...(endpoint
-        ? { endpoint, credentials: { accessKeyId: "local", secretAccessKey: "local" } }
-        : {}),
+      ...(endpoint ? { endpoint, credentials: { accessKeyId: "local", secretAccessKey: "local" } } : {}),
     }),
   );
 

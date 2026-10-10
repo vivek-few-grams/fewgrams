@@ -25,10 +25,7 @@ import { routing } from "@/i18n/routing";
  */
 const intlMiddleware = createIntlMiddleware(routing);
 
-const SESSION_COOKIES = [
-  "authjs.session-token",
-  "__Secure-authjs.session-token",
-];
+const SESSION_COOKIES = ["authjs.session-token", "__Secure-authjs.session-token"];
 
 /** Paths that require a session, written without a locale prefix. */
 const PROTECTED = ["/admin", "/account", "/checkout"];
@@ -45,9 +42,7 @@ function splitLocale(pathname: string) {
 export function proxy(request: NextRequest) {
   const { locale, path } = splitLocale(request.nextUrl.pathname);
 
-  const isProtected = PROTECTED.some(
-    (p) => path === p || path.startsWith(`${p}/`),
-  );
+  const isProtected = PROTECTED.some((p) => path === p || path.startsWith(`${p}/`));
 
   if (isProtected && !SESSION_COOKIES.some((n) => request.cookies.has(n))) {
     // Keep the visitor in their language through the round trip.

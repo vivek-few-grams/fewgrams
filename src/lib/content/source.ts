@@ -199,9 +199,7 @@ export function createContentSource<T extends { name: string; imageAlt?: string 
     rows: R[],
     locale: string,
   ): Promise<Array<R & { content: ResolvedContent<T> | null }>> {
-    return Promise.all(
-      rows.map(async (row) => ({ ...row, content: await get(row.contentKey, locale) })),
-    );
+    return Promise.all(rows.map(async (row) => ({ ...row, content: await get(row.contentKey, locale) })));
   }
 
   /**

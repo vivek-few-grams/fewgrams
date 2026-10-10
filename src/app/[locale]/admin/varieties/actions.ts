@@ -87,9 +87,7 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
       yieldGramsPerTrayMin,
       yieldGramsPerTrayMax,
       pricePerTray,
-      ...(seed !== null && Number.isFinite(seed) && seed > 0
-        ? { seedGramsPerTray: seed }
-        : {}),
+      ...(seed !== null && Number.isFinite(seed) && seed > 0 ? { seedGramsPerTray: seed } : {}),
       active: fd.get("active") === "on",
     },
   };

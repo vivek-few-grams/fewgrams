@@ -66,7 +66,6 @@ export default async function TraysAdmin() {
         </div>
       </section>
 
-
       <section className="rounded-2xl border border-forest/15 p-6">
         <h2 className="font-display text-lg font-semibold text-forest">{t("addTitle")}</h2>
 

@@ -27,7 +27,14 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
   const addOrigin = () =>
     setOrigins((os) => [
       ...os,
-      { id: `loc-${Math.random().toString(36).slice(2, 8)}`, name: "", phone: "", address: "", city: "", pincode: "" },
+      {
+        id: `loc-${Math.random().toString(36).slice(2, 8)}`,
+        name: "",
+        phone: "",
+        address: "",
+        city: "",
+        pincode: "",
+      },
     ]);
   const removeOrigin = (id: string) => setOrigins((os) => os.filter((o) => o.id !== id));
   const k = settings?.packing;
@@ -56,7 +63,9 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
   return (
     <form action={action} className="mt-8 max-w-3xl space-y-8">
       <fieldset className="rounded-2xl border border-forest/12 p-5">
-        <legend className="px-1 font-display text-base font-semibold text-forest">{t("pickupHeading")}</legend>
+        <legend className="px-1 font-display text-base font-semibold text-forest">
+          {t("pickupHeading")}
+        </legend>
         <p className="font-body text-xs text-stone">{t("pickupHint")}</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {text("pickupName", p?.name)}
@@ -68,7 +77,9 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
       </fieldset>
 
       <fieldset className="rounded-2xl border border-forest/12 p-5">
-        <legend className="px-1 font-display text-base font-semibold text-forest">{t("originsHeading")}</legend>
+        <legend className="px-1 font-display text-base font-semibold text-forest">
+          {t("originsHeading")}
+        </legend>
         <p className="font-body text-xs leading-relaxed text-stone">{t("originsHint")}</p>
         <div className="mt-4 space-y-4">
           {origins.map((o, i) => (
@@ -138,7 +149,9 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
       </fieldset>
 
       <fieldset className="rounded-2xl border border-forest/12 p-5">
-        <legend className="px-1 font-display text-base font-semibold text-forest">{t("greensHeading")}</legend>
+        <legend className="px-1 font-display text-base font-semibold text-forest">
+          {t("greensHeading")}
+        </legend>
         <p className="font-body text-xs text-stone">{t("greensHint")}</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {/* 200 is the owner's figure (23 Sep 2026), pre-filled only until
@@ -148,11 +161,11 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
       </fieldset>
 
       <fieldset className="rounded-2xl border border-forest/12 p-5">
-        <legend className="px-1 font-display text-base font-semibold text-forest">{t("packingHeading")}</legend>
+        <legend className="px-1 font-display text-base font-semibold text-forest">
+          {t("packingHeading")}
+        </legend>
         <p className="font-body text-xs text-stone">{t("packingHint")}</p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          {num("seedPackingGrams", k?.seedPackingGrams)}
-        </div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">{num("seedPackingGrams", k?.seedPackingGrams)}</div>
       </fieldset>
 
       <div className="flex items-center gap-4">

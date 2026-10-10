@@ -49,7 +49,10 @@ const MARKS: ((key: string) => React.ReactNode)[] = [
     <g key={key}>
       <path d="M0 22 C0 10 1 0 0 -10" />
       {[-48, 48, 0].map((r, i) => (
-        <g key={i} transform={`translate(0 ${i === 2 ? -8 : 4 - i * 6}) rotate(${r}) scale(${i === 2 ? 0.75 : 0.62})`}>
+        <g
+          key={i}
+          transform={`translate(0 ${i === 2 ? -8 : 4 - i * 6}) rotate(${r}) scale(${i === 2 ? 0.75 : 0.62})`}
+        >
           <path d={LEAF} className="fill-sage/50" />
           <path d={LEAF} />
         </g>

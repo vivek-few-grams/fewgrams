@@ -24,7 +24,8 @@ describe("lineOrigin (the owner, 25 Sep 2026)", () => {
 });
 
 describe("splitShipments", () => {
-  const originOf = (l: { kind: "seed" | "tray" | "rack" | "variety"; key: string }) => lineOrigin(l, vendorOf);
+  const originOf = (l: { kind: "seed" | "tray" | "rack" | "variety"; key: string }) =>
+    lineOrigin(l, vendorOf);
 
   it("is our parcel plus the rack maker's", () => {
     expect(splitShipments([shelfRack, mat, seed, pipe], originOf)).toEqual([

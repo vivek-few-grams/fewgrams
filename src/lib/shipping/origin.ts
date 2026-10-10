@@ -23,8 +23,12 @@ export const SHELF_RACK_ITEM = "rack:shelf";
  * our pickup for everything else. A shelf rack whose vendor has not been set
  * ships from ours, so an unset vendor never blocks an order.
  */
-export function lineOrigin(line: { kind: CartKind; key: string }, vendorOf: Readonly<Record<string, string>>): string {
-  if (line.kind === "rack" && rackRangeOfKey(line.key) === "shelf") return vendorOf[SHELF_RACK_ITEM] ?? HOME_ORIGIN;
+export function lineOrigin(
+  line: { kind: CartKind; key: string },
+  vendorOf: Readonly<Record<string, string>>,
+): string {
+  if (line.kind === "rack" && rackRangeOfKey(line.key) === "shelf")
+    return vendorOf[SHELF_RACK_ITEM] ?? HOME_ORIGIN;
   return HOME_ORIGIN;
 }
 

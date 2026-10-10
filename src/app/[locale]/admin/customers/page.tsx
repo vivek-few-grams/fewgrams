@@ -75,7 +75,8 @@ export default async function CustomersAdmin({ searchParams }: PageProps<"/[loca
         (a.name ?? a.email ?? "").localeCompare(b.name ?? b.email ?? ""),
     );
 
-  const money = (n: number) => format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+  const money = (n: number) =>
+    format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
 
   return (
     <div className="space-y-8">
@@ -103,7 +104,10 @@ export default async function CustomersAdmin({ searchParams }: PageProps<"/[loca
           {t("search")}
         </button>
         {q && (
-          <Link href="/admin/customers" className="font-body text-sm text-stone underline underline-offset-4 hover:text-forest">
+          <Link
+            href="/admin/customers"
+            className="font-body text-sm text-stone underline underline-offset-4 hover:text-forest"
+          >
             {t("clear")}
           </Link>
         )}
@@ -119,7 +123,14 @@ export default async function CustomersAdmin({ searchParams }: PageProps<"/[loca
           <table className="w-full min-w-[48rem] border-collapse text-left">
             <thead>
               <tr className="border-b border-forest/15 bg-sand/50">
-                {[t("colCustomer"), t("colPhone"), t("colOrders"), t("colSpent"), t("colLast"), t("colPlans")].map((h) => (
+                {[
+                  t("colCustomer"),
+                  t("colPhone"),
+                  t("colOrders"),
+                  t("colSpent"),
+                  t("colLast"),
+                  t("colPlans"),
+                ].map((h) => (
                   <th key={h} scope="col" className={th}>
                     {h}
                   </th>
@@ -137,7 +148,9 @@ export default async function CustomersAdmin({ searchParams }: PageProps<"/[loca
                       {c.name ?? c.email ?? t("noName")}
                     </Link>
                     {c.role !== "customer" && (
-                      <span className="ml-2 rounded-full bg-sage px-2 py-0.5 text-xs text-forest">{t(`role.${c.role}`)}</span>
+                      <span className="ml-2 rounded-full bg-sage px-2 py-0.5 text-xs text-forest">
+                        {t(`role.${c.role}`)}
+                      </span>
                     )}
                     {c.name && c.email && <span className="block text-xs text-stone">{c.email}</span>}
                   </td>
@@ -147,7 +160,9 @@ export default async function CustomersAdmin({ searchParams }: PageProps<"/[loca
                   <td className={`${td} text-forest`}>
                     {c.last ? format.dateTime(new Date(c.last), { dateStyle: "medium" }) : "—"}
                   </td>
-                  <td className={`${td} tabular-nums text-forest`}>{c.plans ? format.number(c.plans) : "—"}</td>
+                  <td className={`${td} tabular-nums text-forest`}>
+                    {c.plans ? format.number(c.plans) : "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>

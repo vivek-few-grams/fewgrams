@@ -44,16 +44,11 @@ export async function saveProfile(
 export async function listAddresses(userId: string): Promise<Address[]> {
   const { data } = await AddressEntity.query.byUser({ userId }).go(LIST_OPTS);
   return data.sort(
-    (a, b) =>
-      Number(b.isDefault) - Number(a.isDefault) ||
-      a.createdAt.localeCompare(b.createdAt),
+    (a, b) => Number(b.isDefault) - Number(a.isDefault) || a.createdAt.localeCompare(b.createdAt),
   );
 }
 
-export async function getAddress(
-  userId: string,
-  addrId: string,
-): Promise<Address | null> {
+export async function getAddress(userId: string, addrId: string): Promise<Address | null> {
   const { data } = await AddressEntity.get({ userId, addrId }).go(READ_OPTS);
   return data;
 }
@@ -83,18 +78,13 @@ export async function putAddress(address: Address): Promise<Address> {
   return saved;
 }
 
-export async function setDefaultAddress(
-  userId: string,
-  addrId: string,
-): Promise<void> {
+export async function setDefaultAddress(userId: string, addrId: string): Promise<void> {
   const addresses = await listAddresses(userId);
   const target = addresses.find((a) => a.addrId === addrId);
   if (!target) throw new Error(`Address ${addrId} not found`);
 
   if (!target.isDefault) {
-    await AddressEntity.patch({ userId, addrId })
-      .set({ isDefault: true, updatedAt: now() })
-      .go();
+    await AddressEntity.patch({ userId, addrId }).set({ isDefault: true, updatedAt: now() }).go();
   }
   await clearOtherDefaults(userId, addrId, addresses);
 }
@@ -121,17 +111,11 @@ export async function deleteAddress(userId: string, addrId: string): Promise<voi
 
 /** Only touches rows that are actually wrong, so the usual case — one
  *  address, already correct — writes nothing. */
-async function clearOtherDefaults(
-  userId: string,
-  keepId: string,
-  known: Address[],
-): Promise<void> {
+async function clearOtherDefaults(userId: string, keepId: string, known: Address[]): Promise<void> {
   const stale = known.filter((a) => a.addrId !== keepId && a.isDefault);
   await Promise.all(
     stale.map((a) =>
-      AddressEntity.patch({ userId, addrId: a.addrId })
-        .set({ isDefault: false, updatedAt: now() })
-        .go(),
+      AddressEntity.patch({ userId, addrId: a.addrId }).set({ isDefault: false, updatedAt: now() }).go(),
     ),
   );
 }

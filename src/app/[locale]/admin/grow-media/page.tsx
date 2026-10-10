@@ -19,10 +19,7 @@ export const dynamic = "force-dynamic";
 export default async function GrowMediaAdmin() {
   const t = await getTranslations("admin.growMedia");
 
-  const [rows, content] = await Promise.all([
-    listGrowMedia(),
-    listGrowMediumContent(routing.defaultLocale),
-  ]);
+  const [rows, content] = await Promise.all([listGrowMedia(), listGrowMediumContent(routing.defaultLocale)]);
 
   const withContent = await attachGrowMediumContent(rows, routing.defaultLocale);
   /* Content files not yet priced, offered as suggestions only. */

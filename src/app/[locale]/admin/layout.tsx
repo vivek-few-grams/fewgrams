@@ -36,11 +36,7 @@ import { ADMIN_NAV_LABELS } from "./nav-items";
  * `overflow-x-auto` never engages — it widens the whole page instead, and the
  * rail goes with it.
  */
-export default async function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const actor = await requireRole("admin");
   const t = await getTranslations("admin.shell");
 

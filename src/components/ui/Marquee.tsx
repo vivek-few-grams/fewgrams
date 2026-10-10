@@ -39,13 +39,12 @@ export const DEFAULT_MIN_LINES = 10;
  * twice, on the 3:2 tray card and again on the 4:5 rack card. `marquee.test.ts`
  * pins each live caller's numbers against the panel it actually renders in.
  */
-export function marqueeLines(
-  words: string[],
-  minLines: number = DEFAULT_MIN_LINES,
-): string[] {
+export function marqueeLines(words: string[], minLines: number = DEFAULT_MIN_LINES): string[] {
   if (words.length === 0) return [];
   const copies = Math.ceil(minLines / words.length);
-  return Array.from({ length: copies }, () => words).flat().map(shorten);
+  return Array.from({ length: copies }, () => words)
+    .flat()
+    .map(shorten);
 }
 
 /**

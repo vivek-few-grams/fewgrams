@@ -1,14 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-  type ComponentProps,
-} from "react";
+import { useCallback, useEffect, useRef, useState, useTransition, type ComponentProps } from "react";
 import { useTranslations } from "next-intl";
 import {
   ArrowRight,
@@ -42,21 +35,8 @@ import { setCartQuantity } from "@/app/[locale]/cart/actions";
 import { IDLE } from "@/lib/forms";
 import { GardenStage } from "./GardenStage";
 import type { GardenScene } from "./scene";
-import {
-  STEPS,
-  nextStep,
-  stepFrom,
-  type BenchStep,
-  type StepId,
-} from "./steps";
-import {
-  DARK_DAYS,
-  DARK_SHARE_TALL,
-  STEEP_SECONDS,
-  type Anchor,
-  type Phase,
-  type Target,
-} from "./targets";
+import { STEPS, nextStep, stepFrom, type BenchStep, type StepId } from "./steps";
+import { DARK_DAYS, DARK_SHARE_TALL, STEEP_SECONDS, type Anchor, type Phase, type Target } from "./targets";
 import type { GardenLink, GardenProduct, GardenShelf } from "./types";
 
 /**
@@ -139,18 +119,15 @@ export function GardenJourney({
   }, []);
 
   /* ---- the URL ---- */
-  const write = useCallback(
-    (next: { step: StepId; tray: TrayFinish; greens: Look }, push: boolean) => {
-      const q = new URLSearchParams(window.location.search);
-      q.set("step", next.step);
-      q.set("tray", next.tray);
-      q.set("greens", next.greens);
-      const url = `${window.location.pathname}?${q}`;
-      if (push) window.history.pushState(null, "", url);
-      else window.history.replaceState(null, "", url);
-    },
-    [],
-  );
+  const write = useCallback((next: { step: StepId; tray: TrayFinish; greens: Look }, push: boolean) => {
+    const q = new URLSearchParams(window.location.search);
+    q.set("step", next.step);
+    q.set("tray", next.tray);
+    q.set("greens", next.greens);
+    const url = `${window.location.pathname}?${q}`;
+    if (push) window.history.pushState(null, "", url);
+    else window.history.replaceState(null, "", url);
+  }, []);
 
   const go = useCallback(
     (next: StepId) => {
@@ -193,14 +170,9 @@ export function GardenJourney({
     },
     [finish, write],
   );
-  const onProgress = useCallback(
-    (s: BenchStep, progress: number, phase: Phase) => {
-      setState((prev) =>
-        prev.step === s ? { step: s, progress, phase } : prev,
-      );
-    },
-    [],
-  );
+  const onProgress = useCallback((s: BenchStep, progress: number, phase: Phase) => {
+    setState((prev) => (prev.step === s ? { step: s, progress, phase } : prev));
+  }, []);
 
   const bench = step === "touch" ? null : step;
   const done = step === "touch" || !live || state.progress >= 1;
@@ -211,8 +183,7 @@ export function GardenJourney({
      middle and the next tools drop onto the bench — after a moment to read
      "well done". The last step stays, because the kit is the point of it.
      Next still skips the wait. */
-  const finished =
-    !!bench && live && state.step === step && state.progress >= 1;
+  const finished = !!bench && live && state.step === step && state.progress >= 1;
   /* "Well done" in the middle of the screen from the moment a step is
      finished, held on through the move into the next one until its tools
      have landed on the bench, so it reads as the bridge between the two. */
@@ -235,35 +206,23 @@ export function GardenJourney({
   }, [lingering]);
 
   /* ---- labels pinned to what to reach for ---- */
-  const select = useCallback(
-    (target: Target) => sceneRef.current?.select(target),
-    [],
-  );
+  const select = useCallback((target: Target) => sceneRef.current?.select(target), []);
   const pill = (target: Target, text: string, sub?: string) => (
     <button
       type="button"
       onClick={() => select(target)}
       className="flex items-center gap-2 whitespace-nowrap rounded-full bg-forest py-2 pl-2.5 pr-4 font-body text-sm font-semibold text-cream shadow-[0_6px_18px_rgba(3,39,24,0.3)] transition-colors hover:bg-forest-deep"
     >
-      <span
-        className="garden-label-dot size-2.5 shrink-0 rounded-full bg-sage"
-        aria-hidden
-      />
+      <span className="garden-label-dot size-2.5 shrink-0 rounded-full bg-sage" aria-hidden />
       <span className="flex flex-col items-start leading-tight">
         {text}
-        {sub && (
-          <span className="text-[11px] font-medium text-cream/75">{sub}</span>
-        )}
+        {sub && <span className="text-[11px] font-medium text-cream/75">{sub}</span>}
       </span>
     </button>
   );
   /* A seed packet's tag in the scene: its name and price pick it, like
      the packet itself, and the bag beside them opens the seeds page. */
-  const shopPill = (
-    target: Target,
-    name: string,
-    product: GardenProduct | null | undefined,
-  ) =>
+  const shopPill = (target: Target, name: string, product: GardenProduct | null | undefined) =>
     product ? (
       /* The whole tag goes to the seeds page, not this one seed's (the
          owner, 2–3 Oct 2026); the packet itself is picked on the bench,
@@ -278,9 +237,7 @@ export function GardenJourney({
           {/* Smaller on a phone, where four stand across the bench. */}
           <span className="flex flex-col items-start whitespace-nowrap py-0.5 pl-2 pr-1 text-xs font-semibold leading-tight text-forest sm:py-1 sm:pl-3 sm:pr-2 sm:text-sm">
             {name}
-            <span className="text-[10px] font-medium text-forest/70 sm:text-[11px]">
-              {product.price}
-            </span>
+            <span className="text-[10px] font-medium text-forest/70 sm:text-[11px]">{product.price}</span>
           </span>
           <span
             aria-hidden
@@ -319,28 +276,17 @@ export function GardenJourney({
   if (bench) {
     for (const f of TRAY_FINISH_KEYS)
       labels[f] = (
-        <PairCard
-          name={t(`targets.${f}`)}
-          product={shelf.trays[f]}
-          onPick={() => select(f)}
-          t={t}
-        />
+        <PairCard name={t(`targets.${f}`)} product={shelf.trays[f]} onPick={() => select(f)} t={t} />
       );
     labels.basin = pill("basin", t("targets.dip"));
     labels.timer = <SoakTimer label={t("steps.clean.soaking")} />;
     labels.cloth = pill("cloth", t("targets.cloth"));
-    labels.can = pill(
-      "can",
-      phase === "water" ? t("targets.water") : t("targets.can"),
-    );
+    labels.can = pill("can", phase === "water" ? t("targets.water") : t("targets.can"));
     labels.block = pill(
       "block",
-      phase === "takeScoop"
-        ? t("targets.bowl")
-        : (gestureLabel[phase ?? "pour"] ?? ""),
+      phase === "takeScoop" ? t("targets.bowl") : (gestureLabel[phase ?? "pour"] ?? ""),
     );
-    if (shelf.medium)
-      labels.medium = <MediumTag product={shelf.medium} t={t} />;
+    if (shelf.medium) labels.medium = <MediumTag product={shelf.medium} t={t} />;
     /* The light step's rack card, bottom left, with a dotted arrow to it
        from the shelf it sells (the owner, 3 Oct 2026); the scene draws
        the line between the two (`placeRackArrow`). */
@@ -374,11 +320,7 @@ export function GardenJourney({
     labels.lamp = pill("lamp", t("targets.lamp"));
     labels.cutter = pill("cutter", t("targets.cutter"));
     for (const l of LOOK_KEYS)
-      labels[`packet-${l}`] = shopPill(
-        `packet-${l}`,
-        t(`looks.${l}`),
-        shelf.seeds[l],
-      );
+      labels[`packet-${l}`] = shopPill(`packet-${l}`, t(`looks.${l}`), shelf.seeds[l]);
     const trayWord: Partial<Record<Phase, string>> = {
       takeTray: t("targets.trayUp"),
       lift: t("targets.liftOut"),
@@ -399,19 +341,13 @@ export function GardenJourney({
     if (!live && !stills) return null;
     const any = stills;
     const tray = shelf.trays[finish];
-    if (s === "pick" && tray && (any || p === "drop" || p === "done"))
-      return { p: tray };
+    if (s === "pick" && tray && (any || p === "drop" || p === "done")) return { p: tray };
     /* The tray being cleaned is the one just picked. */
     if (s === "clean" && tray) return { p: tray };
-    if (
-      (s === "soak" || s === "fill") &&
-      shelf.medium &&
-      (any || s === "fill" || (p && p !== "takeCan"))
-    )
+    if ((s === "soak" || s === "fill") && shelf.medium && (any || s === "fill" || (p && p !== "takeCan")))
       return { p: shelf.medium, recommended: true };
     const seed = shelf.seeds[look];
-    if (s === "sow" && seed && (any || p === "sow" || p === "done"))
-      return { p: seed };
+    if (s === "sow" && seed && (any || p === "sow" || p === "done")) return { p: seed };
     if (s === "light" && shelf.rack) return { p: shelf.rack };
     /* From the moment the harvest opens, not once it is cut (the owner,
        3 Oct 2026). */
@@ -441,14 +377,7 @@ export function GardenJourney({
     <BuyCard p={ad.p} recommended={ad.recommended} t={t} />
   ) : null;
 
-  const dots = (
-    <StepDots
-      step={step}
-      onGo={go}
-      labels={(s) => t(`steps.${s}.label`)}
-      t={t}
-    />
-  );
+  const dots = <StepDots step={step} onGo={go} labels={(s) => t(`steps.${s}.label`)} t={t} />;
   const pillClass =
     "rounded-full bg-cream/90 px-4 py-2.5 font-body text-sm font-semibold text-forest shadow-sm ring-1 ring-forest/10 transition-colors hover:bg-cream";
   const primaryClass =
@@ -525,16 +454,8 @@ export function GardenJourney({
       {bench === "dark" &&
         live &&
         state.step === "dark" &&
-        (phase === "hold" ||
-          phase === "toLight" ||
-          phase === "carry" ||
-          phase === "done") && (
-          <DarkSplit
-            sceneRef={sceneRef}
-            t={t}
-            toLight={phase === "toLight"}
-            over={phase !== "hold"}
-          />
+        (phase === "hold" || phase === "toLight" || phase === "carry" || phase === "done") && (
+          <DarkSplit sceneRef={sceneRef} t={t} toLight={phase === "toLight"} over={phase !== "hold"} />
         )}
 
       {/* ---- progress, along the top edge ---- */}
@@ -593,14 +514,7 @@ export function GardenJourney({
                 <path d="M98 0H70L48 62H76Z" fill="#1d5a3a" />
                 <path d="M89 0H80L58 62H67Z" fill="#a8cf8e" />
                 {/* The ring the ribbon hangs it by. */}
-                <rect
-                  x="52"
-                  y="50"
-                  width="16"
-                  height="9"
-                  rx="3"
-                  fill="url(#medal-rim)"
-                />
+                <rect x="52" y="50" width="16" height="9" rx="3" fill="url(#medal-rim)" />
                 <path
                   d="M60.0 54.0L64.5 57.8L69.8 55.3L73.2 60.1L79.0 59.1L81.0 64.6L86.9 65.1L87.4 71.0L92.9 73.0L91.9 78.8L96.7 82.2L94.2 87.5L98.0 92.0L94.2 96.5L96.7 101.8L91.9 105.2L92.9 111.0L87.4 113.0L86.9 118.9L81.0 119.4L79.0 124.9L73.2 123.9L69.8 128.7L64.5 126.2L60.0 130.0L55.5 126.2L50.2 128.7L46.8 123.9L41.0 124.9L39.0 119.4L33.1 118.9L32.6 113.0L27.1 111.0L28.1 105.2L23.3 101.8L25.8 96.5L22.0 92.0L25.8 87.5L23.3 82.2L28.1 78.8L27.1 73.0L32.6 71.0L33.1 65.1L39.0 64.6L41.0 59.1L46.8 60.1L50.2 55.3L55.5 57.8Z"
                   fill="url(#medal-rim)"
@@ -689,10 +603,7 @@ export function GardenJourney({
                 : "md:bottom-auto md:right-6 md:top-[19%]"
           }`}
         >
-          <div
-            data-garden-card={bench ?? undefined}
-            className="pointer-events-auto w-full min-w-0 md:w-auto"
-          >
+          <div data-garden-card={bench ?? undefined} className="pointer-events-auto w-full min-w-0 md:w-auto">
             {card}
           </div>
         </div>
@@ -717,26 +628,19 @@ export function GardenJourney({
                 be chosen it carries a pulsing dot, rather than saying it
                 twice in a second line (the owner, 3 Oct 2026). */}
             <h1 className="flex items-center gap-2.5 font-display text-xl font-bold leading-tight text-forest md:text-[1.9rem]">
-              {step === "pick" &&
-                live &&
-                state.step === "pick" &&
-                state.phase === "choose" && (
-                  <span
-                    className="garden-label-dot size-2.5 shrink-0 rounded-full bg-sage md:size-3"
-                    aria-hidden
-                  />
-                )}
+              {step === "pick" && live && state.step === "pick" && state.phase === "choose" && (
+                <span
+                  className="garden-label-dot size-2.5 shrink-0 rounded-full bg-sage md:size-3"
+                  aria-hidden
+                />
+              )}
               {t(`steps.${step}.title`)}
             </h1>
             {/* The scene waters once; a real tray needs it twice a day
                 (the owner, 3 Oct 2026). */}
             {step === "light" && (
               <p className="mt-1 flex items-center gap-1.5 font-body text-sm font-semibold text-forest/80">
-                <Droplets
-                  size={15}
-                  aria-hidden
-                  className="shrink-0 text-sky-600"
-                />
+                <Droplets size={15} aria-hidden className="shrink-0 text-sky-600" />
                 {t("steps.light.twice")}
               </p>
             )}
@@ -747,51 +651,31 @@ export function GardenJourney({
                 {/* Without the live scene there are no tray labels, so the
                     photograph keeps one way to the shop. */}
                 {!traysLive && (
-                  <ShopLink
-                    newTab={t("product.newTab")}
-                    href="/microgreens"
-                    className={pillClass}
-                  >
+                  <ShopLink newTab={t("product.newTab")} href="/microgreens" className={pillClass}>
                     {t("steps.touch.order")}
                   </ShopLink>
                 )}
                 {/* Where the journey's Next sits on every other step. A
                     slow breath and a nudge of the arrow: the one thing on
                     this screen that leads on, so it asks to be pressed. */}
-                <button
-                  type="button"
-                  onClick={() => go("pick")}
-                  className={`garden-nudge ${primaryClass}`}
-                >
+                <button type="button" onClick={() => go("pick")} className={`garden-nudge ${primaryClass}`}>
                   <Sprout size={18} aria-hidden />
                   <span className="max-w-[15rem] text-left leading-snug sm:max-w-none">
                     {t("steps.touch.start")}
                   </span>
-                  <ArrowRight
-                    size={16}
-                    aria-hidden
-                    className="garden-nudge-arrow"
-                  />
+                  <ArrowRight size={16} aria-hidden className="garden-nudge-arrow" />
                 </button>
               </>
             ) : (
               <>
                 {live && !done && bench !== "pick" && (
-                  <button
-                    type="button"
-                    onClick={() => sceneRef.current?.autoplay()}
-                    className={pillClass}
-                  >
+                  <button type="button" onClick={() => sceneRef.current?.autoplay()} className={pillClass}>
                     {t("nav.auto")}
                   </button>
                 )}
                 {following ? (
                   done && (
-                    <button
-                      type="button"
-                      onClick={() => go(following)}
-                      className={primaryClass}
-                    >
+                    <button type="button" onClick={() => go(following)} className={primaryClass}>
                       {t("nav.next")}
                       <ArrowRight size={16} aria-hidden />
                     </button>
@@ -799,11 +683,7 @@ export function GardenJourney({
                 ) : (
                   /* The end of the journey leads to the shop (the owner,
                      3 Oct 2026); the step dots still start it again. */
-                  <ShopLink
-                    newTab={t("product.newTab")}
-                    href="/shop"
-                    className={primaryClass}
-                  >
+                  <ShopLink newTab={t("product.newTab")} href="/shop" className={primaryClass}>
                     <ShoppingBag size={16} aria-hidden />
                     {t("nav.shop")}
                     <ArrowRight size={16} aria-hidden />
@@ -828,11 +708,7 @@ type Ad = { p: GardenProduct | GardenLink; recommended?: boolean };
  *  (the owner, 2 Oct 2026), so the tray in play stays where it is. The
  *  basket link does not: going to pay is leaving the garden. A screen
  *  reader is told; where a link has its own `aria-label`, that says it. */
-function ShopLink({
-  newTab,
-  children,
-  ...props
-}: ComponentProps<typeof Link> & { newTab: string }) {
+function ShopLink({ newTab, children, ...props }: ComponentProps<typeof Link> & { newTab: string }) {
   return (
     <Link {...props} target="_blank" rel="noopener noreferrer">
       {children}
@@ -906,11 +782,7 @@ function SoakTimer({ label }: { label: string }) {
   return (
     <span className="garden-card-in flex flex-col items-center gap-1.5">
       <span className="relative grid size-20 place-items-center rounded-full bg-cream/95 shadow-[0_10px_30px_rgba(3,39,24,0.25)] ring-1 ring-forest/10">
-        <svg
-          viewBox="0 0 64 64"
-          className="absolute inset-0 size-full -rotate-90"
-          aria-hidden
-        >
+        <svg viewBox="0 0 64 64" className="absolute inset-0 size-full -rotate-90" aria-hidden>
           <circle
             cx="32"
             cy="32"
@@ -1003,17 +875,10 @@ function DarkSplit({
       const d = scene?.days() ?? 0;
       /* The dark room's share of the stage, as the scene draws it. */
       const share = scene?.split() ?? 1;
-      const half =
-        box.clientWidth / box.clientHeight >= 0.9 ? 0.5 : DARK_SHARE_TALL;
+      const half = box.clientWidth / box.clientHeight >= 0.9 ? 0.5 : DARK_SHARE_TALL;
       box.style.setProperty("--dark", String(share));
-      box.style.setProperty(
-        "--alone",
-        String(Math.min(1, Math.max(0, (share - half) / (1 - half)))),
-      );
-      box.style.setProperty(
-        "--seam",
-        String(Math.min(1, (1 - share) * 10, share * 10)),
-      );
+      box.style.setProperty("--alone", String(Math.min(1, Math.max(0, (share - half) / (1 - half)))));
+      box.style.setProperty("--seam", String(Math.min(1, (1 - share) * 10, share * 10)));
       const n = Math.min(DARK_DAYS - 1, Math.floor(d));
       setDay((was) => (was === n ? was : n));
       raf = requestAnimationFrame(frame);
@@ -1025,11 +890,7 @@ function DarkSplit({
     };
   }, [sceneRef]);
 
-  const panels: [
-    React.CSSProperties,
-    React.CSSProperties,
-    React.CSSProperties,
-  ] = wide
+  const panels: [React.CSSProperties, React.CSSProperties, React.CSSProperties] = wide
     ? [
         { inset: "0 auto 0 0", width: "calc(100% * var(--dark, 1))" },
         { inset: "0 0 0 auto", width: "calc(100% * (1 - var(--dark, 1)))" },
@@ -1053,8 +914,7 @@ function DarkSplit({
           top: "calc(100% * var(--dark, 1) - 2px)",
         },
       ];
-  const heading =
-    "rounded-full px-4 py-1.5 font-body text-sm font-semibold shadow-sm";
+  const heading = "rounded-full px-4 py-1.5 font-body text-sm font-semibold shadow-sm";
 
   const stages = (
     <ol className="flex items-end gap-2 sm:gap-4">
@@ -1063,11 +923,7 @@ function DarkSplit({
           key={stage}
           aria-current={i === day ? "step" : undefined}
           className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-1.5 transition-all duration-500 ${
-            i === day
-              ? "bg-cream/15 opacity-100 ring-1 ring-cream/30"
-              : i < day
-                ? "opacity-60"
-                : "opacity-30"
+            i === day ? "bg-cream/15 opacity-100 ring-1 ring-cream/30" : i < day ? "opacity-60" : "opacity-30"
           }`}
         >
           <SeedStage stage={stage} />
@@ -1082,10 +938,7 @@ function DarkSplit({
   return (
     <div ref={root} className="pointer-events-none absolute inset-0 z-20">
       {/* ---- the dark room ---- */}
-      <div
-        style={panels[0]}
-        className="absolute flex flex-col items-center overflow-hidden"
-      >
+      <div style={panels[0]} className="absolute flex flex-col items-center overflow-hidden">
         {/* At the top, over the tray, where nothing else is: the step
             card holds the bottom (the owner, 3 Oct 2026). */}
         <div className="garden-stages-in mt-4 md:mt-6">{stages}</div>
@@ -1113,23 +966,14 @@ function DarkSplit({
       )}
 
       {/* The seam between the two places. */}
-      <div
-        aria-hidden
-        style={{ ...panels[2], opacity: "var(--seam, 0)" }}
-        className="absolute bg-cream"
-      />
+      <div aria-hidden style={{ ...panels[2], opacity: "var(--seam, 0)" }} className="absolute bg-cream" />
 
       {/* ---- the kitchen, sliding in ---- */}
-      <div
-        style={panels[1]}
-        className="absolute flex flex-col items-center overflow-hidden"
-      >
+      <div style={panels[1]} className="absolute flex flex-col items-center overflow-hidden">
         {/* Where to drop the tray, once the days are done. */}
         {toLight && (
           <div className="garden-card-in absolute inset-3 flex items-center justify-center rounded-3xl border-2 border-dashed border-cream/90 bg-cream/10">
-            <p
-              className={`${heading} garden-nudge flex items-center gap-2 bg-forest text-cream`}
-            >
+            <p className={`${heading} garden-nudge flex items-center gap-2 bg-forest text-cream`}>
               <Sun size={16} aria-hidden />
               {t("steps.dark.drop")}
             </p>
@@ -1146,9 +990,7 @@ function DarkSplit({
           {t.rich("steps.dark.keep", {
             days: DARK_DAYS,
             b: (chunks) => (
-              <strong className="rounded-md bg-cream px-1.5 font-bold text-forest">
-                {chunks}
-              </strong>
+              <strong className="rounded-md bg-cream px-1.5 font-bold text-forest">{chunks}</strong>
             ),
           })}
         </p>
@@ -1163,9 +1005,7 @@ function SeedStage({ stage }: { stage: (typeof STAGES)[number] }) {
   return (
     <svg viewBox="0 0 48 48" className="size-11 sm:size-12" aria-hidden>
       <rect x="2" y="27" width="44" height="19" rx="4" fill="#4a3424" />
-      {stage === "seed" && (
-        <ellipse cx="24" cy="31" rx="5" ry="3.6" fill="#b5895a" />
-      )}
+      {stage === "seed" && <ellipse cx="24" cy="31" rx="5" ry="3.6" fill="#b5895a" />}
       {stage === "sprout" && (
         <>
           <path
@@ -1182,14 +1022,7 @@ function SeedStage({ stage }: { stage: (typeof STAGES)[number] }) {
             fill="none"
             strokeLinecap="round"
           />
-          <ellipse
-            cx="18.5"
-            cy="20"
-            rx="3.6"
-            ry="2.6"
-            fill="#b5895a"
-            transform="rotate(-25 18.5 20)"
-          />
+          <ellipse cx="18.5" cy="20" rx="3.6" ry="2.6" fill="#b5895a" transform="rotate(-25 18.5 20)" />
         </>
       )}
       {stage === "leaves" && (
@@ -1201,28 +1034,9 @@ function SeedStage({ stage }: { stage: (typeof STAGES)[number] }) {
             fill="none"
             strokeLinecap="round"
           />
-          <path
-            d="M24 32 V12"
-            stroke="#e8e0b0"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-          />
-          <ellipse
-            cx="18"
-            cy="11"
-            rx="6.5"
-            ry="3.2"
-            fill="#e3d36f"
-            transform="rotate(-18 18 11)"
-          />
-          <ellipse
-            cx="30"
-            cy="11"
-            rx="6.5"
-            ry="3.2"
-            fill="#e3d36f"
-            transform="rotate(18 30 11)"
-          />
+          <path d="M24 32 V12" stroke="#e8e0b0" strokeWidth="2.4" strokeLinecap="round" />
+          <ellipse cx="18" cy="11" rx="6.5" ry="3.2" fill="#e3d36f" transform="rotate(-18 18 11)" />
+          <ellipse cx="30" cy="11" rx="6.5" ry="3.2" fill="#e3d36f" transform="rotate(18 30 11)" />
         </>
       )}
     </svg>
@@ -1235,13 +1049,7 @@ function MediumTag({ product, t }: { product: GardenProduct; t: T }) {
   return (
     <span className="flex flex-col-reverse items-center">
       {/* Points down into the bowl from above it. */}
-      <svg
-        aria-hidden
-        width="16"
-        height="36"
-        viewBox="0 0 16 36"
-        className="mt-1 text-forest/75"
-      >
+      <svg aria-hidden width="16" height="36" viewBox="0 0 16 36" className="mt-1 text-forest/75">
         <path
           d="M8 3 V30"
           stroke="currentColor"
@@ -1281,9 +1089,7 @@ function MediumTag({ product, t }: { product: GardenProduct; t: T }) {
           <span className="text-[10px] font-semibold uppercase tracking-wider text-forest/60">
             {t("product.recommended")}
           </span>
-          <span className="max-w-[10rem] truncate text-sm font-semibold text-forest">
-            {product.name}
-          </span>
+          <span className="max-w-[10rem] truncate text-sm font-semibold text-forest">{product.name}</span>
           <span className="text-[11px] text-stone">{product.price}</span>
         </span>
         <span
@@ -1450,16 +1256,10 @@ function TrayTag({
   const k = Math.hypot(to.x - sx, to.y - sy) * 0.5;
   const d = `M${sx} ${sy} C${sx + ox * k} ${sy + oy * k} ${to.x - ix * k} ${to.y - iy * k} ${to.x} ${to.y}`;
   /* The head: two short strokes back from the tip, either side of `into`. */
-  const wing = (s: number) =>
-    `${to.x - ix * 11 + iy * 6 * s} ${to.y - iy * 11 - ix * 6 * s}`;
+  const wing = (s: number) => `${to.x - ix * 11 + iy * 6 * s} ${to.y - iy * 11 - ix * 6 * s}`;
   return (
     <div className="garden-card-in">
-      <svg
-        aria-hidden
-        className="absolute left-0 top-0 overflow-visible text-forest/75"
-        width="1"
-        height="1"
-      >
+      <svg aria-hidden className="absolute left-0 top-0 overflow-visible text-forest/75" width="1" height="1">
         <path
           d={d}
           stroke="currentColor"
@@ -1541,11 +1341,7 @@ function StepDots({
                       : "text-forest ring-1 ring-forest/25 hover:bg-forest/10"
                 }`}
               >
-                {i < at ? (
-                  <Check size={12} strokeWidth={3} aria-hidden />
-                ) : (
-                  i + 1
-                )}
+                {i < at ? <Check size={12} strokeWidth={3} aria-hidden /> : i + 1}
               </button>
             </li>
           );
@@ -1580,13 +1376,7 @@ function BuyCard({
           aria-label={`${t("product.view")}: ${p.name} (${nt})`}
           className="garden-buy-glow relative size-20 shrink-0 overflow-hidden rounded-xl bg-sand"
         >
-          <Image
-            src={p.image.src}
-            alt={p.image.alt}
-            fill
-            sizes="80px"
-            className="object-contain p-1"
-          />
+          <Image src={p.image.src} alt={p.image.alt} fill sizes="80px" className="object-contain p-1" />
         </ShopLink>
       )}
       <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5 font-body leading-tight">
@@ -1595,10 +1385,7 @@ function BuyCard({
           {t("product.forSale")}
         </span>
         {recommended && (
-          <RecommendedBadge
-            label={t("product.recommended")}
-            className="!px-2 !py-0.5 !text-[10px]"
-          />
+          <RecommendedBadge label={t("product.recommended")} className="!px-2 !py-0.5 !text-[10px]" />
         )}
         <ShopLink
           newTab={nt}
@@ -1685,10 +1472,7 @@ function WallFrame({ p, recommended = false, t }: Ad & { t: T }) {
               />
             </ShopLink>
           )}
-          <span
-            className="flex min-w-0 flex-1 flex-col items-start"
-            style={{ gap: u(5, 2) }}
-          >
+          <span className="flex min-w-0 flex-1 flex-col items-start" style={{ gap: u(5, 2) }}>
             <span
               className="inline-flex items-center whitespace-nowrap rounded-full bg-forest font-semibold uppercase tracking-wide text-cream"
               style={{
@@ -1697,10 +1481,7 @@ function WallFrame({ p, recommended = false, t }: Ad & { t: T }) {
                 gap: u(2.5, 1),
               }}
             >
-              <ShoppingBag
-                aria-hidden
-                style={{ width: "1.1em", height: "1.1em" }}
-              />
+              <ShoppingBag aria-hidden style={{ width: "1.1em", height: "1.1em" }} />
               {t("product.forSale")}
             </span>
             {recommended && (
@@ -1729,10 +1510,7 @@ function WallFrame({ p, recommended = false, t }: Ad & { t: T }) {
                 gap: u(4, 1.6),
               }}
             >
-              <ShoppingBag
-                aria-hidden
-                style={{ width: "1.1em", height: "1.1em" }}
-              />
+              <ShoppingBag aria-hidden style={{ width: "1.1em", height: "1.1em" }} />
               {t("product.buyHere")}
             </ShopLink>
           </span>
@@ -1773,14 +1551,10 @@ function Kit({
     : { card: "", title: "", list: "", row: "", img: "", price: "", cta: "" };
   /* What was used, and the rack it grew on (the owner, 3 Oct 2026); the
      fresh greens are not offered here any more. */
-  const items = [shelf.trays[finish], shelf.medium, shelf.seeds[look]].filter(
-    (p): p is GardenProduct => !!p,
-  );
+  const items = [shelf.trays[finish], shelf.medium, shelf.seeds[look]].filter((p): p is GardenProduct => !!p);
   const [pending, start] = useTransition();
   const [result, setResult] = useState<"added" | "failed" | null>(
-    items.length > 0 && items.every((p) => p.quickAdd.inCart > 0)
-      ? "added"
-      : null,
+    items.length > 0 && items.every((p) => p.quickAdd.inCart > 0) ? "added" : null,
   );
   const addAll = () =>
     start(async () => {
@@ -1807,11 +1581,7 @@ function Kit({
             <ShoppingBag size={11} aria-hidden />
             {t("product.forSale")}
           </span>
-          <p
-            className={`font-display text-lg font-bold text-forest ${z.title}`}
-          >
-            {t("kit.title")}
-          </p>
+          <p className={`font-display text-lg font-bold text-forest ${z.title}`}>{t("kit.title")}</p>
           <ul className={`mt-2 divide-y divide-forest/10 ${z.list}`}>
             {items.map((p) => (
               <li
@@ -1819,16 +1589,8 @@ function Kit({
                 className={`flex items-center gap-3 py-1.5 font-body text-sm ${z.row}`}
               >
                 {p.image && (
-                  <span
-                    className={`relative size-12 shrink-0 ${z.img} overflow-hidden rounded-lg bg-sand`}
-                  >
-                    <Image
-                      src={p.image.src}
-                      alt=""
-                      fill
-                      sizes="48px"
-                      className="object-contain p-0.5"
-                    />
+                  <span className={`relative size-12 shrink-0 ${z.img} overflow-hidden rounded-lg bg-sand`}>
+                    <Image src={p.image.src} alt="" fill sizes="48px" className="object-contain p-0.5" />
                   </span>
                 )}
                 {/* The name with its price under it, and a button for each
@@ -1841,9 +1603,7 @@ function Kit({
                   >
                     {p.name}
                   </ShopLink>
-                  <span className={`text-xs text-stone ${z.price}`}>
-                    {p.price}
-                  </span>
+                  <span className={`text-xs text-stone ${z.price}`}>{p.price}</span>
                 </span>
                 <QuickAdd {...p.quickAdd} className="shrink-0" />
               </li>
@@ -1851,19 +1611,9 @@ function Kit({
             {/* The rack it stood on: sizes and a colour to choose, so a
                 way to its range rather than an Add. */}
             {rack && (
-              <li
-                className={`flex items-center gap-3 py-1.5 font-body text-sm ${z.row}`}
-              >
-                <span
-                  className={`relative size-12 shrink-0 overflow-hidden rounded-lg bg-sand ${z.img}`}
-                >
-                  <Image
-                    src={rack.image.src}
-                    alt=""
-                    fill
-                    sizes="48px"
-                    className="object-contain p-0.5"
-                  />
+              <li className={`flex items-center gap-3 py-1.5 font-body text-sm ${z.row}`}>
+                <span className={`relative size-12 shrink-0 overflow-hidden rounded-lg bg-sand ${z.img}`}>
+                  <Image src={rack.image.src} alt="" fill sizes="48px" className="object-contain p-0.5" />
                 </span>
                 <ShopLink
                   newTab={t("product.newTab")}
@@ -1907,9 +1657,7 @@ function Kit({
             </button>
           )}
           {result === "failed" && (
-            <p className="mt-2 font-body text-xs text-terracotta">
-              {t("product.failed")}
-            </p>
+            <p className="mt-2 font-body text-xs text-terracotta">{t("product.failed")}</p>
           )}
         </>
       )}

@@ -64,7 +64,10 @@ type Courier = {
 type Rates = {
   status?: string;
   message?: string;
-  result?: { serviceable_couriers?: Courier[]; shipment_details?: { zone?: string; applicable_weight?: number } };
+  result?: {
+    serviceable_couriers?: Courier[];
+    shipment_details?: { zone?: string; applicable_weight?: number };
+  };
 };
 type Orchestrated = {
   status?: number | string;
@@ -78,7 +81,9 @@ type Orchestrated = {
   };
 };
 type ShipmentList = {
-  data?: Array<{ attributes?: { tracking_number?: string | null; order?: { external_id?: string; display_id?: string } } }>;
+  data?: Array<{
+    attributes?: { tracking_number?: string | null; order?: { external_id?: string; display_id?: string } };
+  }>;
 };
 
 const at = (w: When) => Date.parse(typeof w === "string" ? w : (w?.datetime ?? ""));
@@ -110,7 +115,11 @@ export class VelocityProvider implements ShippingProvider {
   private async call<T>(path: string, body: unknown): Promise<{ ok: boolean; status: number; body: T }> {
     const res = await fetch(`${HOST}${path}`, {
       method: "POST",
-      headers: { "content-type": "application/json", accept: "application/json", authorization: `Bearer ${this.apiKey}` },
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        authorization: `Bearer ${this.apiKey}`,
+      },
       body: JSON.stringify(body),
       cache: "no-store",
       signal: AbortSignal.timeout(TIMEOUT_MS),
@@ -131,7 +140,9 @@ export class VelocityProvider implements ShippingProvider {
       payment_method: "prepaid",
     });
     if (!ok || body.status !== "SUCCESS") {
-      throw new Error(`Velocity rates failed: ${status} ${(body.message ?? JSON.stringify(body)).slice(0, 300)}`);
+      throw new Error(
+        `Velocity rates failed: ${status} ${(body.message ?? JSON.stringify(body)).slice(0, 300)}`,
+      );
     }
     const chargedGrams = Math.ceil(body.result?.shipment_details?.applicable_weight ?? input.grams);
     const zone = body.result?.shipment_details?.zone ?? "";
@@ -164,15 +175,23 @@ export class VelocityProvider implements ShippingProvider {
 
   /** The AWB an earlier attempt already got for `reference`, if any. */
   private async findAwb(reference: string): Promise<string | null> {
-    const { body } = await this.call<ShipmentList>("/custom/api/v1/shipments", { page: 1, per_page: 20, search: reference });
-    const hit = body.data?.find((s) => s.attributes?.order?.external_id === reference || s.attributes?.order?.display_id === reference);
+    const { body } = await this.call<ShipmentList>("/custom/api/v1/shipments", {
+      page: 1,
+      per_page: 20,
+      search: reference,
+    });
+    const hit = body.data?.find(
+      (s) => s.attributes?.order?.external_id === reference || s.attributes?.order?.display_id === reference,
+    );
     return hit?.attributes?.tracking_number || null;
   }
 
   async book(input: BookingInput): Promise<BookingResult> {
     const warehouse = warehouseFor(input.pickup.name);
     if (!warehouse) {
-      throw new Error(`No Velocity warehouse id for pickup "${input.pickup.name}" — add it to VELOCITY_WAREHOUSES`);
+      throw new Error(
+        `No Velocity warehouse id for pickup "${input.pickup.name}" — add it to VELOCITY_WAREHOUSES`,
+      );
     }
     const created = await this.call<Orchestrated>("/custom/api/v1/forward-order-orchestration", {
       order_id: input.reference,
@@ -190,7 +209,12 @@ export class VelocityProvider implements ShippingProvider {
       billing_phone: input.drop.phone.replace(/\D/g, "").slice(-10),
       shipping_is_billing: true,
       print_label: true,
-      order_items: input.items.map((i) => ({ name: i.name, sku: i.sku, units: i.units, selling_price: i.unitPrice })),
+      order_items: input.items.map((i) => ({
+        name: i.name,
+        sku: i.sku,
+        units: i.units,
+        selling_price: i.unitPrice,
+      })),
       payment_method: "PREPAID",
       sub_total: input.value,
       cod_collectible: 0,
@@ -221,7 +245,9 @@ export class VelocityProvider implements ShippingProvider {
       trackingNumber: awb,
       courierRef: p?.shipment_id ?? null,
       pickupRequested,
-      pickupError: pickupRequested ? null : "Velocity did not confirm the pickup — request it from the dashboard",
+      pickupError: pickupRequested
+        ? null
+        : "Velocity did not confirm the pickup — request it from the dashboard",
       labelUrl: p?.label_url ?? null,
     };
   }

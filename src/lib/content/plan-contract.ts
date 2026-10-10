@@ -21,13 +21,7 @@
  */
 
 /** Every field an `en` block must carry. Order is the order they are written. */
-export const EN_REQUIRED = [
-  "name",
-  "badge",
-  "tagline",
-  "description",
-  "highlights",
-] as const;
+export const EN_REQUIRED = ["name", "badge", "tagline", "description", "highlights"] as const;
 
 /** Derived rather than restated, so adding a field to the template cannot add
  *  it to English only. */
@@ -40,8 +34,7 @@ const ALLOWED_TOP_LEVEL = new Set(["en", "kn"]);
  *  unfinished plan rather than a short one. */
 export const MIN_HIGHLIGHTS = 3;
 
-const isFilledString = (v: unknown): boolean =>
-  typeof v === "string" && v.trim().length > 0;
+const isFilledString = (v: unknown): boolean => typeof v === "string" && v.trim().length > 0;
 
 /**
  * Prose must not restate the price or the box weight.
@@ -64,8 +57,7 @@ const isFilledString = (v: unknown): boolean =>
  * boundary instead, which is also what keeps the guard off ordinary words that
  * merely start with ರೂ, like ರೂಪುಗೊಳ್ಳುತ್ತದೆ.
  */
-const MONEY =
-  /(?:₹|\brs\.?|\brupees?\b|ರೂ\.?)\s*[\d೦-೯]|[\d೦-೯][\d,.]*\s*(?:rupees?\b|ರೂ)/iu;
+const MONEY = /(?:₹|\brs\.?|\brupees?\b|ರೂ\.?)\s*[\d೦-೯]|[\d೦-೯][\d,.]*\s*(?:rupees?\b|ರೂ)/iu;
 const WEIGHT = /[\d೦-೯][\d,.]*\s*(?:g\b|gm\b|grams?\b|ಗ್ರಾಂ|ಗ್ರಾಮ್)/iu;
 
 /**
@@ -94,12 +86,7 @@ export function checkPlanFile(key: string, raw: unknown): string[] {
   return problems;
 }
 
-function checkText(
-  raw: unknown,
-  locale: string,
-  required: readonly string[],
-  at: (msg: string) => void,
-) {
+function checkText(raw: unknown, locale: string, required: readonly string[], at: (msg: string) => void) {
   if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
     at(`"${locale}" must be an object`);
     return;
