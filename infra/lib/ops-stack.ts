@@ -45,6 +45,28 @@ export class OpsStack extends Stack {
       }),
     );
 
+    /* `cdk gc` after each deploy (deploy.yml) deletes the bundles no stack
+       references any more. Unlike `cdk deploy` it does not hand off to a
+       bootstrap role — it calls S3 and CloudFormation with this role's own
+       credentials — so it needs these directly: read every template, and tag
+       and delete in the two staging buckets (ap-south-1, and us-east-1 for the
+       certificate and the edge function). Nothing else. */
+    deployRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["cloudformation:ListStacks", "cloudformation:DescribeStacks", "cloudformation:GetTemplate"],
+        resources: ["*"],
+      }),
+    );
+    deployRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["s3:ListBucket", "s3:GetObjectTagging", "s3:PutObjectTagging", "s3:DeleteObject"],
+        resources: [
+          `arn:aws:s3:::cdk-hnb659fds-assets-${this.account}-*`,
+          `arn:aws:s3:::cdk-hnb659fds-assets-${this.account}-*/*`,
+        ],
+      }),
+    );
+
     new CfnOutput(this, "DeployRoleArn", {
       value: deployRole.roleArn,
       description: "Set as the AWS_DEPLOY_ROLE_ARN repository variable in GitHub",

@@ -4,8 +4,8 @@ import type { IConstruct } from "constructs";
 import { LOG_RETENTION } from "./config";
 
 /**
- * Gives every Lambda function in a stack a log group with CERT-In's 180-day
- * retention — SPEC §2.2.
+ * Gives every Lambda function in a stack a log group with `LOG_RETENTION`
+ * (config.ts) — SPEC §2.2.
  *
  * Lambda creates `/aws/lambda/<name>` on first invocation with retention set to
  * "never expire", and neither cdk-nextjs nor CDK's own custom-resource handlers

@@ -5,6 +5,7 @@ import { TABLES, ddb } from "@/lib/ddb";
 import { brand } from "@/lib/brand";
 import { DEFAULT_ROLE, isBootstrapAdmin } from "@/lib/auth/roles";
 import { ensureUserRole, setUserRole } from "@/lib/auth/users";
+import { takeMagicLink } from "@/lib/auth/magic-link-quota";
 
 /**
  * Auth.js configuration — SPEC §8.1.
@@ -118,6 +119,29 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
 
   callbacks: {
+    /**
+     * The magic-link limit — two a day per address, a minute apart
+     * (src/lib/auth/magic-link-quota.ts).
+     *
+     * Auth.js calls this with `email.verificationRequest` before it creates
+     * the token or calls `sendVerificationRequest`, and turns a returned path
+     * into the redirect. So a refused request sends nothing and stores nothing,
+     * and the check holds for a POST straight to /api/auth as well as for the
+     * login form. The login page translates the `error` code; a direct POST
+     * lands on the default-locale page, which is fine for something only a
+     * script does.
+     *
+     * Every other sign-in (Google, and the click on a link already sent)
+     * passes through untouched.
+     */
+    async signIn({ account, email }) {
+      if (account?.provider === "email" && email?.verificationRequest) {
+        const refusal = await takeMagicLink(account.providerAccountId);
+        if (refusal) return `/login?error=${refusal}`;
+      }
+      return true;
+    },
+
     /**
      * Return a deliberately minimal session.
      *

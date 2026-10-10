@@ -96,7 +96,7 @@ Once per AWS account, in this order.
      `<SiteUrl>/api/payments/razorpay/webhook` and send a test event: it must
      return **200**, not 403 (403 means the body-hash Lambda@Edge is not
      signing — see `lib/webhook-signing.ts`)
-   - CloudWatch → Log groups: every `/aws/lambda/…` group shows 6 months'
+   - CloudWatch → Log groups: every `/aws/lambda/…` group shows 1 week's
      retention
 
 ## Before taking real orders
@@ -126,10 +126,12 @@ At launch traffic the bill is cents (SPEC §2.2). What can change that:
 - **A VPC or NAT Gateway** — ~$45/month. Nothing here needs one.
 - **`…Containers` constructs** from cdk-nextjs — $120–140/month. Functions only.
 - **CloudWatch log ingestion over 5 GB/month** — the first allowance a busy
-  site exceeds. Log less in production rather than shortening retention, which
-  CERT-In fixes at 180 days.
-- **Old Lambda bundles** pile up in the CDK staging bucket, ~15 MB per deploy.
-  `npx cdk gc --unstable=gc --profile fewgrams` now and then.
+  site exceeds. Retention does not help here — ingestion is what is billed —
+  so log less in production.
+- **Old Lambda bundles** are deleted by the last step of every deploy (`cdk
+  gc`), and the space is freed 30 days later when the bucket's lifecycle drops
+  the deleted versions. A deploy run from a laptop skips that step; run
+  `npx cdk gc --unstable=gc --type=s3 --profile fewgrams` afterwards.
 
 ## Upgrading cdk-nextjs
 

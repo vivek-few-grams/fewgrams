@@ -592,6 +592,41 @@ export const AddressEntity = new Entity(
 );
 
 /**
+ * Sign-in links sent to one address on one IST day — SPEC §8.1.
+ *   PK = MAGICLINK#<email>   SK = DAY#<YYYY-MM-DD>
+ *
+ * Keyed by the address, not the user, because the limit applies before an
+ * account exists: a first sign-in is the commonest magic link of all. The
+ * address arrives already normalised (lower-cased) by Auth.js.
+ *
+ * No GSI. GSI1 on this table is the adapter's email index, and this row must
+ * not land in it. `expires` is the table's TTL attribute (infra
+ * data-stack.ts), so a day's row deletes itself; nothing depends on that,
+ * since the day is in the key.
+ */
+export const MagicLinkQuotaEntity = new Entity(
+  {
+    model: { ...model, entity: "magicLinkQuota" },
+    attributes: {
+      email: { type: "string", required: true },
+      day: { type: "string", required: true },
+      sent: { type: "number", required: true },
+      /** Epoch milliseconds of the last link sent. */
+      lastSentAt: { type: "number", required: true },
+      /** Epoch seconds — the DynamoDB TTL format. */
+      expires: { type: "number", required: true },
+    },
+    indexes: {
+      byEmailDay: {
+        pk: { field: "PK", composite: ["email"], template: "MAGICLINK#${email}", casing: "none" },
+        sk: { field: "SK", composite: ["day"], template: "DAY#${day}", casing: "none" },
+      },
+    },
+  },
+  usersConfig,
+);
+
+/**
  * Rack rate card — SPEC §19–§21. Nine entities, one partition.
  *
  *   PK = RACKSPEC   SK = SETTINGS | PLATE#<id> | ANGLE#<id>

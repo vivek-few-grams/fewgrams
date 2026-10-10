@@ -50,3 +50,12 @@ jobs:
           SITE_PUBLIC: ${{ vars.SITE_PUBLIC }}
           # Makes every deploy re-read the Parameter Store values (web-stack.ts).
           DEPLOY_REVISION: ${{ github.run_id }}
+      # CDK keeps every bundle it has ever uploaded (~15 MB a deploy). Delete
+      # the ones no stack references any more. Safe straight after a
+      # successful deploy: the live version is referenced, so it stays, and
+      # the concurrency group above means no other deploy is mid-upload.
+      # `--app infra/cdk.out` reuses the assembly just deployed instead of
+      # building the app a second time. Deleted objects become noncurrent
+      # versions, which the bootstrap bucket's lifecycle removes after 30 days.
+      - name: Delete unused deploy bundles
+        run: npx cdk gc --unstable=gc --type=s3 --confirm=false --app infra/cdk.out

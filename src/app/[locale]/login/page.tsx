@@ -1,6 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { redirect as nextRedirect } from "next/navigation";
 import { Link, redirect } from "@/i18n/navigation";
 import { auth, signIn } from "@/auth";
+import { MAGIC_LINK_REFUSALS } from "@/lib/auth/magic-link-quota";
 import { brand } from "@/lib/brand";
 import Image from "next/image";
 import { ArrowRight, Mail, MapPin, Package, ShieldCheck, type LucideIcon } from "lucide-react";
@@ -24,7 +26,7 @@ export const dynamic = "force-dynamic";
 
 const googleConfigured = !!process.env.AUTH_GOOGLE_ID && !!process.env.AUTH_GOOGLE_SECRET;
 
-const ERROR_KEYS = ["OAuthAccountNotLinked", "Verification", "AccessDenied"];
+const ERROR_KEYS = ["OAuthAccountNotLinked", "Verification", "AccessDenied", ...MAGIC_LINK_REFUSALS];
 
 /** What an account is for, down the picture half. */
 const PERKS: { key: "track" | "addresses" | "noPassword"; icon: LucideIcon }[] = [
@@ -47,6 +49,26 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
   const params = await searchParams;
   const callbackUrl = typeof params.callbackUrl === "string" ? params.callbackUrl : "/";
   const errorCode = typeof params.error === "string" ? params.error : undefined;
+
+  /* Out of email links for today (src/lib/auth/magic-link-quota.ts): point
+     at Google and take the email form away, rather than leave a button that
+     can only fail. Without Google the form stays, and either way the message
+     sends them to customer care. */
+  const emailExhausted = errorCode === "EmailLimit";
+  /* Out of links, the way forward is a person: the message links to /contact,
+     which carries the care numbers from content/contact.json. */
+  const careLink = (chunks: React.ReactNode) => (
+    <Link href="/contact" className="font-semibold text-forest underline underline-offset-4 hover:text-forest-deep">
+      {chunks}
+    </Link>
+  );
+  const errorMessage = !errorCode
+    ? null
+    : emailExhausted
+      ? t.rich(googleConfigured ? "errors.EmailLimit" : "errors.EmailLimitNoGoogle", { link: careLink })
+      : ERROR_KEYS.includes(errorCode)
+        ? t(`errors.${errorCode}`)
+        : t("errors.default");
 
   // Already signed in — no reason to show a login form.
   const session = await auth();
@@ -122,9 +144,12 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
             </h1>
             <p className="mt-2 font-body text-sm text-stone">{t("body")}</p>
 
-            {errorCode && (
-              <p className="mt-6 rounded-xl border border-terracotta/40 bg-terracotta/5 px-4 py-3 font-body text-sm text-ink">
-                {ERROR_KEYS.includes(errorCode) ? t(`errors.${errorCode}`) : t("errors.default")}
+            {errorMessage && (
+              <p
+                role="alert"
+                className="mt-6 rounded-xl border border-terracotta/40 bg-terracotta/5 px-4 py-3 font-body text-sm text-ink"
+              >
+                {errorMessage}
               </p>
             )}
 
@@ -146,58 +171,75 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
                     </button>
                   </form>
 
-                  <div className="my-6 flex items-center gap-3">
-                    <span className="h-px flex-1 bg-forest/15" />
-                    <span className="font-body text-[11px] uppercase tracking-widest text-stone">
-                      {t("or")}
-                    </span>
-                    <span className="h-px flex-1 bg-forest/15" />
-                  </div>
+                  {!emailExhausted && (
+                    <div className="my-6 flex items-center gap-3">
+                      <span className="h-px flex-1 bg-forest/15" />
+                      <span className="font-body text-[11px] uppercase tracking-widest text-stone">
+                        {t("or")}
+                      </span>
+                      <span className="h-px flex-1 bg-forest/15" />
+                    </div>
+                  )}
                 </>
               )}
 
-              <form
-                action={async (formData: FormData) => {
-                  "use server";
-                  await signIn("email", {
-                    email: String(formData.get("email") ?? "").trim(),
-                    redirectTo: callbackUrl,
-                  });
-                }}
-                className="space-y-3"
-              >
-                <label className="block">
-                  <span className="font-body text-xs font-semibold text-forest">{t("emailLabel")}</span>
-                  <span className="relative mt-2 block">
-                    <Mail
-                      aria-hidden
-                      size={17}
-                      strokeWidth={1.75}
-                      className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-stone"
-                    />
-                    <input
-                      name="email"
-                      type="email"
-                      required
-                      autoComplete="email"
-                      placeholder={t("emailPlaceholder")}
-                      className="w-full rounded-xl border border-forest/20 bg-white py-3 pl-11 pr-4 font-body text-sm text-ink outline-none transition-shadow placeholder:text-stone/50 focus:border-forest focus:ring-4 focus:ring-sage/35"
-                    />
-                  </span>
-                </label>
-                <button
-                  type="submit"
-                  className="group flex w-full items-center justify-center gap-2 rounded-full bg-forest px-5 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
+              {!(emailExhausted && googleConfigured) && (
+                <form
+                  action={async (formData: FormData) => {
+                    "use server";
+                    const to = await signIn("email", {
+                      email: String(formData.get("email") ?? "").trim(),
+                      redirectTo: callbackUrl,
+                      redirect: false,
+                    });
+                    /* A refused link comes back as Auth.js's redirect to
+                       `/login?error=…` with no locale. Re-issue it through the
+                       locale-aware redirect so a Kannada visitor reads the
+                       reason in Kannada. */
+                    const refusal = new URL(to, "http://localhost").searchParams.get("error");
+                    if (refusal && (MAGIC_LINK_REFUSALS as readonly string[]).includes(refusal)) {
+                      redirect({ href: { pathname: "/login", query: { error: refusal, callbackUrl } }, locale });
+                    }
+                    /* Anything else is Auth.js's own destination (the
+                       check-your-email page), followed exactly as `signIn`
+                       would have followed it itself. */
+                    nextRedirect(to);
+                  }}
+                  className="space-y-3"
                 >
-                  {t("sendLink")}
-                  <ArrowRight
-                    aria-hidden
-                    size={16}
-                    strokeWidth={2}
-                    className="transition-transform group-hover:translate-x-0.5"
-                  />
-                </button>
-              </form>
+                  <label className="block">
+                    <span className="font-body text-xs font-semibold text-forest">{t("emailLabel")}</span>
+                    <span className="relative mt-2 block">
+                      <Mail
+                        aria-hidden
+                        size={17}
+                        strokeWidth={1.75}
+                        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-stone"
+                      />
+                      <input
+                        name="email"
+                        type="email"
+                        required
+                        autoComplete="email"
+                        placeholder={t("emailPlaceholder")}
+                        className="w-full rounded-xl border border-forest/20 bg-white py-3 pl-11 pr-4 font-body text-sm text-ink outline-none transition-shadow placeholder:text-stone/50 focus:border-forest focus:ring-4 focus:ring-sage/35"
+                      />
+                    </span>
+                  </label>
+                  <button
+                    type="submit"
+                    className="group flex w-full items-center justify-center gap-2 rounded-full bg-forest px-5 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
+                  >
+                    {t("sendLink")}
+                    <ArrowRight
+                      aria-hidden
+                      size={16}
+                      strokeWidth={2}
+                      className="transition-transform group-hover:translate-x-0.5"
+                    />
+                  </button>
+                </form>
+              )}
             </div>
 
             <p className="mt-6 flex items-start gap-3 rounded-xl bg-sand px-4 py-3 font-body text-xs leading-relaxed text-stone">

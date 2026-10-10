@@ -105,8 +105,10 @@ The US region was checked (10 Oct 2026) and saves under ₹10 a month at 1,000 v
 Lambda, CloudFront and SES cost the same in both regions. Hyderabad (`ap-south-2`) costs the
 same as Mumbai and buys nothing.
 
-**Logs are kept 180 days.** CERT-In direction (iv). Set on every log group by the Web stack;
-do not shorten it to save money — storage is $0.03/GB-month.
+**Logs are kept 7 days** (the owner, 10 Oct 2026), set on every log group by the Web stack
+(`LOG_RETENTION`). This is knowingly below CERT-In direction (iv), which asks for 180 days; the
+cost difference at launch volume is under $1 a month, so it is a choice about what to keep. Revisit
+before taking real orders.
 
 **No VPC.** DynamoDB, SES, S3 and Parameter Store are reached over AWS's public endpoints with
 IAM. A Lambda in a VPC needs a NAT Gateway to reach the internet (Razorpay, couriers) — about
@@ -122,7 +124,8 @@ scripts (`scripts/*-fill.mjs`) stay manual — CI never writes business data.
 **Cost of a deploy: effectively nil.** GitHub Free includes 2,000 Actions minutes a month for a
 private repo (~200 deploys); CloudFormation, the Lambda update and one `/*` invalidation (1,000
 paths a month free) cost nothing; the S3 uploads cost a fraction of a cent. CDK keeps every old
-Lambda bundle in its staging bucket, so run `cdk gc` or give that bucket a lifecycle rule.
+Lambda bundle in its staging bucket, so the workflow's last step runs `cdk gc` to delete the ones
+no stack references (cdk-nextjs prunes its own static-assets and cache buckets).
 
 **While the site is private,** HTTP Basic Auth is checked at the edge, before Lambda runs. It has
 to be: behind a Function URL the viewer's `Authorization` header never reaches the app (Origin
@@ -1329,6 +1332,16 @@ unlabelled boxes.
 
 **Auth.js (`next-auth@5.0.0-beta.32`) + `@auth/dynamodb-adapter@2.11.3`. Google SSO + email
 magic link. No passwords. Database sessions.**
+
+**Magic links are limited: two per address per IST day, at least a minute apart** (the owner,
+10 Oct 2026). A third request is refused and the login page swaps the email form for "Continue
+with Google" plus a link to customer care (`/contact`) — never "try tomorrow"; a request inside
+the minute is asked to wait. The reason is SES's sending
+reputation more than its bill — a bot feeding addresses into the form makes bounces, and SES
+pauses an account whose bounce rate climbs, receipts included. Checked in Auth.js's `signIn`
+callback, before any token is created, so a POST straight to `/api/auth` meets it too; one
+conditional DynamoDB write (`MAGICLINK#<email>` / `DAY#<date>` in the users table) does the
+check and the count together. `src/lib/auth/magic-link-quota.ts`.
 
 #### Why not Cognito
 

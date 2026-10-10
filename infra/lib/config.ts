@@ -76,6 +76,8 @@ export const RUNTIME_CONSTANTS = {
   COURIER_BOOKING: "off",
 } as const;
 
-/** 180 days — CERT-In Cyber Security Directions (28 Apr 2022), direction (iv).
- *  Do not shorten it to save money: log storage is $0.03/GB-month. */
-export const LOG_RETENTION = RetentionDays.SIX_MONTHS;
+/** 7 days — the owner's call, 10 Oct 2026, knowingly below the 180 days in
+ *  CERT-In's Cyber Security Directions (28 Apr 2022), direction (iv). At
+ *  launch volume 180 days costs well under $1 a month, so this is a decision
+ *  about what to keep, not about money. Revisit before taking real orders. */
+export const LOG_RETENTION = RetentionDays.ONE_WEEK;
