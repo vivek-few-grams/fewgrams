@@ -36,6 +36,16 @@ jobs:
         with:
           node-version: 24
           cache: npm
+      # Turbopack's build cache, so `next build` (run by cdk-nextjs during
+      # synth) starts warm — node_modules/next/dist/docs/01-app/02-guides/
+      # ci-build-caching.md. Restored before `npm ci` so the source hash below
+      # never walks node_modules. Free on a public repository.
+      - uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**', 'content/**', 'messages/**', 'next.config.ts') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
       - run: npm ci
       - run: npm test
       - run: npm run lint
