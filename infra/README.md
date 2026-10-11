@@ -18,8 +18,27 @@ Settings are in `lib/config.ts` and nowhere else.
 ## Day to day
 
 Push to `main`. The **Deploy** workflow runs the tests, lint and type check,
-then `cdk deploy --all` — about 6–10 minutes. **Actions → Deploy → Run
+then deploys **the app** — `FewgramsWeb` and the webhook signer's
+`edge-lambda-stack-…` — about 6–10 minutes. **Actions → Deploy → Run
 workflow** redeploys without a commit (after changing a parameter, say).
+
+### Deployed from a laptop
+
+`FewgramsData` (the tables) and `FewgramsOps` (the deploy role, the budgets)
+are never deployed by the workflow — `--exclusively` leaves them out. A change
+to either goes out from a laptop, after reading the preview:
+
+```sh
+SITE_GATE=x:x aws-vault exec fg -- npx cdk diff FewgramsData
+SITE_GATE=x:x aws-vault exec fg -- npx cdk deploy FewgramsData
+```
+
+Deploy one of them before pushing an app change that needs it (a new table
+index, say), or the app deploy fails on the missing export.
+
+The split is about routine, not a hard wall: the deploy role uses CDK's
+bootstrap roles, which can change any stack. What keeps the tables safe from a
+bad deploy is deletion protection and `RETAIN` (`lib/data-stack.ts`).
 
 Pull requests run **CI**: the same checks plus `cdk synth`, which builds the
 app exactly as a deploy would, without AWS access.
@@ -56,8 +75,10 @@ Once per AWS account, in this order.
 
    ```sh
    ACCOUNT=$(aws-vault exec fg -- aws sts get-caller-identity --query Account --output text)
-   aws-vault exec fg -- npx cdk bootstrap aws://$ACCOUNT/ap-south-1 aws://$ACCOUNT/us-east-1
+   SITE_GATE=x:x aws-vault exec fg -- npx cdk bootstrap aws://$ACCOUNT/ap-south-1 aws://$ACCOUNT/us-east-1
    ```
+
+   (`SITE_GATE` again only lets the app synthesize, as in step 5.)
 
 4. **Store the runtime parameters.** Every name in `RUNTIME_PARAMETERS`
    (`lib/config.ts`) must exist before the first deploy, as a **String**
@@ -90,6 +111,12 @@ Once per AWS account, in this order.
 
    (`SITE_GATE` only has to be set for the app to synthesize; this stack does
    not use it.) Confirm the two emails AWS Budgets sends to `ALERT_EMAIL`.
+
+   Then the tables, also by hand — the workflow never deploys them:
+
+   ```sh
+   SITE_GATE=x:x aws-vault exec fg -- npx cdk deploy FewgramsData
+   ```
 
 6. **Configure GitHub** (Settings → Secrets and variables → Actions):
    - variable `AWS_DEPLOY_ROLE_ARN` = the `DeployRoleArn` output from step 5

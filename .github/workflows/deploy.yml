@@ -1,6 +1,7 @@
-# Deploys to production on every push to main, or by the "Run workflow"
-# button — SPEC §2.2. Signs in to AWS through OIDC: the only thing stored in
-# GitHub is the role's ARN, never a key.
+# Deploys the app to production on every push to main, or by the "Run
+# workflow" button — SPEC §2.2. Infrastructure (tables, this role, budgets) is
+# not deployed from here; see infra/README.md. Signs in to AWS through OIDC:
+# the only thing stored in GitHub is the role's ARN, never a key.
 #
 # Repository settings it needs (Settings → Secrets and variables → Actions):
 #   variable  AWS_DEPLOY_ROLE_ARN  output DeployRoleArn of the FewgramsOps stack
@@ -43,8 +44,13 @@ jobs:
         with:
           role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ap-south-1
-      - name: Deploy every stack
-        run: npx cdk deploy --all --require-approval never
+      # The app only: the site and the payment-webhook signer it creates in
+      # us-east-1. `--exclusively` leaves FewgramsData (the tables) and
+      # FewgramsOps (this role, the budgets) alone even though FewgramsWeb
+      # depends on them — those are deployed from a laptop, after a `cdk diff`
+      # (infra/README.md, "Deployed from a laptop").
+      - name: Deploy the app
+        run: npx cdk deploy FewgramsWeb 'edge-lambda-stack-*' --exclusively --require-approval never
         env:
           SITE_GATE: ${{ secrets.SITE_GATE }}
           SITE_PUBLIC: ${{ vars.SITE_PUBLIC }}
