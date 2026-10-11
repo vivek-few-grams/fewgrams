@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { PRODUCT_TYPES } from "@/lib/types";
 import { getDisabledProductTypes } from "@/lib/repo/catalogue-visibility";
 import { toggleProductType } from "./actions";
+import { requireRole } from "@/lib/auth/guard";
 
 /**
  * `/admin/settings` — SPEC §12. Turn a whole product type on or off.
@@ -22,6 +23,7 @@ import { toggleProductType } from "./actions";
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
+  await requireRole("admin");
   const t = await getTranslations("admin.settings");
   const label = await getTranslations("common.categories");
   const disabled = new Set(await getDisabledProductTypes());

@@ -16,6 +16,7 @@ import { PipeRackTable, type PipeRackView } from "./PipeRackTable";
 import { PipeRates } from "./PipeRates";
 import { MarginForm } from "../racks/MarginForm";
 import { PipeSizeTable } from "./PipeSizeTable";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +63,7 @@ export const dynamic = "force-dynamic";
  * admin first, so nothing here writes to the product catalogue.
  */
 export default async function PipeRacksAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.pipeRacks");
   const tm = await getTranslations("admin.racks");
 

@@ -19,6 +19,7 @@ import {
 } from "@/lib/subscriptions/subscription";
 import { StepSubmit } from "../../orders/StepSubmit";
 import { cancelSubscription, pauseSubscription, resumeSubscription, skipSaturday } from "../actions";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ export const dynamic = "force-dynamic";
  * move the server then refuses.
  */
 export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]/admin/subscriptions/[id]">) {
+  await requireRole("admin");
   const { id } = await params;
   if (!isSubscriptionId(id)) notFound();
   const sub = await getSubscription(id);

@@ -6,6 +6,7 @@ import { attachSeedContent, listSeedContent } from "@/lib/content/seeds";
 import { routing } from "@/i18n/routing";
 import { AddSeedForm } from "./AddSeedForm";
 import { SeedTable } from "./SeedTable";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -40,6 +41,7 @@ export const dynamic = "force-dynamic";
  * wants one stable set of labels.
  */
 export default async function SeedsAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.seeds");
 
   const [rows, content, margin] = await Promise.all([

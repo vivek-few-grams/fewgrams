@@ -134,7 +134,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
      * Every other sign-in (Google, and the click on a link already sent)
      * passes through untouched.
      */
-    async signIn({ account, email }) {
+    async signIn({ account, email, profile }) {
+      /* `allowDangerousEmailAccountLinking` above trusts Google to have
+         verified the address — so insist on it. A Google account can carry
+         an address its owner never proved (a non-Gmail sign-up, a Workspace
+         admin typing any address), and without this check it would link
+         straight onto the real owner's account here — the admin's included,
+         since ADMIN_EMAILS matches by address. */
+      if (account?.provider === "google" && profile?.email_verified !== true) return false;
       if (account?.provider === "email" && email?.verificationRequest) {
         const refusal = await takeMagicLink(account.providerAccountId);
         if (refusal) return `/login?error=${refusal}`;

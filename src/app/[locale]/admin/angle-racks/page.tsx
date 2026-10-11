@@ -12,6 +12,7 @@ import { AngleRackTable, type AngleRackView } from "./AngleRackTable";
 import { FrameTable } from "./FrameTable";
 import { SharedRates } from "./SharedRates";
 import { MarginForm } from "../racks/MarginForm";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -53,6 +54,7 @@ export const dynamic = "force-dynamic";
  * first, so nothing here writes to the product catalogue.
  */
 export default async function AngleRacksAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.angleRacks");
   const tm = await getTranslations("admin.racks");
 

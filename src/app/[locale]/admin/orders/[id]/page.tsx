@@ -8,6 +8,7 @@ import { getOrder, listPayments } from "@/lib/repo/orders";
 import { ParcelBooking } from "../ParcelBooking";
 import { OrderCancel } from "../OrderCancel";
 import { OrderSteps } from "../OrderSteps";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +23,7 @@ export const dynamic = "force-dynamic";
  * purchase order yet.
  */
 export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/orders/[id]">) {
+  await requireRole("admin");
   const { id } = await params;
   if (!isOrderId(id)) notFound();
   const order = await getOrder(id);

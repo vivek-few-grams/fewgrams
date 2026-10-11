@@ -10,6 +10,7 @@ import { MarginForm } from "./MarginForm";
 import { SeedButton } from "./SeedButton";
 import { VendorPickupSection } from "../vendor-pickup/VendorPickupSection";
 import { SHELF_RACK_ITEM } from "@/lib/shipping/origin";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +59,7 @@ export const dynamic = "force-dynamic";
  * projection would be a second answer to "what racks do we sell".
  */
 export default async function RacksAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.racks");
 
   const [stored, models] = await Promise.all([loadRateCard(), listRackModels()]);

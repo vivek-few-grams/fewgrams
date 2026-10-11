@@ -21,6 +21,7 @@ import {
   subscriptionState,
   type Subscription,
 } from "@/lib/subscriptions/subscription";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -55,6 +56,7 @@ const HORIZON = 4;
 export default async function SubscriptionsAdmin({
   searchParams,
 }: PageProps<"/[locale]/admin/subscriptions">) {
+  await requireRole("admin");
   const raw = (await searchParams).view;
   const view: View = isView(raw) ? raw : "active";
   const t = await getTranslations("admin.subscriptions");

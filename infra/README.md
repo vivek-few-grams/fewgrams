@@ -31,19 +31,32 @@ Rollback: `git revert` the commit and push.
 Once per AWS account, in this order.
 
 1. **A separate AWS account for Fewgrams.** The always-free Lambda and
-   CloudFront allowances are per account, so nothing else should share it.
-   Turn on MFA for the root user and sign in day to day with an admin user,
-   configured locally as a profile — `fewgrams` below.
+   CloudFront allowances are shared by everything billed together, so nothing
+   else should run in this organization. Turn on MFA for the root user and
+   sign in day to day with an admin user. Locally that user is an
+   [aws-vault](https://github.com/ByteNess/aws-vault) profile — `fg` below —
+   with MFA required, so the key lives in the Keychain and reaches only the
+   one command it wraps. Run every command through it: on a machine with
+   other AWS work, the `default` profile is someone else's account.
 
-2. **Raise the Lambda concurrency limit.** New accounts often start at 10
-   requests at once. Service Quotas → AWS Lambda → *Concurrent executions* →
-   request 1,000, in **ap-south-1**. Free; takes a day or so.
+   An account opened through AWS's newer simplified sign-up is pinned to one
+   region (Sydney for an Indian address) with no Lambda@Edge. Fixing that is
+   two steps: **Activate advanced features** (AWS Settings → Projects; free,
+   irreversible), then edit the `AdvancedModeRegionRestrictionSecurityControlPolicy`
+   SCP in AWS Organizations — delete the `UsEast1Partitional` statement and
+   put `ap-south-1` in `RegionFloor` in place of the original region. Deploy
+   into the project's member account, never the management account.
+
+2. **Check the Lambda concurrency limit** in **ap-south-1** (Service Quotas →
+   AWS Lambda → *Concurrent executions*). Some new accounts start at 10
+   requests at once; 400 or more is plenty for launch. Raising it is free and
+   takes a day or so.
 
 3. **Bootstrap CDK** in both regions it uses:
 
    ```sh
-   ACCOUNT=$(aws sts get-caller-identity --query Account --output text --profile fewgrams)
-   npx cdk bootstrap aws://$ACCOUNT/ap-south-1 aws://$ACCOUNT/us-east-1 --profile fewgrams
+   ACCOUNT=$(aws-vault exec fg -- aws sts get-caller-identity --query Account --output text)
+   aws-vault exec fg -- npx cdk bootstrap aws://$ACCOUNT/ap-south-1 aws://$ACCOUNT/us-east-1
    ```
 
 4. **Store the runtime parameters.** Every name in `RUNTIME_PARAMETERS`
@@ -52,7 +65,7 @@ Once per AWS account, in this order.
    environment; IAM still decides who can read it):
 
    ```sh
-   put() { aws ssm put-parameter --profile fewgrams --region ap-south-1 \
+   put() { aws-vault exec fg -- aws ssm put-parameter --region ap-south-1 \
              --type String --overwrite --name "/fewgrams/prod/$1" --value "$2"; }
    put AUTH_SECRET "$(openssl rand -base64 32)"
    put AUTH_URL https://placeholder.invalid   # replaced in step 8
@@ -72,7 +85,7 @@ Once per AWS account, in this order.
 5. **Deploy the ops stack by hand**, once — it creates the role CI deploys with:
 
    ```sh
-   SITE_GATE=x:x npx cdk deploy FewgramsOps --profile fewgrams
+   SITE_GATE=x:x aws-vault exec fg -- npx cdk deploy FewgramsOps
    ```
 
    (`SITE_GATE` only has to be set for the app to synthesize; this stack does
@@ -92,6 +105,8 @@ Once per AWS account, in this order.
 
 9. **Check it works:**
    - the site asks for the `SITE_GATE` username and password
+   - `curl -I <SiteUrl>/.env` answers **404** without a password prompt (the
+     scanner block, `lib/scanner-block.ts`)
    - in the Razorpay dashboard, set the webhook to
      `<SiteUrl>/api/payments/razorpay/webhook` and send a test event: it must
      return **200**, not 403 (403 means the body-hash Lambda@Edge is not
@@ -119,6 +134,37 @@ Once per AWS account, in this order.
 4. `put AUTH_URL https://<domain>`, redeploy, and update the Google redirect
    URI and the Razorpay/Cashfree webhook URLs.
 
+## Without a WAF
+
+There is no WAF (SPEC §2.2). What stands in for one:
+
+- **The site gate** (`lib/site-gate.ts`) — while private, everything but the
+  payment webhooks gets a 401 at CloudFront and never reaches the Lambda.
+- **The scanner block** (`lib/scanner-block.ts`) — `/.env`, `*.php`,
+  `/wp-admin` and the like get a 404 at CloudFront, public or not.
+- **No way round CloudFront** — the Lambda's Function URL takes only requests
+  CloudFront has signed (`AWS_IAM` + Origin Access Control); S3 likewise.
+- **Cost ceilings** — the Lambda serves at most `MAX_CONCURRENCY` requests at
+  once and each table is capped in request units per second (`lib/config.ts`).
+  A flood is throttled instead of billed; the budget alarms email at $0 and $10.
+- **AWS Shield Standard** — on every CloudFront distribution, free, against
+  network-level floods.
+- **In the app** — roles checked on every admin page and server action, the
+  magic-link limit, payment webhooks verified by signature and settled server
+  to server, Google sign-ins accepted only for a Google-verified address,
+  and no off-site `callbackUrl` redirects.
+- **Security headers** — HSTS, `nosniff`, frame options and referrer policy
+  from cdk-nextjs's response-headers policies; Content-Security-Policy,
+  Permissions-Policy and COOP from the app (`src/lib/security-headers.ts`).
+- **Patched dependencies** — `npm audit --omit=dev` should report 0. Next.js
+  advisories have included SSRF and cache poisoning on self-hosted sites like
+  this one, so upgrade promptly when it does not.
+
+CloudFront's flat-rate **Free** plan includes a WAF with rate limiting and has
+no overage charges, but allows 5 cache behaviors; cdk-nextjs makes one per
+top-level `public/` entry, 20 in all. Moving `public/` under a single folder
+would be the way in, if the bill or the bots ever call for it.
+
 ## Costs to watch
 
 At launch traffic the bill is cents (SPEC §2.2). What can change that:
@@ -131,7 +177,7 @@ At launch traffic the bill is cents (SPEC §2.2). What can change that:
 - **Old Lambda bundles** are deleted by the last step of every deploy (`cdk
   gc`), and the space is freed 30 days later when the bucket's lifecycle drops
   the deleted versions. A deploy run from a laptop skips that step; run
-  `npx cdk gc --unstable=gc --type=s3 --profile fewgrams` afterwards.
+  `aws-vault exec fg -- npx cdk gc --unstable=gc --type=s3` afterwards.
 
 ## Upgrading cdk-nextjs
 

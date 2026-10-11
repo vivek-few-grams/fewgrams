@@ -8,6 +8,7 @@ import { listOrdersForUser } from "@/lib/repo/orders";
 import { listAddresses } from "@/lib/repo/profile";
 import { listSubscriptionsForUser } from "@/lib/repo/subscriptions";
 import { subscriptionState } from "@/lib/subscriptions/subscription";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ const USER_ID = /^[0-9a-f-]{36}$/i;
  * to its own admin page (27 Sep 2026).
  */
 export default async function CustomerAdmin({ params }: PageProps<"/[locale]/admin/customers/[id]">) {
+  await requireRole("admin");
   const { id } = await params;
   if (!USER_ID.test(id)) notFound();
   const customer = await getCustomer(id);

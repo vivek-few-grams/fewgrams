@@ -4,6 +4,7 @@ import { attachContent, listVarietyContent } from "@/lib/content/varieties";
 import { routing } from "@/i18n/routing";
 import { AddVarietyForm } from "./AddVarietyForm";
 import { VarietyTable } from "./VarietyTable";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,7 @@ export const dynamic = "force-dynamic";
  * wants one stable set of labels.
  */
 export default async function VarietiesAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.varieties");
 
   const [rows, content] = await Promise.all([listVarieties(), listVarietyContent(routing.defaultLocale)]);

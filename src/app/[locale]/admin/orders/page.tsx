@@ -5,6 +5,7 @@ import { formatReceiptNo, type Order } from "@/lib/orders/order";
 import { listOrdersByStatus } from "@/lib/repo/orders";
 import type { OrderStatus } from "@/lib/types";
 import { OrderSteps } from "./OrderSteps";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +50,7 @@ const byUrgency = (a: Order, b: Order) =>
  * receipt is looked up.
  */
 export default async function OrdersAdmin({ searchParams }: PageProps<"/[locale]/admin/orders">) {
+  await requireRole("admin");
   const raw = (await searchParams).status;
   const current: OrderStatus | null = typeof raw === "string" && isTabbed(raw) ? raw : null;
 

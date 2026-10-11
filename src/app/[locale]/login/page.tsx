@@ -6,6 +6,7 @@ import { MAGIC_LINK_REFUSALS } from "@/lib/auth/magic-link-quota";
 import { brand } from "@/lib/brand";
 import Image from "next/image";
 import { ArrowRight, Mail, MapPin, Package, ShieldCheck, type LucideIcon } from "lucide-react";
+import { safeCallbackPath } from "@/lib/auth/callback-url";
 
 /**
  * Sign in — SPEC §8.1. Google SSO + email magic link, no passwords.
@@ -47,7 +48,7 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
 
   const t = await getTranslations("auth.login");
   const params = await searchParams;
-  const callbackUrl = typeof params.callbackUrl === "string" ? params.callbackUrl : "/";
+  const callbackUrl = safeCallbackPath(params.callbackUrl);
   const errorCode = typeof params.error === "string" ? params.error : undefined;
 
   /* Out of email links for today (src/lib/auth/magic-link-quota.ts): point
@@ -58,7 +59,10 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
   /* Out of links, the way forward is a person: the message links to /contact,
      which carries the care numbers from content/contact.json. */
   const careLink = (chunks: React.ReactNode) => (
-    <Link href="/contact" className="font-semibold text-forest underline underline-offset-4 hover:text-forest-deep">
+    <Link
+      href="/contact"
+      className="font-semibold text-forest underline underline-offset-4 hover:text-forest-deep"
+    >
       {chunks}
     </Link>
   );
@@ -198,7 +202,10 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
                        reason in Kannada. */
                     const refusal = new URL(to, "http://localhost").searchParams.get("error");
                     if (refusal && (MAGIC_LINK_REFUSALS as readonly string[]).includes(refusal)) {
-                      redirect({ href: { pathname: "/login", query: { error: refusal, callbackUrl } }, locale });
+                      redirect({
+                        href: { pathname: "/login", query: { error: refusal, callbackUrl } },
+                        locale,
+                      });
                     }
                     /* Anything else is Auth.js's own destination (the
                        check-your-email page), followed exactly as `signIn`

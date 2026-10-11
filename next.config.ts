@@ -1,7 +1,16 @@
 import createNextIntlPlugin from "next-intl/plugin";
 import type { NextConfig } from "next";
+import { securityHeaders } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
+  /* No `X-Powered-By: Next.js` — it tells a scanner which exploits to try. */
+  poweredByHeader: false,
+
+  /* CSP, Permissions-Policy and COOP — src/lib/security-headers.ts. */
+  async headers() {
+    return [{ source: "/:path*", headers: securityHeaders(process.env.NODE_ENV !== "production") }];
+  },
+
   /**
    * `content/varieties/*.json` is read at request time with `fs`
    * (src/lib/content/varieties.ts), and Next's dependency tracing only

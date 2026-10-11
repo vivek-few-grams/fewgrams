@@ -1,7 +1,7 @@
 import { RemovalPolicy, Stack, type StackProps } from "aws-cdk-lib";
 import { AttributeType, Billing, TableV2, type GlobalSecondaryIndexPropsV2 } from "aws-cdk-lib/aws-dynamodb";
 import type { Construct } from "constructs";
-import { TABLE_PREFIX } from "./config";
+import { TABLE_MAX_READS_PER_SECOND, TABLE_MAX_WRITES_PER_SECOND, TABLE_PREFIX } from "./config";
 
 /**
  * The three DynamoDB tables — SPEC §4.6, `src/lib/ddb.ts`.
@@ -54,7 +54,10 @@ export class DataStack extends Stack {
       tableName: `${TABLE_PREFIX}-${suffix}`,
       partitionKey: { name: "PK", type: AttributeType.STRING },
       sortKey: { name: "SK", type: AttributeType.STRING },
-      billing: Billing.onDemand(),
+      billing: Billing.onDemand({
+        maxReadRequestUnits: TABLE_MAX_READS_PER_SECOND,
+        maxWriteRequestUnits: TABLE_MAX_WRITES_PER_SECOND,
+      }),
       globalSecondaryIndexes,
       timeToLiveAttribute: extra.timeToLiveAttribute,
       pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: !!extra.pointInTimeRecovery },

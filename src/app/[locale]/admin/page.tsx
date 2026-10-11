@@ -5,6 +5,7 @@ import { listSeeds } from "@/lib/repo/seeds";
 import { listTrays } from "@/lib/repo/trays";
 import { listGrowMedia } from "@/lib/repo/grow-media";
 import { listVarieties } from "@/lib/repo/varieties";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export const dynamic = "force-dynamic";
  * screens are a price calculator, not a stock list.
  */
 export default async function AdminHome() {
+  await requireRole("admin");
   const t = await getTranslations("admin.overview");
 
   const [varieties, plans, seeds, trays, media] = await Promise.all([

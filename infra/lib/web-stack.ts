@@ -6,8 +6,9 @@ import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { Architecture } from "aws-cdk-lib/aws-lambda";
 import { NextjsGlobalFunctions } from "cdk-nextjs";
 import type { Construct } from "constructs";
-import { PARAMETER_PATH, RUNTIME_CONSTANTS, RUNTIME_PARAMETERS } from "./config";
+import { MAX_CONCURRENCY, PARAMETER_PATH, RUNTIME_CONSTANTS, RUNTIME_PARAMETERS } from "./config";
 import { LogRetention } from "./log-retention";
+import { blockScanners } from "./scanner-block";
 import { gateSite } from "./site-gate";
 import { signPaymentWebhooks } from "./webhook-signing";
 
@@ -42,6 +43,10 @@ export class WebStack extends Stack {
                per request. cdk-nextjs stages sharp for this architecture
                whatever machine runs the build. */
             architecture: Architecture.ARM_64,
+            /* A ceiling on the bill, not a performance setting: a flood past
+               this many requests at once is refused (CloudFront shows a 5xx)
+               instead of scaling Lambda up to the account's limit. */
+            reservedConcurrentExecutions: MAX_CONCURRENCY,
             environment: runtimeEnvironment(),
           },
         },
@@ -73,6 +78,9 @@ export class WebStack extends Stack {
 
     const viewerRequestFn = nextjs.nextjsDistribution.node.findChild("CloudFrontFn") as CloudFrontFunction;
     if (props.siteGate) gateSite(viewerRequestFn, props.siteGate);
+    /* After the gate, so it is prepended ahead of it: a scan gets a 404, not a
+       password prompt, whether or not the site is public. */
+    blockScanners(viewerRequestFn);
     signPaymentWebhooks(nextjs, viewerRequestFn);
 
     Aspects.of(this).add(new LogRetention());

@@ -4,6 +4,7 @@ import { attachTrayContent, listTrayContent } from "@/lib/content/trays";
 import { routing } from "@/i18n/routing";
 import { AddTrayForm } from "./AddTrayForm";
 import { TrayTable } from "./TrayTable";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,7 @@ export const dynamic = "force-dynamic";
  * wants one stable set of labels.
  */
 export default async function TraysAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.trays");
 
   const [rows, content] = await Promise.all([listTrays(), listTrayContent(routing.defaultLocale)]);

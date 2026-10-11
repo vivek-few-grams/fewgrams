@@ -6,6 +6,7 @@ import { listTrays } from "@/lib/repo/trays";
 import { listGrowMedia } from "@/lib/repo/grow-media";
 import { shippingProvider, shippingProviders, type CourierName } from "@/lib/shipping";
 import { DeliveryForm } from "./DeliveryForm";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export const dynamic = "force-dynamic";
  * here, not as a checkout a customer cannot finish.
  */
 export default async function DeliveryAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.delivery");
   const [settings, trays, media, card] = await Promise.all([
     getShippingSettings(),

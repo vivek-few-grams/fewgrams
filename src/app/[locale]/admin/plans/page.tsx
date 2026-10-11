@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import { PlanRow } from "./PlanRow";
 import type { VarietyChoice } from "./rotation";
 import type { Plan } from "@/lib/types";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,7 @@ export const dynamic = "force-dynamic";
  * wants one stable set of labels.
  */
 export default async function PlansAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.plans");
 
   const [entries, varieties, planContent, varietyNames] = await Promise.all([

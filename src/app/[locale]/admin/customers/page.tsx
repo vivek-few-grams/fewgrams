@@ -7,6 +7,7 @@ import { listOrdersByStatus } from "@/lib/repo/orders";
 import { listSubscriptionsByStatus } from "@/lib/repo/subscriptions";
 import { subscriptionState, type Subscription } from "@/lib/subscriptions/subscription";
 import { ORDER_STATUSES } from "@/lib/types";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,7 @@ const counts = (o: Order) => o.status !== "cancelled" && o.status !== "refunded"
  * shop's size. `?q=` filters on name, email or phone.
  */
 export default async function CustomersAdmin({ searchParams }: PageProps<"/[locale]/admin/customers">) {
+  await requireRole("admin");
   const raw = (await searchParams).q;
   const q = typeof raw === "string" ? raw.trim().toLowerCase() : "";
   const t = await getTranslations("admin.customers");

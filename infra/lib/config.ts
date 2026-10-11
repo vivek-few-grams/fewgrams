@@ -31,6 +31,25 @@ export const ALERT_EMAIL = "info.fewgrams@gmail.com";
  *  them, so nothing can drift between the app and the stack. */
 export const TABLE_PREFIX = "fewgrams";
 
+/**
+ * The most requests the site's Lambda serves at once — SPEC §2.2. With no WAF
+ * this is the cost ceiling under a flood: at 2 GB a function, 20 busy around
+ * the clock is about $45 a day, against an unbounded bill at the account's
+ * limit of 400. A real visitor holds one for a fraction of a second, so 20 is
+ * far more than launch traffic needs. Raise it here if CloudWatch shows
+ * `Throttles` on an ordinary day.
+ */
+export const MAX_CONCURRENCY = 20;
+
+/**
+ * DynamoDB on-demand's per-table ceiling, in request units per second, for the
+ * same reason. Well above anything a one-farm shop asks for (an admin Scan of
+ * every order is a few hundred units at most); beyond it the request is
+ * throttled rather than billed.
+ */
+export const TABLE_MAX_READS_PER_SECOND = 500;
+export const TABLE_MAX_WRITES_PER_SECOND = 100;
+
 /** Where the runtime parameters live in SSM Parameter Store. */
 export const PARAMETER_PATH = "/fewgrams/prod";
 

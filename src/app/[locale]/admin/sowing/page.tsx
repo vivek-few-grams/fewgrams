@@ -7,6 +7,7 @@ import { listVarieties } from "@/lib/repo/varieties";
 import { yieldByVariety } from "@/lib/sowing/sowing";
 import { SowingCard } from "./SowingCard";
 import { SowingEditor } from "./SowingEditor";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export const dynamic = "force-dynamic";
  * files in English, like every admin screen (SPEC §4.4).
  */
 export default async function SowingAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.sowing");
   const [sowings, rows] = await Promise.all([listSowings(), listVarieties()]);
   const withContent = await attachContent(rows, routing.defaultLocale);

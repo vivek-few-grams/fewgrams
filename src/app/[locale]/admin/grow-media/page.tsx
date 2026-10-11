@@ -4,6 +4,7 @@ import { attachGrowMediumContent, listGrowMediumContent } from "@/lib/content/gr
 import { routing } from "@/i18n/routing";
 import { AddGrowMediumForm } from "./AddGrowMediumForm";
 import { GrowMediumTable } from "./GrowMediumTable";
+import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,7 @@ export const dynamic = "force-dynamic";
  * (SPEC §4.3). Content is read in English whatever the admin's locale.
  */
 export default async function GrowMediaAdmin() {
+  await requireRole("admin");
   const t = await getTranslations("admin.growMedia");
 
   const [rows, content] = await Promise.all([listGrowMedia(), listGrowMediumContent(routing.defaultLocale)]);
