@@ -227,9 +227,9 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                 {t("deliveryAtCheckout")}
               </p>
 
-              {/* Checkout is signed-in only for now, so a guest goes through
-                  login and comes back to /checkout (src/proxy.ts). Held back
-                  while a seed line asks for more than the shelf has. */}
+              {/* Open to everyone: a signed-out shopper signs in as
+                  checkout's first step. Held back while a seed line asks for
+                  more than the shelf has. */}
               {cart.overStock.length > 0 ? (
                 <p className="mt-5 rounded-xl bg-terracotta/20 px-4 py-3 text-center font-body text-sm font-semibold text-cream">
                   {t("overStockBlock")}

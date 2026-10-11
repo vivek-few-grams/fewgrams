@@ -1,8 +1,10 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
-import { ShoppingBag, Sprout } from "lucide-react";
+import { CreditCard, MapPin, ShoppingBag, Sprout, Truck, UserRound, type LucideIcon } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { requireRole } from "@/lib/auth/guard";
+import { currentActor } from "@/lib/auth/guard";
+import { routing } from "@/i18n/routing";
+import { SignInOptions } from "@/components/auth/SignInOptions";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { lineId } from "@/lib/cart/cart";
 import type { CartItem } from "@/lib/cart/server";
@@ -27,9 +29,13 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/checkout
 }
 
 /**
- * `/checkout` — SPEC §9, §12. Signed-in only for now (the owner's decision,
- * 23 Sep 2026); guest checkout with account auto-provisioning is SPEC §8's
- * follow-up.
+ * `/checkout` — SPEC §9, §12. Paying needs an account, but **seeing checkout
+ * does not** (the owner, 11 Oct 2026): a signed-out shopper gets their order
+ * and the four steps ahead, with sign-in as step 1 on this page rather than a
+ * bounce to `/login`, and comes straight back here at step 2. Guest checkout —
+ * an address and a delivery price before signing in — is SPEC §8's follow-up.
+ * `startCheckout` and `scanDelivery` still `assertRole("customer")`, so
+ * nothing past step 1 runs for a guest whatever the page shows.
  *
  * Two columns (the owner's layout, 23 Sep 2026): delivery on the left; on
  * the right a sticky panel with the order — item count, the lines, the
@@ -56,14 +62,14 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const actor = await requireRole("customer");
+  const actor = await currentActor();
   const t = await getTranslations("checkout");
   const tc = await getTranslations("cart");
 
   const [cart, addresses, profile] = await Promise.all([
     hydrateCart(locale),
-    listAddresses(actor.userId),
-    getProfile(actor.userId),
+    actor ? listAddresses(actor.userId) : [],
+    actor ? getProfile(actor.userId) : null,
   ]);
   const greens = travelsOnOwnRun(cart.items);
   /* One area check per distinct PIN, and only when greens make the area
@@ -197,6 +203,17 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
     );
   };
 
+  if (!actor) {
+    return (
+      <GuestCheckout
+        locale={locale}
+        heading={t("heading")}
+        subheading={t("subheading")}
+        summary={summaryFor(true)}
+      />
+    );
+  }
+
   return (
     <div className="co-page">
       <section className="mx-auto max-w-[1400px] px-6 pb-12 pt-8 md:px-12 md:pb-16 md:pt-10">
@@ -251,6 +268,90 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
               }}
             />
           )}
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/** Steps 2–4 as a signed-out shopper sees them: named, explained, not yet open. */
+const LATER_STEPS: { key: "address" | "delivery" | "pay"; icon: LucideIcon }[] = [
+  { key: "address", icon: MapPin },
+  { key: "delivery", icon: Truck },
+  { key: "pay", icon: CreditCard },
+];
+
+/**
+ * Checkout for someone not signed in: the order on the right exactly as a
+ * signed-in shopper sees it, and on the left the four steps — sign-in open as
+ * step 1, the rest shown so the way to a placed order is visible before
+ * anyone is asked for an account. Signing in returns to this URL, locale and
+ * all, and the cart is a cookie, so it is all still here.
+ */
+async function GuestCheckout({
+  locale,
+  heading,
+  subheading,
+  summary,
+}: {
+  locale: string;
+  heading: string;
+  subheading: string;
+  summary: React.ReactNode;
+}) {
+  const t = await getTranslations("checkout.guest");
+  const callbackUrl = locale === routing.defaultLocale ? "/checkout" : `/${locale}/checkout`;
+
+  return (
+    <div className="co-page">
+      <section className="mx-auto max-w-[1400px] px-6 pb-12 pt-8 md:px-12 md:pb-16 md:pt-10">
+        <h1 className="flex items-center gap-2.5 font-display text-[clamp(1.6rem,3.2vw,2.4rem)] font-bold leading-tight tracking-tight text-forest">
+          {heading}
+          <Sprout aria-hidden className="size-[0.8em] text-sage" strokeWidth={2} />
+        </h1>
+        <p className="mt-1 font-body text-sm text-stone">{subheading}</p>
+
+        <div className="mt-5 grid gap-8 lg:grid-cols-[1fr_400px] lg:gap-12">
+          <ol aria-label={t("stepsLabel")} className="space-y-3">
+            <li className="rounded-2xl bg-sand p-6 md:p-8">
+              <div className="flex items-start gap-4">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forest text-cream">
+                  <UserRound aria-hidden size={18} strokeWidth={1.75} />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-body text-[11px] font-semibold uppercase tracking-widest text-stone">
+                    1 · {t("signIn")}
+                  </p>
+                  <h2 className="mt-1 font-display text-lg font-bold text-forest">{t("signInHeading")}</h2>
+                  <p className="mt-1 font-body text-sm leading-relaxed text-stone">{t("signInBody")}</p>
+                </div>
+              </div>
+              <div className="mt-6 max-w-md md:ml-14">
+                <SignInOptions callbackUrl={callbackUrl} locale={locale} />
+              </div>
+            </li>
+            {LATER_STEPS.map(({ key, icon: Icon }, i) => (
+              <li
+                key={key}
+                className="flex items-start gap-4 rounded-2xl border border-forest/10 px-6 py-5 md:px-8"
+              >
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-forest text-cream">
+                  <Icon aria-hidden size={18} strokeWidth={1.75} />
+                </span>
+                <div className="min-w-0">
+                  <p className="font-body text-[11px] font-semibold uppercase tracking-widest text-stone">
+                    {i + 2} · {t(key)}
+                  </p>
+                  <p className="mt-1 font-body text-sm leading-relaxed text-stone">{t(`${key}Hint`)}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          {/* First on a phone, so what is being bought is seen before the
+              sign-in it leads to; the right-hand column from `lg`. */}
+          <aside className="-order-1 lg:order-none lg:sticky lg:top-28 lg:self-start">
+            <div className="co-card co-card--dark p-5 md:p-6">{summary}</div>
+          </aside>
         </div>
       </section>
     </div>

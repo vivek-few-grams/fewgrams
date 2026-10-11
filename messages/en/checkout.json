@@ -86,5 +86,17 @@
   },
   "setAsideHeading": "Not deliverable to your location",
   "setAsideBody": "Fresh greens reach selected areas only, so these aren't in this order or its total. They stay in your cart for another address.",
-  "setAsideAddress": "Fresh greens don't reach this PIN code. The rest of your order ships by courier; the greens stay in your cart."
+  "setAsideAddress": "Fresh greens don't reach this PIN code. The rest of your order ships by courier; the greens stay in your cart.",
+  "guest": {
+    "stepsLabel": "Checkout steps",
+    "signIn": "Sign in",
+    "signInHeading": "Sign in to continue",
+    "signInBody": "Your cart is saved. Sign in and you'll come straight back here to add your address and pay.",
+    "address": "Delivery address",
+    "addressHint": "Where we deliver. Saved to your account, so you type it once.",
+    "delivery": "Delivery option",
+    "deliveryHint": "We compare delivery prices for your address and you pick one.",
+    "pay": "Pay",
+    "payHint": "Pay securely. Nothing is charged until you do."
+  }
 }

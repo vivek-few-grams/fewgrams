@@ -27,8 +27,10 @@ const intlMiddleware = createIntlMiddleware(routing);
 
 const SESSION_COOKIES = ["authjs.session-token", "__Secure-authjs.session-token"];
 
-/** Paths that require a session, written without a locale prefix. */
-const PROTECTED = ["/admin", "/account", "/checkout"];
+/** Paths that require a session, written without a locale prefix.
+ *  `/checkout` is not one: it renders for a signed-out shopper with sign-in as
+ *  its first step (the owner, 11 Oct 2026). */
+const PROTECTED = ["/admin", "/account"];
 
 /** Split `/kn/admin/varieties` into its locale and the rest. */
 function splitLocale(pathname: string) {
