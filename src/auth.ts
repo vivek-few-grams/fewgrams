@@ -6,6 +6,9 @@ import { brand } from "@/lib/brand";
 import { DEFAULT_ROLE, isBootstrapAdmin } from "@/lib/auth/roles";
 import { ensureUserRole, setUserRole } from "@/lib/auth/users";
 import { takeMagicLink } from "@/lib/auth/magic-link-quota";
+import { getTranslations } from "next-intl/server";
+import { EMAIL_FROM, notificationProvider } from "@/lib/notify";
+import { SIGN_IN_LINK_MINUTES, signInEmail, signInEmailLocale } from "@/lib/notify/sign-in-email";
 
 /**
  * Auth.js configuration — SPEC §8.1.
@@ -81,21 +84,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     /**
      * Magic link, defined inline rather than via the Nodemailer provider.
      * `nodemailer` is an optional peer dependency and `EmailConfig` only
-     * requires `sendVerificationRequest`, so this needs no SMTP server and no
-     * email service at all during development — the link goes to the terminal.
+     * requires `sendVerificationRequest`, so this needs no SMTP server: it
+     * goes through SPEC §11's NotificationProvider — Amazon SES in production
+     * (`EMAIL_TRANSPORT=ses`), and the terminal in development, so local work
+     * never needs email credentials.
      *
-     * TODO(launch): send through SPEC §11's NotificationProvider (Resend free
-     * tier, or SES once the AWS account exists). Keep the dev branch below so
-     * local development never needs credentials.
+     * The email is written in the language of the page the link returns to
+     * (`signInEmailLocale`).
      */
     {
       id: "email",
       type: "email",
       name: "Email",
-      from: `${brand.name} <${brand.email}>`,
-      maxAge: 15 * 60, // link valid 15 minutes
+      from: EMAIL_FROM,
+      maxAge: SIGN_IN_LINK_MINUTES * 60,
       async sendVerificationRequest({ identifier, url }) {
-        if (process.env.NODE_ENV !== "production") {
+        const provider = notificationProvider();
+        if (!provider) {
           console.log(
             [
               "",
@@ -104,15 +109,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               "│",
               `│ ${url}`,
               "│",
-              "│ Valid 15 minutes. Paste it into the browser.",
+              `│ Valid ${SIGN_IN_LINK_MINUTES} minutes. Paste it into the browser.`,
               "└─────────────────────────────────────────────────────────────",
               "",
             ].join("\n"),
           );
           return;
         }
-        throw new Error(
-          "No email transport configured. Wire NotificationProvider (SPEC §11) before deploying.",
+        const t = await getTranslations({ locale: signInEmailLocale(url), namespace: "auth.email" });
+        await provider.sendEmail(
+          signInEmail(identifier, url, {
+            subject: t("subject", { brand: brand.name }),
+            heading: t("heading", { brand: brand.name }),
+            body: t("body", { minutes: SIGN_IN_LINK_MINUTES }),
+            button: t("button"),
+            fallback: t("fallback"),
+            ignore: t("ignore"),
+          }),
         );
       },
     },

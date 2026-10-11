@@ -19,6 +19,7 @@
   "dependencies": {
     "@auth/dynamodb-adapter": "^2.11.3",
     "@aws-sdk/client-dynamodb": "^3.1131.0",
+    "@aws-sdk/client-sesv2": "^3.1149.0",
     "@aws-sdk/lib-dynamodb": "^3.1131.0",
     "@cashfreepayments/cashfree-js": "^1.0.7",
     "electrodb": "^3.9.3",

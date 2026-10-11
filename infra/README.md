@@ -143,10 +143,17 @@ Once per AWS account, in this order.
 
 ## Before taking real orders
 
-- **Sign-in email does not send yet.** `src/auth.ts` throws in production
-  until NotificationProvider (SPEC §11) is wired to SES. Google sign-in works.
-  The Lambda already has `ses:SendEmail` for this region's identities.
-- **The tables are empty.** The admin screens fill them, as they did locally.
+- **Sign-in email goes through Amazon SES** (`src/lib/notify`, SPEC §11) from
+  `hello@fewgrams.com`. The identity is in `FewgramsOps`; its DKIM CNAMEs and
+  the `mail.fewgrams.com` MX/TXT are the stack's `Mail*` outputs, added in
+  Cloudflare as DNS-only. A new SES account is in the **sandbox** — it can
+  send only to verified addresses — until production access is granted
+  (SES console → Account dashboard → Request production access; free). New
+  accounts also start on the Essentials plan ($0.16/1,000); switch to à la
+  carte ($0.10/1,000) under SES → Plans.
+- **The tables hold a copy of the local database** (11 Oct 2026), test orders
+  and test users included. Clear those before taking real orders; keep the
+  catalogue.
 - **Opening the site:** set the repository variable `SITE_PUBLIC` to `true`,
   delete the `SITE_GATE` secret, and redeploy. With neither set, synth refuses
   to run — a forgotten secret cannot silently publish the site.

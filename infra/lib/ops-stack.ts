@@ -1,12 +1,13 @@
 import { CfnOutput, Duration, Stack, type StackProps } from "aws-cdk-lib";
 import { CfnBudget } from "aws-cdk-lib/aws-budgets";
 import { OpenIdConnectProvider, PolicyStatement, Role, WebIdentityPrincipal } from "aws-cdk-lib/aws-iam";
+import { EmailIdentity, Identity } from "aws-cdk-lib/aws-ses";
 import type { Construct } from "constructs";
-import { ALERT_EMAIL, GITHUB_OIDC_SUBJECT_PREFIX } from "./config";
+import { ALERT_EMAIL, GITHUB_OIDC_SUBJECT_PREFIX, MAIL_DOMAIN, MAIL_FROM_SUBDOMAIN } from "./config";
 
 /**
- * The deploy role GitHub Actions assumes, and the two budget alarms —
- * SPEC §2.2.
+ * The deploy role GitHub Actions assumes, the two budget alarms and the SES
+ * sending identity — SPEC §2.2, §11.
  *
  * Deployed **once by hand** from a laptop (`npx cdk deploy FewgramsOps`), since
  * the role it creates is what lets CI deploy everything after it.
@@ -83,6 +84,31 @@ export class OpsStack extends Stack {
        Budgets charges nothing for the first two budgets. */
     this.budget("ZeroSpend", 0.01, 100);
     this.budget("Monthly10", 10, 80);
+
+    /* The domain SES sends from, with Easy DKIM (2048-bit) and a custom MAIL
+       FROM. DNS is on Cloudflare, so nothing here can publish the records:
+       the outputs below are the five to add there, all DNS-only. SES checks
+       them on its own and the identity turns "verified" once they resolve.
+       The app's Lambda may already send as any identity in this region
+       (web-stack.ts). */
+    const mail = new EmailIdentity(this, "MailIdentity", {
+      identity: Identity.domain(MAIL_DOMAIN),
+      mailFromDomain: `${MAIL_FROM_SUBDOMAIN}.${MAIL_DOMAIN}`,
+    });
+    mail.dkimRecords.forEach((record, i) => {
+      new CfnOutput(this, `MailDkim${i + 1}`, {
+        value: `CNAME ${record.name} -> ${record.value}`,
+        description: "Add in Cloudflare, DNS-only",
+      });
+    });
+    new CfnOutput(this, "MailFromMx", {
+      value: `MX ${MAIL_FROM_SUBDOMAIN}.${MAIL_DOMAIN} -> 10 feedback-smtp.${this.region}.amazonses.com`,
+      description: "Add in Cloudflare",
+    });
+    new CfnOutput(this, "MailFromSpf", {
+      value: `TXT ${MAIL_FROM_SUBDOMAIN}.${MAIL_DOMAIN} -> "v=spf1 include:amazonses.com ~all"`,
+      description: "Add in Cloudflare",
+    });
   }
 
   private budget(id: string, limitUsd: number, alertAtPercent: number) {

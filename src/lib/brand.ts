@@ -44,10 +44,13 @@ export const brand = {
      `messages/<locale>/common.json` under `brand.*` — a plain string here
      rendered the English headline on /kn. What stays is identity: names,
      files, addresses, none of which translate. */
-  /** The "from" on sign-in emails (`src/auth.ts`). Customer-care email,
-   *  phone and WhatsApp live in `content/contact.json` instead, so the care
-   *  inbox can change without touching who login links come from. */
-  email: "info.fewgrams@gmail.com",
+  /** The "from" on every email the app sends (`src/lib/notify`), through
+   *  Amazon SES — so it must be on the SES-verified domain (infra
+   *  `MAIL_DOMAIN`). Nothing receives mail here; replies go nowhere useful.
+   *  Customer-care email, phone and WhatsApp live in `content/contact.json`
+   *  instead, so the care inbox can change without touching who login links
+   *  come from. */
+  email: "hello@fewgrams.com",
   instagram: "@fewgrams",
   /** TODO: FSSAI registration is a legal prerequisite to launch — SPEC §16. */
   fssai: null as string | null,

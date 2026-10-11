@@ -33,6 +33,19 @@ export const GITHUB_OIDC_SUBJECT_PREFIX = "repo:vivek-few-grams@328954572/fewgra
  */
 export const DOMAIN_NAME: string | undefined = "fewgrams.com";
 
+/**
+ * The domain the app sends mail from through Amazon SES — sign-in links now,
+ * receipts later (SPEC §11). Not `DOMAIN_NAME`: the site could move host while
+ * mail stays on fewgrams.com. The app's sender is `brand.email`, which must be
+ * an address on this domain.
+ *
+ * `MAIL_FROM_SUBDOMAIN` is SES's custom MAIL FROM: the bounce address lives on
+ * `mail.fewgrams.com`, whose own SPF names SES, so SPF aligns for DMARC
+ * without touching the apex SPF record Zoho needs (email-setup, 10 Oct 2026).
+ */
+export const MAIL_DOMAIN = "fewgrams.com";
+export const MAIL_FROM_SUBDOMAIN = "mail";
+
 /** Budget alarms go here. Not the care inbox (content/contact.json) — this is
  *  the operator. */
 export const ALERT_EMAIL = "info.fewgrams@gmail.com";
@@ -103,6 +116,9 @@ export const RUNTIME_CONSTANTS = {
   DYNAMODB_TABLE_PREFIX: TABLE_PREFIX,
   DYNAMODB_REGION: REGION,
   COURIER_BOOKING: "off",
+  /* Sign-in links (and later receipts) go out through Amazon SES, as
+     `brand.email` on `MAIL_DOMAIN` — src/lib/notify. */
+  EMAIL_TRANSPORT: "ses",
 } as const;
 
 /** 7 days — the owner's call, 10 Oct 2026, knowingly below the 180 days in
