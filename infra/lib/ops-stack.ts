@@ -53,7 +53,13 @@ export class OpsStack extends Stack {
        certificate and the edge function). Nothing else. */
     deployRole.addToPolicy(
       new PolicyStatement({
-        actions: ["cloudformation:ListStacks", "cloudformation:DescribeStacks", "cloudformation:GetTemplate"],
+        actions: [
+          "cloudformation:ListStacks",
+          "cloudformation:DescribeStacks",
+          "cloudformation:GetTemplate",
+          /* `cdk gc` reads each stack's template summary to find the assets it uses. */
+          "cloudformation:GetTemplateSummary",
+        ],
         resources: ["*"],
       }),
     );
