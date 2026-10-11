@@ -31,7 +31,7 @@ export const GITHUB_OIDC_SUBJECT_PREFIX = "repo:vivek-few-grams@328954572/fewgra
  * first deploy after that waits until the validation CNAME it prints is added
  * in Cloudflare. `AUTH_URL` has to change to match.
  */
-export const DOMAIN_NAME: string | undefined = undefined;
+export const DOMAIN_NAME: string | undefined = "fewgrams.com";
 
 /** Budget alarms go here. Not the care inbox (content/contact.json) — this is
  *  the operator. */

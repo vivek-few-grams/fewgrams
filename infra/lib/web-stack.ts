@@ -50,12 +50,16 @@ export class WebStack extends Stack {
             environment: runtimeEnvironment(),
           },
         },
+        /* Both on the Distribution itself. cdk-nextjs's own `certificate` prop
+           (`nextjsDistributionProps`) is read only by its container variant —
+           for functions it is silently ignored, which synthesized an alias with
+           no certificate, a distribution CloudFront refuses to create. */
         ...(props.domain && {
-          nextjsGlobalFunctions: {
-            nextjsDistributionProps: { certificate: props.domain.certificate },
-          },
           nextjsDistribution: {
-            distributionProps: { domainNames: [props.domain.name] },
+            distributionProps: {
+              domainNames: [props.domain.name],
+              certificate: props.domain.certificate,
+            },
           },
         }),
       },

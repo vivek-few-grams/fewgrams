@@ -153,13 +153,21 @@ Once per AWS account, in this order.
 
 ## Adding the domain
 
-1. Set `DOMAIN_NAME` in `lib/config.ts` and push.
-2. The deploy pauses on `FewgramsCert`. ACM's console (us-east-1) shows a
-   validation CNAME: add it in Cloudflare as **DNS-only**. The deploy carries on
-   once ACM sees it, usually within minutes.
-3. In Cloudflare, CNAME the domain to the `CloudFrontDomain` output, DNS-only.
-4. `put AUTH_URL https://<domain>`, redeploy, and update the Google redirect
-   URI and the Razorpay/Cashfree webhook URLs.
+Done for fewgrams.com on 11 Oct 2026; the steps, for a move to another domain:
+
+1. Set `DOMAIN_NAME` in `lib/config.ts`.
+2. Deploy the certificate from a laptop — it is infrastructure, so the workflow
+   never deploys it:
+   `SITE_GATE=x:x aws-vault exec fg -- npx cdk deploy FewgramsCert`. It pauses
+   until ACM sees its validation CNAME (ACM console, us-east-1): add that in
+   Cloudflare as **DNS-only** and leave it there for good — renewal reuses it.
+3. `put AUTH_URL https://<domain>`, then push: the workflow puts the domain on
+   the distribution.
+4. In Cloudflare, CNAME the domain to the `CloudFrontDomain` output, DNS-only.
+   At the apex this sits beside the Zoho MX/TXT records; Cloudflare flattens it.
+5. `www`: a proxied (orange) `www` record and a Cloudflare redirect rule to the
+   apex — nothing in AWS.
+6. Update the Google redirect URI and the Razorpay/Cashfree webhook URLs.
 
 ## Without a WAF
 
