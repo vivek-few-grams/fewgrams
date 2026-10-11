@@ -9,8 +9,18 @@ import { RetentionDays } from "aws-cdk-lib/aws-logs";
  *  of financial transactions (the orders table) in Indian jurisdiction. */
 export const REGION = "ap-south-1";
 
-/** The GitHub repository allowed to deploy, `owner/name`. */
-export const GITHUB_REPO = "vivek-few-grams/fewgrams";
+/**
+ * The GitHub repository allowed to deploy, as GitHub writes it into the
+ * `sub` of its OIDC token: `repo:<owner>@<owner id>/<name>@<repo id>`.
+ *
+ * The repository uses GitHub's immutable subject format, so the numeric IDs
+ * are part of it — a token from `vivek-few-grams/fewgrams` without them is
+ * refused, which is what made the first deploy fail (11 Oct 2026). It is also
+ * the safer form: a repository deleted and re-created under the same name has
+ * new IDs and cannot deploy here. Check it with
+ * `gh api repos/<owner>/<name>/actions/oidc/customization/sub`.
+ */
+export const GITHUB_OIDC_SUBJECT_PREFIX = "repo:vivek-few-grams@328954572/fewgrams@1369558817";
 
 /**
  * The public hostname, once there is one — e.g. `"fewgrams.in"`.

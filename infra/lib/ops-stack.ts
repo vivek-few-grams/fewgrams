@@ -2,7 +2,7 @@ import { CfnOutput, Duration, Stack, type StackProps } from "aws-cdk-lib";
 import { CfnBudget } from "aws-cdk-lib/aws-budgets";
 import { OpenIdConnectProvider, PolicyStatement, Role, WebIdentityPrincipal } from "aws-cdk-lib/aws-iam";
 import type { Construct } from "constructs";
-import { ALERT_EMAIL, GITHUB_REPO } from "./config";
+import { ALERT_EMAIL, GITHUB_OIDC_SUBJECT_PREFIX } from "./config";
 
 /**
  * The deploy role GitHub Actions assumes, and the two budget alarms —
@@ -31,7 +31,7 @@ export class OpsStack extends Stack {
       assumedBy: new WebIdentityPrincipal(github.openIdConnectProviderArn, {
         StringEquals: {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": `repo:${GITHUB_REPO}:ref:refs/heads/main`,
+          "token.actions.githubusercontent.com:sub": `${GITHUB_OIDC_SUBJECT_PREFIX}:ref:refs/heads/main`,
         },
       }),
     });
