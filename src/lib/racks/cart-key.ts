@@ -47,7 +47,7 @@ import { isRackColour, type RackColour } from "./colours";
  * imply a choice nobody is offered.
  */
 
-/** The three ranges, keyed as `/shop/racks` and `public/racks/` key them. */
+/** The three ranges, keyed as `/shop/racks` and `public/img/racks/` key them. */
 export const RACK_RANGES = ["shelf", "angle", "pipe"] as const;
 export type RackRange = (typeof RACK_RANGES)[number];
 

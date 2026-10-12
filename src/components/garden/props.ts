@@ -798,7 +798,7 @@ export const PACKET = { w: 0.8, h: 1.06, d: 0.14 };
  * A Fewgrams seed pouch, as the packs are printed: white kraft-lined film,
  * a heat seal across the top, the logo, and a clear window onto the seeds
  * in their own colour. No words of ours are printed — the logo is the
- * brand's own artwork (`public/brand/fewgrams-logo.svg`), drawn in once it
+ * brand's own artwork (`public/img/brand/fewgrams-logo.svg`), drawn in once it
  * loads; until then the pouch is plain white with its window.
  */
 export function seedPacket(bin: Bin, rand: () => number, seed: string) {
@@ -874,7 +874,7 @@ export function seedPacket(bin: Bin, rand: () => number, seed: string) {
     paint();
     tex.needsUpdate = true;
   };
-  img.src = "/brand/fewgrams-logo.svg";
+  img.src = "/img/brand/fewgrams-logo.svg";
   const mat = bin.add(
     new THREE.MeshStandardMaterial({
       map: tex,

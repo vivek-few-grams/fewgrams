@@ -90,7 +90,7 @@ export async function OtherProducts({
               photo={categoryPhoto("microgreens")}
               media={
                 <Image
-                  src="/shop/microgreens-cutout.webp"
+                  src="/img/shop/microgreens-cutout.webp"
                   alt=""
                   fill
                   sizes="(min-width: 768px) 22vw, 42vw"

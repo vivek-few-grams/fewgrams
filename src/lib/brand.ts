@@ -5,7 +5,7 @@
 export const brand = {
   name: "Fewgrams",
   /**
-   * The logo lockup — `public/brand/fewgrams-logo.svg`.
+   * The logo lockup — `public/img/brand/fewgrams-logo.svg`.
    *
    * Intrinsic size comes from the file's own viewBox (2112 x 1788, aspect
    * 1.18:1) and is declared here so `next/image` can reserve the box and no
@@ -21,7 +21,7 @@ export const brand = {
    * as text; it predates both files.
    */
   logo: {
-    src: "/brand/fewgrams-logo.svg",
+    src: "/img/brand/fewgrams-logo.svg",
     width: 2112,
     height: 1788,
   },
@@ -35,7 +35,7 @@ export const brand = {
    * declares its own intrinsic size.
    */
   logoLight: {
-    src: "/brand/fewgrams-logo-white.svg",
+    src: "/img/brand/fewgrams-logo-white.svg",
     width: 2112,
     height: 1845,
   },

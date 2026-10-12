@@ -30,7 +30,7 @@ Either order works.
 1. In **admin → varieties**, type the key and set the price, yield, grow days
    and seed rate. Files that already exist here appear as suggestions.
 2. Create `<key>.json` in this folder. English is required; Kannada optional.
-3. Drop its photos in `public/varieties/<key>/`.
+3. Drop its photos in `public/img/varieties/<key>/`.
 
 Until step 2 is done the admin row is flagged in red with the exact path to
 create, and every public page skips the variety rather than showing a nameless
@@ -154,5 +154,5 @@ says so on the page.
 ```
 
 `images` names files; it never contains image data. They resolve through
-`varietyImageUrl()` to `public/varieties/<key>/` today and to CloudFront at
+`varietyImageUrl()` to `public/img/varieties/<key>/` today and to CloudFront at
 launch, so nothing here changes when storage moves.

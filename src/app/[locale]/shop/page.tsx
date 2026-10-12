@@ -127,7 +127,7 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
             photo={categoryPhoto("microgreens")}
             media={
               <Image
-                src="/shop/microgreens-cutout.webp"
+                src="/img/shop/microgreens-cutout.webp"
                 alt=""
                 fill
                 sizes="(min-width: 1024px) 18vw, 84vw"

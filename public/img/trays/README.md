@@ -3,8 +3,8 @@
 One folder per item, named by its content key:
 
 ```
-public/trays/tray-pair/cutout.webp     ← the card
-public/trays/tray-pair/hero.jpg        ← the gallery
+public/img/trays/tray-pair/cutout.webp     ← the card
+public/img/trays/tray-pair/hero.jpg        ← the gallery
 ```
 
 Filenames are declared in `content/trays/<key>.json` under `images`, and
@@ -53,10 +53,10 @@ the prompt, because the generator ignores margin instructions — these three ca
 back at 90, 94 and 96% of the frame width.
 
 ```bash
-python3 scripts/cutout.py <master.png> public/trays/<key>/cutout.webp \
+python3 scripts/cutout.py <master.png> public/img/trays/<key>/cutout.webp \
     --aspect 3:2 --fill 0.88 --width 900
 
-python3 scripts/cutout.py <master.png> public/trays/<key>/hero.jpg \
+python3 scripts/cutout.py <master.png> public/img/trays/<key>/hero.jpg \
     --aspect 3:2 --fill 0.92 --width 1500 --bg '#f2ebe3'
 ```
 
@@ -65,7 +65,7 @@ Python dependency to the repo.
 
 ## No text baked into the photograph
 
-Same rule as `public/varieties/`: it cannot be translated for `/kn`, it
+Same rule as `public/img/varieties/`: it cannot be translated for `/kn`, it
 duplicates the `<h1>`, and it cannot be restyled without re-rendering every
 file. The page supplies the words — and on the card the marquee is already
 scrolling the spec labels behind the subject.

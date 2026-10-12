@@ -100,7 +100,7 @@ export function createContentSource<T extends { name: string; imageAlt?: string 
   folder,
 }: {
   /** Both the folder under `content/` and the folder under the image base, so
-   *  `content/seeds/sunflower.json` pairs with `/seeds/sunflower/hero.jpg`.
+   *  `content/seeds/sunflower.json` pairs with `/img/seeds/sunflower/hero.jpg`.
    *  One name, so the two can never drift apart. */
   folder: string;
 }): ContentSource<T> {
@@ -223,14 +223,14 @@ export function createContentSource<T extends { name: string; imageAlt?: string 
    * by about a third and defeats `next/image` resizing entirely.
    *
    * So the content file names the file and this resolves it. Today that is
-   * `public/<folder>/<key>/<filename>`, served by Next itself. At launch
+   * `public/img/<folder>/<key>/<filename>`, served by Next itself. At launch
    * `NEXT_PUBLIC_IMAGE_BASE_URL` points at CloudFront and nothing else changes
    * — which is why every caller goes through this function rather than
    * building the path inline.
    */
   function imageUrl(key: string, filename: string): string {
     const base = process.env.NEXT_PUBLIC_IMAGE_BASE_URL ?? "";
-    return `${base}/${folder}/${key}/${filename}`;
+    return `${base}/img/${folder}/${key}/${filename}`;
   }
 
   /** The hero photo, or null when the photography has not been shot yet — the

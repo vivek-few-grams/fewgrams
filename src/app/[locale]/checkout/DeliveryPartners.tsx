@@ -241,7 +241,7 @@ function ParcelHeading({ n, items }: { n: number; items: string[] }) {
  * text beside it, so the icon is decorative and `alt` is empty. Each is shown
  * as the square it is, not cropped to a circle.
  *
- * Built from each courier's own artwork (`public/couriers/README.md`). An
+ * Built from each courier's own artwork (`public/img/couriers/README.md`). An
  * aggregator's row names the carrier it books ("Xpressbees via Velocity") but
  * shows the aggregator's icon, since the aggregator is who is booked. Used on
  * the scan's "checking" rows too, so each courier looks the same while it is
@@ -249,10 +249,10 @@ function ParcelHeading({ n, items }: { n: number; items: string[] }) {
  * error until it has one.
  */
 const COURIER_ICON: Record<PartnerName, string> = {
-  delhivery: "/couriers/delhivery-icon.png",
-  ekart: "/couriers/ekart-icon.png",
-  shiprocket: "/couriers/shiprocket-icon.png",
-  velocity: "/couriers/velocity-icon.png",
+  delhivery: "/img/couriers/delhivery-icon.png",
+  ekart: "/img/couriers/ekart-icon.png",
+  shiprocket: "/img/couriers/shiprocket-icon.png",
+  velocity: "/img/couriers/velocity-icon.png",
 };
 
 function CourierLogo({ courier }: { courier: PartnerName }) {

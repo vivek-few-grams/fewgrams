@@ -584,7 +584,7 @@ function RotationModal({
             empty. */}
         <div className="relative aspect-[16/5] bg-sage">
           <Image
-            src={`/plans/${entry.plan.contentKey}.webp`}
+            src={`/img/plans/${entry.plan.contentKey}.webp`}
             alt=""
             fill
             sizes="(min-width: 57rem) 52rem, 92vw"

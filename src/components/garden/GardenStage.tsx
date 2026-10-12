@@ -15,7 +15,7 @@ import type { BenchStep } from "./steps";
  * each step shows a still of the scene at the end of that step, and the page
  * lets the visitor walk through them with Next.
  *
- * Stills live in `public/garden/<step>.webp` (16:9, from `sm`) and
+ * Stills live in `public/img/garden/<step>.webp` (16:9, from `sm`) and
  * `<step>-narrow.webp` (portrait, phones), captured from this scene — retake
  * them if the scene changes (docs/GROW_JOURNEY_PLAN.md §7 says how).
  *
@@ -205,13 +205,13 @@ export function GardenStage({
   const {
     props: { srcSet: wide },
   } = getImageProps({
-    src: `/garden/${step}.webp`,
+    src: `/img/garden/${step}.webp`,
     ...WIDE,
     alt,
     sizes: "100vw",
   });
   const { props: narrow } = getImageProps({
-    src: `/garden/${step}-narrow.webp`,
+    src: `/img/garden/${step}-narrow.webp`,
     ...NARROW,
     alt,
     sizes: "100vw",

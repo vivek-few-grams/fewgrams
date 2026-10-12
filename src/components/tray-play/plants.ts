@@ -91,7 +91,7 @@ export type Variety = {
   bounce: number;
 };
 
-/* Colours were taken off the hero's trays photograph (public/brand/
+/* Colours were taken off the hero's trays photograph (public/img/brand/
    hero-trays.jpg), so the drawing and the photograph agree. */
 export const LOOKS: Record<Look, Variety> = {
   amaranth: {

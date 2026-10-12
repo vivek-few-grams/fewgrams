@@ -185,16 +185,16 @@ export default async function RackRangePage({
 
   const shots: Shot[] = [
     {
-      src: `/racks/${r}/cutout.webp`,
+      src: `/img/racks/${r}/cutout.webp`,
       alt: t(`ranges.${r}.imageAlt`),
     },
     /* All three ranges now have a joint-detail close-up and a what's-included
        flat lay, alongside the cut-out rather than replacing it. */
-    { src: `/racks/${r}/joint-detail-2.webp`, alt: t(`ranges.${r}.jointAlt`) },
-    { src: `/racks/${r}/whats-included-2.webp`, alt: t(`ranges.${r}.includedAlt`) },
+    { src: `/img/racks/${r}/joint-detail-2.webp`, alt: t(`ranges.${r}.jointAlt`) },
+    { src: `/img/racks/${r}/whats-included-2.webp`, alt: t(`ranges.${r}.includedAlt`) },
     /* Pipe is the only range shown loaded with drainage cell mats so far —
        the same shot also appears on the mat's own gallery. */
-    ...(r === "pipe" ? [{ src: `/racks/${r}/with-mats-2.webp`, alt: t(`ranges.${r}.withMatsAlt`) }] : []),
+    ...(r === "pipe" ? [{ src: `/img/racks/${r}/with-mats-2.webp`, alt: t(`ranges.${r}.withMatsAlt`) }] : []),
   ];
 
   const facts = rack

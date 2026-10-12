@@ -58,7 +58,7 @@
     "pick": "Key",
     "pickHint": "Lowercase letters and hyphens only — radish, red-amaranth, green-amaranth. No numbers or spaces. This names the content file and the page address, so it is an identifier, not a label.",
     "pickPlaceholder": "red-amaranth",
-    "howTo": "Save it here first, then create content/varieties/[key].json for the name and description and drop photos in public/varieties/[key]/. Until that file exists the variety is flagged below and stays off the site.",
+    "howTo": "Save it here first, then create content/varieties/[key].json for the name and description and drop photos in public/img/varieties/[key]/. Until that file exists the variety is flagged below and stays off the site.",
     "growDays": "Grow days",
     "growDaysHint": "Sow to harvest",
     "yieldMin": "Approx. weight per tray, low (g)",

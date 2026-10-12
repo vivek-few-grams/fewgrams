@@ -1,7 +1,7 @@
 # Variety cut-out prompt — ChatGPT
 
 The card treatment in SPEC §18.4 needs one transparent cut-out per variety at
-`public/varieties/<key>/cutout.webp`. Master reference is
+`public/img/varieties/<key>/cutout.webp`. Master reference is
 `red-amaranthus` — every other variety is generated **from** it so the tray,
 camera angle and lighting stay identical across the grid.
 
@@ -69,7 +69,7 @@ stem tips, which is the whole reason transparency is worth insisting on.
 ## Processing
 
 ```
-python3 scripts/cutout.py <source.png> public/varieties/<key>/cutout.webp
+python3 scripts/cutout.py <source.png> public/img/varieties/<key>/cutout.webp
 ```
 
 Then add `"cutout": "cutout.webp"` to `images` in

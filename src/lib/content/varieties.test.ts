@@ -96,7 +96,7 @@ describe("English fallback — SPEC §4.4", () => {
 
 describe("images", () => {
   it("builds a path under the variety's own folder", () => {
-    expect(varietyImageUrl("red-amaranth", "hero.jpg")).toBe("/varieties/red-amaranth/hero.jpg");
+    expect(varietyImageUrl("red-amaranth", "hero.jpg")).toBe("/img/varieties/red-amaranth/hero.jpg");
   });
 
   it("falls back to the name for alt text rather than leaving it empty", () => {
@@ -106,7 +106,7 @@ describe("images", () => {
       images: { hero: "hero.jpg" },
       recipeSlugs: [],
     });
-    expect(hero).toEqual({ src: "/varieties/radish/hero.jpg", alt: "Radish" });
+    expect(hero).toEqual({ src: "/img/varieties/radish/hero.jpg", alt: "Radish" });
   });
 
   it("returns null when the photography has not been shot", () => {

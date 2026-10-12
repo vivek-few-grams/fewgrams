@@ -178,7 +178,7 @@ export default async function GardenPage({ params, searchParams }: PageProps<"/[
           name: rackText("shelf.name"),
           href: "/shop/racks/shelf",
           image: {
-            src: "/racks/shelf/cutout.webp",
+            src: "/img/racks/shelf/cutout.webp",
             alt: rackText("shelf.imageAlt"),
           },
         }

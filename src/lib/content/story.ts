@@ -50,7 +50,7 @@ import { routing, type Locale } from "@/i18n/routing";
 export type StoryPageMeta = {
   /** Kebab-case, and also the anchor id for the mobile stack. */
   key: string;
-  /** Filename inside `public/story/`. */
+  /** Filename inside `public/img/story/`. */
   image: string;
 };
 
@@ -129,7 +129,7 @@ function asLocale(locale: string): Locale {
  */
 export function storyImageUrl(filename: string, version?: number): string {
   const base = process.env.NEXT_PUBLIC_IMAGE_BASE_URL ?? "";
-  const url = `${base}/story/${filename}`;
+  const url = `${base}/img/story/${filename}`;
   return version ? `${url}?v=${version}` : url;
 }
 
@@ -169,7 +169,7 @@ const readImageMeta = cache(
        time, and inventing one would put a `?v=0` on a URL that is already
        going to render broken. */
     const fallback = { width: 1200, height: 800, version: 0 };
-    const file = path.join(process.cwd(), "public", "story", filename);
+    const file = path.join(process.cwd(), "public", "img", "story", filename);
     try {
       const [b, info] = await Promise.all([readFile(file), stat(file)]);
       const version = Math.round(info.mtimeMs);

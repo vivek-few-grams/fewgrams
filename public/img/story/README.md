@@ -1,4 +1,4 @@
-# Storybook illustrations — `public/story/`
+# Storybook illustrations — `public/img/story/`
 
 The thirteen pictures for `/how-we-grow`. One file per page, named for its page key in
 `content/story/book.json`. SPEC §18.5.
@@ -28,7 +28,7 @@ the tilting card treatment in §17.4. A storybook illustration is the opposite: 
 its own background, filling a whole leaf, never scaled or rotated. So it is a plain resize:
 
 ```sh
-cwebp -quiet -q 80 -resize 1200 0 -metadata none "<master>.png" -o public/story/<key>.webp
+cwebp -quiet -q 80 -resize 1200 0 -metadata none "<master>.png" -o public/img/story/<key>.webp
 ```
 
 1200px wide is a leaf at 2× on a large desktop and the full column at 3× on a phone. `-metadata

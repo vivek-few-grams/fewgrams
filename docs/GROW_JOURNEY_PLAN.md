@@ -49,13 +49,13 @@ diff:
 | `src/components/home/tray-play/field.ts` | Spring field: a grid of damped springs (the physics) |
 | `src/components/home/tray-play/field.test.ts` | 6 tests: swipe, overshoot, settle, fast > slow, hover parts, clamp |
 | `src/components/home/tray-play/scene.ts` | three.js scene: moulded black tray pairs, instanced stems + cupped leaves, shaders, pointer, loop |
-| `public/brand/tray-play.webp`, `tray-play-narrow.webp` | Stills captured from the scene (2608×1120, 1344×1010) |
+| `public/img/brand/tray-play.webp`, `tray-play-narrow.webp` | Stills captured from the scene (2608×1120, 1344×1010) |
 | `messages/{en,kn}/home.json` → `trayPlay` | heading, body, hintPointer, hintTouch, alt |
 | `src/app/[locale]/page.tsx` | `<TrayPlay />` currently between `<Process />` and `<WhyMicrogreens />` |
 | `package.json` | `three` + `@types/three` added |
 
 Other modified files in `git status` (`shop/page.tsx`, `globals.css`,
-`CategoryMedia.tsx`, `OtherProducts.tsx`, `MarqueeCard.tsx`, `public/shop/*-photo.webp`)
+`CategoryMedia.tsx`, `OtherProducts.tsx`, `MarqueeCard.tsx`, `public/img/shop/*-photo.webp`)
 were **already modified before this feature**. They are not part of it; ask the
 owner before committing them alongside.
 
@@ -90,7 +90,7 @@ the hint `<p>`, screenshot the canvas element at `scale: 'device'`:
 - wide: viewport **1440×900** → canvas 1304×559 → 2608×1120
 - narrow: viewport **768×1024** → canvas 672×504 → 1344×1010
 
-Then `cwebp -q 82 in.png -o public/brand/tray-play{,-narrow}.webp`, and make
+Then `cwebp -q 82 in.png -o public/img/brand/tray-play{,-narrow}.webp`, and make
 sure `WIDE` / `NARROW` sizes in `TrayPlayStage.tsx` match the files. Do this
 for any new journey stills too.
 
@@ -243,7 +243,7 @@ minutes. A "come back tomorrow" garden is a different product.
   needs a `Look` in `tray-play/plants.ts` and a seed/variety key in
   `garden/page.tsx`.
 - `/how-we-grow` ↔ `/garden` cross-links (open decision 4) are not added yet.
-- Stills: `public/garden/<step>.webp` and `-narrow.webp` were captured with the
+- Stills: `public/img/garden/<step>.webp` and `-narrow.webp` were captured with the
   black pair and radish; retake after any scene change (script idea: load
   `?step=<s>`, press "Do it for me", wait for Next, hide the hint/progress/tags,
   screenshot the canvas — wide at 1440×900 @2×, narrow at 390×844 @2.5×).

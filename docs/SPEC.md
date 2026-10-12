@@ -520,7 +520,7 @@ The order is now whichever suits you:
 1. In admin → varieties, type a key (`red-amaranth`) and set the numbers. Existing content files
    appear as autocomplete suggestions, so a second variety in a family is easy to match.
 2. Create `content/varieties/red-amaranth.json` for the name and copy.
-3. Drop photos in `public/varieties/red-amaranth/`.
+3. Drop photos in `public/img/varieties/red-amaranth/`.
 
 What keeps a nameless variety away from customers is downstream rather than preventive, and it is
 enough: the admin row is flagged in red naming the **exact path to create**, and every public page
@@ -653,7 +653,7 @@ sufficient: a DynamoDB item caps at **400 KB**, which one decent photograph exce
 read capacity on every page view for bytes a CDN serves for nothing; and base64 inflates the
 payload by about a third while defeating `next/image` resizing entirely.
 
-Today they resolve to `public/varieties/<key>/<filename>`, served by Next. At launch
+Today they resolve to `public/img/varieties/<key>/<filename>`, served by Next. At launch
 `NEXT_PUBLIC_IMAGE_BASE_URL` points at CloudFront (§2) and nothing else changes — which is why
 every caller goes through `varietyImageUrl()` rather than building a path inline. A variety with no
 `images.hero` falls back to the generated `Sprout` placeholder, so photography can land one variety
@@ -1803,7 +1803,7 @@ Then:
 - **"How we grow" artwork is not final (§18.5).** The page is built and the copy is done in both
   languages, but six of the thirteen illustrations carry baked-in English labels a Kannada reader
   cannot read, and the set spans two illustration styles. Neither blocks launch; both are visible
-  to every visitor. Regeneration notes are in `public/story/README.md`.
+  to every visitor. Regeneration notes are in `public/img/story/README.md`.
 - **Bundle prices do not exist yet.** §18.4 is built against a typed placeholder until Phase 2
   ships the admin UI.
 - **Tray delivery rate not set**, and it matters more since 17 Sep 2026 because trays are now real
@@ -2280,7 +2280,7 @@ and role badge stay quiet because they are context, not controls, and they take 
 long address cannot squeeze the pill.
 
 **Logo, added 15 Sep 2026.** The text wordmark was replaced by the lockup at
-`public/brand/fewgrams-logo.svg`, declared in `src/lib/brand.ts` per §16 rather than hardcoded in
+`public/img/brand/fewgrams-logo.svg`, declared in `src/lib/brand.ts` per §16 rather than hardcoded in
 the header. Source file is `fewgrams-divider-greenbrown_6.svg` — despite the name it is the stacked
 lockup, not a divider.
 
@@ -2796,7 +2796,7 @@ then stays on screen indefinitely while the correct bytes sit on disk, which is 
 happened twice on 22 Sep 2026 before the cause was found. The version is the file's modification
 time, so there is no number to remember to bump, and `story-contract.test.ts` asserts it is
 present and correct on every page. `images.localPatterns` in `next.config.ts` is what permits the
-query string; it is scoped to `/story/**` because omitting `search` allows any query string and
+query string; it is scoped to `/img/story/**` because omitting `search` allows any query string and
 each distinct one is a fresh entry in the image optimizer's cache.
 
 A spiral binding was built and removed the same day (22 Sep 2026).
@@ -2829,7 +2829,7 @@ unique and DOM order is reading order.
 **Open: the artwork is not final.** Six of the thirteen illustrations carry baked-in English scene
 labels (seed names, "Cocopeat", "Used Cocopeat (Dispose)"), which a Kannada reader cannot read.
 Accepted for now as depicted props rather than interface copy, and recorded in
-`public/story/README.md` as an exception that must not grow.
+`public/img/story/README.md` as an exception that must not grow.
 
 **The book opens itself (24 Sep 2026).** In book mode the page begins with a small closed
 hardcover, tilted, with a page block and a shadow, and "Our chapter starts here" on a forest cover
@@ -3199,7 +3199,7 @@ is the complete set rather than "the others" (`VarietyGallery.tsx`).
   crop differently from the image it opens, so what you tap would not be what
   you get.
 - **Photography spec and the baked-in-title problem are in
-  `public/varieties/README.md`.** The current heroes have "<Name> / Microgreens"
+  `public/img/varieties/README.md`.** The current heroes have "<Name> / Microgreens"
   rendered into the top-left, which cannot be translated for `/kn`, duplicates
   the `<h1>` beside it, and is cropped away by the square grid tiles. Photographs
   should carry no text.
@@ -3794,9 +3794,9 @@ dropped by the parser.
 ### 19.11 The range photography
 
 Three cut-outs, supplied by the owner on 17 Sep 2026, at
-`public/racks/<range>/cutout.webp`. Details and the two known caveats — the
+`public/img/racks/<range>/cutout.webp`. Details and the two known caveats — the
 steel is orange rather than the brand green, and the `angle` master is clipped
-at its left edge — are in `public/racks/README.md`; prompts are in
+at its left edge — are in `public/img/racks/README.md`; prompts are in
 `docs/TRAY_PROMPT.md`.
 
 **4:5 portrait and normalised on height**, which is the opposite of the variety
@@ -4595,7 +4595,7 @@ from ₹150 to ₹120; the other three kept their price.
   "to order" list, because there are no orders yet (§9). When checkout lands,
   a paid line whose quantity exceeded stock is the trigger for a purchase —
   that is the operational half of §22.2 and it is unbuilt.
-- **No photography, now across eighteen seeds.** `public/seeds/<key>/` is
+- **No photography, now across eighteen seeds.** `public/img/seeds/<key>/` is
   empty, so every seed page and card renders the Sprout fallback. The card
   treatment with the tilt and the marquee needs a transparent cut-out
   (§17.4).
@@ -4918,7 +4918,7 @@ three kinds: is the row active, and does it have a content file.
 
 Three shots, supplied by the owner on 17 Sep 2026 and the first photography any category other than
 microgreens has had. Prompts and shot notes are in `docs/TRAY_PROMPT.md`; the assets live in
-`public/trays/<key>/`.
+`public/img/trays/<key>/`.
 
 **They arrived as transparent 3:2 cut-outs**, which is what made the §17.4 treatment possible here
 at all — the drain holes are holes in the alpha channel, so the panel colour shows through them.
@@ -5120,7 +5120,7 @@ behind it, and explain on the detail page why low-EC cocopeat matters to a plant
 - **The tile.** The owner's image — a bare compressed coir block with a heap of loose coir, a
   coconut shell and a wooden scoop (replacing a first version the same afternoon, under a new
   filename so the optimiser cannot serve the old one) — built by `scripts/cutout.py` at the
-  square defaults into `public/shop/grow-media-block-cutout.webp` and used by `CategoryMedia` on `/shop` and the home page,
+  square defaults into `public/img/shop/grow-media-block-cutout.webp` and used by `CategoryMedia` on `/shop` and the home page,
   `aspect-square w-[82%]`. A category picture rather than the pack, which suits §24.10: the tile
   says "what we grow in", and a second medium can join without the picture being wrong.
 - **The marquee** reveals on hover and scrolls, like every tile. Its words are properties of coir
@@ -5255,7 +5255,7 @@ jump anywhere.
   product, a range or a catalogue page (`ShopLink` in `GardenJourney.tsx`) opens beside it, so
   the tray in play is not lost; a screen reader is told. The basket link stays in the same tab.
 - **The still is the fallback, not a placeholder.** Each bench step has a still of its end state
-  in `public/garden/<step>.webp` and `<step>-narrow.webp`. With no WebGL, no JavaScript or
+  in `public/img/garden/<step>.webp` and `<step>-narrow.webp`. With no WebGL, no JavaScript or
   reduced motion the visitor walks the stills with Next. With motion allowed the still stays
   hidden while the scene loads (the owner, 1 Oct 2026): it was taken at one screen shape and the
   scene frames itself to the visitor's, so showing it first made the trays jump on every reload.

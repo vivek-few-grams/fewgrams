@@ -16,7 +16,7 @@ import { SignInOptions, googleConfigured } from "@/components/auth/SignInOptions
  *
  * One card in two halves (the owner asked for it to look better, 26 Sep
  * 2026): an illustration — a young girl peering at a sprout through a
- * magnifying glass, `public/brand/login-girl.webp`, the owner's pick; a new picture takes a new filename, because `next/image`
+ * magnifying glass, `public/img/brand/login-girl.webp`, the owner's pick; a new picture takes a new filename, because `next/image`
  * keeps serving the old one from its cache when a file is replaced in place —
  * with
  * what an account is for over its dark lower third on the left, the form on
@@ -85,7 +85,7 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
             phone, the full left half from `lg`. */}
         <div className="relative h-60 overflow-hidden bg-forest md:h-72 lg:h-auto">
           <Image
-            src="/brand/login-girl.webp"
+            src="/img/brand/login-girl.webp"
             alt={t("panelAlt")}
             fill
             priority
@@ -122,7 +122,7 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
             them to stay clear of the fields. */}
         <div className="relative isolate flex flex-col items-center justify-center overflow-hidden px-6 py-10 md:px-12 md:py-14 lg:px-16">
           <Image
-            src="/brand/login-sprig-sage.webp"
+            src="/img/brand/login-sprig-sage.webp"
             alt=""
             width={520}
             height={526}
@@ -130,7 +130,7 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
             className="pointer-events-none absolute -right-12 -top-10 -z-10 hidden w-44 rotate-[200deg] select-none opacity-90 md:block lg:w-60"
           />
           <Image
-            src="/brand/login-sprig-chard.webp"
+            src="/img/brand/login-sprig-chard.webp"
             alt=""
             width={520}
             height={525}

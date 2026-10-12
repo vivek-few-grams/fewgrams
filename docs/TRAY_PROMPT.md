@@ -154,7 +154,7 @@ Note that a dark preview backdrop makes a correct cut-out *look* like a black
 studio shot; check the alpha, not the thumbnail.
 
 Then build both assets from the one master — commands and reasoning in
-`public/trays/README.md` — and name them in `content/trays/<key>.json`:
+`public/img/trays/README.md` — and name them in `content/trays/<key>.json`:
 
 ```json
 "images": { "hero": "hero.jpg", "cutout": "cutout.webp" },
@@ -166,7 +166,7 @@ Then build both assets from the one master — commands and reasoning in
 
 **Status:** all three shot on 17 Sep 2026 and live on `/shop/racks`, plus the
 `shelf` range on the category tile. Assets and the two caveats are in
-`public/racks/README.md`. This section stays for re-shoots and further angles.
+`public/img/racks/README.md`. This section stays for re-shoots and further angles.
 
 When these prompts were written there was nowhere for a rack image to go —
 `RackModel` has no `images` field and there is no `content/racks/` folder — so

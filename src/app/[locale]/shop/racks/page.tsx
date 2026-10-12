@@ -199,7 +199,7 @@ export default async function RacksPage({ params }: PageProps<"/[locale]/shop/ra
                   object rather than the photography. */}
                   <div className="mcard__media relative aspect-[4/5] h-[82%]">
                     <Image
-                      src={`/racks/${range}/cutout.webp`}
+                      src={`/img/racks/${range}/cutout.webp`}
                       alt={t(`ranges.${range}.imageAlt`)}
                       fill
                       priority={i === 0}

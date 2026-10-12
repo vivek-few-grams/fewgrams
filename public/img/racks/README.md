@@ -3,9 +3,9 @@
 One folder per range, named as `/shop/racks` names it:
 
 ```
-public/racks/shelf/cutout.webp   ← the plated range      (/admin/racks,       SPEC §19)
-public/racks/angle/cutout.webp   ← the open-frame range  (/admin/angle-racks, SPEC §20)
-public/racks/pipe/cutout.webp    ← the UPVC range        (/admin/pipe-racks,  SPEC §21)
+public/img/racks/shelf/cutout.webp   ← the plated range      (/admin/racks,       SPEC §19)
+public/img/racks/angle/cutout.webp   ← the open-frame range  (/admin/angle-racks, SPEC §20)
+public/img/racks/pipe/cutout.webp    ← the UPVC range        (/admin/pipe-racks,  SPEC §21)
 ```
 
 Unlike varieties and trays these are **not declared in a content file**, because
@@ -58,7 +58,7 @@ why there is no `hero.jpg` (§19.7, §19.11).
 ## Building them
 
 ```bash
-python3 scripts/cutout.py <master.png> public/racks/<range>/cutout.webp \
+python3 scripts/cutout.py <master.png> public/img/racks/<range>/cutout.webp \
     --aspect 4:5 --fill 0.88 --width 720
 ```
 

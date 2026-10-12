@@ -344,7 +344,7 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
            text is the line's own name, which is more specific than the range
            alt would be. */
         image: {
-          src: `/racks/${found.rack.range}/cutout.webp`,
+          src: `/img/racks/${found.rack.range}/cutout.webp`,
           alt: rackLineName(t, found.rack, found.colour),
         },
         maxUnits: MAX_UNITS_PER_LINE,

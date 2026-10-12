@@ -60,7 +60,7 @@ Either order works.
    hold.
 2. Copy `_template.json` to `<key>.json` and fill in every field, in **both**
    `en` and `kn`.
-3. Photographs are optional. Drop them in `public/seeds/<key>/` and name them
+3. Photographs are optional. Drop them in `public/img/seeds/<key>/` and name them
    in `images` when they exist; until then the page shows the Sprout mark.
 
 Until step 2 is done the admin row is flagged in red with the exact path, and

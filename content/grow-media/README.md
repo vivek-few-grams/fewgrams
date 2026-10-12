@@ -60,4 +60,4 @@ buyer how big a bucket they need.
    fields in **both** `en` and `kn`.
 3. Add its row to `scripts/grow-media-fill.mjs` — the parity test fails
    otherwise.
-4. Photographs are optional, in `public/grow-media/<key>/`.
+4. Photographs are optional, in `public/img/grow-media/<key>/`.

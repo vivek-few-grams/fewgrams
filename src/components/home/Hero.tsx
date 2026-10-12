@@ -8,7 +8,7 @@ import { HeroCarousel } from "./HeroCarousel";
  * dark-on-light is in `HeroCarousel`.
  *
  * A frame is one entry here plus one `slides.<key>.*` group in
- * `messages/<locale>/home.json` and one `public/brand/hero-<key>.jpg`. Order is
+ * `messages/<locale>/home.json` and one `public/img/brand/hero-<key>.jpg`. Order is
  * the rotation order. Only structure lives in this array — crop anchor and
  * destination. Every word is a message key, including the alt text and the
  * button label.
@@ -68,7 +68,7 @@ export async function Hero() {
 
       <HeroCarousel
         slides={HERO_SLIDES.map(({ key, position }) => ({
-          src: `/brand/hero-${key}.jpg`,
+          src: `/img/brand/hero-${key}.jpg`,
           position,
           alt: t(`slides.${key}.alt`),
           eyebrow: t(`slides.${key}.eyebrow`),

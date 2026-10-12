@@ -29,27 +29,27 @@ const CUTOUTS: Partial<Record<Category, string>> = {
      and UPVC ranges are photographed too but have nowhere to go yet: there is
      one tile for the category, not one per range — the other two appear on
      `/shop/racks` (SPEC §19.6). */
-  racks: "/racks/shelf/cutout.webp",
+  racks: "/img/racks/shelf/cutout.webp",
   /* The packet line-up, 20 Sep 2026 — a group shot rather than one packet,
      because a seed sale is a shelf of varieties and no single pack stands in
      for the range the way one rack model can. Built with the same
      `scripts/cutout.py --aspect 3:2 --fill 0.88` recipe as the microgreens
      tile's photo, which is the other landscape group shot on this page. */
-  seeds: "/shop/seeds-cutout.webp",
+  seeds: "/img/shop/seeds-cutout.webp",
   /* The pack line-up, 20 Sep 2026 — cell trays, the black growing tray pair
      and the coloured drainage tray pair, stacked in one shot, the same
      "group rather than one item" call as the seeds photo. Replaced same day
      with a cleaner re-shoot of the same idea — the first version had all
      three groups arranged side by side; this one stacks them vertically,
      which is why the box below is portrait rather than 3:2. */
-  trays: "/shop/trays-cutout.webp",
+  trays: "/img/shop/trays-cutout.webp",
   /* A bare compressed coir block with a heap of loose coir, a coconut shell
      and a wooden scoop — the owner's image, 24 Sep 2026 (it replaced a first
      version the same afternoon, under a new filename so the image optimiser
      cannot serve the old one). A category picture rather than the IFFCO
      pack, so the tile reads as "what we grow in" and a second medium can
      join without it lying. `scripts/cutout.py` at the square defaults. */
-  media: "/shop/grow-media-block-cutout.webp",
+  media: "/img/shop/grow-media-block-cutout.webp",
 };
 
 /**
@@ -99,11 +99,11 @@ const MEDIA_CLASS: Partial<Record<Category, string>> = {
  * so the image optimiser can never serve one for the other.
  */
 const PHOTOS: Partial<Record<Category | "microgreens", string>> = {
-  microgreens: "/shop/microgreens-photo.webp",
-  racks: "/shop/racks-photo.webp",
-  seeds: "/shop/seeds-photo.webp",
-  trays: "/shop/trays-photo.webp",
-  media: "/shop/grow-media-photo.webp",
+  microgreens: "/img/shop/microgreens-photo.webp",
+  racks: "/img/shop/racks-photo.webp",
+  seeds: "/img/shop/seeds-photo.webp",
+  trays: "/img/shop/trays-photo.webp",
+  media: "/img/shop/grow-media-photo.webp",
 };
 
 export function categoryPhoto(key: Category | "microgreens"): string | undefined {

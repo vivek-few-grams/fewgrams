@@ -30,7 +30,7 @@ The card falls back to the photograph laid flat (`object-cover`) because there
 is no transparent `cutout.webp`. When one is made, build it the tray way:
 
 ```
-python3 scripts/cutout.py <master.png> public/grow-media/<key>/cutout.webp --aspect 3:2 --fill 0.88 --width 900
+python3 scripts/cutout.py <master.png> public/img/grow-media/<key>/cutout.webp --aspect 3:2 --fill 0.88 --width 900
 ```
 
 and add `"cutout": "cutout.webp"` to the content file's `images`.

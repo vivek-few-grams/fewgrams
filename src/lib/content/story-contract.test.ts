@@ -14,7 +14,7 @@ import { getStoryBook } from "./story";
  * shape of bug worth spending a test on.
  */
 const BOOK = path.join(process.cwd(), "content", "story", "book.json");
-const IMAGES = path.join(process.cwd(), "public", "story");
+const IMAGES = path.join(process.cwd(), "public", "img", "story");
 
 const loadBook = async () => JSON.parse(await readFile(BOOK, "utf8")) as Record<string, never>;
 
@@ -36,7 +36,7 @@ describe("story content template", () => {
     const missing: string[] = [];
     for (const page of raw.pages as unknown as { key: string; image: string }[]) {
       await access(path.join(IMAGES, page.image)).catch(() =>
-        missing.push(`${page.key} → public/story/${page.image}`),
+        missing.push(`${page.key} → public/img/story/${page.image}`),
       );
     }
     expect(missing, `\nmissing illustrations:\n  ${missing.join("\n  ")}\n`).toEqual([]);
@@ -135,7 +135,7 @@ describe("getStoryBook", () => {
 
   it("resolves every page's image through the image base", async () => {
     for (const page of await getStoryBook("en")) {
-      expect(page.src).toMatch(new RegExp(`^/story/${page.image.replace(".", "\\.")}\\?v=\\d+$`));
+      expect(page.src).toMatch(new RegExp(`^/img/story/${page.image.replace(".", "\\.")}\\?v=\\d+$`));
     }
   });
 
@@ -149,7 +149,7 @@ describe("getStoryBook", () => {
     expect(pages.length).toBeGreaterThan(0);
 
     for (const page of pages) {
-      const { mtimeMs } = await stat(path.join(process.cwd(), "public", "story", page.image));
+      const { mtimeMs } = await stat(path.join(process.cwd(), "public", "img", "story", page.image));
       expect(new URL(page.src, "https://x").searchParams.get("v"), page.key).toBe(
         String(Math.round(mtimeMs)),
       );

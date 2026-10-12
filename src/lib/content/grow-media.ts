@@ -50,7 +50,7 @@ export type GrowMediumImages = ContentImages;
 export type GrowMediumContentFile = ContentFile<GrowMediumText>;
 export type GrowMediumContent = ResolvedContent<GrowMediumText>;
 
-/** `content/grow-media/`, and so `/grow-media/<key>/…` for the photographs. */
+/** `content/grow-media/`, and so `/img/grow-media/<key>/…` for the photographs. */
 const source = createContentSource<GrowMediumText>({ folder: "grow-media" });
 
 export const listGrowMediumKeys = source.listKeys;

@@ -3,8 +3,8 @@
 One folder per variety, named by its content key:
 
 ```
-public/varieties/radish/hero.jpg
-public/varieties/red-amaranth/hero.jpg
+public/img/varieties/radish/hero.jpg
+public/img/varieties/red-amaranth/hero.jpg
 ```
 
 ## Size and shape — shoot to this

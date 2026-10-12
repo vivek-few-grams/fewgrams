@@ -37,7 +37,7 @@ the `pages` array at the top of the file.
 | Field | Rule |
 |---|---|
 | `pages[].key` | kebab-case letters, **no digits** — the same rule every content key obeys |
-| `pages[].image` | a filename in `public/story/`, `.webp` only |
+| `pages[].image` | a filename in `public/img/story/`, `.webp` only |
 | `en` / `kn` | one block per key in `pages`, all five fields, in the order above |
 
 ### The caption earns its place
@@ -61,7 +61,7 @@ hoping.
 
 ## Adding or moving a page
 
-1. Add the illustration to `public/story/` through the webp pipeline (see the README there).
+1. Add the illustration to `public/img/story/` through the webp pipeline (see the README there).
 2. Add a row to `pages` **where it belongs in the story**, not at the end.
 3. Write its `en` block, then its `kn` block. Both, in the same commit — see below.
 4. `npx vitest run src/lib/content/story-contract.test.ts`.

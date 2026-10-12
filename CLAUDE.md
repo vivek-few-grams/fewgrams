@@ -62,7 +62,7 @@ Add one in either order:
 1. In admin → varieties, type a key (`red-amaranth`) and set the numbers.
 2. Create `content/varieties/red-amaranth.json` — all eleven fields in
    **both** `en` and `kn`. Copy `_template.json`; three tests enforce parity.
-3. Drop photos in `public/varieties/red-amaranth/`.
+3. Drop photos in `public/img/varieties/red-amaranth/`.
 
 Until the file exists the admin row is flagged in red with the exact path, and
 public pages skip it. Shape and reasoning: `content/varieties/README.md`.
@@ -165,7 +165,7 @@ above applies, with these differences:
   figure or a day count); and **`ourNote`** — how we use it ourselves.
   Contract: `grow-media-contract.ts`.
 - **The /shop tile is a category picture, not the IFFCO pack**
-  (`public/shop/grow-media-block-cutout.webp`), and its marquee scrolls properties
+  (`public/img/shop/grow-media-block-cutout.webp`), and its marquee scrolls properties
   of coir (`GROW_MEDIA_TILE_WORDS`, `shop.growMedia.tileWords`) rather than
   the two long product names. Labels only — no claim, no tuned figure.
 - **Presented as what we grow in, not as resale** (the owner, 24 Sep 2026).
@@ -278,7 +278,7 @@ The order lives in the `pages` array and nowhere else.
   track the source file, so the old picture stays on screen forever with the
   right bytes on disk. Verified: overwriting a file with entirely different
   content still returned `304` and the same ETag. `next.config.ts` lists
-  `/story/**` in `images.localPatterns` so the query string is allowed; do not
+  `/img/story/**` in `images.localPatterns` so the query string is allowed; do not
   widen that pattern, because omitting `search` allows any query string and
   each distinct one is another entry in the optimizer's cache.
 - **Do not add `sizes` to the book plate.** `width: auto` on a replaced
@@ -432,7 +432,7 @@ skewed rectangle rather than a tilted product.
   in code because the generator ignores margin instructions. Defaults are the
   square variety job; `--aspect 3:2 --fill 0.88 --width 900` is the tray card
   and `--bg '#f2ebe3'` flattens a gallery hero from the same master. Reasoning
-  in `public/trays/README.md` and `public/varieties/README.md`.
+  in `public/img/trays/README.md` and `public/img/varieties/README.md`.
 - **The fill percentage is set by the hover, not by taste.** The card scales the
   media 1.1, rotates it 4° and then clips, so the subject's padding is the only
   thing keeping its corners off the edge. Changing a card's size means

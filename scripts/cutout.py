@@ -1,11 +1,11 @@
 """Normalise a generated cut-out into a catalogue media asset.
 
     # the square variety card asset — the original job, and the defaults
-    python3 scripts/cutout.py <source.png> public/varieties/<key>/cutout.webp
+    python3 scripts/cutout.py <source.png> public/img/varieties/<key>/cutout.webp
 
     # a 3:2 tray card asset, and its gallery photograph on the frame's ground
-    python3 scripts/cutout.py <src.png> public/trays/<key>/cutout.webp --aspect 3:2 --fill 0.88 --width 900
-    python3 scripts/cutout.py <src.png> public/trays/<key>/hero.jpg --aspect 3:2 --fill 0.92 --width 1500 --bg '#f2ebe3'
+    python3 scripts/cutout.py <src.png> public/img/trays/<key>/cutout.webp --aspect 3:2 --fill 0.88 --width 900
+    python3 scripts/cutout.py <src.png> public/img/trays/<key>/hero.jpg --aspect 3:2 --fill 0.92 --width 1500 --bg '#f2ebe3'
 
 Needs Pillow and numpy; nothing else in the project does, so install them into
 a throwaway venv rather than adding a Python dependency to the repo.

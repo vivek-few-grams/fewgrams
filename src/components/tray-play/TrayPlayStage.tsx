@@ -13,7 +13,7 @@ import { GhostHand } from "./GhostHand";
  *
  * Two stills, because the panel changes shape at `lg` (see `TrayPlay`) and
  * one picture cropped to the other shape loses a tray off each side. Both
- * are captures of this scene at rest, in `public/brand/` — retake them with
+ * are captures of this scene at rest, in `public/img/brand/` — retake them with
  * the same viewport sizes if the scene changes, or the fade from still to
  * live will visibly jump.
  *
@@ -26,9 +26,9 @@ import { GhostHand } from "./GhostHand";
  * a sideways one reaches the canvas — on a phone the trays are a strip the
  * thumb crosses, not a trap the page gets stuck in.
  */
-const WIDE = { src: "/brand/tray-play.webp", width: 2608, height: 1120 };
+const WIDE = { src: "/img/brand/tray-play.webp", width: 2608, height: 1120 };
 const NARROW = {
-  src: "/brand/tray-play-narrow.webp",
+  src: "/img/brand/tray-play-narrow.webp",
   width: 1344,
   height: 1010,
 };

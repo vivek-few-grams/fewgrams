@@ -74,7 +74,7 @@ than an admin field.
 2. Create `content/trays/<key>.json` — all four fields in **both** `en` and
    `kn`. Copy `_template.json`; the contract test enforces parity, that the
    Kannada is actually Kannada, and that it is not a copy of the English.
-3. Photographs are optional, and both kinds go in `public/trays/<key>/` —
+3. Photographs are optional, and both kinds go in `public/img/trays/<key>/` —
    see the README there for the shapes and the build commands.
    `images.cutout` is the **card**, transparent so the panel colour and the
    marquee show through it; `images.hero` is the **gallery**, flattened onto
