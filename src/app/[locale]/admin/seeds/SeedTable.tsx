@@ -1,18 +1,21 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { AlertTriangle, Check, PackageX, Search, X } from "lucide-react";
+import { AlertTriangle, PackageX, Search, X } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
-import { IDLE, type FormState } from "@/lib/forms";
 import { sanitiseKey } from "@/lib/content/content-key";
 import { shelfPacks } from "@/lib/seeds/stock";
 import type { Seed } from "@/lib/types";
-import { removeSeed, toggleSeedActive, updateSeed } from "./actions";
-import { NumberField } from "../fields";
+import { correctSeedStock, removeSeed, toggleSeedActive } from "./actions";
+import { CostCell, OnBills, StockCount } from "../StockCells";
+import { SupplierPicker, type VendorChoice } from "../vendors/SupplierPicker";
+
+/** The row's vendor picker (`SupplierPicker`): who to offer, who is ticked. */
+type Picker = { supplyKey: string; vendors: VendorChoice[]; selected: string[] };
 
 /**
- * The seed shelf — price and grams held, editable in place.
+ * The seed shelf — cost, price and grams held, one row per seed.
  *
  * Built on the same bones as `VarietyTable`: one shared `grid-template-columns`
  * between the header and every row, a client-side filter because the whole
@@ -21,14 +24,12 @@ import { NumberField } from "../fields";
  * of those is written out in `varieties/VarietyRow.tsx`; what follows is what
  * is different here.
  *
- * ## Stock is the column that changes daily
+ * ## Nothing on the row is typed but a stocktake (18 Oct 2026)
  *
- * A variety's numbers get tuned after a few sows. A seed's stock changes every
- * time a sack is opened or an order goes out, so this table is built for one
- * job: **count the shelf, type the figure, save the row.** That is why stock
- * is an editable field in the row rather than behind an edit screen, and why
- * there is no "adjust by" control — see `actions.ts` for why a count beats a
- * ledger.
+ * The cost comes from the latest purchase bill and links to it; the grams
+ * held move with bills, orders and sowings. What is left in the row is the
+ * pencil beside the grams, for a count that disagrees with the shelf — see
+ * `actions.ts`.
  *
  * It is also the only screen in the app where the figure appears at all: since
  * 17 Sep 2026 the customer-facing pages do not print it (SPEC §22.2).
@@ -43,12 +44,11 @@ import { NumberField } from "../fields";
  *
  * ## The price is worked out, not typed (3 Oct 2026)
  *
- * The row takes what we pay for 100 g; the sell price beside it is that cost
- * plus the seeds margin, set above the table, and is shown rather than
- * edited — the owner's rule for every screen.
+ * The sell price is the cost per 100 g plus the seeds margin, set above the
+ * table, and is shown rather than edited — the owner's rule for every screen.
  */
 const COLUMNS =
-  "minmax(10rem,1.5fr) minmax(5rem,0.8fr) minmax(5rem,0.8fr) minmax(6rem,0.9fr) minmax(5.5rem,0.9fr) minmax(6rem,1fr) 6rem 5.5rem 4rem";
+  "minmax(10rem,1.5fr) minmax(6.5rem,0.9fr) minmax(5rem,0.8fr) minmax(6rem,0.9fr) minmax(9.5rem,1fr) minmax(6rem,1fr) 6.5rem 4rem";
 
 /**
  * Below this the rows scroll sideways inside their own box rather than
@@ -65,7 +65,11 @@ const COLUMNS =
  */
 const MIN_WIDTH = "min-w-[64rem]";
 
-export function SeedTable({ seeds }: { seeds: Array<{ seed: Seed; name: string | null }> }) {
+export function SeedTable({
+  seeds,
+}: {
+  seeds: Array<{ seed: Seed; name: string | null; bills: number; picker: Picker }>;
+}) {
   const t = useTranslations("admin.seeds");
   const [query, setQuery] = useState("");
 
@@ -147,7 +151,6 @@ export function SeedTable({ seeds }: { seeds: Array<{ seed: Seed; name: string |
                 t("colMargin"),
                 t("colStock"),
                 t("colPacks"),
-                "",
                 t("colActive"),
                 "",
               ].map((heading, i) => (
@@ -157,8 +160,8 @@ export function SeedTable({ seeds }: { seeds: Array<{ seed: Seed; name: string |
               ))}
             </div>
 
-            {shown.map(({ seed, name }) => (
-              <SeedRow key={seed.id} seed={seed} name={name} />
+            {shown.map(({ seed, name, bills, picker }) => (
+              <SeedRow key={seed.id} seed={seed} name={name} bills={bills} picker={picker} />
             ))}
           </div>
         </div>
@@ -167,18 +170,20 @@ export function SeedTable({ seeds }: { seeds: Array<{ seed: Seed; name: string |
   );
 }
 
-function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
+function SeedRow({
+  seed,
+  name,
+  bills,
+  picker,
+}: {
+  seed: Seed;
+  name: string | null;
+  /** Bills that name it — none, and it can be deleted. */
+  bills: number;
+  picker: Picker;
+}) {
   const t = useTranslations("admin.seeds");
   const tc = useTranslations("admin.common");
-  const [state, action, pending] = useActionState<FormState, FormData>(updateSeed, IDLE);
-  /* Live, so typing 250 shows "2 packs next day" before the row is saved —
-     what the shelf can fill this morning, next to the figure being typed. */
-  const [stock, setStock] = useState(seed.stockGrams);
-
-  const errorFor = (field: string) =>
-    state.status === "error" && state.field === field
-      ? t(`errors.${state.code}`, state.values ?? {})
-      : undefined;
 
   return (
     <div
@@ -190,88 +195,72 @@ function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
       <div className="min-w-0">
         <p className="truncate font-body text-sm font-semibold text-forest">{name ?? seed.contentKey}</p>
         <code className="font-body text-[11px] text-stone">{seed.contentKey}</code>
+        <SupplierPicker {...picker} item={name ?? seed.contentKey} />
       </div>
 
-      <form action={action} className="contents">
-        <input type="hidden" name="id" value={seed.id} />
-        {/* Active is owned by its own toggle, so the save form carries the
-            current value forward rather than clearing it. */}
-        <input type="hidden" name="active" value={seed.active ? "on" : "off"} />
+      <CostCell cost={seed.costPer100g} source={seed.costBill} />
+      {/* Worked out from the cost and the margin, never typed. */}
+      <span className="font-body text-sm tabular-nums text-forest">
+        {t("priceValue", { amount: seed.pricePer100g })}
+      </span>
+      <span className="font-body text-sm tabular-nums text-stone">
+        {seed.costPer100g === undefined
+          ? "—"
+          : t("marginValue", {
+              amount: Math.round(seed.pricePer100g - seed.costPer100g),
+              percent: Math.round(((seed.pricePer100g - seed.costPer100g) / seed.costPer100g) * 100),
+            })}
+      </span>
+      <StockCount
+        id={seed.id}
+        value={seed.stockGrams}
+        unit="grams"
+        correct={correctSeedStock}
+        align="start"
+      />
 
-        <NumberField
-          compact
-          label={t("colCost")}
-          name="costPer100g"
-          defaultValue={seed.costPer100g}
-          error={errorFor("costPer100g")}
-        />
-        {/* Worked out from the cost and the margin on save, never typed. */}
-        <span className="font-body text-sm tabular-nums text-forest">
-          {t("priceValue", { amount: seed.pricePer100g })}
+      <PacksCell grams={seed.stockGrams} />
+
+      {/* A seed no bill has costed yet is priced at 0, so it cannot be
+          switched on — the chip says why instead of offering the switch. */}
+      {!seed.active && seed.costPer100g === undefined ? (
+        <span className="rounded-full bg-forest/10 px-3 py-1 text-center font-body text-[11px] text-stone">
+          {t("needsBill")}
         </span>
-        {/* From what is stored, not the cost being typed — the rack rows'
-            call. */}
-        <span className="font-body text-sm tabular-nums text-stone">
-          {seed.costPer100g === undefined
-            ? "—"
-            : t("marginValue", {
-                amount: seed.pricePer100g - seed.costPer100g,
-                percent: Math.round(((seed.pricePer100g - seed.costPer100g) / seed.costPer100g) * 100),
-              })}
-        </span>
-        <NumberField
-          compact
-          label={t("colStock")}
-          name="stockGrams"
-          min={0}
-          value={Number.isFinite(stock) ? stock : ""}
-          onChange={(event) => setStock(Number(event.target.value))}
-          error={errorFor("stockGrams")}
-        />
+      ) : (
+        <form action={toggleSeedActive} className="contents">
+          <input type="hidden" name="id" value={seed.id} />
+          <button
+            /* Hover moves in the direction of what the click does: greener when
+               it will switch on, plain when off. */
+            className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
+              seed.active
+                ? "bg-sage text-forest hover:bg-forest hover:text-cream"
+                : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
+            }`}
+          >
+            {seed.active ? t("colActive") : t("hidden")}
+          </button>
+        </form>
+      )}
 
-        <PacksCell grams={stock} />
+      {bills > 0 ? (
+        <OnBills count={bills} />
+      ) : (
+        <form action={removeSeed} className="contents">
+          <input type="hidden" name="id" value={seed.id} />
+          <ConfirmSubmit
+            label={tc("delete")}
+            title={t("deleteTitle")}
+            message={t("deleteConfirm")}
+            confirmLabel={tc("confirmDelete")}
+            cancelLabel={tc("cancel")}
+            className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
+          />
+        </form>
+      )}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
-        >
-          {state.status === "saved" && !pending && (
-            <Check size={13} strokeWidth={2.5} className="text-forest" />
-          )}
-          {state.status === "saved" && !pending ? t("savedRow") : t("save")}
-        </button>
-      </form>
-
-      <form action={toggleSeedActive} className="contents">
-        <input type="hidden" name="id" value={seed.id} />
-        <button
-          /* Hover moves in the direction of what the click does: greener when
-             it will switch on, plain when off. */
-          className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
-            seed.active
-              ? "bg-sage text-forest hover:bg-forest hover:text-cream"
-              : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
-          }`}
-        >
-          {seed.active ? t("colActive") : t("hidden")}
-        </button>
-      </form>
-
-      <form action={removeSeed} className="contents">
-        <input type="hidden" name="id" value={seed.id} />
-        <ConfirmSubmit
-          label={tc("delete")}
-          title={t("deleteTitle")}
-          message={t("deleteConfirm")}
-          confirmLabel={tc("confirmDelete")}
-          cancelLabel={tc("cancel")}
-          className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
-        />
-      </form>
-
-      {/* Not costed yet: the price is whatever it was before 3 Oct 2026, and
-          moves to cost plus margin on the first save with a cost. */}
+      {/* Added from a bill that is not saved yet: no cost, price 0. */}
       {seed.costPer100g === undefined && (
         <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">
           <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
@@ -283,17 +272,6 @@ function SeedRow({ seed, name }: { seed: Seed; name: string | null }) {
         <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">
           <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
           {t("missingContentHint", { key: seed.contentKey })}
-        </p>
-      )}
-
-      {/* **Any** error, not just a form-level one — fixed 17 Sep 2026.
-          `NumberField`'s `compact` variant returns a bare input so the row
-          stays aligned with its header, which means a field error rendered
-          only as a red border and `aria-invalid`: an operator saw that a
-          figure was refused and never why. */}
-      {state.status === "error" && (
-        <p className="col-span-full font-body text-[11px] text-terracotta">
-          {t(`errors.${state.code}`, state.values ?? {})}
         </p>
       )}
     </div>

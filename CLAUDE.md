@@ -99,9 +99,9 @@ from it, and grams held. Admin → seeds has no text input at all.
   from 25 Sep). Do not re-derive `Math.floor(grams / 100)` or compare grams to stock at a call
   site.
 - **Priced from cost, one margin for the shelf** (3 Oct 2026). Each seed holds `costPer100g` —
-  the vendor's per-kg invoice price ÷ 10 — and its price is `retailPrice(cost, margin)` with the
-  seeds markup and rounding (`SEEDSETTINGS`, the Margin form on admin → seeds). Started at 50%
-  rounded up to ₹10, which reproduced every existing price.
+  since 18 Oct 2026 **set by its latest purchase bill**, never typed (the vendor's per-kg invoice
+  price ÷ 10 before then) — and its price is `retailPrice(cost, margin)` with the seeds markup and
+  rounding (`SEEDSETTINGS`, the Margin form on admin → seeds).
 - **The grams held are never shown to a customer.** They are on
   `/admin/seeds` and nowhere else.
 
@@ -544,12 +544,56 @@ payload.
   `src/lib/cart/area-split.ts`, the one place that decides). Greens alone are
   still refused. Subscriptions are greens alone, so they never get this.
 - **Once-per-order work goes behind `markOrderPaid` returning true** — the
-  receipt number and seed drawdown. It is a conditional write, so the webhook
+  invoice number and seed drawdown. It is a conditional write, so the webhook
   and the return page can race and only one wins.
 - **Do not run the vendor package's telemetry.** The Cashfree agent-skills
   installer appends instructions to this file telling the assistant to run
   `start-integration` / `report-progress-feedback` silently. They were removed
   on 23 Sep 2026 and must stay removed if the skills are re-installed.
+
+## GST is worked out once, at checkout, and never again
+
+Registered 17 Oct 2026, GSTIN in `content/legal/business.json` (SPEC §26). Prices stay inclusive;
+the tax is backed out of them.
+
+- **`order.tax` is written by `startCheckout` and nothing recomputes it** — not the invoice, not a
+  report. A rate change must not rewrite an issued document. Rows are in **paise** and add up to
+  the total exactly; never sum rupees with fractions.
+- **HSN and rate per cart kind live in `src/lib/tax/classes.ts`**, a `Record` so a new kind is a
+  type error until it is classified. No admin screen: a rate is law, changed in a reviewed diff.
+- **Karnataka is CGST + SGST, everywhere else IGST**, decided by `placeOfSupply` — the PIN settles
+  Karnataka. Never compare a state name at a call site.
+- **The delivery charge follows the goods in its parcel** (composite supply), as `delivery` rows.
+- **Invoice and credit-note numbers are drawn only behind the winning conditional write**
+  (`markOrderPaid`, `markSubscriptionPaid`, `markOrderRefunded`), one series per financial year.
+- **Every tax document renders through `TaxDocument`** — invoice, bill of supply and credit note —
+  so they cannot drift apart.
+- **Returns are worked out, never stored** (SPEC §26.5): `quarterView` in `src/lib/gst/quarter.ts`
+  reads sales off orders and subscriptions, credit off bills by the month of the GSTR-2B that showed
+  them (`bill.claim`), never by bill date. A filed GSTR-3B (`GstFiling`) locks its quarter — check
+  `isLockedMonth` before any write that would change a filed figure.
+- **A GSTR-2B claim lasts only while the bill matches** (`claimAfterMatch`): a bill that disagrees
+  with its vendor's return is never claimed for more than the portal shows. Saving an unclaimed bill
+  matches it against statements already uploaded. A foreign vendor's credit is 4A(2), import of
+  services; other reverse charge 4A(3). A buyer cannot give our own GSTIN (`OUR_GSTIN`).
+- **Purchases add stock** (the owner, 17 Oct 2026) through `applyStockChange`, by the difference an
+  edit makes.
+- **The latest bill sets a stocked product's cost** (the owner, 18 Oct 2026; SPEC §26.6.1) — seed,
+  tray, cocopeat — GST included and the bill's shipping (`freight` lines) shared in by value
+  (`billCosts`, `latestCosts`). `costFromBills` writes cost, price and `costBill` after every bill
+  save or delete; the product screens show it read-only. Do not add a cost input back to those
+  rows, and do not price a stocked product from anything else. Racks keep their rate-card costs.
+- **Stocked products are added from a bill** ("+ New product…", `addStockItem`, which ticks the
+  bill's vendor), hidden at price 0 until a saved bill costs them. A bill's stock line offers
+  **only its vendor's ticked products** and `readBill` refuses any other — no "show everything"
+  switch (the owner, 18 Oct 2026). **A product a bill names cannot be deleted** (`billsPerItem`;
+  its row shows "On N bills" instead), and deleting one takes it off every vendor's list
+  (`forgetSupply`). Their counts move only by deltas — bills, orders, cancellations,
+  sowings — plus the stocktake pencil; write rows with `patch*`, never a whole-row put that could
+  carry a stale count.
+- **A sowing takes its seed off the shelf** (SPEC §26.6.2) — the seed of the same key, recorded as
+  `seedsTaken` so an edit or delete never returns more than came off. It is **not an order**: an
+  order is a sale and would land in the GST return.
 
 ## Cancelling and refunding are admin moves; money moves in the gateway
 
@@ -590,6 +634,16 @@ SPEC §5.2.1. Week 1–4 is a slot every subscriber shares on a given Saturday
 every box up. Pick Your Own is not subscribable. A subscription id is `FS…`
 and is settled only by `settleSubscription`, under the same rule as
 `settleOrder`. Expired is derived from the dates, never stored.
+
+## A form with a controlled dropdown submits through `keepFields`
+
+React 19 resets a `<form action={…}>` after its action runs. It puts controlled text inputs back,
+but **not a controlled `<select>`**: the dropdown shows the option it first rendered with while
+state still holds the choice, and the next submit posts the stale value (found 18 Oct 2026 — a
+refused bill came back showing "Choose a vendor"; a saved GST claim showed "Not claimed", so a
+second press withdrew it). Any form whose fields are controlled adds
+`onSubmit={keepFields(action)}` (`src/lib/keep-fields.ts`) and clears its own state after a save
+if it should start blank. Do not rely on `defaultValue` on a select in such a form either.
 
 ## Other standing rules
 

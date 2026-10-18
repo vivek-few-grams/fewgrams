@@ -31,48 +31,61 @@ export const ADMIN_NAV_GROUPS: {
   /* Overview is ungrouped and first: it is the screen an operator lands on,
      and putting it under a heading would imply a sibling it does not have. */
   { heading: null, items: [{ label: "overview", href: "/admin" }] },
-  /* Above the catalogue: orders are what an operator opens every day, the
-     catalogue screens only when a price or a product changes. */
+  /* Regrouped 18 Oct 2026 (the owner: "our menus have grown a lot, we need
+     proper organisation") — twenty rows had outgrown the rail and the last
+     ones sat under the footer. Each group now folds (`AdminNav`), and the old
+     thirteen-row Catalogue is split by what the screens are for: what we grow
+     and what we sell off the shelf.
+
+     Sales first: orders are what an operator opens every day. */
   {
-    heading: "operations",
+    heading: "sales",
     items: [
       { label: "orders", href: "/admin/orders" },
       /* Weekly plans and the tray plan they add up to (SPEC §5, §6). */
       { label: "subscriptions", href: "/admin/subscriptions" },
       /* Everyone who has signed in, and what they have bought (27 Sep 2026). */
       { label: "customers", href: "/admin/customers" },
-      /* What was sown each day and what it gave at harvest (10 Oct 2026). */
-      { label: "sowing", href: "/admin/sowing" },
     ],
   },
+  /* The greens: what was sown each day (10 Oct 2026), the varieties sown, and
+     the weekly plans built from them. */
   {
-    heading: "catalogue",
+    heading: "growing",
     items: [
+      { label: "sowing", href: "/admin/sowing" },
       { label: "varieties", href: "/admin/varieties" },
       { label: "plans", href: "/admin/plans" },
-      /* Seeds replaced the generic Products screen on 17 Sep 2026, at the
-         owner's request: one pipe-delimited textarea served racks, trays,
-         seeds and snacks, and the only category with real stock had to express
-         it as a variant attribute. Trays and snacks get screens of their own
-         when they are built — not a shared form (SPEC §22.3). */
+    ],
+  },
+  /* Everything sold off the shelf. Seeds replaced the generic Products screen
+     on 17 Sep 2026, at the owner's request: one pipe-delimited textarea served
+     racks, trays, seeds and snacks, and the only category with real stock had
+     to express it as a variant attribute — so each kind has its own screen
+     (SPEC §22.3), in the order the owner asked for them. Grow media is
+     cocopeat, sold like a tray (SPEC §24). The three rack ranges have three
+     price formulas and three screens (SPEC §19–§21), each named for its
+     material so none is the ambiguous plain "Racks", cheapest first. */
+  {
+    heading: "shop",
+    items: [
       { label: "seeds", href: "/admin/seeds" },
-      /* Trays and drainage cells, 17 Sep 2026 — the other half of what the
-         deleted generic form was supposed to serve, now its own screen for
-         its own reason: nothing in it is stocked and everything in it has a
-         supplier lead time (SPEC §23). Sits after seeds because that is the
-         order the owner asked for them in. */
       { label: "trays", href: "/admin/trays" },
-      /* Grow media, 24 Sep 2026 — cocopeat, bought in and sold like a tray
-         but its own category to a customer (SPEC §24). */
       { label: "growMedia", href: "/admin/grow-media" },
-      /* Three rack ranges, three price formulas, three screens (SPEC §19–§21).
-         All three are named for their material — "Shelf racks", "Angle racks",
-         "Pipe racks" — rather than leaving one as plain "Racks", which would be
-         the ambiguous one. They sit adjacent and in the order they were built,
-         which is also cheapest-first. */
       { label: "racks", href: "/admin/racks" },
       { label: "angleRacks", href: "/admin/angle-racks" },
       { label: "pipeRacks", href: "/admin/pipe-racks" },
+    ],
+  },
+  /* The GST books (SPEC §26, 18 Oct 2026): who we buy from, what we paid
+     them, and the returns. Under its own heading because it is the one part
+     of admin about money owed to the government rather than the shop. */
+  {
+    heading: "finance",
+    items: [
+      { label: "gst", href: "/admin/gst" },
+      { label: "purchases", href: "/admin/purchases" },
+      { label: "vendors", href: "/admin/vendors" },
     ],
   },
   {

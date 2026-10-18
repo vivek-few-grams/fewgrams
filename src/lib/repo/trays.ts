@@ -2,6 +2,8 @@ import type { EntityItem } from "electrodb";
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import { TrayEntity } from "@/lib/db/entities";
 import type { Tray } from "@/lib/types";
+import { marginOf, retailPrice } from "@/lib/pricing/margin";
+import type { ItemCost } from "@/lib/purchases/cost";
 
 type Row = EntityItem<typeof TrayEntity>;
 
@@ -25,10 +27,11 @@ function fromRow({ leadDays: _retired, stockPacks, ...r }: Row): Tray {
  * Anything that displays a tray reads both and joins them with
  * `attachTrayContent`.
  *
- * **No stock function, and there will not be one.** Nothing in this category
- * is held — every order is placed with the supplier when it comes in (SPEC
- * §23.1) — so there is no figure to decrement and no conditional write to get
- * right at checkout. That is the one way this is simpler than seeds.
+ * **Stock moves by deltas** — a purchase bill adds, a paid order takes
+ * (`takeFromStock`, conditional), a cancellation returns — and is set
+ * outright only by a stocktake (`setTrayStock`). The row form and the toggle
+ * write through `patchTray`, so neither can put back a count an order has
+ * just taken from.
  */
 
 /** Every tray, ordered by content key — GSI1's sort key, so the order comes
@@ -97,4 +100,56 @@ export async function returnToStock(contentKey: string, units: number): Promise<
   const row = data[0];
   if (!row) return;
   await TrayEntity.patch({ id: row.id }).add({ stockPacks: units }).go();
+}
+
+/** The fields the row form and the toggle write. */
+type Settable = Omit<Tray, "id" | "contentKey" | "stockPacks" | "cost" | "costBill">;
+
+/** Change a row's price, margin, packing or active flag — and clear any of
+ *  them named in `remove` — without touching the stock a concurrent order
+ *  may be taking, or the cost a bill set. */
+export async function patchTray(
+  id: string,
+  set: Partial<Settable>,
+  remove: ReadonlyArray<keyof Settable> = [],
+): Promise<void> {
+  const update = TrayEntity.patch({ id }).set(set);
+  await (remove.length ? update.remove([...remove]) : update).go();
+}
+
+/** A stocktake: the packs counted, written outright. */
+export async function setTrayStock(id: string, packs: number): Promise<void> {
+  await TrayEntity.patch({ id }).set({ stockPacks: packs }).go();
+}
+
+/**
+ * Put a bill's cost on a row and price it with **the row's own** margin
+ * (`costFromBills`). The first bill keeps the cost from before as
+ * `openingCost`, so `null` — no bill names it any more — puts it back; a row
+ * added from a bill goes back to unpriced and hidden. `setSeedCost`'s rule.
+ */
+export async function setTrayCost(contentKey: string, cost: ItemCost | null): Promise<void> {
+  const { data } = await TrayEntity.query.byCatalogue({ contentKey }).go(LIST_OPTS);
+  const row = data[0];
+  if (!row) return;
+  if (cost) {
+    const opening = !row.costBill && row.cost !== undefined ? { openingCost: row.cost } : {};
+    await TrayEntity.patch({ id: row.id })
+      .set({
+        cost: cost.cost,
+        price: retailPrice(cost.cost, marginOf(row)),
+        costBill: cost.source,
+        ...opening,
+      })
+      .go();
+  } else if (row.costBill) {
+    const opening = row.openingCost;
+    await (
+      opening !== undefined
+        ? TrayEntity.patch({ id: row.id }).set({ cost: opening, price: retailPrice(opening, marginOf(row)) })
+        : TrayEntity.patch({ id: row.id }).set({ price: 0, active: false }).remove(["cost"])
+    )
+      .remove(["costBill", "openingCost"])
+      .go();
+  }
 }

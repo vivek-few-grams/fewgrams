@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Sowing } from "@/lib/types";
-import { gramsPerTray, isIsoDate, readSowing, yieldByVariety, yieldRatio } from "./sowing";
+import { gramsPerTray, isIsoDate, readSowing, seedChange, yieldByVariety, yieldRatio } from "./sowing";
 
 const keys = new Set(["radish", "sunflower"]);
 const today = "2026-10-10";
@@ -170,5 +170,43 @@ describe("yield", () => {
         perTray: null,
       },
     ]);
+  });
+});
+
+describe("seedChange", () => {
+  const radish = { varietyKey: "radish", seedGrams: 40 };
+  const mustard = { varietyKey: "mustard", seedGrams: 30 };
+
+  it("takes a new sowing's seed off the shelf", () => {
+    expect(seedChange({}, [radish, mustard])).toEqual(
+      new Map([
+        ["radish", 40],
+        ["mustard", 30],
+      ]),
+    );
+  });
+
+  it("adds two lines of one variety together", () => {
+    expect(seedChange({}, [radish, radish])).toEqual(new Map([["radish", 80]]));
+  });
+
+  it("moves only the difference on an edit, and nothing for a harvest", () => {
+    const cut = { ...radish, harvestGrams: 350, harvestedOn: "2026-10-25" };
+    expect(seedChange({ radish: 40, mustard: 30 }, [cut, { ...mustard, seedGrams: 25 }])).toEqual(
+      new Map([["mustard", -5]]),
+    );
+  });
+
+  it("puts a deleted sowing's seed back", () => {
+    expect(seedChange({ radish: 40 }, [])).toEqual(new Map([["radish", -40]]));
+  });
+
+  it("never puts back more than a short shelf gave", () => {
+    /* 250 g sown with 200 g on the shelf: deleting returns 200, and
+       correcting the line to 25 g returns 175. */
+    expect(seedChange({ mustard: 200 }, [])).toEqual(new Map([["mustard", -200]]));
+    expect(seedChange({ mustard: 200 }, [{ ...mustard, seedGrams: 25 }])).toEqual(
+      new Map([["mustard", -175]]),
+    );
   });
 });

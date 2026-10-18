@@ -51,5 +51,6 @@
   "secureNote": "Nothing is charged until you pay.",
   "lineSoldOut": "Sold out — remove it to continue.",
   "lineOverStock": "We have less than this now — reduce it to continue.",
-  "overStockBlock": "Adjust the highlighted seed to continue."
+  "overStockBlock": "Adjust the highlighted seed to continue.",
+  "inclusive": "Inclusive of all taxes"
 }

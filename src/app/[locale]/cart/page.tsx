@@ -30,8 +30,8 @@ import { CartLineControls } from "./CartLineControls";
  * Both depend on the address — the date on which courier carries it, the
  * price on where it is going — so a date on this page was a promise checkout
  * then contradicted ("Everything arrives Fri 2 Oct" here, "Arrives Mon 5 Oct"
- * with Delhivery there). Checkout groups the lines by when each is ready and
- * gives the arrival date once a partner is picked.
+ * with Delhivery there). Checkout gives the arrival date once a partner is
+ * picked, and nothing earlier.
  */
 export const dynamic = "force-dynamic";
 
@@ -201,7 +201,7 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
           </div>
 
           <PinnedColumn className="lg:self-start">
-            <div className="pin-column__scroll co-card co-card--dark p-5 md:p-6">
+            <div className="co-card co-card--dark p-5 md:p-6">
               <h2 className="font-display text-lg font-bold text-cream">{t("summaryHeading")}</h2>
               <dl className="mt-4 space-y-3 border-t border-cream/15 pt-4 font-body text-sm">
                 <div className="flex items-baseline justify-between gap-4">
@@ -216,7 +216,11 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                 </div>
               </dl>
               <div className="mt-4 flex items-baseline justify-between gap-4 border-t border-cream/15 pt-4">
-                <span className="font-body text-sm font-semibold text-cream">{t("itemsTotal")}</span>
+                <span className="font-body text-sm font-semibold text-cream">
+                  {t("itemsTotal")}
+                  {/* SPEC §26.1: prices include GST; the invoice breaks it out. */}
+                  <span className="block text-xs font-normal text-cream/70">{t("inclusive")}</span>
+                </span>
                 <span className="font-display text-2xl font-bold tabular-nums text-cream">
                   {t("subtotalValue", { amount: cart.subtotal })}
                 </span>

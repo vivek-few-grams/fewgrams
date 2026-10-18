@@ -40,7 +40,9 @@
     "deliveryUnavailable": "We couldn't price delivery to this address just now. Nothing has been charged — please try again shortly.",
     "gatewayError": "We couldn't open the payment screen. Please try again in a moment.",
     "notCompleted": "The payment was not completed. Your cart is still here, so you can try again.",
-    "deliveryChanged": "Delivery prices changed since you checked. We've looked again — pick a delivery partner and pay."
+    "deliveryChanged": "Delivery prices changed since you checked. We've looked again — pick a delivery partner and pay.",
+    "gstinInvalid": "That GSTIN doesn't look right. Check all 15 characters, and add the business name.",
+    "gstinOurs": "That's our own GSTIN. Enter your business's GSTIN, or remove it to buy without one."
   },
   "changeAddress": "Change",
   "changeAddressLabel": "Change delivery address",
@@ -72,12 +74,6 @@
   },
   "readyToShip": "Handed to the courier <b>{date}</b> — the arrival date follows the delivery partner",
   "arrivesLabel": "Arrives",
-  "groupReady": "Ready {date}",
-  "reasonGrow": "Grown for you",
-  "reasonShelf": "From our shelf",
-  "reasonOrdered": "Ordered in for you",
-  "reasonBuild": "Built for you",
-  "groupsNote": "Each parcel leaves once everything in it is ready.",
   "splitNote": "Your order comes in {count, number} parcels. Each is collected from where it's kept, so each has its own delivery partner and date.",
   "parcel": "Parcel {n}",
   "confirming": {
@@ -98,5 +94,18 @@
     "deliveryHint": "We compare delivery prices for your address and you pick one.",
     "pay": "Pay",
     "payHint": "Pay securely. Nothing is charged until you do."
-  }
+  },
+  "business": {
+    "toggle": "Buying for a business? Add GSTIN",
+    "heading": "Business purchase",
+    "gstin": "GSTIN",
+    "name": "Business name, as registered for GST",
+    "note": "Your GSTIN goes on the invoice so your business can claim the GST.",
+    "gstinMissing": "Enter the 15-character GSTIN, or press Remove.",
+    "gstinWrong": "That GSTIN doesn't check out. Look at each of the 15 characters again.",
+    "gstinOurs": "That's our own GSTIN. Enter your business's GSTIN, or press Remove.",
+    "nameMissing": "Add the business name, as registered for GST.",
+    "remove": "Remove"
+  },
+  "inclusive": "Inclusive of all taxes"
 }

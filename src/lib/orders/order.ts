@@ -5,6 +5,8 @@ import { istDateISO } from "@/lib/delivery-date";
 import type { SeedSourcing } from "@/lib/seeds/stock";
 import type { PaymentAttempt } from "@/lib/payments";
 import type { GatewayName, ProviderOrderStatus } from "@/lib/payments/provider";
+import type { Buyer, TaxRow } from "@/lib/tax/order-tax";
+import type { GstState } from "@/lib/tax/states";
 import type { Address, OrderStatus } from "@/lib/types";
 
 /**
@@ -131,6 +133,8 @@ export function canBook(order: Pick<Order, "status">, x: Pick<OrderShipment, "me
  *  against one courier's format. */
 export const TRACKING_NUMBER = /^[A-Za-z0-9-]{6,40}$/;
 
+export type CreditNote = { number: string; issuedAt: string };
+
 export type Order = {
   id: string;
   userId: string;
@@ -159,8 +163,23 @@ export type Order = {
   provider: GatewayName;
   providerOrderId: string | null;
   /** Assigned at payment, so an abandoned checkout leaves no gap in the
-   *  sequence (SPEC §9.1). */
+   *  sequence (SPEC §9.1). Only on orders paid before GST registration;
+   *  later ones carry `invoiceNo`. */
   receiptNo: number | null;
+  /** `FG/2627/00001`, drawn at payment (SPEC §26.3). */
+  invoiceNo: string | null;
+  /** The tax inside `total`, in paise — SPEC §26.2. Null on orders placed
+   *  before GST registration. */
+  tax: TaxRow[] | null;
+  /** Where the goods are delivered, for GST. Null when the state could not
+   *  be placed (taxed as inter-state) and on orders from before
+   *  registration. */
+  placeOfSupply: GstState | null;
+  /** A business buyer, when a GSTIN was given at checkout. */
+  buyer: Buyer | null;
+  /** Issued when the order is marked refunded (SPEC §26.3). It reverses the
+   *  whole invoice, so its rows are `tax`. */
+  creditNote: CreditNote | null;
   paidAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -196,6 +215,15 @@ export function isOrderId(raw: string): boolean {
 /** `FG-000123`. Receipt numbers are sequential; order ids are not. */
 export function formatReceiptNo(n: number): string {
   return `FG-${String(n).padStart(6, "0")}`;
+}
+
+/**
+ * The number a customer and an operator know a paid order or subscription
+ * by: its invoice number, or for one paid before GST registration its
+ * receipt number. Null while unpaid.
+ */
+export function documentNo(x: { invoiceNo: string | null; receiptNo: number | null }): string | null {
+  return x.invoiceNo ?? (x.receiptNo !== null ? formatReceiptNo(x.receiptNo) : null);
 }
 
 export function linesFromCart(cart: HydratedCart): OrderLine[] {

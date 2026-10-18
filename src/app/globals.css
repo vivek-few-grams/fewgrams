@@ -1346,17 +1346,14 @@ html[data-loader="out"] .loader__mark {
    The cart's and checkout's right column — `PinnedColumn.tsx`
 
    Pinned at `--pin-top`, the column's own starting offset, which
-   `PinnedColumn` measures; so it never moves when the page scrolls. The fallback is only
+   `PinnedColumn` measures; so it never moves when the page scrolls — or, for a
+   column taller than the window, pinned by its bottom. The fallback is only
    what the first paint uses before the measurement lands. Desktop only: below
    `lg` the column stacks under the form and scrolls with it. */
 @media (width >= 64rem) {
   .pin-column {
     position: sticky;
     top: var(--pin-top, 13rem);
-  }
-  .pin-column__scroll {
-    max-height: calc(100dvh - var(--pin-top, 13rem) - 1rem);
-    overflow-y: auto;
   }
 }
 
@@ -2429,5 +2426,47 @@ html[data-loader="out"] .loader__mark {
   }
   100% {
     box-shadow: 0 0 0 12px rgba(168, 207, 142, 0);
+  }
+}
+
+/* A tax document prints alone (SPEC §26.3) — there is no page to view one
+   on. Each sits in `.print-doc`, unseen, beside its button (`PrintDoc`), and
+   the button marks it `data-printing` only while the print dialog is open.
+   Without a mark, a page prints as itself.
+
+   Everything that neither is, holds, nor sits inside the marked sheet goes
+   with `display`, not `visibility`, or the hidden order page would still
+   take up pages after the invoice. What holds it is laid flat, so a grid
+   column or a card's padding cannot squeeze or push the sheet. */
+.print-doc {
+  display: none;
+}
+@media print {
+  body:has(.invoice-sheet[data-printing])
+    *:not(:has(.invoice-sheet[data-printing])):not(
+      .invoice-sheet[data-printing],
+      .invoice-sheet[data-printing] *
+    ) {
+    display: none !important;
+  }
+  :has(.invoice-sheet[data-printing]) {
+    display: block !important;
+    position: static !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+  .invoice-sheet[data-printing] {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+  @page {
+    margin: 14mm;
   }
 }

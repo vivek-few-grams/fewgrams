@@ -61,7 +61,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           {t("title")}
         </Link>
 
-        <AdminNav labels={labels} navLabel={t("navLabel")} />
+        {/* Scrolls inside the rail rather than running under the footer, if
+            it ever outgrows the window again with every group open. */}
+        <div className="lg:-mx-1 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:px-1">
+          <AdminNav labels={labels} navLabel={t("navLabel")} />
+        </div>
 
         {/* Identity and the way out — SPEC §18.1. Pushed to the foot of the
             rail on `lg`: it is the least-used control here, so the top of the
@@ -70,7 +74,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             The email and role stay quiet on purpose — they are context, not
             controls. They take the `min-w-0` and truncate, because a long
             address must not squeeze the pill beside it. */}
-        <div className="mt-4 flex min-w-0 flex-wrap items-center gap-3 border-t border-forest/12 pt-4 lg:mt-auto lg:flex-col lg:items-start lg:gap-2">
+        <div className="mt-4 flex min-w-0 flex-wrap items-center gap-3 border-t border-forest/12 pt-4 lg:flex-col lg:items-start lg:gap-2">
           <span className="flex min-w-0 max-w-full items-center gap-2 font-body text-xs text-stone">
             <span className="truncate">{actor.email}</span>
             <span className="shrink-0 rounded-full bg-sage px-2 py-0.5 font-semibold text-forest">

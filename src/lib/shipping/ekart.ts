@@ -1,4 +1,5 @@
 import { brand } from "@/lib/brand";
+import { BUSINESS } from "@/lib/content/legal";
 import type { BookingInput, BookingResult, CourierOption, QuoteInput, ShippingProvider } from "./provider";
 import { boxForGrams } from "./weight";
 
@@ -129,7 +130,6 @@ export class EkartProvider implements ShippingProvider {
   /** One call: the shipment and its pickup together. Throws when Ekart
    *  answers with no tracking id, which means nothing was created. */
   async book(input: BookingInput): Promise<BookingResult> {
-    const gstin = process.env.SELLER_GSTIN;
     const units = input.items.reduce((n, i) => n + i.units, 0);
     const invoice = input.reference;
     const res = await fetch(`${HOST}/api/v1/package/create`, {
@@ -145,7 +145,7 @@ export class EkartProvider implements ShippingProvider {
         invoice_date: input.orderDate.slice(0, 10),
         seller_name: brand.name,
         seller_address: `${input.pickup.address}, ${input.pickup.city} ${input.pickup.pincode}`,
-        ...(gstin ? { seller_gst_tin: gstin } : {}),
+        seller_gst_tin: BUSINESS.gstin,
         consignee_name: input.drop.name,
         consignee_gst_amount: 0,
         products_desc: input.items

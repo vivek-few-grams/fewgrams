@@ -172,6 +172,19 @@ export const ProductEntity = new Entity(
   catalogueConfig,
 );
 
+/** The bill a stocked product's cost was last read from — see
+ *  `CostSource` in src/lib/purchases/cost.ts. Absent on a row costed before
+ *  costs came from bills (18 Oct 2026). */
+const COST_BILL = {
+  type: "map",
+  properties: {
+    billId: { type: "string", required: true },
+    number: { type: "string", required: true },
+    date: { type: "string", required: true },
+    vendor: { type: "string", required: true },
+  },
+} as const;
+
 /**
  * The seeds margin — markup and rounding on each seed's `costPer100g`, one for
  * the whole seed shelf (the owner, 3 Oct 2026). A singleton, off GSI1, so
@@ -232,6 +245,10 @@ export const SeedEntity = new Entity(
       pricePer50g: { type: "number" },
       /** ₹ we pay for 100 g — see `Seed.costPer100g`. */
       costPer100g: { type: "number" },
+      costBill: COST_BILL,
+      /** The cost from before bills, kept while a bill's cost is in force so
+       *  deleting that bill can put it back. Never read anywhere else. */
+      openingCost: { type: "number" },
       /** Grams on the shelf — the most that can be ordered (the owner,
        *  25 Sep 2026). Zero is sold out. */
       stockGrams: { type: "number", required: true },
@@ -283,6 +300,10 @@ export const TrayEntity = new Entity(
       price: { type: "number", required: true },
       /** ₹ we pay for one pack — see `Tray.cost`. */
       cost: { type: "number" },
+      costBill: COST_BILL,
+      /** The cost from before bills, kept while a bill's cost is in force so
+       *  deleting that bill can put it back. Never read anywhere else. */
+      openingCost: { type: "number" },
       /** This pack's margin on `cost` — see `Tray.markupPercent`. */
       markupPercent: { type: "number" },
       roundUpToNearest: { type: "number" },
@@ -342,6 +363,10 @@ export const GrowMediumEntity = new Entity(
       /** ₹ for one pack as sold, whole — see `GrowMedium.price`. */
       price: { type: "number", required: true },
       cost: { type: "number" },
+      costBill: COST_BILL,
+      /** The cost from before bills, kept while a bill's cost is in force so
+       *  deleting that bill can put it back. Never read anywhere else. */
+      openingCost: { type: "number" },
       /** This pack's margin on `cost` — see `GrowMedium.markupPercent`. */
       markupPercent: { type: "number" },
       roundUpToNearest: { type: "number" },
@@ -1167,6 +1192,37 @@ export const PinPlaceEntity = new Entity(
 const placed = (attr: Record<string, unknown>) => attr.status !== "pending_payment";
 
 /**
+ * The tax rows inside a paid total — SPEC §26.2, `TaxRow` in
+ * `src/lib/tax/order-tax.ts`. Paise. Shared by orders and subscriptions.
+ */
+const TAX_ROWS = {
+  type: "list",
+  items: {
+    type: "map",
+    properties: {
+      source: { type: ["line", "delivery"] as const, required: true },
+      line: { type: "string", required: true },
+      hsn: { type: "string", required: true },
+      rate: { type: "number", required: true },
+      gross: { type: "number", required: true },
+      taxable: { type: "number", required: true },
+      cgst: { type: "number", required: true },
+      sgst: { type: "number", required: true },
+      igst: { type: "number", required: true },
+    },
+  },
+} as const;
+
+/** A GST state, `{ code: "29", name: "Karnataka" }`. */
+const PLACE_OF_SUPPLY = {
+  type: "map",
+  properties: {
+    code: { type: "string", required: true },
+    name: { type: "string", required: true },
+  },
+} as const;
+
+/**
  * One-off order — SPEC §4, §9, §13.
  *   PK = ORDER#<id>   SK = META
  *   GSI1PK = DELIVERY#<date>   GSI1SK = ORDER#<id>        (paid onwards)
@@ -1291,6 +1347,31 @@ export const OrderEntity = new Entity(
           },
         },
       },
+      /** The tax inside the total, worked out at checkout — SPEC §26.2.
+       *  Absent on orders placed before GST registration (17 Oct 2026),
+       *  which have no invoice. */
+      tax: TAX_ROWS,
+      /** The delivery state's GST code — absent when the state could not be
+       *  placed, and on orders from before registration. */
+      placeOfSupply: PLACE_OF_SUPPLY,
+      /** A business buyer's GSTIN, given at checkout. */
+      buyer: {
+        type: "map",
+        properties: {
+          gstin: { type: "string", required: true },
+          name: { type: "string", required: true },
+        },
+      },
+      /** Issued when a cancelled or failed order is marked refunded — SPEC
+       *  §26.3. Reverses the whole invoice, so it carries no rows of its own:
+       *  they are `tax`. */
+      creditNote: {
+        type: "map",
+        properties: {
+          number: { type: "string", required: true },
+          issuedAt: { type: "string", required: true },
+        },
+      },
       deliveryDate: { type: "string", required: true },
       address: {
         type: "map",
@@ -1323,6 +1404,9 @@ export const OrderEntity = new Entity(
       provider: { type: ["cashfree", "razorpay"] as const, required: true },
       providerOrderId: { type: "string" },
       receiptNo: { type: "number" },
+      /** `FG/2627/00001`, drawn at payment from the series for its financial
+       *  year (SPEC §26.3). Replaces `receiptNo` from GST registration on. */
+      invoiceNo: { type: "string" },
       paidAt: { type: "string" },
       createdAt: { type: "string", required: true },
       updatedAt: { type: "string", required: true },
@@ -1457,6 +1541,13 @@ export const SubscriptionEntity = new Entity(
       provider: { type: ["cashfree", "razorpay"] as const, required: true },
       providerOrderId: { type: "string" },
       receiptNo: { type: "number" },
+      /** `FG/2627/00001`, drawn at payment from the series for its financial
+       *  year (SPEC §26.3). Replaces `receiptNo` from GST registration on. */
+      invoiceNo: { type: "string" },
+      /** Exempt rows (fresh greens), kept for the invoice and GSTR-1 — SPEC
+       *  §26.2. Absent on subscriptions from before registration. */
+      tax: TAX_ROWS,
+      placeOfSupply: PLACE_OF_SUPPLY,
       paidAt: { type: "string" },
       createdAt: { type: "string", required: true },
       updatedAt: { type: "string", required: true },
@@ -1591,6 +1682,18 @@ export const SowingEntity = new Entity(
           },
         },
       },
+      /** The seed grams this sowing actually took off the shelf, per seed
+       *  key (from 18 Oct 2026) — see `Sowing.seedsTaken`. */
+      seedsTaken: {
+        type: "list",
+        items: {
+          type: "map",
+          properties: {
+            key: { type: "string", required: true },
+            grams: { type: "number", required: true },
+          },
+        },
+      },
       createdAt: { type: "string", required: true },
       updatedAt: { type: "string", required: true },
     },
@@ -1608,6 +1711,321 @@ export const SowingEntity = new Entity(
           template: "${sowDate}#${id}",
           casing: "none",
         },
+      },
+    },
+  },
+  ordersConfig,
+);
+
+/* ───────────────────────────── GST books ───────────────────────────── */
+
+const HEADS_MAP = {
+  type: "map",
+  properties: {
+    igst: { type: "number", required: true },
+    cgst: { type: "number", required: true },
+    sgst: { type: "number", required: true },
+  },
+} as const;
+
+/**
+ * A vendor we buy from — `/admin/vendors`, SPEC §26.6.
+ *   PK = VENDOR#<id>   SK = META   GSI1PK = VENDOR   GSI1SK = <id>
+ *
+ * In the orders table with the rest of the money (SPEC §4.6). A purchase
+ * bill copies the vendor's name, GSTIN and state at the time it is entered,
+ * so editing a vendor never changes a bill already claimed.
+ */
+export const VendorEntity = new Entity(
+  {
+    model: { ...model, entity: "vendor" },
+    attributes: {
+      id: { type: "string", required: true },
+      name: { type: "string", required: true },
+      kind: { type: ["registered", "unregistered", "foreign"] as const, required: true },
+      gstin: { type: "string" },
+      stateCode: { type: "string" },
+      stateName: { type: "string" },
+      address: { type: "string" },
+      phone: { type: "string" },
+      email: { type: "string" },
+      /** Whether its GSTR-1 lands by the 11th (monthly) or the 13th after
+       *  the quarter — from the portal's Search Taxpayer. */
+      filing: { type: ["monthly", "quarterly", "unknown"] as const, required: true },
+      /** What we buy from them — keys from `purchases/supplies.ts`. */
+      supplies: { type: "list", items: { type: "string" } },
+      notes: { type: "string" },
+      active: { type: "boolean", required: true },
+      createdAt: { type: "string", required: true },
+      updatedAt: { type: "string", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "VENDOR#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      all: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: [], template: "VENDOR", casing: "none" },
+        sk: { field: "GSI1SK", composite: ["id"], template: "${id}", casing: "none" },
+      },
+    },
+  },
+  ordersConfig,
+);
+
+/**
+ * A vendor's bill — `/admin/purchases`, SPEC §26.6.
+ *   PK = PURCHASE#<id>   SK = META   GSI1PK = PURCHASE   GSI1SK = <date>#<id>
+ *
+ * Paise throughout. The lines are a list on the one row because a bill is
+ * entered and corrected as a whole, like a sowing.
+ */
+export const PurchaseBillEntity = new Entity(
+  {
+    model: { ...model, entity: "purchase" },
+    attributes: {
+      id: { type: "string", required: true },
+      vendor: {
+        type: "map",
+        required: true,
+        properties: {
+          id: { type: "string", required: true },
+          name: { type: "string", required: true },
+          kind: { type: ["registered", "unregistered", "foreign"] as const, required: true },
+          gstin: { type: "string" },
+          stateCode: { type: "string" },
+          stateName: { type: "string" },
+        },
+      },
+      number: { type: "string", required: true },
+      date: { type: "string", required: true },
+      reverseCharge: { type: "boolean", required: true },
+      lines: {
+        type: "list",
+        required: true,
+        items: {
+          type: "map",
+          properties: {
+            category: {
+              type: [
+                "stock",
+                "freight",
+                "rack",
+                "growing",
+                "packaging",
+                "courier",
+                "gateway",
+                "software",
+                "rent",
+                "other",
+              ] as const,
+              required: true,
+            },
+            itemKind: { type: ["tray", "media", "seed"] as const },
+            itemKey: { type: "string" },
+            description: { type: "string", required: true },
+            quantity: { type: "number" },
+            taxable: { type: "number", required: true },
+            rate: { type: "number", required: true },
+            igst: { type: "number", required: true },
+            cgst: { type: "number", required: true },
+            sgst: { type: "number", required: true },
+            credit: { type: ["full", "shared", "none"] as const, required: true },
+          },
+        },
+      },
+      paidOn: { type: "string" },
+      claim: {
+        type: "map",
+        properties: {
+          month: { type: "string", required: true },
+          source: { type: ["gstr2b", "manual", "reverseCharge"] as const, required: true },
+        },
+      },
+      match: {
+        type: "map",
+        properties: {
+          month: { type: "string", required: true },
+          status: { type: ["matched", "mismatch"] as const, required: true },
+          taxable: { type: "number", required: true },
+          igst: { type: "number", required: true },
+          cgst: { type: "number", required: true },
+          sgst: { type: "number", required: true },
+        },
+      },
+      file: {
+        type: "map",
+        properties: {
+          name: { type: "string", required: true },
+          type: { type: "string", required: true },
+          size: { type: "number", required: true },
+          chunks: { type: "number", required: true },
+        },
+      },
+      notes: { type: "string" },
+      createdAt: { type: "string", required: true },
+      updatedAt: { type: "string", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "PURCHASE#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      byDate: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: [], template: "PURCHASE", casing: "none" },
+        sk: { field: "GSI1SK", composite: ["date", "id"], template: "${date}#${id}", casing: "none" },
+      },
+    },
+  },
+  ordersConfig,
+);
+
+/**
+ * A bill's scan or PDF, in pieces — SPEC §26.6.
+ *   PK = BILLFILE#<billId>   SK = CHUNK#<nnn>
+ *
+ * In DynamoDB rather than S3 because the stack has no bucket and a bill is
+ * small: a 3 MB cap, cut into base64 pieces under the 400 KB item limit.
+ */
+export const BillFileChunkEntity = new Entity(
+  {
+    model: { ...model, entity: "billfile" },
+    attributes: {
+      billId: { type: "string", required: true },
+      n: { type: "number", required: true, padding: { length: 3, char: "0" } },
+      data: { type: "string", required: true },
+    },
+    indexes: {
+      byBill: {
+        pk: { field: "PK", composite: ["billId"], template: "BILLFILE#${billId}", casing: "none" },
+        sk: { field: "SK", composite: ["n"], template: "CHUNK#${n}", casing: "none" },
+      },
+    },
+  },
+  ordersConfig,
+);
+
+/**
+ * A GSTR-2B statement as uploaded — SPEC §26.5.
+ *   PK = GSTR2B#<month>   SK = META
+ *
+ * Kept so the match can be shown again without the file; a fresh upload for
+ * the same month replaces it.
+ */
+export const Gstr2bEntity = new Entity(
+  {
+    model: { ...model, entity: "gstr2b" },
+    attributes: {
+      month: { type: "string", required: true },
+      gstin: { type: "string", required: true },
+      fileName: { type: "string", required: true },
+      uploadedAt: { type: "string", required: true },
+      invoices: {
+        type: "list",
+        required: true,
+        items: {
+          type: "map",
+          properties: {
+            gstin: { type: "string", required: true },
+            name: { type: "string", required: true },
+            number: { type: "string", required: true },
+            date: { type: "string", required: true },
+            value: { type: "number", required: true },
+            taxable: { type: "number", required: true },
+            igst: { type: "number", required: true },
+            cgst: { type: "number", required: true },
+            sgst: { type: "number", required: true },
+            itcAvailable: { type: "boolean", required: true },
+            reverseCharge: { type: "boolean", required: true },
+            note: { type: "boolean", required: true },
+          },
+        },
+      },
+    },
+    indexes: {
+      byMonth: {
+        pk: { field: "PK", composite: ["month"], template: "GSTR2B#${month}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+    },
+  },
+  ordersConfig,
+);
+
+/**
+ * A tax deposit — PMT-06 for a quarter's first two months, or the balance
+ * paid with GSTR-3B. SPEC §26.5.
+ *   PK = GSTPAY#<id>   SK = META   GSI1PK = GSTPAY   GSI1SK = <month>#<id>
+ */
+export const GstPaymentEntity = new Entity(
+  {
+    model: { ...model, entity: "gstpayment" },
+    attributes: {
+      id: { type: "string", required: true },
+      month: { type: "string", required: true },
+      paidOn: { type: "string", required: true },
+      reference: { type: "string", required: true },
+      heads: { ...HEADS_MAP, required: true },
+      createdAt: { type: "string", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "GSTPAY#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      all: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: [], template: "GSTPAY", casing: "none" },
+        sk: { field: "GSI1SK", composite: ["month", "id"], template: "${month}#${id}", casing: "none" },
+      },
+    },
+  },
+  ordersConfig,
+);
+
+/**
+ * What was filed for a quarter, and the ledgers it left — SPEC §26.5.
+ *   PK = GSTFILING#<quarter>   SK = META   GSI1PK = GSTFILING   GSI1SK = <quarter>
+ */
+export const GstFilingEntity = new Entity(
+  {
+    model: { ...model, entity: "gstfiling" },
+    attributes: {
+      quarter: { type: "string", required: true },
+      gstr1: {
+        type: "map",
+        properties: {
+          filedOn: { type: "string", required: true },
+          arn: { type: "string", required: true },
+        },
+      },
+      gstr3b: {
+        type: "map",
+        properties: {
+          filedOn: { type: "string", required: true },
+          arn: { type: "string", required: true },
+        },
+      },
+      closing: {
+        type: "map",
+        properties: {
+          credit: { ...HEADS_MAP, required: true },
+          cash: { ...HEADS_MAP, required: true },
+        },
+      },
+      updatedAt: { type: "string", required: true },
+    },
+    indexes: {
+      byQuarter: {
+        pk: { field: "PK", composite: ["quarter"], template: "GSTFILING#${quarter}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      all: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: [], template: "GSTFILING", casing: "none" },
+        sk: { field: "GSI1SK", composite: ["quarter"], template: "${quarter}", casing: "none" },
       },
     },
   },

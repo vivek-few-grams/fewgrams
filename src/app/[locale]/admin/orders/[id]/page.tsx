@@ -2,10 +2,17 @@ import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
-import { formatReceiptNo, isOrderId, type ShippingQuote } from "@/lib/orders/order";
+import { documentNo, isOrderId, type ShippingQuote } from "@/lib/orders/order";
 import { GATEWAY_LABEL } from "@/lib/payments/provider";
+import { taxTotals } from "@/lib/tax/order-tax";
+import { GST_STATES, HOME_STATE } from "@/lib/tax/states";
+import { setOrderPlaceOfSupply } from "../actions";
+import { listFilings } from "@/lib/repo/gst";
+import { monthOf, quarterOf } from "@/lib/gst/period";
 import { getOrder, listPayments } from "@/lib/repo/orders";
 import { ParcelBooking } from "../ParcelBooking";
+import { orderCreditNote, orderInvoice } from "@/components/tax/docs";
+import { PrintDoc } from "@/components/tax/TaxDocument";
 import { OrderCancel } from "../OrderCancel";
 import { OrderSteps } from "../OrderSteps";
 import { requireRole } from "@/lib/auth/guard";
@@ -28,6 +35,11 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
   if (!isOrderId(id)) notFound();
   const order = await getOrder(id);
   if (!order) notFound();
+  /* Once the quarter's GSTR-1 is filed, a missing state is corrected by
+     amendment on the portal, not here. */
+  const gstr1Filed =
+    !!order.paidAt &&
+    !!(await listFilings()).find((f) => f.quarter === quarterOf(monthOf(order.paidAt!)))?.gstr1;
 
   const t = await getTranslations("admin.orders");
   const format = await getFormatter();
@@ -45,6 +57,8 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
     });
   const payments = await listPayments(id);
 
+  /* SPEC §26.3 — straight to the print dialog, as on the customer's page. */
+  const [invoice, creditNote] = await Promise.all([orderInvoice(order), orderCreditNote(order)]);
   const when = (iso: string) => format.dateTime(new Date(iso), { dateStyle: "medium", timeStyle: "short" });
 
   return (
@@ -55,7 +69,7 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
         <div className="min-w-0">
           <p className="font-body text-xs uppercase tracking-wider text-stone">{order.id}</p>
           <h1 className="mt-1 font-display text-2xl font-bold text-forest">
-            {order.receiptNo !== null ? formatReceiptNo(order.receiptNo) : t("noReceipt")}
+            {documentNo(order) ?? t("noReceipt")}
           </h1>
           <p className="mt-2 font-body text-sm text-forest">
             {t(`status.${order.status}`)} ·{" "}
@@ -69,6 +83,53 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
             {t("placed", { when: when(order.createdAt) })}
             {order.paidAt && ` · ${t("paidAt", { when: when(order.paidAt) })}`}
           </p>
+          {/* SPEC §26.2 — what the invoice will say, without opening it. */}
+          {order.tax && (
+            <p className="mt-1 font-body text-xs text-stone">
+              {t("gstLine", {
+                amount: (() => {
+                  const x = taxTotals(order.tax);
+                  return (x.cgst + x.sgst + x.igst) / 100;
+                })(),
+                place: order.placeOfSupply
+                  ? `${order.placeOfSupply.name} (${order.placeOfSupply.code})`
+                  : t("gstUnplaced"),
+              })}
+              {order.buyer && ` · ${t("gstBuyer", { name: order.buyer.name, gstin: order.buyer.gstin })}`}
+            </p>
+          )}
+          {/* GSTR-1 needs a state for every sale: name it where checkout
+              could not read one from the address. */}
+          {order.tax && order.paidAt && !order.placeOfSupply && gstr1Filed && (
+            <p className="mt-2 font-body text-xs text-terracotta">{t("gstStateFiled")}</p>
+          )}
+          {order.tax && order.paidAt && !order.placeOfSupply && !gstr1Filed && (
+            <form action={setOrderPlaceOfSupply} className="mt-2 flex flex-wrap items-center gap-2">
+              <input type="hidden" name="id" value={order.id} />
+              <select
+                name="state"
+                required
+                defaultValue=""
+                aria-label={t("gstSetState")}
+                className="rounded-lg border border-forest/25 bg-cream px-3 py-1.5 font-body text-sm text-forest"
+              >
+                <option value="" disabled>
+                  {t("gstSetState")}
+                </option>
+                {GST_STATES.filter((x) => x.code !== HOME_STATE.code).map((x) => (
+                  <option key={x.code} value={x.code}>
+                    {x.code} · {x.name}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                className="rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest/5"
+              >
+                {t("gstSetStateButton")}
+              </button>
+            </form>
+          )}
         </div>
         <div className="order-first flex flex-col items-start gap-4 md:order-none md:shrink-0 md:items-end">
           <Link
@@ -77,8 +138,14 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
           >
             {t("back")}
           </Link>
-          <OrderSteps order={order} />
-          <OrderCancel order={order} />
+          {/* One row (the owner, 18 Oct 2026): the documents, then cancel,
+              then the next step — the main move last, at the right edge. */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-3 md:justify-end">
+            {invoice && <PrintDoc {...invoice} id="invoice" label={t("invoice")} />}
+            {creditNote && <PrintDoc {...creditNote} id="credit-note" label={t("creditNote")} />}
+            <OrderCancel order={order} />
+            <OrderSteps order={order} />
+          </div>
         </div>
       </section>
 

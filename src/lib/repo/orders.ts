@@ -1,7 +1,7 @@
 import type { EntityItem } from "electrodb";
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import { CounterEntity, OrderEntity, PaymentEntity } from "@/lib/db/entities";
-import type { Order, OrderLine } from "@/lib/orders/order";
+import type { CreditNote, Order, OrderLine } from "@/lib/orders/order";
 import type { GatewayName, PaymentAttempt } from "@/lib/payments";
 import type { OrderStatus, OrderSummary } from "@/lib/types";
 import { SOLD_STATUSES, seedGramsByKey } from "@/lib/seeds/best-sellers";
@@ -47,6 +47,11 @@ function toOrder(row: OrderRow): Order {
     provider: row.provider,
     providerOrderId: row.providerOrderId ?? null,
     receiptNo: row.receiptNo ?? null,
+    invoiceNo: row.invoiceNo ?? null,
+    tax: row.tax ?? null,
+    placeOfSupply: row.placeOfSupply ?? null,
+    buyer: row.buyer ?? null,
+    creditNote: row.creditNote ?? null,
     paidAt: row.paidAt ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -84,6 +89,11 @@ function toRow(o: Order) {
     provider: o.provider,
     ...(o.providerOrderId ? { providerOrderId: o.providerOrderId } : {}),
     ...(o.receiptNo !== null ? { receiptNo: o.receiptNo } : {}),
+    ...(o.invoiceNo ? { invoiceNo: o.invoiceNo } : {}),
+    ...(o.tax ? { tax: o.tax } : {}),
+    ...(o.placeOfSupply ? { placeOfSupply: o.placeOfSupply } : {}),
+    ...(o.buyer ? { buyer: o.buyer } : {}),
+    ...(o.creditNote ? { creditNote: o.creditNote } : {}),
     ...(o.paidAt ? { paidAt: o.paidAt } : {}),
     createdAt: o.createdAt,
     updatedAt: o.updatedAt,
@@ -196,8 +206,22 @@ export async function markOrderPaid(order: Order, paidAt: string, deliveryDate: 
   }
 }
 
-export async function setReceiptNo(id: string, receiptNo: number): Promise<void> {
-  await OrderEntity.patch({ id }).set({ receiptNo, updatedAt: new Date().toISOString() }).go();
+export async function setCreditNote(id: string, creditNote: CreditNote): Promise<void> {
+  await OrderEntity.patch({ id }).set({ creditNote, updatedAt: new Date().toISOString() }).go();
+}
+
+/** Set a paid order's place of supply where checkout could not place its
+ *  state (SPEC §26.2). Its rows are already inter-state, which every state
+ *  but ours is, so only the reporting changes. */
+export async function setPlaceOfSupply(
+  id: string,
+  placeOfSupply: { code: string; name: string },
+): Promise<void> {
+  await OrderEntity.patch({ id }).set({ placeOfSupply, updatedAt: new Date().toISOString() }).go();
+}
+
+export async function setInvoiceNo(id: string, invoiceNo: string): Promise<void> {
+  await OrderEntity.patch({ id }).set({ invoiceNo, updatedAt: new Date().toISOString() }).go();
 }
 
 /** The next number in a sequence, from an atomic `ADD`. The first call on a
@@ -273,6 +297,7 @@ function summarise(o: Order): OrderSummary {
   return {
     id: o.id,
     receiptNo: o.receiptNo,
+    invoiceNo: o.invoiceNo,
     placedAt: o.paidAt ?? o.createdAt,
     deliveryDate: o.deliveryDate,
     status: o.status,

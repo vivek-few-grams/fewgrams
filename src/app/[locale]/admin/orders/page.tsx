@@ -1,7 +1,7 @@
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { istDateISO } from "@/lib/delivery-date";
-import { formatReceiptNo, type Order } from "@/lib/orders/order";
+import { documentNo, type Order } from "@/lib/orders/order";
 import { listOrdersByStatus } from "@/lib/repo/orders";
 import type { OrderStatus } from "@/lib/types";
 import { OrderSteps } from "./OrderSteps";
@@ -160,7 +160,7 @@ async function OrderCard({ order, today }: { order: Order; today: string }) {
           href={`/admin/orders/${order.id}`}
           className="font-body text-sm font-semibold text-forest underline underline-offset-4"
         >
-          {order.receiptNo !== null ? formatReceiptNo(order.receiptNo) : order.id}
+          {documentNo(order) ?? order.id}
         </Link>
         <span className="font-body text-sm tabular-nums text-forest">
           {t("amount", { amount: order.total })}
@@ -245,7 +245,7 @@ async function StatusTable({ status }: { status: OrderStatus }) {
                   href={`/admin/orders/${o.id}`}
                   className="font-semibold text-forest underline underline-offset-4"
                 >
-                  {o.receiptNo !== null ? formatReceiptNo(o.receiptNo) : o.id}
+                  {documentNo(o) ?? o.id}
                 </Link>
                 <span className="mt-0.5 block text-xs text-stone">
                   {format.dateTime(new Date(o.paidAt ?? o.createdAt), {

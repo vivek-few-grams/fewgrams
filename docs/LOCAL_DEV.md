@@ -287,7 +287,6 @@ off unless the server has:
 
 ```
 COURIER_BOOKING=on
-SELLER_GSTIN=...                 # optional; sent to Delhivery and Ekart when set
 ```
 
 Leave `COURIER_BOOKING` unset locally: Ekart and Shiprocket have no test system, so the

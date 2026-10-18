@@ -1,8 +1,9 @@
 import { paymentProvider, type PaymentProvider } from "@/lib/payments";
-import { getOrder, markOrderPaid, nextSequence, recordPayment, setReceiptNo } from "@/lib/repo/orders";
+import { getOrder, markOrderPaid, nextSequence, recordPayment, setInvoiceNo } from "@/lib/repo/orders";
 import { takeFromShelf } from "@/lib/repo/seeds";
 import { takeFromStock as takeTraysFromStock } from "@/lib/repo/trays";
 import { takeFromStock as takeMediaFromStock } from "@/lib/repo/grow-media";
+import { financialYear, formatInvoiceNo, invoiceCounter } from "@/lib/tax/order-tax";
 import { settlementFor, shiftForPaymentDay, type Order } from "./order";
 
 /**
@@ -15,7 +16,7 @@ import { settlementFor, shiftForPaymentDay, type Order } from "./order";
  * so.
  *
  * Safe to call any number of times, concurrently. `markOrderPaid` returns
- * true for one caller only, and the once-per-order work — the receipt
+ * true for one caller only, and the once-per-order work — the invoice
  * number, drawing seed off the shelf — sits behind it.
  */
 export async function settleOrder(
@@ -47,7 +48,7 @@ export async function settleOrder(
   const deliveryDate = shiftForPaymentDay(order.deliveryDate, new Date(order.createdAt), now);
   if (!(await markOrderPaid(order, now.toISOString(), deliveryDate))) return getOrder(orderId);
 
-  await setReceiptNo(orderId, await nextSequence("receipt"));
+  await setInvoiceNo(orderId, await drawInvoiceNo(now));
 
   /* After the payment is recorded, and never able to undo it. Seeds are
      capped at the shelf at checkout, so a shortfall means two orders for the
@@ -79,4 +80,14 @@ export async function settleOrder(
   }
 
   return getOrder(orderId);
+}
+
+/**
+ * The next invoice number for the financial year `paidAt` falls in — SPEC
+ * §26.3. One gapless series per year, shared by orders and subscriptions,
+ * and drawn only by the caller that won the payment write.
+ */
+export async function drawInvoiceNo(paidAt: Date): Promise<string> {
+  const fy = financialYear(paidAt);
+  return formatInvoiceNo(fy, await nextSequence(invoiceCounter(fy)));
 }

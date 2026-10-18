@@ -2,10 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
-import { deleteTray, getTray, listTrays, putTray } from "@/lib/repo/trays";
-import { NO_MARGIN, retailPrice } from "@/lib/pricing/margin";
-import { isValidContentKey } from "@/lib/content/content-key";
-import { count, err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
+import { isOnABill } from "@/lib/repo/purchases";
+import { forgetSupply } from "@/lib/repo/vendors";
+import { deleteTray, getTray, patchTray, setTrayStock } from "@/lib/repo/trays";
+import { marginOf, retailPrice } from "@/lib/pricing/margin";
+import { count, err, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
 import { isValidStockPacks } from "@/lib/trays/lead-time";
 import type { Tray } from "@/lib/types";
 
@@ -16,18 +17,20 @@ import type { Tray } from "@/lib/types";
  * is addressable over HTTP independently of the page that renders its form.
  *
  * **Nothing here accepts text.** An item's name, its one line and its spec
- * table come from `content/trays/<contentKey>.json` (SPEC §4.3), so the only
- * identifier these actions take is a content key. Same rule as varieties and
- * seeds, for the same reason: copy wants git history and a diff, a price does
- * not.
+ * table come from `content/trays/<contentKey>.json` (SPEC §4.3). Same rule as
+ * varieties and seeds, for the same reason: copy wants git history and a
+ * diff, a price does not.
  *
- * ## No stock, and therefore no concurrency problem
+ * ## No cost and no adding here (18 Oct 2026)
  *
- * The thing that makes `putSeed` unsafe for checkout — two orders racing the
- * same counted figure — does not exist here. Nothing in this category is held
- * (SPEC §23.1), so a whole-row `put` is correct for every path, now and after
- * checkout is built. What *will* arrive with checkout is the operational half:
- * a paid line means somebody has to place the order with the supplier.
+ * A tray is added from a purchase bill ("+ New product", `addStockItem`) and
+ * costed by the latest bill it is on (`costFromBills`) — the owner: every
+ * purchase is entered with what was paid, so the product screen should not
+ * ask again. What is left here is the row's own margin, its packing, the
+ * switch, the delete, and a stocktake.
+ *
+ * Every write is a `patch` of the fields it owns, so none of them can put
+ * back a stock count a paid order has just taken from.
  */
 
 /** Public pages that change when this catalogue does. */
@@ -39,88 +42,18 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
 }
 
-/** The cost, its margin, the price and the packs held, plus active. */
-type Ops = Pick<Tray, "price" | "stockPacks" | "active" | "cost" | "markupPercent" | "roundUpToNearest">;
-
-/** The selling price is **worked out, never typed** (the owner, 3 Oct 2026:
- *  "sell price is based on cost + margin"): the cost and **this row's own**
- *  markup and rounding (the owner, 4 Oct 2026 — grow media's rule; until then
- *  one margin served the whole screen). So the cost is required. A blank
- *  markup or rounding prices at cost to the rupee (`NO_MARGIN`). */
-function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
-  const cost = money(fd, "cost");
-  if (cost === null) return { ok: false, state: err("costInvalid", "cost") };
-
+/** The row's own markup and rounding (the owner, 4 Oct 2026). Blank prices
+ *  at cost to the rupee (`NO_MARGIN`). */
+function readMargin(
+  fd: FormData,
+): { ok: true; value: Pick<Tray, "markupPercent" | "roundUpToNearest"> } | { ok: false; state: FormState } {
   const markupRaw = String(fd.get("markupPercent") ?? "").trim();
   const markupPercent = markupRaw === "" ? undefined : zeroOrMore(fd, "markupPercent");
   if (markupPercent === null) return { ok: false, state: err("zeroOrMore", "markupPercent") };
   const roundRaw = String(fd.get("roundUpToNearest") ?? "").trim();
   const roundUpToNearest = roundRaw === "" ? undefined : count(fd, "roundUpToNearest");
   if (roundUpToNearest === null) return { ok: false, state: err("countInvalid", "roundUpToNearest") };
-
-  const price = retailPrice(cost, {
-    markupPercent: markupPercent ?? NO_MARGIN.markupPercent,
-    roundUpToNearest: roundUpToNearest ?? NO_MARGIN.roundUpToNearest,
-  });
-
-  /* Zero is a real count — nothing held, every order a day later (the
-     owner, 25 Sep 2026). An empty field is refused, not read as zero. */
-  const stockPacks = zeroOrMore(fd, "stockPacks");
-  if (stockPacks === null || !isValidStockPacks(stockPacks)) {
-    return { ok: false, state: err("stockInvalid", "stockPacks") };
-  }
-
-  return {
-    ok: true,
-    value: {
-      cost,
-      price,
-      stockPacks,
-      active: fd.get("active") === "on",
-      ...(markupPercent !== undefined ? { markupPercent } : {}),
-      ...(roundUpToNearest !== undefined ? { roundUpToNearest } : {}),
-    },
-  };
-}
-
-/**
- * Create an item from a content key.
- *
- * **The content file is deliberately not a precondition**, exactly as for a
- * seed: requiring it first would mean you could not price a supplier's tray
- * without opening a code editor. What stops a nameless item reaching a
- * customer is downstream — the admin row is flagged in red with the exact
- * path, and the public page skips an item it cannot name.
- *
- * The id is a generated UUID and is never derived from the key, so re-keying
- * content later cannot collide with an existing row or orphan an order line.
- */
-export async function addTray(_prev: FormState, fd: FormData): Promise<FormState> {
-  await assertRole("admin");
-
-  const contentKey = String(fd.get("contentKey") ?? "")
-    .trim()
-    .toLowerCase();
-  if (!contentKey) return err("keyRequired", "contentKey");
-
-  /* Validated rather than sanitised: the key is a filename, so quietly
-     rewriting it would break the link between this row and the file the
-     operator is about to create. */
-  if (!isValidContentKey(contentKey)) return err("keyInvalid", "contentKey", { key: contentKey });
-
-  /* One row per key — the key is the GSI1 sort key, so two rows sharing one
-     would make the pair indistinguishable in every list. Checked against
-     *trays* only: this folder is its own namespace (SPEC §23.2). */
-  const existing = await listTrays();
-  if (existing.some((t) => t.contentKey === contentKey))
-    return err("keyTaken", "contentKey", { key: contentKey });
-
-  const ops = readOps(fd);
-  if (!ops.ok) return ops.state;
-
-  await putTray({ id: crypto.randomUUID(), contentKey, ...ops.value });
-  refresh();
-  return { status: "saved" };
+  return { ok: true, value: { markupPercent, roundUpToNearest } };
 }
 
 const PACKING = [
@@ -154,9 +87,9 @@ function readPacking(fd: FormData): { ok: true; value: Partial<Packing> } | { ok
   return { ok: true, value };
 }
 
-/** Update the price, the lead time and the packing on an existing item. The
- *  key and id never change here — re-keying means renaming the content file
- *  and is a rename, not an edit. */
+/** Save the margin and the packing, and reprice from the cost the bills set.
+ *  The key and id never change here — re-keying means renaming the content
+ *  file and is a rename, not an edit. */
 export async function updateTray(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
 
@@ -164,35 +97,60 @@ export async function updateTray(_prev: FormState, fd: FormData): Promise<FormSt
   const current = id ? await getTray(id) : null;
   if (!current) return err("notFound");
 
-  const ops = readOps(fd);
-  if (!ops.ok) return ops.state;
+  const margin = readMargin(fd);
+  if (!margin.ok) return margin.state;
   const packing = readPacking(fd);
   if (!packing.ok) return packing.state;
 
-  /* Packing replaces rather than merges: clearing all six fields is how an
-     owner says "re-measure this", and a merge would keep the old figures.
-     The margin is dropped with it so that blanking a field clears it rather
-     than keeping a figure nobody can see — grow media's rule. */
-  const cleared: readonly string[] = [...PACKING, "markupPercent", "roundUpToNearest"];
-  const rest = Object.fromEntries(Object.entries(current).filter(([k]) => !cleared.includes(k))) as Tray;
-  await putTray({ ...rest, ...ops.value, ...packing.value });
+  /* Packing and margin replace rather than merge: a blank field clears its
+     figure, which is how an owner says "re-measure this" — so a field left
+     blank is removed, not kept. */
+  const set = { ...margin.value, ...packing.value };
+  const blank = ([...PACKING, "markupPercent", "roundUpToNearest"] as const).filter(
+    (k) => set[k] === undefined,
+  );
+  const filled = Object.fromEntries(Object.entries(set).filter(([, v]) => v !== undefined));
+  /* No cost yet — added from a bill not saved — keeps its price of 0. */
+  const price =
+    current.cost === undefined ? current.price : retailPrice(current.cost, marginOf(margin.value));
+  await patchTray(current.id, { ...filled, price }, blank);
   refresh();
   return { status: "saved" };
 }
 
-/** Hide an item without losing its price or its lead time. This is the only
- *  way something leaves this category's shelf: there is no out-of-stock state
- *  to fall into, because nothing is ever in stock (SPEC §23.1). */
+/** A stocktake — the packs counted. Zero is a real count; an empty field is
+ *  not. */
+export async function correctTrayStock(_prev: FormState, fd: FormData): Promise<FormState> {
+  await assertRole("admin");
+  const tray = await getTray(String(fd.get("id") ?? ""));
+  if (!tray) return err("notFound");
+  const packs = zeroOrMore(fd, "count");
+  if (packs === null || !isValidStockPacks(packs)) return err("packsInvalid", "count");
+  await setTrayStock(tray.id, packs);
+  refresh();
+  return { status: "saved" };
+}
+
+/** Hide an item without losing its price — the only way something leaves
+ *  this shelf. **Not switched on before a bill has costed it**: a row added
+ *  from a bill is priced at 0 until that bill is saved. */
 export async function toggleTrayActive(fd: FormData): Promise<void> {
   await assertRole("admin");
   const existing = await getTray(String(fd.get("id")));
   if (!existing) throw new Error("Tray not found");
-  await putTray({ ...existing, active: !existing.active });
+  if (!existing.active && existing.cost === undefined) return;
+  await patchTray(existing.id, { active: !existing.active });
   refresh();
 }
 
 export async function removeTray(fd: FormData): Promise<void> {
   await assertRole("admin");
-  await deleteTray(String(fd.get("id")));
+  const id = String(fd.get("id"));
+  const row = await getTray(id);
+  /* Its screen offers no Delete while a bill names it; this is for a
+     request made without the screen. */
+  if (row && (await isOnABill(`tray:${row.contentKey}`))) throw new Error("This tray is on a purchase bill");
+  await deleteTray(id);
+  if (row) await forgetSupply(`tray:${row.contentKey}`);
   refresh();
 }

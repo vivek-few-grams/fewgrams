@@ -7,7 +7,7 @@ import {
   istDateISO,
   nextCutoff,
 } from "@/lib/delivery-date";
-import { formatReceiptNo } from "@/lib/orders/order";
+import { documentNo } from "@/lib/orders/order";
 import { getPlanContent } from "@/lib/content/plans";
 import { varietyNameMap } from "@/lib/content/varieties";
 import { listPlansWithWeeks } from "@/lib/repo/plans";
@@ -451,7 +451,7 @@ function SubRow({
           href={`/admin/subscriptions/${sub.id}`}
           className="font-semibold text-forest underline underline-offset-4 hover:text-stone"
         >
-          {sub.receiptNo !== null ? formatReceiptNo(sub.receiptNo) : sub.id}
+          {documentNo(sub) ?? sub.id}
         </Link>
         <span className="block text-xs text-stone">
           {format.dateTime(new Date(sub.paidAt ?? sub.createdAt), { dateStyle: "medium" })}

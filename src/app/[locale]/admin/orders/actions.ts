@@ -3,8 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
 import { cancelOrder as cancel } from "@/lib/orders/cancel";
+import { markOrderRefunded } from "@/lib/orders/refund";
 import { TRACKING_NUMBER, canAdvance, canMarkRefunded, isOrderId } from "@/lib/orders/order";
-import { advanceOrderStatus, getOrder, setShipmentTracking } from "@/lib/repo/orders";
+import { advanceOrderStatus, getOrder, setPlaceOfSupply, setShipmentTracking } from "@/lib/repo/orders";
+import { listFilings } from "@/lib/repo/gst";
+import { monthOf, quarterOf } from "@/lib/gst/period";
+import { HOME_STATE, gstStateByCode } from "@/lib/tax/states";
 import { bookShipment, type BookFailure } from "@/lib/shipping/book";
 import { ORDER_STATUSES, type OrderStatus } from "@/lib/types";
 
@@ -60,7 +64,8 @@ export async function cancelOrder(fd: FormData): Promise<void> {
 
 /**
  * Record that a cancelled or failed order's money has been returned in the
- * gateway's dashboard. Nothing is sent to the gateway from here.
+ * gateway's dashboard, and issue its credit note (`markOrderRefunded`).
+ * Nothing is sent to the gateway from here.
  */
 export async function markRefunded(fd: FormData): Promise<void> {
   await assertRole("admin");
@@ -71,7 +76,9 @@ export async function markRefunded(fd: FormData): Promise<void> {
   if (!canMarkRefunded(order.status)) {
     throw new Error(`An order cannot be marked refunded from ${order.status}`);
   }
-  await advanceOrderStatus(order, order.status, "refunded");
+  /* Issues the credit note too (SPEC §26.3). False means a second press got
+     there first; the refreshed page shows the one note it issued. */
+  await markOrderRefunded(order);
   revalidateOrder(id);
 }
 
@@ -125,4 +132,26 @@ export async function bookParcel(_prev: BookState, fd: FormData): Promise<BookSt
     trackingNumber: outcome.result.trackingNumber,
     pickupRequested: outcome.result.pickupRequested,
   };
+}
+
+/**
+ * Name the state of a paid order whose address checkout could not place
+ * (SPEC §26.2) — GSTR-1 needs a place of supply for every sale. Never
+ * Karnataka: an order is placed in Karnataka by its PIN, so one left
+ * unplaced is delivered elsewhere and its tax is already IGST. Refused once
+ * the quarter's GSTR-1 is marked filed.
+ */
+export async function setOrderPlaceOfSupply(fd: FormData): Promise<void> {
+  await assertRole("admin");
+  const id = String(fd.get("id") ?? "");
+  if (!isOrderId(id)) throw new Error("Bad request");
+  const order = await getOrder(id);
+  if (!order || !order.tax || !order.paidAt || order.placeOfSupply) throw new Error("Nothing to set");
+  const state = gstStateByCode(String(fd.get("state") ?? ""));
+  if (!state || state.code === HOME_STATE.code) throw new Error("Pick a state outside Karnataka");
+  const filed = (await listFilings()).find((f) => f.quarter === quarterOf(monthOf(order.paidAt!)));
+  if (filed?.gstr1) throw new Error("That quarter's GSTR-1 is filed");
+  await setPlaceOfSupply(id, state);
+  revalidateOrder(id);
+  revalidatePath("/[locale]/admin/gst", "page");
 }

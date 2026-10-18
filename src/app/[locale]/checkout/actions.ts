@@ -24,6 +24,9 @@ import { splitByArea } from "@/lib/cart/area-split";
 import { courierArrival, courierPickup, istDateISO, latestDate } from "@/lib/delivery-date";
 import { getAddress, getProfile } from "@/lib/repo/profile";
 import { createOrder, setProviderOrderId } from "@/lib/repo/orders";
+import { isValidGstin, normaliseGstin, OUR_GSTIN } from "@/lib/tax/gstin";
+import { orderTax, type Buyer } from "@/lib/tax/order-tax";
+import { placeOfSupply } from "@/lib/tax/states";
 import { choiceField, type CheckoutState, type DeliveryScan } from "./state";
 
 const fail = (code: string, values?: Record<string, string>): CheckoutState => ({
@@ -88,6 +91,10 @@ export async function startCheckout(_prev: CheckoutState, fd: FormData): Promise
   const total = orderTotal(lines) + delivery.amount;
   if (Number(fd.get("total")) !== total) return fail("priceChanged");
 
+  const buyer = readBuyer(fd);
+  if (buyer === "invalid") return fail("gstinInvalid");
+  if (buyer === "ours") return fail("gstinOurs");
+
   const now = new Date();
   const expiresAt = new Date(now.getTime() + PAYMENT_WINDOW_MINUTES * 60_000);
   const profile = await getProfile(actor.userId);
@@ -113,6 +120,9 @@ export async function startCheckout(_prev: CheckoutState, fd: FormData): Promise
     };
   });
   const couriered = shipments.filter((x) => x.method === "courier");
+  /* SPEC §26.2: the tax inside the price, worked out once and kept, so a
+     later rate change cannot rewrite this order's invoice. */
+  const pos = placeOfSupply(address);
 
   const order: Order = {
     id: newOrderId(),
@@ -136,6 +146,11 @@ export async function startCheckout(_prev: CheckoutState, fd: FormData): Promise
     provider: provider.name,
     providerOrderId: null,
     receiptNo: null,
+    invoiceNo: null,
+    tax: orderTax(lines, shipments, pos),
+    placeOfSupply: pos,
+    buyer,
+    creditNote: null,
     paidAt: null,
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
@@ -175,6 +190,22 @@ export async function startCheckout(_prev: CheckoutState, fd: FormData): Promise
     console.error(`[payments] could not open a gateway order for ${order.id}`, e);
     return fail("gatewayError");
   }
+}
+
+/**
+ * A business buyer's GSTIN and name, when the "Buying for a business?" field
+ * was opened and filled (SPEC §26.2). Null when it was left empty;
+ * `"invalid"` when a GSTIN was typed that fails the check digit, or came
+ * without a business name — refused rather than dropped, since the buyer
+ * is counting on the credit; `"ours"` when it is our own.
+ */
+function readBuyer(fd: FormData): Buyer | null | "invalid" | "ours" {
+  const gstin = normaliseGstin(String(fd.get("gstin") ?? ""));
+  const name = String(fd.get("gstName") ?? "").trim();
+  if (!gstin && !name) return null;
+  if (!isValidGstin(gstin) || !name || name.length > 120) return "invalid";
+  if (gstin === OUR_GSTIN) return "ours";
+  return { gstin, name };
 }
 
 /**

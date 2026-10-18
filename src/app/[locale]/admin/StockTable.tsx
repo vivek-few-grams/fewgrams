@@ -1,11 +1,13 @@
 "use client";
 
-import { Fragment, useActionState, useState } from "react";
+import { Fragment, useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { AlertTriangle, Check, Truck } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { GrowMedium, Tray } from "@/lib/types";
+import { CostCell, OnBills, StockCount } from "./StockCells";
+import { SupplierPicker, type VendorChoice } from "./vendors/SupplierPicker";
 
 /**
  * The admin table for held stock sold by the pack — trays and grow media
@@ -21,6 +23,10 @@ import type { GrowMedium, Tray } from "@/lib/types";
  * Each input column is sized for its longest real figure, and the table
  * scrolls sideways inside its box on a narrow screen rather than squeezing
  * them.
+ *
+ * **The cost and the count are not inputs** (18 Oct 2026): the cost is the
+ * latest purchase bill's, linked to it, and the count moves with bills and
+ * orders, with a pencil for a stocktake that posts on its own.
  */
 
 /** The six courier packing figures, in the order an owner measures them. */
@@ -34,8 +40,11 @@ const PACKING_FIELDS = [
 ] as const;
 
 type Item = Tray | GrowMedium;
+/** The row's vendor picker (`SupplierPicker`): who to offer, who is ticked. */
+type Picker = { supplyKey: string; vendors: VendorChoice[]; selected: string[] };
 type Action = (prev: FormState, fd: FormData) => Promise<FormState>;
 type PlainAction = (fd: FormData) => Promise<void>;
+type Actions = { update: Action; correct: Action; toggle: PlainAction; remove: PlainAction };
 
 /* The number is typed straight into the cell, spreadsheet style: no box of
    its own, no spinner arrows (they sat over the right-aligned digits and cut
@@ -52,8 +61,8 @@ export function StockTable({
   actions,
 }: {
   namespace: "admin.trays" | "admin.growMedia";
-  items: Array<{ item: Item; name: string | null }>;
-  actions: { update: Action; toggle: PlainAction; remove: PlainAction };
+  items: Array<{ item: Item; name: string | null; bills: number; picker: Picker }>;
+  actions: Actions;
 }) {
   const t = useTranslations(namespace);
 
@@ -78,12 +87,12 @@ export function StockTable({
           <thead>
             <tr className="bg-sand text-left">
               <Th className="w-64">{t("colItem")}</Th>
-              <Th className="w-24 text-right">{t("colCost")}</Th>
+              <Th className="w-32 text-right">{t("colCost")}</Th>
               <Th className="w-20 text-right">{t("colMarkup")}</Th>
               <Th className="w-20 text-right">{t("colRound")}</Th>
               <Th className="w-24 text-right">{t("colPrice")}</Th>
               <Th className="w-28 text-right">{t("colMargin")}</Th>
-              <Th className="w-20 text-right">{t("colStock")}</Th>
+              <Th className="w-36 text-right">{t("colStock")}</Th>
               {PACKING_FIELDS.map((f) => (
                 <Th key={f} className="w-20 text-right">
                   {t(`packingShort.${f}`)}
@@ -93,8 +102,16 @@ export function StockTable({
             </tr>
           </thead>
           <tbody>
-            {items.map(({ item, name }) => (
-              <Row key={item.id} namespace={namespace} item={item} name={name} actions={actions} />
+            {items.map(({ item, name, bills, picker }) => (
+              <Row
+                key={item.id}
+                namespace={namespace}
+                item={item}
+                name={name}
+                bills={bills}
+                picker={picker}
+                actions={actions}
+              />
             ))}
           </tbody>
         </table>
@@ -118,21 +135,21 @@ function Row({
   namespace,
   item,
   name,
+  bills,
+  picker,
   actions,
 }: {
   namespace: "admin.trays" | "admin.growMedia";
   item: Item;
   name: string | null;
-  actions: { update: Action; toggle: PlainAction; remove: PlainAction };
+  bills: number;
+  picker: Picker;
+  actions: Actions;
 }) {
   const t = useTranslations(namespace);
   const tc = useTranslations("admin.common");
   const [state, action, pending] = useActionState<FormState, FormData>(actions.update, IDLE);
-  /* Live, so the line under the name follows the figure being typed. */
-  const [typed, setTyped] = useState(String(item.stockPacks));
-  /* The raw text is the state, so the box shows exactly what was typed; a
-     blank must not read as 0, hence the empty check before `Number`. */
-  const stock = typed.trim() === "" ? NaN : Number(typed);
+  const stock = item.stockPacks;
   const formId = `stock-${item.id}`;
 
   const invalid = (field: string) => state.status === "error" && state.field === field;
@@ -168,15 +185,14 @@ function Row({
             {name ?? item.contentKey}
           </p>
           <code className="font-body text-[11px] text-stone">{item.contentKey}</code>
-          {Number.isInteger(stock) && stock >= 0 && (
-            <p className="mt-1 flex items-center gap-1.5 font-body text-[11px] text-stone">
-              <Truck aria-hidden size={12} strokeWidth={2} className="shrink-0" />
-              {stock === 0 ? t("stockNone") : t("stockLine", { count: stock })}
-            </p>
-          )}
+          <SupplierPicker {...picker} item={name ?? item.contentKey} />
+          <p className="mt-1 flex items-center gap-1.5 font-body text-[11px] text-stone">
+            <Truck aria-hidden size={12} strokeWidth={2} className="shrink-0" />
+            {stock === 0 ? t("stockNone") : t("stockLine", { count: stock })}
+          </p>
         </td>
-        <td className={`${CELL} p-0`}>
-          {input("cost", { "aria-label": t("colCost"), defaultValue: item.cost })}
+        <td className={`${CELL} px-3 py-2 text-right`}>
+          <CostCell cost={item.cost} source={item.costBill} />
         </td>
         {/* Every row carries its own markup and rounding — the 5 kg and the
             1 kg block (3 Oct 2026), and each tray pack (4 Oct 2026). Either
@@ -200,19 +216,13 @@ function Row({
         <td className={`${CELL} px-3 py-2 text-right font-body text-sm tabular-nums text-stone`}>
           {item.cost !== undefined
             ? t("marginValue", {
-                amount: item.price - item.cost,
+                amount: Math.round(item.price - item.cost),
                 percent: Math.round(((item.price - item.cost) / item.cost) * 100),
               })
             : "—"}
         </td>
-        <td className={`${CELL} p-0`}>
-          {input("stockPacks", {
-            "aria-label": t("colStock"),
-            min: 0,
-            step: 1,
-            value: typed,
-            onChange: (e) => setTyped(e.target.value),
-          })}
+        <td className={`${CELL} px-3 py-2`}>
+          <StockCount id={item.id} value={stock} unit="packs" correct={actions.correct} />
         </td>
         {PACKING_FIELDS.map((f) => (
           <td key={f} className={`${CELL} p-0`}>
@@ -239,29 +249,40 @@ function Row({
                 {state.status === "saved" && !pending ? t("savedRow") : t("save")}
               </button>
             </form>
-            <form action={actions.toggle}>
-              <input type="hidden" name="id" value={item.id} />
-              <button
-                className={`whitespace-nowrap rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
-                  item.active
-                    ? "bg-sage text-forest hover:bg-forest hover:text-cream"
-                    : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
-                }`}
-              >
-                {item.active ? t("colActive") : t("hidden")}
-              </button>
-            </form>
-            <form action={actions.remove}>
-              <input type="hidden" name="id" value={item.id} />
-              <ConfirmSubmit
-                label={tc("delete")}
-                title={t("deleteTitle")}
-                message={t("deleteConfirm")}
-                confirmLabel={tc("confirmDelete")}
-                cancelLabel={tc("cancel")}
-                className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
-              />
-            </form>
+            {/* Added from a bill not yet saved: priced at 0, so not offered. */}
+            {!item.active && item.cost === undefined ? (
+              <span className="whitespace-nowrap rounded-full bg-forest/10 px-3 py-1 font-body text-[11px] text-stone">
+                {t("needsBill")}
+              </span>
+            ) : (
+              <form action={actions.toggle}>
+                <input type="hidden" name="id" value={item.id} />
+                <button
+                  className={`whitespace-nowrap rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
+                    item.active
+                      ? "bg-sage text-forest hover:bg-forest hover:text-cream"
+                      : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
+                  }`}
+                >
+                  {item.active ? t("colActive") : t("hidden")}
+                </button>
+              </form>
+            )}
+            {bills > 0 ? (
+              <OnBills count={bills} />
+            ) : (
+              <form action={actions.remove}>
+                <input type="hidden" name="id" value={item.id} />
+                <ConfirmSubmit
+                  label={tc("delete")}
+                  title={t("deleteTitle")}
+                  message={t("deleteConfirm")}
+                  confirmLabel={tc("confirmDelete")}
+                  cancelLabel={tc("cancel")}
+                  className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
+                />
+              </form>
+            )}
           </div>
         </td>
       </tr>

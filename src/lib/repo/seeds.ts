@@ -1,7 +1,8 @@
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import type { EntityItem } from "electrodb";
 import { SeedEntity, SeedSettingsEntity } from "@/lib/db/entities";
-import { NO_MARGIN } from "@/lib/pricing/margin";
+import { NO_MARGIN, retailPrice } from "@/lib/pricing/margin";
+import type { ItemCost } from "@/lib/purchases/cost";
 import type { Margin, Seed } from "@/lib/types";
 
 type Row = EntityItem<typeof SeedEntity>;
@@ -14,6 +15,7 @@ function fromRow(r: Row): Seed {
     contentKey: r.contentKey,
     pricePer100g: r.pricePer100g ?? (r.pricePer50g ?? 0) * 2,
     ...(r.costPer100g !== undefined ? { costPer100g: r.costPer100g } : {}),
+    ...(r.costBill ? { costBill: r.costBill } : {}),
     stockGrams: r.stockGrams,
     active: r.active,
   };
@@ -31,10 +33,11 @@ function fromRow(r: Row): Seed {
  * (SPEC §4.3). Anything that displays a seed reads both and joins them with
  * `attachSeedContent`.
  *
- * `stockGrams` is the one field here that changes daily rather than monthly,
- * and it is written by the admin screen as an absolute figure — what the owner
- * counted — never as a delta. A paid order draws it down through
- * `takeFromShelf`, which is conditional; never through `putSeed`.
+ * `stockGrams` is the one field here that changes daily rather than monthly.
+ * It moves by deltas — a bill adds, an order or a sowing takes
+ * (`takeFromShelf`, conditional), a cancellation returns — and is set
+ * outright only by a stocktake (`setSeedStock`). Nothing writes it through
+ * `putSeed` but the creation of a row.
  */
 
 /** Every seed, ordered by content key — GSI1's sort key, so the order comes
@@ -75,9 +78,60 @@ export async function putSeed(s: Seed): Promise<void> {
     contentKey: s.contentKey,
     pricePer100g: s.pricePer100g,
     ...(s.costPer100g !== undefined ? { costPer100g: s.costPer100g } : {}),
+    ...(s.costBill ? { costBill: s.costBill } : {}),
     stockGrams: s.stockGrams,
     active: s.active,
   }).go();
+}
+
+/** Change a row's price or its active flag without touching the stock a
+ *  concurrent order may be taking. */
+export async function patchSeed(
+  id: string,
+  set: Partial<Pick<Seed, "pricePer100g" | "active">>,
+): Promise<void> {
+  await SeedEntity.patch({ id }).set(set).go();
+}
+
+/** A stocktake: the grams counted on the shelf, written outright. */
+export async function setSeedStock(id: string, grams: number): Promise<void> {
+  await SeedEntity.patch({ id }).set({ stockGrams: grams }).go();
+}
+
+/**
+ * Put a bill's cost on a seed and price it with the seeds margin
+ * (`costFromBills`). The first bill to cost a seed keeps the cost it had
+ * before, as `openingCost`, so that `null` — no bill names it any more — can
+ * put it back. A seed added from a bill has no cost to go back to, so it goes
+ * back to unpriced and hidden, as it was before the bill.
+ */
+export async function setSeedCost(contentKey: string, cost: ItemCost | null, margin: Margin): Promise<void> {
+  const { data } = await SeedEntity.query.byCatalogue({ contentKey }).go(LIST_OPTS);
+  const row = data[0];
+  if (!row) return;
+  if (cost) {
+    const opening = !row.costBill && row.costPer100g !== undefined ? { openingCost: row.costPer100g } : {};
+    await SeedEntity.patch({ id: row.id })
+      .set({
+        costPer100g: cost.cost,
+        pricePer100g: retailPrice(cost.cost, margin),
+        costBill: cost.source,
+        ...opening,
+      })
+      .go();
+  } else if (row.costBill) {
+    const opening = row.openingCost;
+    await (
+      opening !== undefined
+        ? SeedEntity.patch({ id: row.id }).set({
+            costPer100g: opening,
+            pricePer100g: retailPrice(opening, margin),
+          })
+        : SeedEntity.patch({ id: row.id }).set({ pricePer100g: 0, active: false }).remove(["costPer100g"])
+    )
+      .remove(["costBill", "openingCost"])
+      .go();
+  }
 }
 
 /**

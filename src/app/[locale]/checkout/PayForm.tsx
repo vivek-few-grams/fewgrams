@@ -18,6 +18,7 @@ import { openGateway } from "./open-gateway";
 import { PaymentConfirming } from "./PaymentConfirming";
 import { DeliveryPartners, type PartnerName } from "./DeliveryPartners";
 import { DeliveryRide } from "./DeliveryRide";
+import { BusinessGstin } from "./BusinessGstin";
 import { CHECKOUT_IDLE, choiceField, type CheckoutState, type DeliveryScan } from "./state";
 
 /** How long the delivery scan stays on screen at the least. */
@@ -334,7 +335,11 @@ export function PayForm({
             </div>
             {confirmed && total !== null && (
               <div className="flex items-baseline justify-between gap-4 py-3">
-                <dt className="font-body text-sm font-semibold text-forest">{t("total")}</dt>
+                <dt className="font-body text-sm font-semibold text-forest">
+                  {t("total")}
+                  {/* SPEC §26.1: prices include GST; the invoice breaks it out. */}
+                  <span className="block text-xs font-normal text-stone">{t("inclusive")}</span>
+                </dt>
                 <dd className="font-display text-2xl font-bold tabular-nums tracking-tight text-forest">
                   {tc("subtotalValue", { amount: total })}
                 </dd>
@@ -363,6 +368,7 @@ export function PayForm({
               {Object.entries(chosen).map(([parcel, option]) => (
                 <input key={parcel} type="hidden" name={choiceField(parcel)} value={option} />
               ))}
+              <BusinessGstin />
               {error && (
                 <p
                   role="alert"
@@ -389,17 +395,15 @@ export function PayForm({
       {/* The road scene hangs above the column, out of flow, so "Your order"
           starts on the same line as the delivery box. It is inside the
           sticky element so the two stay on screen together (`PinnedColumn`).
-
-          The height cap is on an inner box, not the aside: a sticky panel
-          taller than the window never shows its bottom, where the pay button
-          is. On the aside, `overflow` would also clip the scene.
+          No height cap: the card grows with the order, and a column taller
+          than the window is pinned by its bottom instead.
 
           The card is what is being bought and nothing else — the items and
           their total. Delivery, the grand total and the pay button are the
           payment step, in the left column. */}
       <PinnedColumn className="relative lg:self-start">
         <DeliveryRide className="absolute inset-x-0 bottom-full mb-3 hidden lg:block" />
-        <div className="pin-column__scroll co-card co-card--dark p-5 md:p-6">
+        <div className="co-card co-card--dark p-5 md:p-6">
           {summary}
           {dateLine && (
             <p className="mt-4 flex items-center gap-2.5 rounded-xl bg-cream/10 px-3.5 py-2.5 font-body text-[13px] text-cream/85">

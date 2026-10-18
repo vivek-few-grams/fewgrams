@@ -1,7 +1,8 @@
 import { paymentProvider, type PaymentProvider } from "@/lib/payments";
 import { settlementFor } from "@/lib/orders/order";
-import { nextSequence, recordPayment } from "@/lib/repo/orders";
-import { getSubscription, markSubscriptionPaid, setSubscriptionReceiptNo } from "@/lib/repo/subscriptions";
+import { drawInvoiceNo } from "@/lib/orders/settle";
+import { recordPayment } from "@/lib/repo/orders";
+import { getSubscription, markSubscriptionPaid, setSubscriptionInvoiceNo } from "@/lib/repo/subscriptions";
 import { firstDeliveryDate, istDateISO } from "@/lib/delivery-date";
 import { ROTATION_WEEKS } from "./weeks";
 import { shiftForCutoff, type Subscription } from "./subscription";
@@ -14,9 +15,9 @@ import { shiftForCutoff, type Subscription } from "./subscription";
  * **and** an attempt succeeded for exactly its total.
  *
  * Idempotent and race-safe for the same reason: `markSubscriptionPaid` is a
- * conditional write that returns true for one caller, and the receipt number
- * is drawn only behind it — from the same `receipt` sequence as orders, so
- * receipts stay one gapless series.
+ * conditional write that returns true for one caller, and the invoice number
+ * is drawn only behind it — from the same yearly series as orders, so
+ * invoices stay one gapless series (SPEC §26.3).
  */
 export async function settleSubscription(
   id: string,
@@ -50,6 +51,6 @@ export async function settleSubscription(
   );
   if (!(await markSubscriptionPaid(sub, now.toISOString(), deliveries))) return getSubscription(id);
 
-  await setSubscriptionReceiptNo(id, await nextSequence("receipt"));
+  await setSubscriptionInvoiceNo(id, await drawInvoiceNo(now));
   return getSubscription(id);
 }

@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, Truck } from "lucide-react";
 import { IDLE, type FormState } from "@/lib/forms";
+import { keepFields } from "@/lib/keep-fields";
 import type { Origin } from "@/lib/repo/shipping";
 import { SelectField, TextField } from "../fields";
 import { addVendor, saveVendorPickups } from "./actions";
@@ -58,7 +59,9 @@ export function VendorPickupPanel({
         <p className="mt-4 font-body text-sm text-terracotta">{e("noSettings")}</p>
       ) : (
         <>
-          <form action={save} className="mt-4">
+          {/* Controlled, so submitted without React's form reset (`keepFields`),
+              which would show each dropdown's first value after a save. */}
+          <form action={save} onSubmit={keepFields(save)} className="mt-4">
             <div className="grid gap-x-6 gap-y-3 sm:grid-cols-[1fr_22rem]">
               {items.map((it) => (
                 <div key={it.item} className="contents">

@@ -7,10 +7,16 @@
  *   node --env-file=.env.local scripts/seeds-fill.mjs --reset-stock   # also set stock
  *
  * **This is a script and not a button**, for the same reason as
- * `racks-fill.mjs`: adding one seed is a three-field form on /admin/seeds, and
- * loading eighteen rows off a PDF is a data job. The owner's instruction on 17
- * Sep 2026 was to keep the admin screens to the minimum controls, with bulk
- * work done directly against the database.
+ * `racks-fill.mjs`: loading eighteen rows off a PDF is a data job. The owner's
+ * instruction on 17 Sep 2026 was to keep the admin screens to the minimum
+ * controls, with bulk work done directly against the database.
+ *
+ * **Opening costs only, since 18 Oct 2026.** A seed's cost now comes from the
+ * latest purchase bill it is on (SPEC §26.6); these are the costs of the stock
+ * bought before GST registration, which has no bill in the books. A row whose
+ * cost a bill has set (`costBill`) is skipped — the bill wins. On 18 Oct 2026
+ * the owner chose these invoice costs over the ₹55 typed for mustard, radish,
+ * spinach and sunflower.
  *
  * ## Costs, from the vendor's invoice of 26 Aug 2026
  *
@@ -148,6 +154,10 @@ async function main() {
 
   for (const { key, listed, perKg } of PRICE_LIST) {
     const prior = existing.get(key);
+    if (prior?.costBill) {
+      console.log(`${key.padEnd(16)} skip    costed by bill ${prior.costBill.number}`);
+      continue;
+    }
     const cost = perKg === null ? prior?.costPer100g : costPer100g(perKg);
     const priorPrice = prior?.pricePer100g ?? (prior?.pricePer50g ?? 0) * 2;
     if (cost === undefined) {
@@ -158,7 +168,20 @@ async function main() {
         continue;
       }
     }
+    /* The rest of the row as stored — a put replaces it, so anything this
+       script does not own (a vendor link, a future field) must ride along. */
+    const {
+      PK: _pk,
+      SK: _sk,
+      GSI1PK: _g1,
+      GSI1SK: _g2,
+      __edb_e__: _e,
+      __edb_v__: _v,
+      pricePer50g: _old,
+      ...kept
+    } = prior ?? {};
     const row = {
+      ...kept,
       id: prior?.id ?? randomUUID(),
       contentKey: key,
       pricePer100g: cost === undefined ? priorPrice : retailPrice(cost, margin),

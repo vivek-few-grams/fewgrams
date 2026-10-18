@@ -4,7 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { formatPhone } from "@/lib/account/validation";
 import { firstDeliveryDate, formatDeliveryDate, fromIstDateISO, istDateISO } from "@/lib/delivery-date";
-import { formatReceiptNo } from "@/lib/orders/order";
+import { documentNo } from "@/lib/orders/order";
 import { GATEWAY_LABEL } from "@/lib/payments/provider";
 import { getSubscription } from "@/lib/repo/subscriptions";
 import {
@@ -17,6 +17,8 @@ import {
   subscriptionState,
   undeliveredSaturdays,
 } from "@/lib/subscriptions/subscription";
+import { subscriptionInvoice } from "@/components/tax/docs";
+import { PrintDoc } from "@/components/tax/TaxDocument";
 import { StepSubmit } from "../../orders/StepSubmit";
 import { cancelSubscription, pauseSubscription, resumeSubscription, skipSaturday } from "../actions";
 import { requireRole } from "@/lib/auth/guard";
@@ -38,6 +40,8 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
   if (!sub) notFound();
 
   const t = await getTranslations("admin.subscriptions");
+  /* SPEC §26.3 — straight to the print dialog, as on the customer's page. */
+  const invoice = await subscriptionInvoice(sub);
   const format = await getFormatter();
   const now = new Date();
   const today = istDateISO(now);
@@ -64,9 +68,7 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
       <section className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between md:gap-8">
         <div className="min-w-0">
           <p className="font-body text-xs uppercase tracking-wider text-stone">{sub.id}</p>
-          <h1 className="mt-1 font-display text-2xl font-bold text-forest">
-            {sub.receiptNo !== null ? formatReceiptNo(sub.receiptNo) : sub.id}
-          </h1>
+          <h1 className="mt-1 font-display text-2xl font-bold text-forest">{documentNo(sub) ?? sub.id}</h1>
           <p className="mt-2 font-body text-sm text-forest">
             {t(`state.${state}`)}
             {sub.paidAt &&
@@ -80,7 +82,10 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
           >
             {t("detail.back")}
           </Link>
-          <div className="flex flex-wrap gap-2">
+          {/* One row, as on the order page (the owner, 18 Oct 2026): the bill,
+              then the moves. */}
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-3 md:justify-end">
+            {invoice && <PrintDoc {...invoice} id="invoice" label={t("detail.invoice")} />}
             {canResume && (
               <form action={resumeSubscription}>
                 <input type="hidden" name="id" value={sub.id} />

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
+import { keepFields } from "@/lib/keep-fields";
 import type { PipeRackModel, PipeSize, RackSettings } from "@/lib/types";
 import { addPipeRack, removePipeRack, republishPipeRack, togglePipeRack } from "./actions";
 import { CheckField, SelectField } from "../fields";
@@ -290,7 +291,23 @@ function AddPipeRackForm({
      than being offered and then rejected. The action re-checks it anyway,
      because a server action is reachable without its form. */
   const heights = settings.heightsFt.filter((h) => h <= maxHeightFt);
-  const [heightFt, setHeightFt] = useState(heights[heights.length - 1] ?? maxHeightFt);
+  /* Every field controlled, submitted without React's form reset
+     (`keepFields`): the reset put the height dropdown back to the value
+     it started with while state kept the choice, so the shelves shown and the height
+     posted disagreed. A refused add keeps what was picked; a saved one goes
+     back to the defaults, as the reset used to. */
+  const blank = {
+    heightFt: heights[heights.length - 1] ?? maxHeightFt,
+    pipeSizeId: sizes[0]?.id ?? "",
+    active: true,
+  };
+  const [v, setV] = useState(blank);
+  const heightFt = v.heightFt;
+  const [seen, setSeen] = useState(state);
+  if (state !== seen) {
+    setSeen(state);
+    if (state.status === "saved") setV(blank);
+  }
 
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field
@@ -303,13 +320,17 @@ function AddPipeRackForm({
   const shelves = Math.max(0, Math.floor(heightFt) - 1);
 
   return (
-    <form action={action} className="rounded-xl border border-dashed border-forest/25 p-4">
+    <form
+      action={action}
+      onSubmit={keepFields(action)}
+      className="rounded-xl border border-dashed border-forest/25 p-4"
+    >
       <div className="grid items-end gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <SelectField
           label={t("height")}
           name="heightFt"
           value={String(heightFt)}
-          onChange={(e) => setHeightFt(Number(e.target.value))}
+          onChange={(e) => setV((x) => ({ ...x, heightFt: Number(e.target.value) }))}
           options={heights.map((h) => ({ value: String(h), label: String(h) }))}
           error={errorFor("heightFt")}
         />
@@ -327,6 +348,8 @@ function AddPipeRackForm({
         <SelectField
           label={t("size")}
           name="pipeSizeId"
+          value={v.pipeSizeId}
+          onChange={(e) => setV((x) => ({ ...x, pipeSizeId: e.target.value }))}
           options={sizes.map((s) => ({
             value: s.id,
             /* The leg count is in the option label because it is what makes
@@ -353,7 +376,12 @@ function AddPipeRackForm({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-4">
-        <CheckField label={t("liveLabel")} name="active" defaultChecked />
+        <CheckField
+          label={t("liveLabel")}
+          name="active"
+          checked={v.active}
+          onChange={(e) => setV((x) => ({ ...x, active: e.target.checked }))}
+        />
         {state.status === "error" && !state.field && (
           <p className="font-body text-[11px] text-terracotta">
             {t(`errors.${state.code}`, state.values ?? {})}

@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
+import { keepFields } from "@/lib/keep-fields";
 import type { AngleGrade, AngleRackModel, FrameSize, RackSettings } from "@/lib/types";
 import { addAngleRack, removeAngleRack, republishAngleRack, toggleAngleRack } from "./actions";
 import { Swatch } from "../racks/ColourSelect";
@@ -287,7 +288,24 @@ function AddAngleRackForm({
   const [state, action, pending] = useActionState<FormState, FormData>(addAngleRack, IDLE);
 
   const heights = settings.heightsFt;
-  const [heightFt, setHeightFt] = useState(heights[heights.length - 1] ?? 6);
+  /* Every field controlled, submitted without React's form reset
+     (`keepFields`): the reset put the height dropdown back to the value
+     it started with while state kept the choice, so the shelves shown and the height
+     posted disagreed. A refused add keeps what was picked; a saved one goes
+     back to the defaults, as the reset used to. */
+  const blank = {
+    heightFt: heights[heights.length - 1] ?? 6,
+    frameId: frames[0]?.id ?? "",
+    angleId: angles[0]?.id ?? "",
+    active: true,
+  };
+  const [v, setV] = useState(blank);
+  const heightFt = v.heightFt;
+  const [seen, setSeen] = useState(state);
+  if (state !== seen) {
+    setSeen(state);
+    if (state.status === "saved") setV(blank);
+  }
 
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field
@@ -300,13 +318,17 @@ function AddAngleRackForm({
   const shelves = Math.max(0, Math.floor(heightFt) - 1);
 
   return (
-    <form action={action} className="rounded-xl border border-dashed border-forest/25 p-4">
+    <form
+      action={action}
+      onSubmit={keepFields(action)}
+      className="rounded-xl border border-dashed border-forest/25 p-4"
+    >
       <div className="grid items-end gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <SelectField
           label={t("height")}
           name="heightFt"
           value={String(heightFt)}
-          onChange={(e) => setHeightFt(Number(e.target.value))}
+          onChange={(e) => setV((x) => ({ ...x, heightFt: Number(e.target.value) }))}
           options={heights.map((h) => ({ value: String(h), label: String(h) }))}
           error={errorFor("heightFt")}
         />
@@ -324,6 +346,8 @@ function AddAngleRackForm({
         <SelectField
           label={t("frame")}
           name="frameId"
+          value={v.frameId}
+          onChange={(e) => setV((x) => ({ ...x, frameId: e.target.value }))}
           options={frames.map((f) => ({
             value: f.id,
             label: t("frameOption", {
@@ -337,6 +361,8 @@ function AddAngleRackForm({
         <SelectField
           label={t("angle")}
           name="angleId"
+          value={v.angleId}
+          onChange={(e) => setV((x) => ({ ...x, angleId: e.target.value }))}
           options={angles.map((a) => ({
             value: a.id,
             label: t("angleOption", { thickness: a.thicknessMm, rate: a.ratePerFt }),
@@ -356,7 +382,12 @@ function AddAngleRackForm({
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-4">
-        <CheckField label={t("liveLabel")} name="active" defaultChecked />
+        <CheckField
+          label={t("liveLabel")}
+          name="active"
+          checked={v.active}
+          onChange={(e) => setV((x) => ({ ...x, active: e.target.checked }))}
+        />
         {state.status === "error" && !state.field && (
           <p className="font-body text-[11px] text-terracotta">
             {t(`errors.${state.code}`, state.values ?? {})}

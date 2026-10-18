@@ -15,7 +15,12 @@
  */
 export type FormState =
   | { status: "idle" }
-  | { status: "saved" }
+  | {
+      status: "saved";
+      /** Something the save did that the person should know — a key and its
+       *  arguments, like an error. */
+      notice?: { code: string; values?: Record<string, string> };
+    }
   | {
       status: "error";
       code: string;

@@ -1,4 +1,5 @@
 import { brand } from "@/lib/brand";
+import { BUSINESS } from "@/lib/content/legal";
 import type {
   BookingInput,
   BookingResult,
@@ -135,7 +136,6 @@ export class DelhiveryProvider implements ShippingProvider {
   async book(input: BookingInput): Promise<BookingResult> {
     assertPin(input.pickup.pincode);
     assertPin(input.drop.pincode);
-    const gstin = process.env.SELLER_GSTIN;
     const data = {
       pickup_location: { name: input.pickup.name },
       shipments: [
@@ -158,7 +158,7 @@ export class DelhiveryProvider implements ShippingProvider {
             .slice(0, 200),
           quantity: String(input.items.reduce((n, i) => n + i.units, 0)),
           seller_name: brand.name,
-          ...(gstin ? { seller_gst_tin: gstin } : {}),
+          seller_gst_tin: BUSINESS.gstin,
           weight: String(input.grams),
           shipment_length: input.box.length,
           shipment_width: input.box.width,

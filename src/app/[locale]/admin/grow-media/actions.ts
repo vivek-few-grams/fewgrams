@@ -2,20 +2,22 @@
 
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
-import { deleteGrowMedium, getGrowMedium, listGrowMedia, putGrowMedium } from "@/lib/repo/grow-media";
-import { NO_MARGIN, retailPrice } from "@/lib/pricing/margin";
-import { isValidContentKey } from "@/lib/content/content-key";
-import { count, err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
+import { isOnABill } from "@/lib/repo/purchases";
+import { forgetSupply } from "@/lib/repo/vendors";
+import { deleteGrowMedium, getGrowMedium, patchGrowMedium, setGrowMediumStock } from "@/lib/repo/grow-media";
+import { marginOf, retailPrice } from "@/lib/pricing/margin";
+import { count, err, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
 import { isValidStockPacks } from "@/lib/grow-media/lead-time";
 import type { GrowMedium } from "@/lib/types";
 
 /**
  * Grow media mutations — SPEC §24.4. The tray actions (`../trays/actions.ts`)
- * with the grow-media repository and lead-time bounds swapped in; the
- * reasoning for every rule is written out there.
+ * with the grow-media repository and stock bounds swapped in; the reasoning
+ * for every rule is written out there — including why a block is added and
+ * costed from a purchase bill, not here (18 Oct 2026).
  *
  * Every action asserts the admin role itself (SPEC §8), and **nothing here
- * accepts text** — the only identifier taken is a content key.
+ * accepts text**.
  */
 
 /** Public pages that change when this catalogue does. */
@@ -27,86 +29,20 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
 }
 
-/** The cost, its margin, the price and the blocks held, plus active. */
-type Ops = Pick<
-  GrowMedium,
-  "price" | "stockPacks" | "active" | "cost" | "markupPercent" | "roundUpToNearest"
->;
-
-/**
- * The selling price is **worked out, never typed** (the owner, 3 Oct 2026:
- * "sell price is based on cost + margin"): `retailPrice(cost, margin)`, with
- * this pack's own markup and rounding (the owner: "keep separate margin for
- * 5kg and 1 kg"). So the cost is required. A blank markup or rounding prices
- * at cost to the rupee (`NO_MARGIN`), never at a figure nobody chose.
- */
-function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
-  const cost = money(fd, "cost");
-  if (cost === null) return { ok: false, state: err("costInvalid", "cost") };
-
+/** The row's own markup and rounding (the owner, 4 Oct 2026). Blank prices
+ *  at cost to the rupee (`NO_MARGIN`). */
+function readMargin(
+  fd: FormData,
+):
+  | { ok: true; value: Pick<GrowMedium, "markupPercent" | "roundUpToNearest"> }
+  | { ok: false; state: FormState } {
   const markupRaw = String(fd.get("markupPercent") ?? "").trim();
   const markupPercent = markupRaw === "" ? undefined : zeroOrMore(fd, "markupPercent");
   if (markupPercent === null) return { ok: false, state: err("zeroOrMore", "markupPercent") };
   const roundRaw = String(fd.get("roundUpToNearest") ?? "").trim();
   const roundUpToNearest = roundRaw === "" ? undefined : count(fd, "roundUpToNearest");
   if (roundUpToNearest === null) return { ok: false, state: err("countInvalid", "roundUpToNearest") };
-
-  const price = retailPrice(cost, {
-    markupPercent: markupPercent ?? NO_MARGIN.markupPercent,
-    roundUpToNearest: roundUpToNearest ?? NO_MARGIN.roundUpToNearest,
-  });
-
-  /* The tray rule — see `trays/actions.ts`. */
-  const stockPacks = zeroOrMore(fd, "stockPacks");
-  if (stockPacks === null || !isValidStockPacks(stockPacks)) {
-    return { ok: false, state: err("stockInvalid", "stockPacks") };
-  }
-
-  return {
-    ok: true,
-    value: {
-      price,
-      stockPacks,
-      active: fd.get("active") === "on",
-      cost,
-      ...(markupPercent !== undefined ? { markupPercent } : {}),
-      ...(roundUpToNearest !== undefined ? { roundUpToNearest } : {}),
-    },
-  };
-}
-
-/**
- * Create an item from a content key. The content file is not a precondition,
- * exactly as for a tray: the admin row is flagged in red until it exists, and
- * the public page skips an item it cannot name. The id is a generated UUID,
- * never derived from the key.
- */
-export async function addGrowMedium(_prev: FormState, fd: FormData): Promise<FormState> {
-  await assertRole("admin");
-
-  const contentKey = String(fd.get("contentKey") ?? "")
-    .trim()
-    .toLowerCase();
-  if (!contentKey) return err("keyRequired", "contentKey");
-
-  /* Validated rather than sanitised: the key is a filename, so quietly
-     rewriting it would break the link between this row and the file the
-     operator is about to create. */
-  if (!isValidContentKey(contentKey)) return err("keyInvalid", "contentKey", { key: contentKey });
-
-  /* One row per key — the key is the GSI1 sort key, so two rows sharing one
-     would make the pair indistinguishable in every list. Checked against
-     *grow media* only: this folder is its own namespace (SPEC §24.2). */
-  const existing = await listGrowMedia();
-  if (existing.some((t) => t.contentKey === contentKey))
-    return err("keyTaken", "contentKey", { key: contentKey });
-
-  const ops = readOps(fd);
-  if (!ops.ok) return ops.state;
-
-  await putGrowMedium({ id: crypto.randomUUID(), contentKey, ...ops.value });
-  refresh();
-  return { status: "saved" };
+  return { ok: true, value: { markupPercent, roundUpToNearest } };
 }
 
 const PACKING = [
@@ -140,9 +76,9 @@ function readPacking(fd: FormData): { ok: true; value: Partial<Packing> } | { ok
   return { ok: true, value };
 }
 
-/** Update the price, the lead time and the packing on an existing item. The
- *  key and id never change here — re-keying means renaming the content file
- *  and is a rename, not an edit. */
+/** Save the margin and the packing, and reprice from the cost the bills set.
+ *  The key and id never change here — re-keying means renaming the content
+ *  file and is a rename, not an edit. */
 export async function updateGrowMedium(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
 
@@ -150,36 +86,61 @@ export async function updateGrowMedium(_prev: FormState, fd: FormData): Promise<
   const current = id ? await getGrowMedium(id) : null;
   if (!current) return err("notFound");
 
-  const ops = readOps(fd);
-  if (!ops.ok) return ops.state;
+  const margin = readMargin(fd);
+  if (!margin.ok) return margin.state;
   const packing = readPacking(fd);
   if (!packing.ok) return packing.state;
 
-  /* Packing replaces rather than merges: clearing all six fields is how an
-     owner says "re-measure this", and a merge would keep the old figures. */
-  /* The margin is dropped with the packing so that blanking a field clears
-     it rather than keeping a figure nobody can see. */
-  const cleared: readonly string[] = [...PACKING, "cost", "markupPercent", "roundUpToNearest"];
-  const rest = Object.fromEntries(
-    Object.entries(current).filter(([k]) => !cleared.includes(k)),
-  ) as GrowMedium;
-  await putGrowMedium({ ...rest, ...ops.value, ...packing.value });
+  /* Packing and margin replace rather than merge: a blank field clears its
+     figure, which is how an owner says "re-measure this" — so a field left
+     blank is removed, not kept. */
+  const set = { ...margin.value, ...packing.value };
+  const blank = ([...PACKING, "markupPercent", "roundUpToNearest"] as const).filter(
+    (k) => set[k] === undefined,
+  );
+  const filled = Object.fromEntries(Object.entries(set).filter(([, v]) => v !== undefined));
+  /* No cost yet — added from a bill not saved — keeps its price of 0. */
+  const price =
+    current.cost === undefined ? current.price : retailPrice(current.cost, marginOf(margin.value));
+  await patchGrowMedium(current.id, { ...filled, price }, blank);
   refresh();
   return { status: "saved" };
 }
 
-/** Hide an item without losing its price or its lead time — the only way
- *  something leaves this shelf, since nothing here is ever out of stock. */
+/** A stocktake — the blocks counted. Zero is a real count; an empty field is
+ *  not. */
+export async function correctGrowMediumStock(_prev: FormState, fd: FormData): Promise<FormState> {
+  await assertRole("admin");
+  const medium = await getGrowMedium(String(fd.get("id") ?? ""));
+  if (!medium) return err("notFound");
+  const packs = zeroOrMore(fd, "count");
+  if (packs === null || !isValidStockPacks(packs)) return err("packsInvalid", "count");
+  await setGrowMediumStock(medium.id, packs);
+  refresh();
+  return { status: "saved" };
+}
+
+/** Hide an item without losing its price — the only way something leaves
+ *  this shelf. **Not switched on before a bill has costed it**: a row added
+ *  from a bill is priced at 0 until that bill is saved. */
 export async function toggleGrowMediumActive(fd: FormData): Promise<void> {
   await assertRole("admin");
   const existing = await getGrowMedium(String(fd.get("id")));
   if (!existing) throw new Error("Grow medium not found");
-  await putGrowMedium({ ...existing, active: !existing.active });
+  if (!existing.active && existing.cost === undefined) return;
+  await patchGrowMedium(existing.id, { active: !existing.active });
   refresh();
 }
 
 export async function removeGrowMedium(fd: FormData): Promise<void> {
   await assertRole("admin");
-  await deleteGrowMedium(String(fd.get("id")));
+  const id = String(fd.get("id"));
+  const row = await getGrowMedium(id);
+  /* Its screen offers no Delete while a bill names it; this is for a
+     request made without the screen. */
+  if (row && (await isOnABill(`media:${row.contentKey}`)))
+    throw new Error("This grow medium is on a purchase bill");
+  await deleteGrowMedium(id);
+  if (row) await forgetSupply(`media:${row.contentKey}`);
   refresh();
 }
