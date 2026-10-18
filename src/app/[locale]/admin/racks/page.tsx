@@ -11,6 +11,7 @@ import { SeedButton } from "./SeedButton";
 import { VendorPickupSection } from "../vendor-pickup/VendorPickupSection";
 import { SHELF_RACK_ITEM } from "@/lib/shipping/origin";
 import { requireRole } from "@/lib/auth/guard";
+import { SupplierSection } from "../vendors/SupplierSection";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,8 @@ export default async function RacksAdmin() {
           <SeedButton label={t("seedCta")} />
         </section>
       )}
+
+      <SupplierSection supplies={["rack:shelf"]} />
 
       <section className="rounded-2xl border border-forest/15 p-6">
         <h2 className="font-display text-lg font-semibold text-forest">{t("ratesTitle")}</h2>

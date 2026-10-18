@@ -7,10 +7,8 @@ import { routing } from "@/i18n/routing";
 import { SignInOptions } from "@/components/auth/SignInOptions";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { lineId } from "@/lib/cart/cart";
-import type { CartItem } from "@/lib/cart/server";
 import { lineUnits } from "@/lib/cart/line-display";
 import { hydrateCart } from "@/lib/cart/server";
-import { formatDeliveryDate, istDateISO } from "@/lib/delivery-date";
 import { GATEWAY_LABEL, paymentProvider } from "@/lib/payments";
 import { shippingProviders } from "@/lib/shipping";
 import { travelsOnOwnRun } from "@/lib/shipping/parcel";
@@ -111,13 +109,9 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
     );
   }
 
-  /* A cart whose lines are ready on different days is grouped by that day
-     (the owner, 24 Sep 2026): the customer sees what is ready when and why,
-     instead of a single "everything arrives" date the cart used to state
-     before any courier was chosen. Each parcel leaves once what is in it is
-     ready; the arrival is under the card once partners are picked
-     (`PayForm`). */
-  const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
+  /* One flat list, with no "ready" day per line (the owner, 18 Oct 2026: a
+     customer wants the day it arrives, not the day we hand it over). That
+     date is under the card once partners are picked (`PayForm`). */
   const reachable = splitByArea(cart.items, false);
   const line = (item: (typeof cart.items)[number]) => (
     <li key={lineId(item)} className="flex items-center justify-between gap-4 border-b border-cream/15 py-3">
@@ -149,7 +143,6 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
      and so which delivery charge — is chosen. */
   const summaryFor = (inArea: boolean) => {
     const { kept: items, setAside } = splitByArea(cart.items, inArea);
-    const groups = readyGroups(items);
     const subtotal = items.reduce((sum, i) => sum + i.lineTotal, 0);
     /* Keyed because the page hands `PayForm` two of these, one for each kind
        of address, and it swaps them in one slot: without a key React logs a
@@ -162,24 +155,7 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
         <p className="mt-1 font-body text-sm text-cream/70">
           {t("summaryLine", { count: items.length, amount: subtotal })}
         </p>
-        {groups.length > 1 ? (
-          <div className="mt-4 border-t border-cream/15">
-            {groups.map((g) => (
-              <div key={g.iso} className="border-b border-cream/15 pb-1 pt-3">
-                <p className="flex flex-wrap items-baseline gap-x-2 font-body text-[11px] uppercase tracking-widest text-cream/60">
-                  <span className="font-semibold text-cream">
-                    {t("groupReady", { date: formatDeliveryDate(g.date, dateLocale) })}
-                  </span>
-                  <span>{g.reasons.map((r) => t(r)).join(" · ")}</span>
-                </p>
-                <ul className="[&>li:last-child]:border-b-0">{g.items.map(line)}</ul>
-              </div>
-            ))}
-            <p className="pt-3 font-body text-xs leading-relaxed text-cream/65">{t("groupsNote")}</p>
-          </div>
-        ) : (
-          <ul className="mt-4 border-t border-cream/15">{items.map(line)}</ul>
-        )}
+        <ul className="mt-4 border-t border-cream/15">{items.map(line)}</ul>
         <div className="flex items-baseline justify-between gap-4 pt-4">
           <span className="font-body text-sm font-semibold text-cream">{t("itemsTotal")}</span>
           <span className="font-display text-xl font-bold tabular-nums text-cream">
@@ -383,29 +359,4 @@ function Notice({
       )}
     </div>
   );
-}
-
-/**
- * The cart's lines by the day each is ready, earliest first, with the reasons
- * that day is what it is. Keyed on the kind first and the line's sourcing
- * second — shelf or brought in — for the kinds we hold.
- */
-function readyGroups(items: readonly CartItem[]) {
-  const byDay = new Map<string, { iso: string; date: Date; items: CartItem[]; reasons: string[] }>();
-  for (const item of items) {
-    const iso = istDateISO(item.readyDate);
-    const g = byDay.get(iso) ?? { iso, date: item.readyDate, items: [], reasons: [] };
-    const reason =
-      item.kind === "variety"
-        ? "reasonGrow"
-        : item.kind === "rack"
-          ? "reasonBuild"
-          : item.sourcing === "shelf"
-            ? "reasonShelf"
-            : "reasonOrdered";
-    if (!g.reasons.includes(reason)) g.reasons.push(reason);
-    g.items.push(item);
-    byDay.set(iso, g);
-  }
-  return [...byDay.values()].sort((a, b) => a.date.getTime() - b.date.getTime());
 }

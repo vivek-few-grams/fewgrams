@@ -30,6 +30,12 @@ import {
   SowingEntity,
   SubscriptionEntity,
   VarietyEntity,
+  VendorEntity,
+  PurchaseBillEntity,
+  BillFileChunkEntity,
+  Gstr2bEntity,
+  GstPaymentEntity,
+  GstFilingEntity,
 } from "@/lib/db/entities";
 
 /**
@@ -907,5 +913,85 @@ describe("sowing log keys — /admin/sowing", () => {
     const params = SowingEntity.query.byDate({}).params({ ...LIST_OPTS, order: "desc" });
     expect(params.IndexName).toBe("GSI1");
     expect(params.ScanIndexForward).toBe(false);
+  });
+});
+
+describe("GST books keys — SPEC §26.5, §26.6", () => {
+  const heads = { igst: 0, cgst: 0, sgst: 0 };
+
+  it("keeps every GST record in the orders table", () => {
+    const tables = [
+      VendorEntity.put({
+        id: "v1",
+        name: "V",
+        kind: "registered",
+        filing: "monthly",
+        active: true,
+        createdAt: "x",
+        updatedAt: "x",
+      }),
+      GstFilingEntity.put({ quarter: "2627-Q3", updatedAt: "x" }),
+    ].map((q) => q.params().TableName);
+    expect(tables).toEqual([TABLES.orders, TABLES.orders]);
+  });
+
+  it("writes a vendor at VENDOR#<id>, listed under GSI1 VENDOR", () => {
+    const { Item } = VendorEntity.put({
+      id: "v1",
+      name: "V",
+      kind: "registered",
+      filing: "monthly",
+      active: true,
+      createdAt: "x",
+      updatedAt: "x",
+    }).params();
+    expect([Item.PK, Item.SK, Item.GSI1PK, Item.GSI1SK]).toEqual(["VENDOR#v1", "META", "VENDOR", "v1"]);
+  });
+
+  it("writes a bill at PURCHASE#<id>, dated under GSI1 PURCHASE", () => {
+    const { Item } = PurchaseBillEntity.put({
+      id: "b1",
+      vendor: { id: "v1", name: "V", kind: "registered" },
+      number: "1",
+      date: "2026-10-20",
+      reverseCharge: false,
+      lines: [],
+      createdAt: "x",
+      updatedAt: "x",
+    }).params();
+    expect([Item.PK, Item.SK, Item.GSI1PK, Item.GSI1SK]).toEqual([
+      "PURCHASE#b1",
+      "META",
+      "PURCHASE",
+      "2026-10-20#b1",
+    ]);
+  });
+
+  it("pads a bill file's chunks so they sort in order", () => {
+    const { Item } = BillFileChunkEntity.put({ billId: "b1", n: 7, data: "x" }).params();
+    expect([Item.PK, Item.SK]).toEqual(["BILLFILE#b1", "CHUNK#007"]);
+  });
+
+  it("keys a GSTR-2B by month, a payment by month and a filing by quarter", () => {
+    expect(
+      Gstr2bEntity.put({
+        month: "2026-10",
+        gstin: "g",
+        fileName: "f",
+        uploadedAt: "x",
+        invoices: [],
+      }).params().Item.PK,
+    ).toBe("GSTR2B#2026-10");
+    const pay = GstPaymentEntity.put({
+      id: "p1",
+      month: "2026-10",
+      paidOn: "d",
+      reference: "r",
+      heads,
+      createdAt: "x",
+    }).params().Item;
+    expect([pay.PK, pay.GSI1PK, pay.GSI1SK]).toEqual(["GSTPAY#p1", "GSTPAY", "2026-10#p1"]);
+    const filing = GstFilingEntity.put({ quarter: "2627-Q3", updatedAt: "x" }).params().Item;
+    expect([filing.PK, filing.GSI1PK, filing.GSI1SK]).toEqual(["GSTFILING#2627-Q3", "GSTFILING", "2627-Q3"]);
   });
 });

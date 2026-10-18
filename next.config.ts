@@ -6,6 +6,16 @@ const nextConfig: NextConfig = {
   /* No `X-Powered-By: Next.js` — it tells a scanner which exploits to try. */
   poweredByHeader: false,
 
+  /**
+   * A purchase bill carries its PDF or photo through a server action (SPEC
+   * §26.6), capped at 3 MB by `BILL_FILE_MAX`; the default 1 MB would refuse
+   * most phone photos. 4 MB leaves room for the form's own fields and the
+   * multipart boundaries, and stays under the Lambda's 6 MB request limit.
+   */
+  experimental: {
+    serverActions: { bodySizeLimit: "4mb" },
+  },
+
   /* CSP, Permissions-Policy and COOP — src/lib/security-headers.ts. */
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders(process.env.NODE_ENV !== "production") }];

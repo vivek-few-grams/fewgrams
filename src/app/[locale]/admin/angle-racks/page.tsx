@@ -13,6 +13,7 @@ import { FrameTable } from "./FrameTable";
 import { SharedRates } from "./SharedRates";
 import { MarginForm } from "../racks/MarginForm";
 import { requireRole } from "@/lib/auth/guard";
+import { SupplierSection } from "../vendors/SupplierSection";
 
 export const dynamic = "force-dynamic";
 
@@ -71,6 +72,8 @@ export default async function AngleRacksAdmin() {
           <p className="font-body text-sm text-stone">{t("introShared")}</p>
         </div>
       </section>
+
+      <SupplierSection supplies={["rack:angle"]} />
 
       <section className="rounded-2xl border border-forest/15 bg-sand/40 p-6">
         <h2 className="font-display text-lg font-semibold text-forest">{t("ratesTitle")}</h2>

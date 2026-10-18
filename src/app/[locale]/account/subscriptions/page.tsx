@@ -2,7 +2,7 @@ import { getFormatter, getTranslations, setRequestLocale } from "next-intl/serve
 import { CalendarDays } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
-import { formatReceiptNo } from "@/lib/orders/order";
+import { documentNo } from "@/lib/orders/order";
 import { formatDeliveryDate, fromIstDateISO, istDateISO } from "@/lib/delivery-date";
 import { getSubscription, listSubscriptionsForUser } from "@/lib/repo/subscriptions";
 import {
@@ -11,6 +11,8 @@ import {
   subscriptionState,
   type Subscription,
 } from "@/lib/subscriptions/subscription";
+import { subscriptionInvoice } from "@/components/tax/docs";
+import { PrintDoc } from "@/components/tax/TaxDocument";
 import { Card } from "../ui";
 
 export const dynamic = "force-dynamic";
@@ -49,6 +51,11 @@ export default async function SubscriptionsPage({
     paidId ? getSubscription(paidId) : Promise.resolve(null),
   ]);
   const landed = justPaid && justPaid.userId === actor.userId ? justPaid : null;
+  /* Each paid one's bill of supply rides on the page, out of sight until its
+     button prints it (the owner, 18 Oct 2026). */
+  const invoices = new Map(
+    await Promise.all(subs.map(async (s) => [s.id, await subscriptionInvoice(s)] as const)),
+  );
   const today = istDateISO(new Date());
   const money = (n: number) =>
     format.number(n, { style: "currency", currency: "INR", maximumFractionDigits: 0 });
@@ -63,9 +70,14 @@ export default async function SubscriptionsPage({
               {sub.lines.map((l) => t("planTimes", { plan: l.name, count: l.boxes })).join(" + ")}
             </p>
             <p className="mt-0.5 font-body text-xs text-stone">
-              {sub.receiptNo !== null ? formatReceiptNo(sub.receiptNo) : sub.id} ·{" "}
-              {t("boxesPerWeek", { count: boxesPerWeek(sub) })} · {money(sub.total)}
+              {documentNo(sub) ?? sub.id} · {t("boxesPerWeek", { count: boxesPerWeek(sub) })} ·{" "}
+              {money(sub.total)}
             </p>
+            {invoices.get(sub.id) && (
+              <div className="mt-2">
+                <PrintDoc {...invoices.get(sub.id)!} id={`invoice-${sub.id}`} label={t("downloadInvoice")} />
+              </div>
+            )}
           </div>
           <span
             className={`rounded-full px-3 py-1 font-body text-xs font-semibold ${

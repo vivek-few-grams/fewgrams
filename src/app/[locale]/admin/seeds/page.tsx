@@ -2,11 +2,13 @@ import { getTranslations } from "next-intl/server";
 import { getSeedMargin, listSeeds } from "@/lib/repo/seeds";
 import { MarginForm } from "../racks/MarginForm";
 import { saveSeedMargin } from "./actions";
-import { attachSeedContent, listSeedContent } from "@/lib/content/seeds";
+import { attachSeedContent } from "@/lib/content/seeds";
 import { routing } from "@/i18n/routing";
-import { AddSeedForm } from "./AddSeedForm";
+import { pickerData } from "../vendors/load";
 import { SeedTable } from "./SeedTable";
 import { requireRole } from "@/lib/auth/guard";
+import { billsPerItem } from "@/lib/purchases/cost";
+import { listBills } from "@/lib/repo/purchases";
 
 export const dynamic = "force-dynamic";
 
@@ -27,13 +29,19 @@ export const dynamic = "force-dynamic";
  * nothing in common shared one form, and the one with real stock had to
  * express it as a variant attribute.
  *
- * Like `/admin/varieties`, this owns the **numbers only** — price per 100 g
- * and grams held — so there is not one text input on the page. Every word a
- * customer reads lives in `content/seeds/<key>.json` (SPEC §4.3).
+ * Like `/admin/varieties`, this owns the **numbers only**, so there is not one
+ * text input on the page. Every word a customer reads lives in
+ * `content/seeds/<key>.json` (SPEC §4.3).
  *
- * A seed can be priced and stocked **before** its content file exists. What
- * keeps a nameless seed off the site is downstream: the row is flagged in red
- * with the exact path to create, and every public page skips a seed it cannot
+ * **Since 18 Oct 2026 a seed is added and costed from a purchase bill**, not
+ * here (the owner: every purchase is entered with what was paid, so typing
+ * the cost again was a second place for it to be wrong). The add form went;
+ * the cost is read-only and links to its bill; the grams held move with
+ * bills, orders and sowings, and the pencil beside them is a stocktake.
+ *
+ * A seed can be bought **before** its content file exists. What keeps a
+ * nameless seed off the site is downstream: the row is flagged in red with
+ * the exact path to create, and every public page skips a seed it cannot
  * name.
  *
  * Content is read in English regardless of the admin's locale: SPEC §4.4
@@ -44,18 +52,14 @@ export default async function SeedsAdmin() {
   await requireRole("admin");
   const t = await getTranslations("admin.seeds");
 
-  const [rows, content, margin] = await Promise.all([
+  const [rows, margin, picker, bills] = await Promise.all([
     listSeeds(),
-    listSeedContent(routing.defaultLocale),
     getSeedMargin(),
+    pickerData(),
+    listBills(),
   ]);
-
+  const onBills = billsPerItem(bills);
   const withContent = await attachSeedContent(rows, routing.defaultLocale);
-  /* Suggestions only — content files that exist but are not yet priced. The
-     field accepts anything well-formed, so this is a convenience rather than a
-     constraint. */
-  const taken = new Set(rows.map((r) => r.contentKey));
-  const suggestions = content.filter((c) => !taken.has(c.key)).map((c) => c.key);
 
   return (
     <div className="space-y-10">
@@ -78,13 +82,6 @@ export default async function SeedsAdmin() {
         <MarginForm margin={margin} save={saveSeedMargin} />
       </section>
 
-      <section className="rounded-2xl border border-forest/15 p-6">
-        <h2 className="font-display text-lg font-semibold text-forest">{t("addTitle")}</h2>
-
-        <AddSeedForm suggestions={suggestions} />
-        <p className="mt-4 font-body text-xs text-stone">{t("howTo")}</p>
-      </section>
-
       <SeedTable
         seeds={withContent.map((s) => ({
           seed: {
@@ -92,10 +89,17 @@ export default async function SeedsAdmin() {
             contentKey: s.contentKey,
             pricePer100g: s.pricePer100g,
             ...(s.costPer100g !== undefined ? { costPer100g: s.costPer100g } : {}),
+            ...(s.costBill ? { costBill: s.costBill } : {}),
             stockGrams: s.stockGrams,
             active: s.active,
           },
           name: s.content?.text.name ?? null,
+          bills: onBills.get(`seed:${s.contentKey}`) ?? 0,
+          picker: {
+            supplyKey: `seed:${s.contentKey}`,
+            vendors: picker.vendorsFor(`seed:${s.contentKey}`),
+            selected: picker.selectedFor(`seed:${s.contentKey}`),
+          },
         }))}
       />
     </div>

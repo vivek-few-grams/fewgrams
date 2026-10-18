@@ -1,3 +1,5 @@
+import type { TaxRow } from "@/lib/tax/order-tax";
+import type { GstState } from "@/lib/tax/states";
 import { randomBytes } from "node:crypto";
 import { fromIstDateISO, istDateISO } from "@/lib/delivery-date";
 import type { OrderAddress } from "@/lib/orders/order";
@@ -69,7 +71,14 @@ export type Subscription = {
   locale: string;
   provider: GatewayName;
   providerOrderId: string | null;
+  /** Before GST registration only; later ones carry `invoiceNo`. */
   receiptNo: number | null;
+  /** `FG/2627/00001`, from the same series as orders (SPEC §26.3). */
+  invoiceNo: string | null;
+  /** Exempt rows, in paise — SPEC §26.2. Null on subscriptions from before
+   *  GST registration. */
+  tax: TaxRow[] | null;
+  placeOfSupply: GstState | null;
   paidAt: string | null;
   createdAt: string;
   updatedAt: string;

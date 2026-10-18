@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-10",
+  "updated": "2026-10-17",
   "sections": [
     "about",
     "acceptance",
@@ -30,6 +30,7 @@
         "body": [
           "{tradingName} is a sole proprietorship owned by {proprietor}. We grow microgreens to order and sell seeds, trays, cocopeat and growing racks.",
           "Address: {address}.",
+          "GSTIN: {gstin}.",
           "Email: {email}. Phone and WhatsApp: {phone}.",
           "FSSAI: {fssai}."
         ]
@@ -60,7 +61,7 @@
       "prices": {
         "heading": "Prices and payment",
         "body": [
-          "All prices are in Indian rupees and are the prices shown at the time you order. We are not registered for GST, so no GST is charged and the price shown is the price you pay for the item.",
+          "All prices are in Indian rupees and are the prices shown at the time you order. We are registered for GST. Every price shown includes any GST that applies, so the price shown is the price you pay for the item; your invoice shows how much of it is GST.",
           "Delivery is charged separately and shown at checkout before you pay. Weekly plans include delivery.",
           "Payment is taken online, in full, before an order is placed — by UPI, card or net banking on our payment partner's secure page. We do not see or store your card or UPI details. We do not offer cash on delivery.",
           "An order is placed only when our payment partner confirms that the full amount has been paid. If a price on the website is plainly wrong because of an error, we may cancel an order at that price and refund you in full."
@@ -173,6 +174,7 @@
         "body": [
           "{tradingName} ಎಂಬುದು {proprietor} ಅವರ ಏಕಮಾಲೀಕತ್ವದ ಸಂಸ್ಥೆ. ನಾವು ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಬೆಳೆಸುತ್ತೇವೆ ಮತ್ತು ಬೀಜಗಳು, ಟ್ರೇಗಳು, ಕೊಕೊಪೀಟ್ ಹಾಗೂ ಬೆಳೆಸುವ ರ್ಯಾಕ್‌ಗಳನ್ನು ಮಾರುತ್ತೇವೆ.",
           "ವಿಳಾಸ: {address}.",
+          "ಜಿಎಸ್‌ಟಿಐಎನ್: {gstin}.",
           "ಇಮೇಲ್: {email}. ಫೋನ್ ಮತ್ತು ವಾಟ್ಸ್‌ಆ್ಯಪ್: {phone}.",
           "ಎಫ್‌ಎಸ್‌ಎಸ್‌ಎಐ: {fssai}."
         ]
@@ -203,7 +205,7 @@
       "prices": {
         "heading": "ಬೆಲೆಗಳು ಮತ್ತು ಪಾವತಿ",
         "body": [
-          "ಎಲ್ಲಾ ಬೆಲೆಗಳು ಭಾರತೀಯ ರೂಪಾಯಿಗಳಲ್ಲಿವೆ ಮತ್ತು ನೀವು ಆರ್ಡರ್ ಮಾಡುವ ಸಮಯದಲ್ಲಿ ತೋರಿಸಿದ ಬೆಲೆಗಳೇ ಅನ್ವಯಿಸುತ್ತವೆ. ನಾವು ಜಿಎಸ್‌ಟಿ ನೋಂದಣಿ ಹೊಂದಿಲ್ಲ, ಹಾಗಾಗಿ ಜಿಎಸ್‌ಟಿ ವಿಧಿಸುವುದಿಲ್ಲ; ತೋರಿಸಿದ ಬೆಲೆಯೇ ವಸ್ತುವಿಗೆ ನೀವು ಪಾವತಿಸುವ ಬೆಲೆ.",
+          "ಎಲ್ಲಾ ಬೆಲೆಗಳು ಭಾರತೀಯ ರೂಪಾಯಿಗಳಲ್ಲಿವೆ ಮತ್ತು ನೀವು ಆರ್ಡರ್ ಮಾಡುವ ಸಮಯದಲ್ಲಿ ತೋರಿಸಿದ ಬೆಲೆಗಳೇ ಅನ್ವಯಿಸುತ್ತವೆ. ನಾವು ಜಿಎಸ್‌ಟಿ ನೋಂದಣಿ ಹೊಂದಿದ್ದೇವೆ. ತೋರಿಸಿದ ಪ್ರತಿಯೊಂದು ಬೆಲೆಯೂ ಅನ್ವಯವಾಗುವ ಜಿಎಸ್‌ಟಿಯನ್ನು ಒಳಗೊಂಡಿದೆ, ಹಾಗಾಗಿ ತೋರಿಸಿದ ಬೆಲೆಯೇ ವಸ್ತುವಿಗೆ ನೀವು ಪಾವತಿಸುವ ಬೆಲೆ; ಅದರಲ್ಲಿ ಎಷ್ಟು ಜಿಎಸ್‌ಟಿ ಎಂಬುದನ್ನು ನಿಮ್ಮ ಇನ್‌ವಾಯ್ಸ್ ತೋರಿಸುತ್ತದೆ.",
           "ಡೆಲಿವರಿ ಶುಲ್ಕವನ್ನು ಪ್ರತ್ಯೇಕವಾಗಿ ವಿಧಿಸಿ, ಪಾವತಿಸುವ ಮೊದಲು ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ತೋರಿಸಲಾಗುತ್ತದೆ. ವಾರದ ಯೋಜನೆಗಳಲ್ಲಿ ಡೆಲಿವರಿ ಸೇರಿದೆ.",
           "ಆರ್ಡರ್ ಮಾಡುವ ಮೊದಲು ಪೂರ್ತಿ ಪಾವತಿಯನ್ನು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪಡೆಯಲಾಗುತ್ತದೆ — ನಮ್ಮ ಪಾವತಿ ಪಾಲುದಾರರ ಸುರಕ್ಷಿತ ಪುಟದಲ್ಲಿ ಯುಪಿಐ, ಕಾರ್ಡ್ ಅಥವಾ ನೆಟ್ ಬ್ಯಾಂಕಿಂಗ್ ಮೂಲಕ. ನಿಮ್ಮ ಕಾರ್ಡ್ ಅಥವಾ ಯುಪಿಐ ವಿವರಗಳನ್ನು ನಾವು ನೋಡುವುದೂ ಇಲ್ಲ, ಸಂಗ್ರಹಿಸುವುದೂ ಇಲ್ಲ. ಕ್ಯಾಶ್ ಆನ್ ಡೆಲಿವರಿ ಇಲ್ಲ.",
           "ಪೂರ್ತಿ ಮೊತ್ತ ಪಾವತಿಯಾಗಿದೆ ಎಂದು ನಮ್ಮ ಪಾವತಿ ಪಾಲುದಾರರು ದೃಢೀಕರಿಸಿದಾಗ ಮಾತ್ರ ಆರ್ಡರ್ ಆಗುತ್ತದೆ. ದೋಷದಿಂದ ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿನ ಬೆಲೆ ಸ್ಪಷ್ಟವಾಗಿ ತಪ್ಪಾಗಿದ್ದರೆ, ಆ ಬೆಲೆಯ ಆರ್ಡರ್ ಅನ್ನು ನಾವು ರದ್ದುಮಾಡಿ ಪೂರ್ತಿ ಹಣ ಹಿಂದಿರುಗಿಸಬಹುದು."

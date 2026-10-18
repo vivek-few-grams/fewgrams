@@ -9,6 +9,8 @@ import { checkDeliveryArea } from "@/lib/pincode/place";
 import { getAddress, getProfile } from "@/lib/repo/profile";
 import { createSubscription, setSubscriptionProviderOrderId } from "@/lib/repo/subscriptions";
 import { istDateISO } from "@/lib/delivery-date";
+import { subscriptionTax } from "@/lib/tax/order-tax";
+import { placeOfSupply } from "@/lib/tax/states";
 import { subscribablePlans } from "@/lib/subscriptions/catalogue";
 import { subscriptionSchedule } from "@/lib/subscriptions/rotation";
 import {
@@ -93,6 +95,9 @@ export async function startSubscription(_prev: CheckoutState, fd: FormData): Pro
     provider: provider.name,
     providerOrderId: null,
     receiptNo: null,
+    invoiceNo: null,
+    tax: subscriptionTax(lines, placeOfSupply(address)),
+    placeOfSupply: placeOfSupply(address),
     paidAt: null,
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),

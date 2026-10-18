@@ -1,3 +1,5 @@
+import type { CostSource } from "@/lib/purchases/cost";
+
 /** SPEC §4.4 — admin-created text is stored as a localised map, never a plain
  *  string. Retrofitting this later means a data migration plus touching every
  *  read site. */
@@ -74,6 +76,12 @@ export type Sowing = {
   /** `YYYY-MM-DD`, IST. */
   sowDate: string;
   lines: SowingLine[];
+  /** The seed grams this sowing took off the shelf, per seed key (the owner,
+   *  18 Oct 2026: the shelf the shop sells from is the one sown from). What
+   *  was *taken*, not what was sown — a short shelf gives less — so an edit
+   *  or a delete never puts back more than came off. Absent on a sowing from
+   *  before then, which never touched stock and never will. */
+  seedsTaken?: Record<string, number>;
   createdAt: string;
   updatedAt: string;
 };
@@ -163,13 +171,17 @@ export type Seed = {
    *  it is worked out — `retailPrice(cost, the seeds margin)` — and never
    *  typed. */
   pricePer100g: number;
-  /** ₹ we pay for 100 g — the vendor's per-kg invoice price ÷ 10. Absent
-   *  on a row not yet costed, which keeps its old price until it is. */
+  /** ₹ we pay for 100 g, shipping and tax included — **set by the latest
+   *  purchase bill** (`costFromBills`, the owner, 18 Oct 2026), never typed.
+   *  A row costed before then holds the vendor's per-kg price ÷ 10 until its
+   *  first bill. Absent on a row added from a bill that is not yet saved. */
   costPer100g?: number;
-  /** Grams on the shelf, as the owner last counted them — **the limit**
-   *  (the owner, 25 Sep 2026): no more than this can be ordered, and under
-   *  100 g the seed is sold out. A paid order draws it down (`takeFromShelf`).
-   *  Never shown to a customer. */
+  /** The bill `costPer100g` was read from; absent on a cost from before. */
+  costBill?: CostSource;
+  /** Grams on the shelf — **the limit** (the owner, 25 Sep 2026): no more
+   *  than this can be ordered, and under 100 g the seed is sold out. A
+   *  purchase bill adds to it, a paid order and a sowing take from it, and a
+   *  stocktake corrects it (18 Oct 2026). Never shown to a customer. */
   stockGrams: number;
   active: boolean;
 };
@@ -225,8 +237,12 @@ export type Tray = {
    *  it is worked out — `retailPrice(cost, this row's margin)` — and a price
    *  typed over it holds until the next cost or margin change. */
   price: number;
-  /** ₹ we pay for one pack. Absent on a row priced by hand. */
+  /** ₹ we pay for one pack, GST and shipping included — set by the latest
+   *  purchase bill (18 Oct 2026), never typed. Absent until the first bill
+   *  on a row added from one. */
   cost?: number;
+  /** The bill `cost` was read from; absent on a cost from before. */
+  costBill?: CostSource;
   /** This pack's own markup and rounding on `cost` (the owner, 4 Oct 2026:
    *  the tray pair stays at market while the food-grade pair and the drain
    *  mats price higher, which one shared margin cannot do — it replaced the
@@ -287,9 +303,10 @@ export type GrowMedium = {
    *  `retailPrice(cost, this row's margin)` — and follows every cost or
    *  margin edit; a price typed over it holds until then. */
   price: number;
-  /** ₹ we pay for one pack (3 Oct 2026: ₹300 for 5 kg, ₹70 for 1 kg).
-   *  Absent on a row priced by hand. */
+  /** ₹ we pay for one pack — set by the latest purchase bill, as a tray's
+   *  is (18 Oct 2026; typed until then: ₹300 for 5 kg, ₹70 for 1 kg). */
   cost?: number;
+  costBill?: CostSource;
   /** This pack's own markup and rounding on `cost` — each pack size has its
    *  own (the owner, 3 Oct 2026: "keep separate margin for 5kg and 1 kg").
    *  Blank prices at cost to the rupee (`NO_MARGIN`). */
@@ -500,8 +517,11 @@ export type OrderStatus = (typeof ORDER_STATUSES)[number];
  *  `Order` (src/lib/orders/order.ts). */
 export type OrderSummary = {
   id: string;
-  /** Null only if payment landed but the receipt number was not yet drawn. */
+  /** Null only if payment landed but the number was not yet drawn. Orders
+   *  paid before GST registration have a receipt number, later ones an
+   *  invoice number (`documentNo`). */
   receiptNo: number | null;
+  invoiceNo: string | null;
   placedAt: string;
   deliveryDate: string | null;
   status: OrderStatus;

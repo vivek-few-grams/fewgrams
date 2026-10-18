@@ -31,6 +31,9 @@ function toSubscription(row: Row): Subscription {
     provider: row.provider,
     providerOrderId: row.providerOrderId ?? null,
     receiptNo: row.receiptNo ?? null,
+    invoiceNo: row.invoiceNo ?? null,
+    tax: row.tax ?? null,
+    placeOfSupply: row.placeOfSupply ?? null,
     paidAt: row.paidAt ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -51,6 +54,8 @@ export async function createSubscription(sub: Subscription): Promise<void> {
     address: sub.address,
     locale: sub.locale,
     provider: sub.provider,
+    ...(sub.tax ? { tax: sub.tax } : {}),
+    ...(sub.placeOfSupply ? { placeOfSupply: sub.placeOfSupply } : {}),
     createdAt: sub.createdAt,
     updatedAt: sub.updatedAt,
     expiresAt: sub.expiresAt,
@@ -96,8 +101,8 @@ export async function markSubscriptionPaid(
   }
 }
 
-export async function setSubscriptionReceiptNo(id: string, receiptNo: number): Promise<void> {
-  await SubscriptionEntity.patch({ id }).set({ receiptNo, updatedAt: new Date().toISOString() }).go();
+export async function setSubscriptionInvoiceNo(id: string, invoiceNo: string): Promise<void> {
+  await SubscriptionEntity.patch({ id }).set({ invoiceNo, updatedAt: new Date().toISOString() }).go();
 }
 
 /** Every subscription in one stored status, newest first. `active` holds the

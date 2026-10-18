@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, X } from "lucide-react";
 import { IDLE, type FormState } from "@/lib/forms";
+import { keepFields } from "@/lib/keep-fields";
 import type { Sowing } from "@/lib/types";
 import { addSowing, updateSowing } from "./actions";
 import { NumberField, SelectField } from "../fields";
@@ -70,19 +71,21 @@ export function SowingEditor({
   const [sowDate, setSowDate] = useState(sowing?.sowDate ?? today);
   const [rows, setRows] = useState<Row[]>(() => rowsOf(sowing));
 
-  /* Adjust state during render when a save lands, rather than in an effect
-     (react.dev, "You might not need an effect"). */
+  /* Adjust this form's own state during render when a save lands, rather
+     than in an effect (react.dev, "You might not need an effect"). */
   const [seen, setSeen] = useState(state);
   if (state !== seen) {
     setSeen(state);
-    if (state.status === "saved") {
-      if (editing) onDone?.();
-      else {
-        setSowDate(today);
-        setRows([blankRow()]);
-      }
+    if (state.status === "saved" && !editing) {
+      setSowDate(today);
+      setRows([blankRow()]);
     }
   }
+  /* Closing the editor is the parent's state, and React refuses a parent's
+     update during a child's render — so that one waits for the effect. */
+  useEffect(() => {
+    if (state.status === "saved" && editing) onDone?.();
+  }, [state, editing, onDone]);
 
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field
@@ -105,7 +108,7 @@ export function SowingEditor({
   );
 
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} onSubmit={keepFields(action)} className="space-y-4">
       {sowing && <input type="hidden" name="id" value={sowing.id} />}
 
       <label className="block max-w-xs">
@@ -248,6 +251,16 @@ export function SowingEditor({
         {!editing && state.status === "saved" && !pending && (
           <p role="status" className="font-body text-sm text-forest">
             {t("savedNew")}
+          </p>
+        )}
+        {state.status === "saved" && state.notice && !pending && (
+          <p role="alert" className="w-full font-body text-sm text-terracotta">
+            {t(`notices.${state.notice.code}`, {
+              seeds: (state.notice.values?.keys ?? "")
+                .split(",")
+                .map((k) => varieties.find((v) => v.value === k)?.label ?? k)
+                .join(", "),
+            })}
           </p>
         )}
         {state.status === "error" && !state.field && (

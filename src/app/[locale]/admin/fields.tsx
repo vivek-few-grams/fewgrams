@@ -62,15 +62,14 @@ export function NumberField({
 export function CheckField({
   label,
   name,
-  defaultChecked,
+  ...input
 }: {
   label: string;
   name: string;
-  defaultChecked?: boolean;
-}) {
+} & Pick<React.InputHTMLAttributes<HTMLInputElement>, "defaultChecked" | "checked" | "onChange">) {
   return (
     <label className="flex items-center gap-2 font-body text-sm text-forest">
-      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="size-4" />
+      <input type="checkbox" name={name} className="size-4" {...input} />
       {label}
     </label>
   );

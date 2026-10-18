@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { ADMIN_NAV_GROUPS } from "./nav-items";
 
@@ -26,6 +28,20 @@ import { ADMIN_NAV_GROUPS } from "./nav-items";
  * grouping. A vertical list grows downward, where an admin shell has room to
  * spare, and it gives the content *more* width rather than less — see the note
  * in `layout.tsx`.
+ *
+ * ## Groups fold
+ *
+ * Downward ran out too: twenty rows under five headings outgrew the window,
+ * and the last ones sat under the footer (the owner, 18 Oct 2026). Each
+ * heading now opens and closes its group. The group holding the current page
+ * opens by itself — derived from the path, not stored, so following a link
+ * into another group opens that one — and a heading pressed open or shut
+ * stays that way while the rail is on screen (it lives in the layout, so it
+ * survives navigation). Desktop only: the phone strip shows every link.
+ *
+ * Top-level rows — Overview and the group headings — are set larger and
+ * bolder than the screens inside a group, and an open group sits on a sand
+ * panel, so a submenu reads as one (the owner, 18 Oct 2026).
  */
 export function AdminNav({
   labels,
@@ -44,6 +60,10 @@ export function AdminNav({
      `/admin/racks` does not match `/admin/angle-racks`, so the two rack
      screens cannot both light up. */
   const isActive = (href: string) => (href === "/admin" ? pathname === href : pathname.startsWith(href));
+  const current = ADMIN_NAV_GROUPS.find((g) => g.items.some((i) => isActive(i.href)))?.heading;
+  /* Only the headings someone has pressed; the rest follow the current page. */
+  const [pressed, setPressed] = useState<Record<string, boolean>>({});
+  const isOpen = (heading: string) => pressed[heading] ?? heading === current;
 
   return (
     <nav aria-label={navLabel} className="lg:mt-2">
@@ -56,11 +76,30 @@ export function AdminNav({
         {ADMIN_NAV_GROUPS.map((group, i) => (
           <li key={group.heading ?? `group-${i}`} className="contents lg:block">
             {group.heading && (
-              <p className="hidden px-3 pb-1 pt-5 font-body text-[10px] font-semibold uppercase tracking-widest text-stone lg:block">
+              <button
+                type="button"
+                aria-expanded={isOpen(group.heading)}
+                aria-controls={`admin-nav-${group.heading}`}
+                onClick={() => setPressed((p) => ({ ...p, [group.heading!]: !isOpen(group.heading!) }))}
+                className="mt-1 hidden w-full items-center justify-between rounded-lg px-3 py-2.5 font-body text-[15px] font-semibold text-forest transition-colors hover:bg-sage/60 lg:flex"
+              >
                 {labels[group.heading]}
-              </p>
+                <ChevronDown
+                  aria-hidden
+                  size={16}
+                  strokeWidth={2}
+                  className={`transition-transform ${isOpen(group.heading) ? "rotate-180" : ""}`}
+                />
+              </button>
             )}
-            <ul className="contents lg:block lg:space-y-0.5">
+            <ul
+              id={group.heading ? `admin-nav-${group.heading}` : undefined}
+              className={`contents lg:block lg:space-y-0.5 ${
+                group.heading
+                  ? `lg:mt-0.5 lg:rounded-xl lg:bg-sand lg:p-1.5 ${isOpen(group.heading) ? "" : "lg:hidden"}`
+                  : ""
+              }`}
+            >
               {group.items.map((item) => {
                 const active = isActive(item.href);
                 return (
@@ -73,8 +112,8 @@ export function AdminNav({
                          reports it. */
                       aria-current={active ? "page" : undefined}
                       className={`block whitespace-nowrap rounded-lg px-3 py-2 font-body text-sm transition-colors lg:w-full ${
-                        active ? "bg-forest font-semibold text-cream" : "text-forest hover:bg-sage/60"
-                      }`}
+                        group.heading ? "lg:pl-4" : "lg:py-2.5 lg:text-[15px] lg:font-semibold"
+                      } ${active ? "bg-forest font-semibold text-cream" : "text-forest hover:bg-sage/60"}`}
                     >
                       {labels[item.label]}
                     </Link>

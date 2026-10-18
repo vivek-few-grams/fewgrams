@@ -39,6 +39,8 @@ export type Business = {
   proprietor: string;
   grievanceOfficer: string;
   address: string;
+  /** Printed on the terms and every tax invoice, and sent to couriers that ask for it. */
+  gstin: string;
 };
 
 export const BUSINESS: Business = business;
@@ -60,6 +62,7 @@ export function legalTokens(fssai: string): Record<LegalToken, string> {
     proprietor: BUSINESS.proprietor,
     grievanceOfficer: BUSINESS.grievanceOfficer,
     address: BUSINESS.address,
+    gstin: BUSINESS.gstin,
     email: contact.email,
     phone: `+91 ${contactPhoneDisplay}`,
     fssai,

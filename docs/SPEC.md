@@ -1313,6 +1313,20 @@ already has one of those (`/how-we-grow`) and admin should not gain a second.
 Operations, Sales and Settings groups get added when their first screen is
 built.
 
+**Regrouped, and the groups fold — 18 Oct 2026** (the owner: "our menus have
+grown a lot, we need proper organisation"). Twenty rows under five headings
+outgrew the window and the last ones sat under the footer. The groups are now
+**Sales** (orders, subscriptions, customers), **Growing** (sowing log,
+varieties, plans), **Shop products** (seeds, trays & drainage, grow media, the
+three rack ranges), **Finance** (GST returns, purchases, vendors) and
+**Settings**, under Overview. Each heading opens and closes its group; the one
+holding the current page opens by itself (derived from the path, so following a
+link into another group opens that one), and one pressed open or shut stays so
+while the rail is on screen. The rail scrolls inside itself if every group is
+open in a short window. Overview and the headings are the top level — larger
+and bold — and an open group's screens sit indented on a sand panel, so a
+submenu reads as one.
+
 Below `lg` the rail becomes one horizontally scrolling strip and the group
 headings are hidden: a stack of eighteen rows would push the page content off a
 phone's first screen, and a heading inside a scrolling strip reads as another
@@ -1490,6 +1504,8 @@ Implementation requirements:
 - Refunds initiated from admin, recorded against the order.
 
 ### 9.1 Invoicing
+
+**Superseded by §26** (GST registered 17 Oct 2026). Kept for the orders it describes:
 
 **Simple receipts, no GST at launch** — emailed PDF with order number, items, delivery charge,
 total. No GSTIN or tax breakdown.
@@ -1671,7 +1687,8 @@ sow sheet) · `/admin/deliveries/[date]` (pick-pack, route, status) · `/admin/o
 `/admin/orders/[id]` · `/admin/subscriptions` · `/admin/customers` · `/admin/sowing` (the sowing
 log — built 10 Oct 2026: a dated card per sowing day, seed grams and trays per variety, harvest
 grams recorded against each row later, and yield per variety as harvest g ÷ seed g; `SOWING#<id>`
-in the orders table, newest first on GSI1; logic in `src/lib/sowing/sowing.ts`; touches no stock) · `/admin/coupons` ·
+in the orders table, newest first on GSI1; logic in `src/lib/sowing/sowing.ts`; since 18 Oct 2026 a
+sowing takes its seed off the seed shelf — §26.6) · `/admin/coupons` ·
 `/admin/sales` · `/admin/pincodes` · `/admin/payments` (reconciliation, refunds) · `/admin/reports` ·
 `/admin/settings` (brand, cutoff times, delivery rates)
 
@@ -5266,3 +5283,242 @@ jump anywhere.
   modules: `tray-play/tray.ts` (trays), `tray-play/plants.ts` (greens, with `uGrow`, `uGreen` and
   the sow/cut mask), `tray-play/kinds.ts` (names, no three.js).
 
+
+---
+
+## 26. GST — registered 17 Oct 2026
+
+GSTIN **29HTUPS6000Q1ZI** (proprietor Sindhu D, trade name FEWGRAMS), regular scheme — composition
+is barred because we sell to other states (CGST Act s.10(2)(c)), and it gives no input credit.
+**Quarterly returns with monthly payment (QRMP)**, opted in from Oct–Dec 2026; core business
+Trader → Retailer. The owner files the returns himself, so the app's job is to make every figure
+on the portal one the app has already worked out. Supersedes §9.1.
+
+### 26.1 What is taxed
+
+Checked against Notification 9/2025-CT(Rate) and 10/2025-CT(Rate) (in force 22 Sep 2025). The
+HSN codes are the five on the registration.
+
+| Kind | HSN | GST | |
+|---|---|---|---|
+| `variety`, and every subscription | 0709 | exempt | "Other vegetables, fresh or chilled" — no packaging condition |
+| `seed` | 1209 | exempt | "Seeds … of a kind used for sowing" — only when sold for sowing, so the invoice says so |
+| `tray` (trays and drain mats) | 3926 | 18% | |
+| `media` (cocopeat) | 53050040 | 5% | Coir pith, processed, for horticulture |
+| `rack` | 9403 | 18% | The owner's call, 17 Oct 2026 (9403 over 7308) |
+
+The classes live in code (`src/lib/tax/classes.ts`), declared per cart kind as a `Record` so a new
+kind cannot be sold untaxed by omission. They are law, not a number the business tunes, so there is
+no admin screen: a rate change is a reviewed diff.
+
+**Prices stay inclusive.** Every price shown is what the customer pays, with "Inclusive of all
+taxes" beside the total; the tax is broken out only on the invoice. Tax is backed out of the
+price, never added: ₹100 at 18% is ₹84.75 + ₹15.25.
+
+### 26.2 The tax on an order — worked out once, at checkout
+
+`startCheckout` writes `order.tax`, a list of rows, alongside the lines. Nothing recomputes it
+later, so a rate change cannot rewrite an invoice already issued.
+
+- **Place of supply** is the delivery address's state (goods that move are supplied where the
+  movement ends — IGST Act s.10(1)(a)), kept as `order.placeOfSupply` with its two-digit GST state
+  code. **Karnataka (29) is CGST + SGST, half each; every other state is IGST.** The code comes from
+  the address's state name; Karnataka is also cross-checked against the PIN (56xxxx–59xxxx) so a
+  misspelt state cannot turn a local sale into an inter-state one or back.
+- **One row per line**: gross (what the customer paid for it), taxable value, CGST/SGST or IGST,
+  in **paise**, so rows add to the total exactly. Exempt lines are rows too, at 0%, because GSTR-1
+  reports exempt supplies (table 8) and the HSN summary (table 12) counts them.
+- **The delivery charge follows the goods it carries** (composite supply — CGST Act s.8(a); the
+  owner's default, 17 Oct 2026). Each parcel's charge (`OrderShipment.charge`) is shared across
+  the lines in that parcel by value and taxed at each line's rate, as separate `delivery` rows.
+  The own run carries only greens, so its fee is exempt; a courier parcel of trays carries 18%.
+- **A business buyer** may add a GSTIN at checkout — a small "Buying for a business? Add GSTIN"
+  link under the total that opens the field (the owner, 17 Oct 2026). Format and check digit are
+  validated; it goes on the invoice and makes the sale a B2B line in GSTR-1. The place of supply is
+  still where the goods are delivered.
+
+### 26.3 Invoice
+
+One **invoice-cum-bill of supply** per paid order (CGST Rules 46A — taxable and exempt goods to one
+buyer on one document). Rule 46A names an *unregistered* buyer; a business buyer with greens in
+the order strictly gets a tax invoice plus a separate bill of supply. **The owner kept one document
+for them too** (18 Oct 2026): no tax rides on the exempt lines, and such orders are rare. Numbered **per financial year** at payment, behind `markOrderPaid`, from a
+counter per year: `FG/2627/00001` (13 characters; Rule 46 allows 16, unique within the year). The
+old `FG-000123` receipt numbers were not tax invoices and stay on the orders that have them.
+
+**There is no page to view a tax document on** (the owner, 18 Oct 2026 — it was
+`/account/orders/[id]/invoice` and siblings the day before). It is saved as PDF from the browser's
+print (the owner's call, 17 Oct 2026): "Download invoice" on the customer's order page (and
+"Download credit note", and the subscriptions list's), and "Print invoice" / "Print credit note"
+on the admin order and subscription screens, open the print dialog straight away on the sheet,
+kept on that page out of sight (`PrintDoc`). The page title is swapped meanwhile so the saved PDF
+is named after the number. Who may see it is who may see the page it sits on. It carries: our name, address and GSTIN; invoice number and date; the
+buyer's name and address (and GSTIN if given); place of supply with its state code; per line the
+description, HSN, quantity, taxable value, rate and tax; **one delivery line** — its rows summed,
+with the HSN and rate where there is one and "Mixed" where the parcel carried goods at several
+rates, plus a note that delivery takes the rate of the goods it carries (the owner, 18 Oct 2026;
+the split stays in `order.tax` for the returns); tax totals by head; the total; "Tax is not
+payable on reverse charge". Orders paid before registration have no
+invoice and no button.
+
+**What the document is called follows what it covers** (CGST Rules 46, 46A, 49): only exempt goods
+— a greens order, every subscription — is a **bill of supply**; only taxable goods, a **tax
+invoice**; both, a tax invoice headed **invoice-cum-bill of supply**. One number series for all
+three. **A bill of supply leaves tax out** (Rule 49; the owner, 18 Oct 2026): "Bill number" and
+"Bill date", columns item, HSN, quantity and amount only, no tax totals, and no "includes GST" or
+reverse-charge note — it charges no tax, so it does not print ₹0.00 of it. Subscriptions are invoiced at payment from the same series; their rows are exempt greens
+with delivery inside the price.
+
+**Credit note.** Marking a cancelled or failed order refunded (`markOrderRefunded`) issues one, from
+its own yearly series `CN/2627/00001`, drawn only by the press that wins the status write. It
+reverses the whole invoice — refunds are full today — so it stores just its number and date and
+reuses the order's rows; it names the invoice it reverses (Rule 53). All three documents are one
+component, `src/components/tax/TaxDocument.tsx`, fed by `src/components/tax/docs.ts`.
+
+### 26.4 Build order — all built 17–18 Oct 2026
+
+| Phase | What |
+|---|---|
+| 1a | tax classes, `order.tax`, invoice numbering, the invoice page, the business GSTIN, "Inclusive of all taxes" |
+| 1b | credit notes on refund; subscription invoices; bill of supply / tax invoice titling |
+| 2 | vendors, purchase bills (stock-in, credit types, reverse charge, bill file), monthly payment figure |
+| 3 | `/admin/gst`: summary, payments, GSTR-1 + CSVs, GSTR-3B, GSTR-2B match, filing and lock |
+
+**Costs stay as billed, GST included** (18 Oct 2026). The owner first chose to convert them to
+excluding GST; asked to "build every feature" without picking between the two options put to him,
+the recommended one was taken: every supplier charges the rate we charge (trays and racks 18%,
+cocopeat 5%), so `cost × (1 + markup)` already equals cost ex-GST × markup × GST — converting would
+change labels, not prices, and racks would need a data migration with a ₹1 risk at each rounding
+step. The admin cost and price columns now say "incl. GST". Revisit only if a supplier charges no
+GST or a different rate.
+
+### 26.5 Returns — `/admin/gst`
+
+Quarterly (QRMP). A quarter is `2627-Q3`, a month `2026-10` (`src/lib/gst/period.ts`). Everything
+is worked out by pure functions from the books (`src/lib/gst/quarter.ts`) — sales and credit notes
+read off orders and subscriptions, never stored twice; bills; payments; filings — and paise
+throughout.
+
+- **A sale belongs to its invoice date's month, a credit note to its issue month, a bill's credit
+  to the month of the GSTR-2B it appeared in** (`bill.claim`), not to its bill date (CGST Act
+  s.16(2)(aa)). Reverse-charge credit is claimed in its bill's month, in cash.
+- **GSTR-1** (`gstr1.ts`): table 4 B2B (buyer gave a GSTIN), 5 B2CL (inter-state consumer invoice
+  over ₹1 lakh), 7 B2CS by state and rate, 8 exempt by inter/intra × registered/unregistered, 9B
+  credit notes against B2B/B2CL (a consumer credit note is netted in 7 and 8 of its own period), 12
+  HSN split B2B/B2C with UQC and quantity from `HSN_INFO`, 13 document ranges. Each section downloads
+  as the Offline Tool's CSV (`csv.ts`, `/api/admin/gst/[quarter]/[table]`); the headings follow the
+  tool's templates from memory and should be checked against the tool on the first import.
+- **GSTR-3B** (`gstr3b.ts`): 3.1(a)(c)(d), 3.2, 4A(2)/(3)/(5), 4B(1), 5, 6.1. Credit on a bill from a
+  vendor outside India is an **import of services, 4A(2)**; other reverse charge is 4A(3) (fixed 18 Oct
+  2026 — it was all in 4A(3)). **Rule 42**: credit on a
+  line marked `none` (used only for exempt greens) is reversed whole; on `shared` lines, the exempt
+  share of the period's turnover is reversed; with no turnover, all of it. `setOff`
+  (`ledger.ts`) pays tax from credit in the order s.49(5) and Rule 88A require — IGST credit first,
+  CGST and SGST never across.
+- **Monthly payment** (PMT-06, months 1–2) by self-assessment on the quarter so far, less earlier
+  months' deposits; the fixed-sum figure (35% of last quarter's cash) is shown as the alternative.
+  A deposit is recorded per head, because cash in one head cannot pay another.
+- **Opening balances** carry from the previous quarter: a filed quarter's frozen closing
+  (`GstFiling.closing`), else worked out.
+- **GSTR-2B upload** (`gstr2b.ts`): the portal's JSON, read defensively; matched by vendor GSTIN and
+  invoice number ignoring case and punctuation, amounts within ₹1. A match is claimed in that month
+  if the portal says credit is available. Unmatched portal invoices and waiting bills are listed.
+  **A claim the statement gave lasts only while the bill agrees with it** (`claimAfterMatch`): an
+  edit or re-upload that leaves them apart withdraws it and the bill shows under "Reported
+  differently" — never claimed for more than the portal shows. A claim made by hand stays. **Saving
+  an unclaimed bill checks the statements already on file** from its month on, so a bill entered
+  after its month's upload, or corrected to agree, is matched and claimed without a re-upload.
+- **Filing**: mark GSTR-1 and GSTR-3B filed with date and ARN. GSTR-3B filed **locks the quarter**:
+  bills claimed in it, claims into it, its payments and its 2B uploads stop changing; undo reopens
+  it. A sale whose state could not be placed must get one before GSTR-1 (admin order page);
+  after GSTR-1 is filed, by amendment on the portal.
+
+### 26.6 Purchases and vendors — `/admin/purchases`, `/admin/vendors`
+
+- **Vendor**: registered (GSTIN, check digit verified, state read from it), unregistered, or
+  foreign; and whether they file monthly or quarterly. A bill copies the vendor as it was. The
+  vendors page holds just these details, entered once.
+- **Who supplies each product is picked on the product screens** (the owner, 18 Oct 2026): a
+  vendor picker on every seed, tray and grow-medium row, one on the shelf-rack and angle-rack
+  screens, and two on the pipe-rack screen — **pipes** and **connectors** — because they come
+  from different people. A product may have several vendors, and the picker can add a new vendor
+  on the spot. Stored on the vendor as a list of supply keys (`src/lib/purchases/supplies.ts`:
+  `seed:`/`tray:`/`media:` + content key, and four rack keys), so a purchase bill's stock line
+  offers **only** what the chosen vendor supplies, and saving refuses anything else (the owner,
+  18 Oct 2026: there was a switch for the rest, and it was removed). A new product is registered
+  from the bill with "+ New product…", which ticks the vendor; an existing product from a new
+  vendor gets that vendor ticked on its screen first. An item already on a bill stays, so an old
+  bill can still be corrected.
+- **A product a bill names cannot be deleted** (the owner, 18 Oct 2026): its row shows "On N bills"
+  in place of Delete, and the action refuses it too, because the bill would then name nothing and
+  could not be opened and saved. Hide it instead. Deleting any other product also takes it off
+  every vendor's supply list.
+- **The real vendors are loaded by `scripts/vendors-fill.mjs`** (the owner's details, 18 Oct
+  2026), so the same list reaches the live database after deploy.
+- **Bill**: number exactly as printed (it is the 2B match key), date, paid-on (credit must be
+  reversed if unpaid 180 days after the bill), lines, an optional file (PDF or image ≤ 3 MB, stored
+  in DynamoDB chunks — the stack has no S3 bucket; server actions accept 4 MB). Tax is **added** to
+  a line's value — CGST + SGST from a Karnataka vendor, IGST otherwise — and may be typed over
+  within ₹1 per head to match the bill's rounding. Foreign vendors are always reverse charge.
+- **Line categories** decide the default credit: stock and racks `full`; growing `none`;
+  packaging, courier, gateway fees, software, rent, other `shared`. **Shipping on this bill**
+  (`freight`, 18 Oct 2026) takes the credit of the goods it brought (`freightCredit`): `none` on a
+  bill of exempt seed, `full` on trays and cocopeat, `shared` when mixed — and follows the lines
+  until a credit is picked by hand.
+- **Stock lines add to stock** (`applyStockChange`), with the same atomic adds a cancellation uses;
+  an edit moves stock by the difference, a delete takes it back off, never below zero.
+- A bill dated before registration is a record only: no credit.
+
+#### 26.6.1 The bill sets the cost; the product screens stop asking (18 Oct 2026)
+
+The owner: every purchase is entered with what was paid, and the margin is already on the product
+screen, so the cost should come from the one rather than be typed into the other — and the stock
+should move by itself.
+
+- **A stocked product's cost is its latest bill's** (`latestCosts` in
+  `src/lib/purchases/cost.ts`) — latest by bill date, then by entry. Not an average: a cost that
+  reads off one bill can be checked against it. Per 100 g for seed (bought in grams), per pack for
+  trays, per block for cocopeat, **GST included** and **with the bill's shipping shared in by
+  value** (`billCosts`). The sell price is `retailPrice(cost, margin)` as before — the seeds
+  margin, or the row's own.
+- **Written on save, never typed.** Saving or deleting a bill re-reads every item on it from all
+  bills (`costFromBills`) and writes `cost`, the price and `costBill` (number, date, vendor), which
+  the row shows read-only with a link to the bill. Each stock line on the bill form previews the
+  cost it will set.
+- **The cost from before bills is kept.** Stock bought before registration has no bill (the owner
+  skipped it — no ITC-01), so those rows keep the costs they had, labelled "From before bills"
+  (`scripts/seeds-fill.mjs` holds the seed ones; on 18 Oct 2026 the owner chose the AllThatGrows
+  invoice costs over the ₹55 typed for mustard, radish, spinach and sunflower). The first bill to
+  cost a row parks that figure in `openingCost`, so deleting the bill puts it back.
+- **Products are added from a bill.** "+ New product…" at the foot of a stock line's item list
+  creates a seed, tray or cocopeat row (kind + content key), ticks the bill's vendor as its
+  supplier, and leaves it **hidden at price 0** until a saved bill costs it; the product screen
+  will not switch it on before then. The add forms on the three product screens are gone.
+- **Stock moves by itself; a stocktake corrects it.** Bills add, paid orders take, cancellations
+  return, sowings take (below). The count is read-only on the row, with a pencil for a stocktake
+  (`correctSeedStock` and the tray and cocopeat twins). Every other row write is a `patch`, so none
+  can put back a count an order has just taken from.
+- **Racks are unchanged**: one is built to order, so it is priced from the vendor's rate card
+  before it is ever bought.
+
+#### 26.6.2 Sowing takes seed off the shelf (18 Oct 2026)
+
+The seed the shop sells and the seed sown are one shelf, so the sowing log moves it — reversing
+the 10 Oct choice to keep the two apart. **Not an internal order**: an order is a sale, and would
+put sales that never happened into the GST return and draw invoice numbers; growing from our own
+seed is not a supply at all.
+
+- Saving a sowing takes each line's seed grams from the **seed of the same key** (`radish` sown
+  from `radish`); a variety with no seed row (wheatgrass) takes nothing.
+- The sowing keeps **what it actually took** (`seedsTaken`), so a short shelf — sown more than the
+  count said — never gets more back than it gave: an edit moves the difference from that, a delete
+  returns it. A short shelf says so on save ("count it and correct it on the seeds screen").
+- A sowing logged before 18 Oct 2026 took nothing and never moves stock.
+- Seed carries no GST, so none of this touches a return. Trays and cocopeat taken from shop stock
+  for our own growing would — their credit would need reversing — so they are not drawn this way.
+
+### 26.7 Not built
+
+Partial refunds (credit notes are full only); emailing invoices (SES production access is
+pending); a GSTR-1 JSON export (the CSVs go through the Offline Tool); the annual Rule 42
+recalculation and GSTR-9.

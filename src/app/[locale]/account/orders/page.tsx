@@ -3,7 +3,7 @@ import { Package } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { listOrdersForUser } from "@/lib/repo/orders";
-import { formatReceiptNo } from "@/lib/orders/order";
+import { documentNo } from "@/lib/orders/order";
 import { Card } from "../ui";
 
 export const dynamic = "force-dynamic";
@@ -88,7 +88,7 @@ export default async function OrdersPage({ params }: PageProps<"/[locale]/accoun
                   <tr key={order.id} className="border-b border-forest/10 last:border-0">
                     <td className="py-3 font-body text-sm font-semibold text-forest">
                       <Link href={`/account/orders/${order.id}`} className="underline underline-offset-4">
-                        {order.receiptNo !== null ? formatReceiptNo(order.receiptNo) : order.id}
+                        {documentNo(order) ?? order.id}
                       </Link>
                       <span className="mt-0.5 block font-normal text-xs text-stone">
                         {t("items", { count: order.itemCount })}

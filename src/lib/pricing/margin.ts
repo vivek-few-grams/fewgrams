@@ -33,6 +33,15 @@ export function retailPrice(cost: number, margin: Margin): number {
 /** A rounded price over this ends in 9; at or under it stays round. */
 export const CHARM_PRICE_ABOVE = 300;
 
+/** A row's own markup and rounding — a tray pack's or a cocopeat block's —
+ *  with a blank one pricing at cost to the rupee (`NO_MARGIN`). */
+export function marginOf(row: { markupPercent?: number; roundUpToNearest?: number }): Margin {
+  return {
+    markupPercent: row.markupPercent ?? NO_MARGIN.markupPercent,
+    roundUpToNearest: row.roundUpToNearest ?? NO_MARGIN.roundUpToNearest,
+  };
+}
+
 /** What a range prices at before anyone has set a margin: cost, to the rupee.
  *  Zero for the reason on `Margin.markupPercent`. */
 export const NO_MARGIN: Margin = { markupPercent: 0, roundUpToNearest: 1 };

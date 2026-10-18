@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
-import { formatReceiptNo } from "@/lib/orders/order";
+import { documentNo } from "@/lib/orders/order";
 import { getCustomer } from "@/lib/repo/customers";
 import { listOrdersForUser } from "@/lib/repo/orders";
 import { listAddresses } from "@/lib/repo/profile";
@@ -86,7 +86,7 @@ export default async function CustomerAdmin({ params }: PageProps<"/[locale]/adm
                       href={`/admin/orders/${o.id}`}
                       className="font-semibold text-forest underline underline-offset-4 hover:text-stone"
                     >
-                      {o.receiptNo !== null ? formatReceiptNo(o.receiptNo) : o.id}
+                      {documentNo(o) ?? o.id}
                     </Link>
                     <span className="block text-xs text-stone">{day(o.placedAt)}</span>
                   </td>
@@ -117,7 +117,7 @@ export default async function CustomerAdmin({ params }: PageProps<"/[locale]/adm
                     href={`/admin/subscriptions/${s.id}`}
                     className="font-semibold text-forest underline underline-offset-4 hover:text-stone"
                   >
-                    {s.receiptNo !== null ? formatReceiptNo(s.receiptNo) : s.id}
+                    {documentNo(s) ?? s.id}
                   </Link>
                   <span className="block text-xs text-stone">
                     {s.lines.map((l) => `${l.name} × ${l.boxes}`).join(" + ")}

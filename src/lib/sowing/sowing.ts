@@ -106,6 +106,31 @@ export function yieldByVariety(sowings: Sowing[]): VarietyYield[] {
     .sort((a, b) => a.varietyKey.localeCompare(b.varietyKey));
 }
 
+/**
+ * What saving a sowing does to the seed shelf (the owner, 18 Oct 2026: the
+ * seed sown comes off the stock the shop sells from) — grams to take per
+ * seed key, negative to put back, to go from what the sowing has already
+ * `taken` to what its `lines` call for. A new sowing has taken nothing; a
+ * deleted one calls for nothing.
+ *
+ * Measured from what was *taken*, not from the old lines, so a sowing the
+ * shelf was short for never returns more than came off it.
+ *
+ * Keyed by the variety's content key, because a microgreen is sown from the
+ * seed of the same key — `radish` from `radish`. A variety with no seed row
+ * (wheatgrass) moves nothing; the caller skips it.
+ */
+export function seedChange(
+  taken: Readonly<Record<string, number>>,
+  lines: readonly SowingLine[],
+): Map<string, number> {
+  const m = new Map<string, number>();
+  for (const [k, g] of Object.entries(taken)) m.set(k, -g);
+  for (const l of lines) m.set(l.varietyKey, (m.get(l.varietyKey) ?? 0) + l.seedGrams);
+  for (const [k, v] of m) if (Math.abs(v) < 1e-9) m.delete(k);
+  return m;
+}
+
 /* ───────────────────────── reading the form ───────────────────────── */
 
 /**
