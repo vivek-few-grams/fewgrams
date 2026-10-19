@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
+import { placeholderFor } from "@/lib/images/placeholder";
+import { placeholderProps } from "@/lib/images/placeholder-props";
 import { Sprout } from "@/components/ui/Sprout";
 import { ScatterMarquee } from "@/components/ui/ScatterMarquee";
 
@@ -128,6 +130,7 @@ export function Tile({
                   priority={index < 4}
                   sizes="(min-width: 768px) 18vw, 35vw"
                   className="object-contain"
+                  {...placeholderProps(placeholderFor(cutout.src), "contain")}
                 />
               </div>
             </>
@@ -144,6 +147,7 @@ export function Tile({
               priority={index < 4}
               sizes="(min-width: 768px) 25vw, 50vw"
               className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              {...placeholderProps(placeholderFor(hero.src), "cover")}
             />
           ) : (
             <>

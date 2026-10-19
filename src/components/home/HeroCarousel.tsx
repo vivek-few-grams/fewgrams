@@ -6,9 +6,12 @@ import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { onSectionClick } from "@/lib/section-scroll";
+import { placeholderProps, type Placeholder } from "@/lib/images/placeholder-props";
 
 export type HeroSlide = {
   src: string;
+  /** Resolved by `Hero.tsx` — the lookup is server-only. */
+  placeholder?: Placeholder;
   alt: string;
   /** `object-cover` anchor, per frame — see the note in `Hero.tsx`. */
   position: string;
@@ -131,6 +134,7 @@ export function HeroCarousel({
               priority={index === 0}
               sizes="100vw"
               className={`object-cover ${slide.position}`}
+              {...placeholderProps(slide.placeholder, "cover")}
             />
           </div>
         ))}

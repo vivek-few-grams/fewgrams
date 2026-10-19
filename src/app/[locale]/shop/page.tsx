@@ -18,6 +18,8 @@ import { GROW_MEDIA_TILE_WORDS } from "@/lib/shop";
 import { RACK_RANGES } from "@/lib/racks/cart-key";
 import { CATEGORY_COUNT, CATEGORY_HREF, CATEGORY_PANELS } from "@/lib/shop";
 import { CategoryStrip } from "@/components/chrome/CategoryStrip";
+import { placeholderFor } from "@/lib/images/placeholder";
+import { placeholderProps } from "@/lib/images/placeholder-props";
 
 /**
  * /shop — SPEC §12. The overlay's landing page, and the destination for
@@ -132,6 +134,7 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
                 fill
                 sizes="(min-width: 1024px) 18vw, 84vw"
                 className="object-contain"
+                {...placeholderProps(placeholderFor("/img/shop/microgreens-cutout.webp"), "contain")}
               />
             }
             mediaClass="aspect-[3/2] w-[86%]"

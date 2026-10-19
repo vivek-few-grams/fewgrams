@@ -1,6 +1,7 @@
 import { ArrowLeft, Info, TriangleAlert } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Sprout } from "@/components/ui/Sprout";
+import { placeholderFor } from "@/lib/images/placeholder";
 import { Gallery, type Shot } from "./Gallery";
 
 /**
@@ -141,7 +142,7 @@ export function DetailPage({
         <div className="lg:col-start-1 lg:row-start-1">
           {gallery.shots.length > 0 ? (
             <Gallery
-              shots={gallery.shots}
+              shots={gallery.shots.map((shot) => ({ ...shot, placeholder: placeholderFor(shot.src) }))}
               thumbLabels={gallery.thumbLabels}
               prevLabel={gallery.prevLabel}
               nextLabel={gallery.nextLabel}

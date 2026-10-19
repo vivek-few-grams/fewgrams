@@ -4,6 +4,8 @@ import { auth } from "@/auth";
 import { MAGIC_LINK_REFUSALS } from "@/lib/auth/magic-link-quota";
 import { brand } from "@/lib/brand";
 import Image from "next/image";
+import { placeholderFor } from "@/lib/images/placeholder";
+import { placeholderProps } from "@/lib/images/placeholder-props";
 import { MapPin, Package, ShieldCheck, type LucideIcon } from "lucide-react";
 import { safeCallbackPath } from "@/lib/auth/callback-url";
 import { SignInOptions, googleConfigured } from "@/components/auth/SignInOptions";
@@ -91,6 +93,7 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
             priority
             sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-cover object-[center_22%] lg:object-[center_30%]"
+            {...placeholderProps(placeholderFor("/img/brand/login-girl.webp"), "cover")}
           />
           <div
             aria-hidden

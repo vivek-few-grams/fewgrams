@@ -9,6 +9,8 @@ import { formatDeliveryDate } from "@/lib/delivery-date";
 import { rackReadyDate } from "@/lib/racks/lead-time";
 import { listSellableRacks } from "@/lib/racks/catalogue";
 import Image from "next/image";
+import { placeholderFor } from "@/lib/images/placeholder";
+import { placeholderProps } from "@/lib/images/placeholder-props";
 
 /**
  * `/shop/racks` — SPEC §19.6. The three rack ranges.
@@ -205,6 +207,7 @@ export default async function RacksPage({ params }: PageProps<"/[locale]/shop/ra
                       priority={i === 0}
                       sizes="(min-width: 768px) 30vw, 92vw"
                       className="object-contain"
+                      {...placeholderProps(placeholderFor(`/img/racks/${range}/cutout.webp`), "contain")}
                     />
                   </div>
                 </div>

@@ -3,6 +3,8 @@ import path from "node:path";
 import { cache } from "react";
 import { hasLocale } from "next-intl";
 import { routing, type Locale } from "@/i18n/routing";
+import { placeholderFor } from "@/lib/images/placeholder";
+import type { Placeholder } from "@/lib/images/placeholder-props";
 
 /**
  * The "How we grow" storybook — SPEC §4.3 and §18.5.
@@ -88,6 +90,8 @@ export type StoryBookFile = {
 /** A page resolved for one locale, ready to render. */
 export type StoryPage = StoryPageMeta & {
   src: string;
+  /** Resolved here because the book renders on the client. */
+  placeholder: Placeholder | undefined;
   text: StoryPageText;
   /** The illustration's real pixel size — see `readImageSize`. */
   width: number;
@@ -255,9 +259,11 @@ export async function getStoryBook(locale: string): Promise<StoryPage[]> {
       const en = file.en?.[page.key];
       if (!en?.heading) return null;
       const { version, ...size } = await readImageMeta(page.image);
+      const src = storyImageUrl(page.image, version);
       return {
         ...page,
-        src: storyImageUrl(page.image, version),
+        src,
+        placeholder: placeholderFor(src),
         text: resolveText(en, file.kn?.[page.key], resolved),
         ...size,
       };

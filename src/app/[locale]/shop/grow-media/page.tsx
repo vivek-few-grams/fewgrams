@@ -12,6 +12,8 @@ import { Link } from "@/i18n/navigation";
 import { QuickAdd } from "@/components/catalogue/QuickAdd";
 import { quickAddFor } from "@/lib/cart/quick-add";
 import Image from "next/image";
+import { placeholderFor } from "@/lib/images/placeholder";
+import { placeholderProps } from "@/lib/images/placeholder-props";
 
 /**
  * `/shop/grow-media` — SPEC §24.5. Cocopeat first; perlite or vermiculite
@@ -114,6 +116,7 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
                                 priority={i < 3}
                                 sizes="(min-width: 768px) 30vw, 92vw"
                                 className="object-contain"
+                                {...placeholderProps(placeholderFor(cutout.src), "contain")}
                               />
                             </div>
                           </>
@@ -128,6 +131,7 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
                             priority={i < 3}
                             sizes="(min-width: 768px) 30vw, 92vw"
                             className="object-cover"
+                            {...placeholderProps(placeholderFor(photo.src), "cover")}
                           />
                         ) : (
                           <>

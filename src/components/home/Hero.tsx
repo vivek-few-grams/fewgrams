@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { placeholderFor } from "@/lib/images/placeholder";
 import { HeroCarousel } from "./HeroCarousel";
 
 /**
@@ -67,14 +68,18 @@ export async function Hero() {
       <h1 className="sr-only">{b("tagline")}</h1>
 
       <HeroCarousel
-        slides={HERO_SLIDES.map(({ key, position }) => ({
-          src: `/img/brand/hero-${key}.jpg`,
-          position,
-          alt: t(`slides.${key}.alt`),
-          eyebrow: t(`slides.${key}.eyebrow`),
-          headline: t(`slides.${key}.headline`),
-          body: t(`slides.${key}.body`),
-        }))}
+        slides={HERO_SLIDES.map(({ key, position }) => {
+          const src = `/img/brand/hero-${key}.jpg`;
+          return {
+            src,
+            placeholder: placeholderFor(src),
+            position,
+            alt: t(`slides.${key}.alt`),
+            eyebrow: t(`slides.${key}.eyebrow`),
+            headline: t(`slides.${key}.headline`),
+            body: t(`slides.${key}.body`),
+          };
+        })}
         actions={{ plans: t("ctaPlans"), greens: t("ctaGreens") }}
         dotLabels={HERO_SLIDES.map((_, index) => t("goToSlide", { number: index + 1 }))}
       />

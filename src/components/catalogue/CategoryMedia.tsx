@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { placeholderFor } from "@/lib/images/placeholder";
+import { placeholderProps } from "@/lib/images/placeholder-props";
 import { Sprout } from "@/components/ui/Sprout";
 import type { Category } from "@/lib/types";
 
@@ -145,6 +147,7 @@ export function CategoryMedia({
            is about a quarter of the viewport. */
         sizes="(min-width: 768px) 22vw, 42vw"
         className="h-full w-full object-contain"
+        {...placeholderProps(placeholderFor(cutout), "contain")}
       />
     );
   }

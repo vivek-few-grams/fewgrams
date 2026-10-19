@@ -1,0 +1,802 @@
+{
+  "/img/brand/hero-bowl.jpg": {
+    "sha": "ed58a99623139502",
+    "url": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAABwBACdASoYAAwAPu1krU6ppaSiMAgBMB2JZgCdMoADUpb4CkV7a9UWg+i6AAD+6oK+TDKEdWr8QOzq5ODWgtDBhIDQ0zVZ0jwkLQ2f3UHYQoKQqtMgEioLyytJV3nXa9DXViFAAAA="
+  },
+  "/img/brand/hero-harvest.jpg": {
+    "sha": "e041cab48dadc1b7",
+    "url": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADwAwCdASoYAAoAPu1iqU2ppaQiMAgBMB2JZACdMoMljD/1GFkckO0AAP7nc7EUW3CwmoAyXRcrBZRocP9T3MVXNYaYGCXafFp5LQyOB7/ACVszEEWT62lfQH3n+YTymQ5CuQS7uS8kBfJNZ0J8B2YbLIDordDNaxRW7psgAAA="
+  },
+  "/img/brand/hero-plate.jpg": {
+    "sha": "5be428397bee6719",
+    "url": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABQBACdASoYAAoAPu1iqU2ppaQiMAgBMB2JZgCdMoMljCm9Qvtbos4jXNAAAP6zjq/7ggD8kIKn/MhBCu/eVYrwePfsEI/3/+9yL4ZW81eldr63cEK7yYF4AmljZKviWvfoTP9h4iOLAXVIkVhsAAAA"
+  },
+  "/img/brand/hero-trays.jpg": {
+    "sha": "e7a76ed6967ef899",
+    "url": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABQBACdASoYAAoAPu1kqk4ppaQiMAgBMB2JaACdMoR4GCmzoDNq5M3Ip8mAAP7hmqr3PVe27e2MlJKT2KtD/dUA6AGwAH6mSM2adLJ5rbeDW0ZDdH1MOG54rbmKWYJeskrGVUM6E3IMylWcAAA="
+  },
+  "/img/brand/login-girl.webp": {
+    "sha": "2c8d3c41d2efbfa7",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAACwBACdASoTABgAPu1krE6ppaQiKA1RMB2JaACxHt8BiN1obGH7KoDvhAH5mCB0AP7hWDmWKcTNRxRmj0pITomUViE2EmU0KeeuDgj/Q5Oawq8Sgf58OnsozaQjuV5CpxxnQ5hyifp8/bDKo/0Zf1B8mRFHm55GcaNuKH0lR6A78AAA"
+  },
+  "/img/brand/login-sprig-chard.webp": {
+    "sha": "730824a6c69f11f7",
+    "url": "data:image/webp;base64,UklGRuwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOoAAAART6CgbRs2VBhnfxERiE+yphNwbNtuU115BPH3zjWZOko1mTpD6yTRJ3kE9hsv/nOI6P8EoL17M/CveVJtfmD7n3vbUfJpLdiP+aLnVe/77CcjUo2WMQBMPloTkWBBYJnT+VtrLVgpuW1aR17cIjSkRwyrwUeE9odIOZj2alWOTkRVgmnwaUhNaqKD3bfWNVXm+UsqGviz8nuDX2jJh6trtI7gfSp5GxZXx2JYNqQkL3nEgJRIlKPLYuvAzOjpZuNNmAtmvirBjvuh9XoYZnZzsJR/Zv400AsZutLFijOYDOhIF6aNVm9nAABWUDgg3AAAABAGAJ0BKhgAGAA+7WipT6mmI6IoDVEwHYlqALUa9nXAZmOVO9gCmHIJuhbmN3gwxHu8oqYQyyClAAD+nvRwS1rnWxPkzpP+tk7qEJR02CTabCAdE6ptQs66vMWrbL0mapdS+N7f+8kozDb5rXP21/RM/tvSOvRcNmAjrpTJKR2kXjr2BnJL6FfoumCgqZHvlpSU9TLtlv62vfsb+ctvMk6lQNgOusIvBSFk9b7MJBKpuqjVZ2dHOkLRSFBJwZGMuTghmnXLmBnYz/NgOo7vD9wJhSRBGdV3sMDAAAA="
+  },
+  "/img/brand/login-sprig-sage.webp": {
+    "sha": "90b7c0a2965332ed",
+    "url": "data:image/webp;base64,UklGRsoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSOYAAAART6CgbRs2VBZnfxER4ORPnRNwa9t2Gr1PBW4KwOfyMZ5UBhN7cvkCQP9XALdfpoeI/k8ArV/eGq0qTH9+1jah7f8KaaXifctjdW0RnL9zlUxT3bz4AgiHuj6ytrfps+BEP/BYVepo5C6NgDiwy24qbbUGUKrXYB6yyFsA4QTBT/CPPgFIwu2T4yvfAZTRrs1eBXkzMORZZgUWbSbg8+4iTWZ0mYFPn90OjOQREO8ia3qNNjMwNL194Ud2XiCOVSF5S8oqiEKrTsybE1bxwma1Q3rrkB9ZTG7+iAyVZJVIzyT6X9+zFVZQOCC+AAAA8AQAnQEqGAAYAD7taq9QqaWkIqgKqTAdiWYAtuj/AQtlO/zaACt9BT9g3QAquqkQAP0hAuTjwxRNVfHCqhqPNa2tkRCS+mT2/Q02tHAyIdlNmv29Ns6No0vbhamJxEkPHHUb8LOJbCQQC4VyiWPe/54gnGhxjcaRxjX3jUyBNyGUG15ivd0R3yyreY+khXfa4SqWyBKZiwzvsIajRbLW5Coj3z8TDTdo34/XaAVT6G8eHfPosmtk/PKAybgAAA=="
+  },
+  "/img/brand/tray-play-narrow.webp": {
+    "sha": "68f36717a1d800a9",
+    "url": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAQBACdASoYABIAPu1mqk2ppaQiMAgBMB2JZQCyzCHSzgDEN4/dlm+qgAD+7T6OQ1/mPRW5fFh2982yxsxFvQx39Tspt7Ij3TPvVWLqvO85k07QUAAAAA=="
+  },
+  "/img/brand/tray-play.webp": {
+    "sha": "ccbf7ec434d625d1",
+    "url": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwBACdASoYAAoAPu1kqU2ppaQiMAgBMB2JQBUh6/gLF26J5SFrVqyQapgA/uJSYVweoFOG0r1luALp/S78PQyyGtZSn/IhxeqJ454E50SM8EDvEpGwpMSzb5ec3DLNESLoAA=="
+  },
+  "/img/couriers/delhivery-icon.png": {
+    "sha": "d697cf59d4267acd",
+    "url": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAABQBACdASoYABgAPu1kqk2ppaQiMAgBMB2JZgB4/gPpMmqz6ci2iOI3+LGAAP7d4A6QWfxE5/R8749D/zDTnRh625nez+c12PMMb7y/WVVmpJWXvxGao2sdGavAAA=="
+  },
+  "/img/couriers/ekart-icon.png": {
+    "sha": "e67c4ad4b8fc09d5",
+    "url": "data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAAAQBgCdASoYABgAPtFSoE2oJKMiN+gBABoJbACsLzl67EgNsBdle8mgk0Rf3HzDOxYZaDbDWWab8AAA/srWtP1LdMFbA97dJIhU50cBg7/5Hre+/ZFgpGEbft/noUEP/GwxP+6UAziB8IkiZu+ff9WnBiczgxNOSnTzgIGlNgpBgtp9h3nYmMxpKFQnXorIm+hZGMKpv9NhkpZMt1YfAAAA"
+  },
+  "/img/couriers/shiprocket-icon.png": {
+    "sha": "e57ff32b938a8582",
+    "url": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAACwBACdASoYABgAPu1qqFAppiOiqA1RMB2JYgDG9BEc9Tub/WpEK/rO7670DcpAAP7YoV3oCLV92FZ2zNO/q26a1nVZ6OZJA07nXob61y95Jjcc8xOTBrE5yxyMiz5Y3VXxth95hcS9w8yBYjrq+JFyxjzVNczWzjir6zJiX4AAAA=="
+  },
+  "/img/couriers/velocity-icon.png": {
+    "sha": "1efd136f6c55496d",
+    "url": "data:image/webp;base64,UklGRtoAAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSEYAAAART6A0kiQ1eqTpUb1j/xERMnTm1391KKptJTo0cCxAE0oQwCkDEbCBBv5u3Ub0fwICP5IsrLk5ttrOhfs3HFuVuaDmwDgRVlA4IG4AAADQBACdASoYABgAPuVgpU2pJaOiN/VYASAciWQAsR80NNAVI/mMW5cDNCPgDMZvwAD+yt4EP//4Kw0pQCAZuWas9g4UJ0AVcN/8bx279u8FrpB9dv3QAKZ4s1oaAKu0lZsLlfKVsKnEEv3UBCoAAA=="
+  },
+  "/img/garden/clean-narrow.webp": {
+    "sha": "81e4d535f183526d",
+    "url": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADwAwCdASoMABgAPu1kqU2ppaQiMAgBMB2JZgCdMoADTiElDPVINoMAAP7qr+0V3b3LGz3aQQ6edW52gL0pHBhZGbgYNutnDByQTIJ+LTInLSp8Uy+R4AAA"
+  },
+  "/img/garden/clean.webp": {
+    "sha": "b68f8fa74b7244c6",
+    "url": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAACQBACdASoYAA4APu1kqU2ppaOiMAgBMB2JZgCdMoRwIr+AnLI2khotBtXAkgAA/udfJXnLwgRqu+V8ZBO+5nuiWj7bZo2GO5ILdinC1EGOaTjQAAA="
+  },
+  "/img/garden/dark-narrow.webp": {
+    "sha": "3f0527f57d5b09dd",
+    "url": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAABwAwCdASoMABgAPu1iqU2ppaOiMAgBMB2JYgCo9CHZ65vzAMAA/uemojfdXXpQc2vaipMYs4CAxAiGFtsRlgYEAAA="
+  },
+  "/img/garden/dark.webp": {
+    "sha": "36530bdb8a547836",
+    "url": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAACwAwCdASoYAA4APu1iqU2ppaOiMAgBMB2JYgCdAB6RJ2EkaKDfAAD+1O+tLQjjMIZDtoAJWrGdpVmZ3cDTdJXqSji6lGdAhZul4++KiJzwgAAA"
+  },
+  "/img/garden/fill-narrow.webp": {
+    "sha": "c7ddaf1c0401205f",
+    "url": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAQBACdASoMABgAPu1iqU2ppaQiMAgBMB2JZACdMoMYAEmUqHQPk2TgAAD+6q72nFdVk0f0rLhUg7A+1H9dI8ZRkZ/rvwFC/3Kt4EEtAQBCARxqcz4AAA=="
+  },
+  "/img/garden/fill.webp": {
+    "sha": "535f5b85563d3553",
+    "url": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAwBACdASoYAA4APu1iqU2ppaQiMAgBMB2JZgCdMoADTrILSaVt++/UoAAA/udioTknE/rDrh6hWOi9XGZHtQEvxy32oHetEMtxN4tXAI48SoImq0w9AAAA"
+  },
+  "/img/garden/harvest-narrow.webp": {
+    "sha": "38b1b016a33e2061",
+    "url": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADQAwCdASoMABgAPu1iqU2ppaOiMAgBMB2JYgCdMoRwACnAqub3eGAA/uqwQ63pj680LC6usYZaja93JhICyw2rPSF7+3+d4QQwZNCCSa2b2VMAAAA="
+  },
+  "/img/garden/harvest.webp": {
+    "sha": "66734a0436c19188",
+    "url": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAQBACdASoYAA4APu1iqU2ppaQiMAgBMB2JYgCdMoADTrmW9zRVRvWEAAD+52D17wuxRyEYs2VkdRSMoBTs9WrwnsaG0Yt2DXLW9lAL7f5SrPl87AAAAA=="
+  },
+  "/img/garden/light-narrow.webp": {
+    "sha": "197d8d201a9153fa",
+    "url": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAACwAwCdASoMABgAPu1iqU2ppaOiMAgBMB2JZgCdMoADTlaXEX/KwAD+7T7QAiivXPEo10yNF24hoNhtgas8Oj1BywzkBHac70z2UVAAAAA="
+  },
+  "/img/garden/light.webp": {
+    "sha": "2110bb23a3370991",
+    "url": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAABQBACdASoYAA4APu1iqk2ppaQiMAgBMB2JZACdMoGv/gPGyo+aNVlkFXgAAP7tRxSS1TwYjBxYqbvBG017KLFKzmRpfjSLidzMNK5JHRwjkyzwVLgAAA=="
+  },
+  "/img/garden/pick-narrow.webp": {
+    "sha": "e8cab219dadfd6da",
+    "url": "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADQAwCdASoMABgAPu1krU6ppaSiMAgBMB2JbACw7CHZ16QmgzEvIQAA/u063tfKPSyOVb7Ra0ZEh1vYex0HCW3LWRkT8+5pbYLu3zR4po2EM8a7+f9ZF7vuAAA="
+  },
+  "/img/garden/pick.webp": {
+    "sha": "bcaaae473f17570a",
+    "url": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACQBACdASoYAA4APu1mqk4ppaOiMAgBMB2JbACdMoRwACxpGyyxmcrW1P2PaAAA/udqydHx3RWS1YwRMuIfuMH63eDPhxQ6G4SiYjpNI8m/EjzirceSVEk6SyOtKDrsj4fL5nujgVwAAA=="
+  },
+  "/img/garden/soak-narrow.webp": {
+    "sha": "4f6599dfa7a3fdd3",
+    "url": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAwBACdASoMABgAPu1iqU2ppaQiMAgBMB2JZgCdMoR3ACnAqph5jYOptgAA/uqv7NUlpwmZihwp/OwOUHE3BHZL0PDJE2+GeGZ1HsBOuq5ZtSBC29FpU1pmALBQPJhAAAA="
+  },
+  "/img/garden/soak.webp": {
+    "sha": "856eb422b564fab8",
+    "url": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAACQBACdASoYAA4APu1iqU2ppaOiMAgBMB2JaACdMoR3ACnIgwyDwyBLPdQANAAA/udioTknFZ06W7uccNJoNeR/KWNXagAvlLEsF83NYiwFxcJM4grSpgB3Ous24CAA"
+  },
+  "/img/garden/sow-narrow.webp": {
+    "sha": "9a63649e8ff0249a",
+    "url": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAACwAwCdASoMABgAPu1iqU2ppaQiMAgBMB2JYgCdMoADTiI4Uzg+oAD+6q/s1DY2i0rrjQ6fLYtqY9tLpbZib3StS/9HjNTpp3AAAA=="
+  },
+  "/img/garden/sow.webp": {
+    "sha": "5ce8a70bcf7e2875",
+    "url": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAAAwBACdASoYAA4APu1kqk4ppaQiMAgBMB2JZgCdMoADTrLFjCjL4Fmn1+AA/udgcmKVGM/QtZfW1Gg+Ta8+5/aeOHmu3Q/fc5GP6JvFXWI2ZOAAAAA="
+  },
+  "/img/grow-media/horti-coir-small/hero.webp": {
+    "sha": "c3b56488767d81d4",
+    "url": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAABwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JQBaid+AYc2ya6YTYCweVxxyuUADgE9XekwHCbMOaRFf/h37WpnXxxKNXqb925iWXPGXdV7ARipge6O6Gp2/1R7s4+OtI/o0VYTJ0mHAe21ueXYxpaBc0HIb62BmJcEKSlgAA"
+  },
+  "/img/grow-media/horti-coir-small/on-bench.webp": {
+    "sha": "3bf0b6b914d3669a",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JZgCdG1bATDmYpef5qg/ZrwAA938wN+E1aBPzwa34nJ9dBf1Ruqevq7MXvNS2J4tZLMJnV7uz59ejxMrJ4SqVg+TEgGcKBNfzETfH3w/Ul6378HtnbNVx80gLfsIwk1jP7M1YhRR9YgAA"
+  },
+  "/img/grow-media/horti-coir/hero.webp": {
+    "sha": "c3b56488767d81d4",
+    "url": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAABwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JQBaid+AYc2ya6YTYCweVxxyuUADgE9XekwHCbMOaRFf/h37WpnXxxKNXqb925iWXPGXdV7ARipge6O6Gp2/1R7s4+OtI/o0VYTJ0mHAe21ueXYxpaBc0HIb62BmJcEKSlgAA"
+  },
+  "/img/grow-media/horti-coir/on-bench.webp": {
+    "sha": "3bf0b6b914d3669a",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JZgCdG1bATDmYpef5qg/ZrwAA938wN+E1aBPzwa34nJ9dBf1Ruqevq7MXvNS2J4tZLMJnV7uz59ejxMrJ4SqVg+TEgGcKBNfzETfH3w/Ul6378HtnbNVx80gLfsIwk1jP7M1YhRR9YgAA"
+  },
+  "/img/plans/essential.webp": {
+    "sha": "adf57fbeac8149fe",
+    "url": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAQBACdASoYAAgAPu1kq04ppaQiMAgBMB2JZAB3AARYdJWuzpuzgvilAAD+W+z5VRkxe9Wavg4pDv99GC/tRmZTWDsfQV2aeh2HtzK89jvv7z3l/3OeoAAA"
+  },
+  "/img/plans/exotic.webp": {
+    "sha": "990a380e9c7b7d20",
+    "url": "data:image/webp;base64,UklGRmAAAABXRUJQVlA4IFQAAADwAwCdASoYAAgAPu1mq04ppaQiMAgBMB2JQBOl65A6GGWxPnT24qMAAOIFzb9PmubO0Sw1Wn4iHx8FB7bO4PXOaTVC2xh8skYPxG0pkFHkxv+gAAA="
+  },
+  "/img/racks/angle/cutout.webp": {
+    "sha": "8b09c3f36d2c30c3",
+    "url": "data:image/webp;base64,UklGRowBAABXRUJQVlA4WAoAAAAQAAAAEgAAFwAAQUxQSLMAAAART6AgbQMWzsNfRATs+qIDyJFtS23uy+A/nID9KfZ/3k/gPUMG1hMJaIqActwSOUT0fwIAgJkZUFo737axg72IiBzPiHx/ytbWMZBdf3XHpfdk6wDAnqny1hJr9zcFyrKvmxzPRPl4icj9mijf9jH0NQSy69QxbO/J1gE4U8xz8JTXybV2u0bK930TOZ4T5eNftu0yRsq3PWhdek92TQwo9vRTBwBQnlT+pAHz4f376wx0AgBWUDggsgAAADAFAJ0BKhMAGAA+7WKtUCmlJCKwGAgBMB2JbACdMoSAL7NdyAQsgW0t3FzHG/7m5zcwAP6BqRX68G18Wq5JC+2ARhYEVRcbttOxZLwwEi8G2JT0QrBKGf3a0DSVBi1HilLM9S6FS/f6AHDqSKhXNHDpbQ+s0ILMkzb9PkXXsAs867DsrKILH8nXXo/zPO8540E8H0m7HwwGC1lKgVNRGo7W4TLgL734Hm0r/BKulAFMQAA="
+  },
+  "/img/racks/angle/joint-detail-2.webp": {
+    "sha": "18e3398ec5fe729c",
+    "url": "data:image/webp;base64,UklGRkQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIwAAAART6CgjSQ1dCKYHyMiYOMvl7KBg9i2owYcQPsRABIaC9RBK2FRAC8VQP77DhK57IuCiP6rbduGUXo2+4xsjqIL/w6yQkf8iiFObDbI1tvv0JRlma/e3/ezdS6oKStPAKCmaBM/gowpWQWSOlcyaT89MGHqpaybh3tptB6ykFUH3dd4xKuB21zyvs5bAVZQOCCSAAAAUAQAnQEqGAAYAD7taqxRKaWkIqgKqTAdiWwAnTNofg9wABY1l2MnXM+nAAD9EWetAhv0CrFf1qLNlahg2eMgF+sprFLtGsqjGI2soRtR17SMEuAehEtkz0pUp5BhLXlg+mjqhYiMMtzIzyXTpf986//1Dhg84WOAJPOLn07NDLvADdDmeI6/00/ksFA+AVOgAAA="
+  },
+  "/img/racks/angle/whats-included-2.webp": {
+    "sha": "bcd1fcde8905e2b8",
+    "url": "data:image/webp;base64,UklGRqoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSLsAAAART6CobRs4WBTt7u21iAjo6qjKh+PattXkvlTwX2ggOhdsHlkwjs/hPwrwArQEUi5uDUT0X2HaNoy6ewosLVJJrRc9sFVW1f1Rm8zKcQqRzHGYAaibIeEhrLSqUuNRkGVl+Ur1qepvFIfpLUwmIOwn2cBJB30XKtYiQ3suekgIU127V8NiRCqW086z16PZhNS+67rWnI3yhtThjgs/zh7b9H40hOV5dxnz6nYYyLPB3EPo2n2CzWwTQGAAAFZQOCDIAAAA0AUAnQEqGAAYAD7tZKlNqaWkIjAYDAEwHYlsALT9AAA69FSAyjgAh9tQChNBAodNFK4VmSSMAAD+8XpK4Rysqmxx0A+Jv8k0AnVWdim2RIqpnBi08ccpGjQnFcY0yXzhx92c9j3G8HySTSVw/kOnupkaxW954ZCdNGkFCxdmnxgGn/xBR/8l13vgLVRFrBZypxMe3zO9wUdkxIIMEFKgUjTXWhCv9ByU2QqAbCl2tgUnNCHgAaixEIo0iCkXHtYnbNzRhMwSwAA="
+  },
+  "/img/racks/pipe/cutout.webp": {
+    "sha": "8abe9aff2aa560dc",
+    "url": "data:image/webp;base64,UklGRmgBAABXRUJQVlA4WAoAAAAQAAAAEgAAFwAAQUxQSLQAAAART6C2bRs25D29JyIC6/RlcQ/HtW0rzSVpACvA5y5TZ+wwjjaANSBJBSHtYjVE9J9s0iaBbs0hAElgr5aHoiDQBLhuGfq+f7NQqrHq+uVjQ7FSlhea0tq4AmlwJNmIGpOmdtP/6sB4lDaUz1Llxfx1oFRtWbx+/xXrJgn6+Lb3N/IebqE7ewhVYywKWWDtb2F7CAXBuN3iR1iEOyyVFvwtxJkktpAMkgGA1GCw12WJA/wFJwJWUDggjgAAAFAEAJ0BKhMAGAA+7WivUKmlpCKoCqkwHYlpAAPkyP/8qbhoeY14X/ifLAAA/eM0Dp0QcW82ZzWzjVhCIqR+Z2CVfZuOHQ0/3PkuhzH75mv5oPz4dsw3kfJM/sPi0rsdXe6ZHfTDtbOLavoct8L5OGD+mePtYANYC4ywLzbWffqje2FUzEQ78kV5kqEwAAA="
+  },
+  "/img/racks/pipe/joint-detail-2.webp": {
+    "sha": "a9216cda4011d922",
+    "url": "data:image/webp;base64,UklGRlgBAABXRUJQVlA4WAoAAAAQAAAAEAAAFwAAQUxQSJAAAAART6CgjSQ1dR4Ynz8iAibebP8WcFXbtlJtGnDOGATg2b8X0ALcV0ATIAGuJoCTFydBRP8nAECsQwIQUdpxVUrZVl6WpWtl6vuyLaLVwbQA7E3YAscVHWy4RCj/StXyZIh4Ly0v7SfjWzQtQnq1LUb6rrsyJ76RZwQn1d3KJYJU55UJO6C6cKxDAtwZXYweLAJWUDggogAAAHAEAJ0BKhEAGAA+7WyqUSmlo6KoCqkwHYlqAL/sBVHbUnHoLTRmGV3s3CGAAMnLrUTd6RP8Xa/R6G90LwqFo+qmJIHk0uATUPqfyu53pEzN7Y01kHNAal7l5+ynq+nbEmaEuuaD9d1Yr89J+2AgycR6rLRT5gV9FedZGuETlmGmBtNTEibv+fvIupEr+kyt5W63tgLAbX3ezTBVS3vIcZNAAA=="
+  },
+  "/img/racks/pipe/whats-included-2.webp": {
+    "sha": "f01560f449f8d1b7",
+    "url": "data:image/webp;base64,UklGRqABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSLcAAAART6CgbRs2VBLdvxER0O/4oD4cx7adNl9OA6ICTAVgBViAPZKyNnsN+UoB2DbtUkBE/wcB4jvihPiwElh8QcSnxVky7qXFiGiylHsMwDveOAADgGhCnE4A8Ev8nXGa1Af1/VxNWoW+T+JxGhH1MCklvWEuD5O1WmlBhyW7nXm/DFa4t1d1X/l2PV6SDnN6GNIt7SxoY3hfk8YU2qG7/fT21Yct78u732ih/KIieZVUDjBGGAPKKAMAVlA4IMIAAABQBQCdASoYABgAPuVgpk2pJaOiMAwBIByJQBbdJDE/wGIsvd8VN45f56YWd8C0VjdEw4AA/u7JRO6XymS6ijzwkcomzD/L8VwEtIs4HJJ+g33c/IS/jTvQnAk0C1RYGsEx5Jq2jtUCGR2aFZ1rIYLfogXe2c71wc4kvFDKDXHdABCzz5RNYsqjXgLfbdnitKpzvId6j8BvAEJm8PB+FxqRPzRrBQFImxblHy8FDaK8p8IDBFUfc5aHX/kC+whDp0YgAA=="
+  },
+  "/img/racks/pipe/with-mats-2.webp": {
+    "sha": "77e6e6c137b1669c",
+    "url": "data:image/webp;base64,UklGRtIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFgAAQUxQSNwAAAART6CgbRsWF8bfIiJw4u+aAXqtbVEjsIKPVBDc/q8NRDxnCkBSgGsBYz4KmOWzA792wSIi+q+wbdtGmR16REDVpkqJW9QLroPJHkoKmJGIPLqhlWDtuiJdp38nYHSX9nb99+sNCSrtnQ3ULjjiaQJ2IXRtpiPHP/Ppt9GNCSwrETMT7bdr+/knPiN6SNN+Qe8Cr61N0/TlonaQ34asHqJ2MZ901w6k66ZtCdgmmHGJmtKN/RCfW6AxZlxW3MYE6m8iorcZTSLUDzPzlzapFDAhIpZgpBBCNyEe0EgBVlA4INAAAABwBQCdASoYABcAPu1kqk+ppSOiMBgIATAdiWQAzcAyx+e1wz7ZyTaRnA8Ddcp1f+14BvpUAP7uDzBnGAYmQKO3nw6xyIo5sZXAb06UFtQkKXQscNTS4lU1hqrnrLKLlg/4M4rodWKdCjPtazjOX9D5M6cTa8E8D92twWKa0R749QR74/NlkQ/ACUZDpVREQSnUd54E8FOgH+3sUN3jxjGi9WgIsp29RAvok6fea3TTfCvH9/D2aMdNhmNka4iRk7iNGwL0pVRBi6DhCnuGAAAA"
+  },
+  "/img/racks/shelf/cutout.webp": {
+    "sha": "6439ee1545897e01",
+    "url": "data:image/webp;base64,UklGRpABAABXRUJQVlA4WAoAAAAQAAAAEgAAFwAAQUxQSKAAAAART6CgbRs2VQrt/omIQM4Ec19wUFtb23ypgjAEZCiYBpYChoFMAVsBSKheIKeVENF/tW3bMPSa+gZAggAopOr7vv4gFueyLOfKEHcqzzKhnaqLgGL4RVJCAuLUqp98yWSu6zI3D9rKalr/a3t9RFrljOZal3Plgeuyr7bsd1snc0ICo7mXQS7Obqy138eXVJ06zcYAgpikbRMhTELxTgQAVlA4IMoAAABwBACdASoTABgAPu1mq08ppaOiKA1RMB2JbACdL9Y4AA7rxh20Jf43CI7CcAD+n93lxw6GbjLe/8jC5EfFLVZLsdMq7SLEhSB6GJCS/dFKlbRAyp2lZtC8wVL6+R1r6Z/A9sSDOPPFXEeRpYFyyG2yEcxlI5wm1A2J1eWWgEUiy85ELl8qB/Ca2yx2Sj47da6swOsJvIbT7dRCyYX93COz4QfmUAN141x0Qx6iigWXHp/1PT7jDdfwG5PS3WnpA8UZBzFmNEntJ6AA"
+  },
+  "/img/racks/shelf/joint-detail-2.webp": {
+    "sha": "f1c7b8a4beee7d04",
+    "url": "data:image/webp;base64,UklGRlIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIMAAAART6C2kaQ2+QV86j0QEhEBD+lXpRwwqK09CRFYBQ3AIkCFNbAERoBZg39xcUkQ0X+Fbds2yk53zxgOGV1elWUXyka8kODgVeHv3YEQAuMpw6ojC7tYD72Vyvqd8Le0O2pltdZz7i1bpDQ+QD82QghhPGd4fu+v/1Zui/x2Wap3RYIdBgBWUDggqAAAAHAEAJ0BKhgAGAA+6VyoTak/o6I39VgD8B0JaADCsoABnbjGk+2zlRfWAG4AAP5SNhWjjUJP9+slz9mDunSRJdkuI9YBm7INzgBpJiDMoffp9CsDx/r1AQ5t2F9+bidBavtSjiRUL09GeY0mAo0QQ6ElWdyUnPRcNmSSxVT39P/+GYR+LWotYK9D38kWf3X38lFMz3vEFKHXOidj7eiiSDDfjq9oUgAAAA=="
+  },
+  "/img/racks/shelf/whats-included-2.webp": {
+    "sha": "811ee626bc17eebd",
+    "url": "data:image/webp;base64,UklGRtQBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSMYAAAART6AmAAg2JsTevCIiIPuMUesBNwDYtg3gC0Da2dV3s2UODecA1b0xe9UBacoJvDc9F0T0fwKAmr5b+i5YBJHOoVv6JVxLEn4J/WLb0O8FeWZm3YRQIIiPKZ9ZI3yaGKNPO8o+qk/qdV3XG/MLafZRfQKfJv9Da60REq21JMWcIxy7rjuAD0sJkGg2Emp7sghp+zhImpwfkKYtvjv07tghPcUYL1EVKSPcxhgrmlw9IIzbtl1Q7VSPcHU2rYQ0ExlCIoVA+BRWUDgg6AAAAPAFAJ0BKhgAGAA+7W6uUimmJCKoCAEwHYlsAKcpADn/xbIBzcqUXgP+HuDy2Z1qEhgsg0AOzw+AAP7xmnD3hA94WVXaFayWFWMbW1q16ZbeXIMuDZ5Pvn4qoqmNsagDf/032eEh0zs8wJS7AXz6LBIy1/XB8WXlcLlJtI4a5savTdFaAf5XxwoAt+kZ+VE4qLhj+i16Kp6OtfhMHGYEkaQz7F07Exqzme90ydHRb0UOGYKxflwg0efPW7Xl5fCB4NmTtpJ+AZmL+qYaAExgLPUYtMPz5eK9MWbLtHrVHObsG+8asoXEAAA="
+  },
+  "/img/seeds/alfalfa/cutout.webp": {
+    "sha": "9e576cedc7ad509b",
+    "url": "data:image/webp;base64,UklGRkYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHgAAAART6CgbSM3dij2vvuPiADMr3rOBEeRbTvR/SjgoyAKyALYsc8GogGeApKBmf/0klEQ0f8JAOReYG+Ge0fs/JGIqNJ2iWJmHo7+T/mPeQf9pfrAfEIc/L6TfqLWDqZVMfeuBKBnzah461wBQNpBQ9TFO0C3g9AxcBNWUDggqAAAAPAEAJ0BKhgAGAA+4WCpTailpCIwDAEQHAlAGJsEPAFrSYtOH38Sa1ilQan01+CrIADiMDkL9XNjt2ifPb5b4+o4laPg/7KaRJkVoyvt56+TGClVhU56/CoXDqeQrU4LrD37C1M+fQ+Jf9Eczm/avJ2ubfcxkWUpkI2+npDskrSdCKW2DHvdLSuFnjSW+xtajbEKvcX6r9ZxVr+kq1UQlq323j/HxAAAAA=="
+  },
+  "/img/seeds/alfalfa/hero.jpg": {
+    "sha": "75ccc614cfc1be0b",
+    "url": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAQBQCdASoYABAAPu1iqU2ppaOiMAgBMB2JYgCdMoR3BtVZ3Xicz9SfbLKCvKb6obGAANx8BMduZc9mLwMEQf6G3mhWjBdcJFKFA0FdvL/rb4N0+kH4EIajzHHgZgKOH61bhW6F6OE7sHG3DtoOwehNWjAAAA=="
+  },
+  "/img/seeds/basil/cutout.webp": {
+    "sha": "b53e325e4dec72f9",
+    "url": "data:image/webp;base64,UklGRkABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHoAAAART6CobSM2VhB399ozIgIUrxylYnAUybZaPTDwXhSgAHKQVQSgAdzjF4AGSO8NKziJ6P8EMOhZUBXOcuIPI4BazHz/AG5yN7HNm2lnzB2aPT6k2OMxw88Qz923FYKo7nX90biaREn5/L9rlwHQV1AOY+VyRpUNwGAbAVZQOCCgAAAAUAUAnQEqGAAYAD7taKxPKaYkIjAYCAEwHYlnAAAp1SBzafbMq09naUcykmOFW2H/NG8gAOISlPMO4DNt/bqMBIi0n9MyTnDPNYiMKi0qyra62TsrEzTGEev0bPbZCzwTzhy3MFeV5p29gu53ffeYA4OZKCSLGMhnA3RzEX8XVh6A/m/f0lrlj8/c3tfR4li2AyaB6LeMXytg7Ypq3hgAAA=="
+  },
+  "/img/seeds/basil/hero.jpg": {
+    "sha": "8ae09228d1fe00a6",
+    "url": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAwCdASoYAA0APu1iqk4ppaQiMAgBMB2JZQCdAB5eF1Oj9wbwNDbgAP5hXKawBAtF3RGc+ZrXUX7fQI+zLMdfVl9rbTNidrQmcOVk3EeKFKxB8g2Xm3MQIu0W0Pa6skAAAA=="
+  },
+  "/img/seeds/beetroot/cutout.webp": {
+    "sha": "a659478117490a7b",
+    "url": "data:image/webp;base64,UklGRlIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHcAAAART6CgbRs2VBT7fxERoHu2KXKwimy7yU0wkDgIRUBTAF8YaAaqAHiDAzBQnl46GIjo/wQA+hB7Ex2KXTAQETVyF2/MzKN1ST6w7rqD4DH/oD0wB+U18cByL/1LP23MracBqCQbJp4LVwDQdlgRNd4OULbjOho3AQBWUDggtAAAAJAFAJ0BKhgAGAA+7WasUCmlJCKwGAgBMB2JZQAD5aEHASw9e32/TFoG3yshwjsusVHvKOPwAPkMjNeJF0giMHiblBeXIoiXGEssc6oS/7A6lVNQae+vb09o9M+jUVyh4cc0mbtxDp+p+SY9r1owEGZ4abGh5gJvGBWszT240F/1M3sNFKWIIogTvny9FChC+k1WMLW2cnCLRQSr+FmIYSao6ww+9OZNMpBgDQ5bt22O1v4AAA=="
+  },
+  "/img/seeds/beetroot/hero.jpg": {
+    "sha": "b7fa8edeae51edc8",
+    "url": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwBACdASoYABAAPu1kqU2ppaOiMAgBMB2JQBOmUABflAb0eZKH8NFnOuAA/LM9gXHI+8y0bFzaEjGud7RPUGkRqJ0QDxHG0akHBpgGEMI7lik7sSWRqf44gprq+6KvvQAP7RtAPm+JaExrwAA="
+  },
+  "/img/seeds/broccoli/cutout.webp": {
+    "sha": "f965164415595fb9",
+    "url": "data:image/webp;base64,UklGRjIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSG8AAAART6CgjSQ1dSaYniEiAjC/rOaMBka1bSv5UgApoAmgis6duc+9gOV1SHCJ6P8EEIiH2Aumtac7pagAJPLBvAFovsEP+kvdAbuSPSBca+/5T+SfC8Z/3VKDEgCm7fTb5Mk7QdTs+Hf1HSCoGiAenQMAVlA4IJwAAADQBACdASoYABgAPuVgqE2pJaQiMAwBIByJZQDKIKnDAV++v7Jn/5nCvEj+nxHybAD+x1bBQFdrsmb88NhGPVJ+VaRizxodZj9+3qYeYaAQoRTm3Hp2nuRj8W951JQwm58KTcqXGAJyZ/cH+whf1KsA9EfJbbZUfe3mlgSDeWtCLmUDJ0uW9r6NlgXaM8IODth1HuWNl6CbfrU/wAA="
+  },
+  "/img/seeds/broccoli/hero.jpg": {
+    "sha": "fe766aa17cb4c195",
+    "url": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JQBOgA22k66B4wX8Haj+c8AAA4DBr9B7UYfDAOtCSNA7nl1gbrNyLfeidCDlo/kO0vufWKtZOgrpJ5qTbpYebuDarpB9RgzD/tjKD3umBRFe1AAA="
+  },
+  "/img/seeds/cabbage/cutout.webp": {
+    "sha": "123ceb88cf94eb3c",
+    "url": "data:image/webp;base64,UklGRlIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHYAAAART6CgbRs2VRLt/omIQOfl1T4NzmrbNrWLAg8FGEANXgYm0H8HYIH3fV/ei08F9ovo/wQQGCYlBiXinUip4IwTgIYJ4eMFYOEfY4LzpU52aW1C+7FKjwrG+lf9cb/Q+pQASPN6f52lLRhmnI1TEQiA4XqAKVMDVlA4ILYAAACwBQCdASoYABgAPulcqE2pJSQiN/VYASAdCWMAygGL+/AA3fgIYniSdLEvTLoy6W9AA/26YAAA+C/2pSXVxpbTgkmJPc/wKlhRPBZYH8I5OVd7WbeIOVWtJEtPlG+I/jWPw7s6Ad+rv6Mt9Z30FxlkpNOBLePfk4wBwLRi6BFvYZpvZlQUq7b+mFAs7+X5dL23FhhkxR2oJx3pZZVRqLsvyiAdIuEHMbcDF/ZZWokEb4X7agAAAA=="
+  },
+  "/img/seeds/cabbage/hero.jpg": {
+    "sha": "a98c3dbdced930a1",
+    "url": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JQBOgA3CZfQ7I5AgIBFzArwAA9903y9+WwtFDkolg+gLtAdkIBbyEypBgKvaQ3cmnjRqSg1oxCY+j9OzVMMnjsCgvoKW4YQA8bNa5QdmnPDg8nYAAAA=="
+  },
+  "/img/seeds/dill/cutout.webp": {
+    "sha": "51756e623339c252",
+    "url": "data:image/webp;base64,UklGRkoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHYAAAART6AokqQ2eBpyPvhBRATgffKjD4JVbVtK7gwFZoAAGsAaUMEL6L8H0AKW1yFBRP8nAOCnODLnlB6UummaJpMO5rrv+97J3yhn0gvLiXCLngzPijf6Q/5a/CNWTtO25zo5uEEybHMkAQDXNK9uQoPgVNU0TcRDVlA4IK4AAADwBQCdASoYABgAPuFWpk2opKOiN/qoARAcCWUAzu2MffKxuAUEhCEcPx31S+I6Kzy56xnagaZQAADiFobWe3ZbSOW+loFjem/ouWOMpU7Xw7wI9zBU/Q37jWmHjw9ou4XYPDjxfozc/DLPfviur5MEHurgjiHeI60DDzrL3K9V+vKZR1c5A7r/hDGMA2ZKhkOIfQ0EZ9dkoGpfTF0ceJ0vpt+x+L+XTrNXRaoNAAA="
+  },
+  "/img/seeds/dill/hero.jpg": {
+    "sha": "7683f9e9e2aef7e7",
+    "url": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBACdASoYABAAPu1kqU2ppaOiMAgBMB2JQBOmUABe8ihmOLOXBC4CuPAA4DBr+y/wlU69SHid+fcedSQIQ3xPAHaqNde1T/vjoenhkbkONX+QSoPZvgRvOJnGbHHchJuoi3zjjdysAA=="
+  },
+  "/img/seeds/garden-cress/cutout.webp": {
+    "sha": "039af066d939c2f5",
+    "url": "data:image/webp;base64,UklGRmABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHUAAAART6CgjSQ1dRoYnz8iAvD+8TJLwCCybSUPKGAFNIAlIIMX0AIWQAtY3nfxAhH9J5q2Sd3kziBSIOIMHxJY0LRt25Ya2I/jOPq3NiAxF4lX6gecSzqoLmVo/dV4adj5B5vflcO8mY6ltAU+2vSipkUw+KZK1xEAVlA4IMQAAAAwBgCdASoYABgAPt1WpU2opKOiN/qoARAbiWYAzEsAK4D3XIOAMQlPdDY3bLlCutWD8MGIK/XqI5zAAPkMjNeJCMivjgQUrj1H9NA9+dqBEk6VMZauGkhikfcoD2LeU4yJsy8bAHXswa5VTh7O3/N6YvGaF8MXmfXuVUKabJKYJDuov5CodHaRcx927uSCpEi4VGjPaMo4rek+qcxzIbxvTHAhou6PdKDr/0udPj4DS3sisOUPPUpwfztfbUL8RKZewzgA"
+  },
+  "/img/seeds/garden-cress/hero.jpg": {
+    "sha": "b1eb9c744cc2d6d0",
+    "url": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAACQBACdASoYABAAPu1iqU2ppaQiMAgBMB2JaACdMoMljDvZlDqJIyraoadUr6AA4DBUaiiLA/CPlIRc6sOe049PknvsmgfBnjxH4dlwqb4WgVVWZQndA0nZdDT1nCmAc98UQ02yvh5e+l/llH0rUNa4PoIAAA=="
+  },
+  "/img/seeds/kale/cutout.webp": {
+    "sha": "537fe8d4b498ecd5",
+    "url": "data:image/webp;base64,UklGRlABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHcAAAART6CgbRs2VBL7fxER8Ppl+mWDq8i2EylgYMAACiAL6GBHwOI/C0ADpDccBTcR/Z8AgigOIVAiRp2UCtn5AmDHhPr7B3DjWsxNZuFgbS/7mC1U8vBnlt11IsnCJMdX+ONaUaHt18//e5cSAFGcry9YSQDkBUAVSgBWUDggsgAAAHAFAJ0BKhgAGAA+7WStTimlpKIoDVEwHYllAFUjg9EJHGVUxMuElg5hcWfaR6uyDuFcrVAA4ha3mx1aLOt8g/v36FMi8+rtfjwIyDxNU1fXH2kMbL8S5QkZwB9Sz6Xb04xYj5vDlV3KbdL+Z+SZ35txGaerczKFOg5/A+o7MGHiyR88IG9yfEullpa31uZkRS54Dn60dWXvcvHo40aQp8T5Pa926J1OYDW1Oqpa9dgAAAA="
+  },
+  "/img/seeds/kale/hero.jpg": {
+    "sha": "c484bd05d038b3e3",
+    "url": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JYwCdABtdo5yFZ+7+UkGBZLQA+GHZ2XpFIUp4fxI4OG7zYxjvICGHHvk9ArDbhTeAfkVNirLy8A/7WQIHS3onZaC7UOrnPIufWIcOLeQAAA=="
+  },
+  "/img/seeds/mustard/cutout.webp": {
+    "sha": "d7a962b1525f5459",
+    "url": "data:image/webp;base64,UklGRlABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHwAAAART6CokSQ1thaYj14XEQG4v795mw0OIttWm/cTA2QABZCCTDSQARSAAtBA2up9P+TgNqL/E0DQpeBWJBUs6AcAtcnizw/A9EDwhHpJYf4lS9I+cbDmiYUVb80PiEuKpNv+PzSeIEBL0mr97bVLAHQnLAfUniCuOWHkGnQTVlA4IK4AAADwBACdASoYABgAPu1iqk2ppaQiMAgBMB2JZQAAUqo+VI67qNtzxUX8q7nMiR+KnUAAzjFobnSxyg1NskszkqgLgZJ0ZtNuV4utwxnULfp0+mNaCpCLi+u4I4UJ9CuC9ary48qqhIKgfx/r12sY1NS73UVTYmBBXjj19QLU2+2MJRqEYXcCpTUdGC6e3An2tJEYiBl7Q+yV0vp1iNWTUt2IuD7DwJh3pi6+hkUsAAA="
+  },
+  "/img/seeds/mustard/hero.jpg": {
+    "sha": "5616fce344156b21",
+    "url": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAACwAwCdASoYAA0APu1mqk4ppaOiMAgBMB2JYwCw7BAYc7RlkTIpMAD+lQQf7SVtraKSAvNqIYkxfB0mP9k01oyLf4fIcOYBuDuXCUknNvUUqJTQ8ICqb8lhdwDRngAA"
+  },
+  "/img/seeds/pak-choi/cutout.webp": {
+    "sha": "4211e74c93eb4c10",
+    "url": "data:image/webp;base64,UklGRkgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHQAAAART6CgbRs2VBL7fxERiHya6GU4imxbje7/MfBfxQA6iINoQAO45z0bmKmnNwwCIvo/AYAiIhJYK3dTrIy6aZomkxt/ZuZOu0ze9FsVV4yr/AI1rGLxAf2G3Cjnmbl1BAB4QTLxEukrRZZfN6G9AkCWZdHOLlZQOCCuAAAAkAUAnQEqGAAYAD7tXKtOKaSkIjAYDAEwHYllAMzRi3JyJYdQlKwK/wjgXaBpll4s2i4dOQAA+PN06enxkDy3XCf+hUbApLeemXTJyuB9Xux4R9c19bf9GlDh9UfnMXqDKCG2Df+BcZY8nlGiKs0e3Xly4iGY3HtzDww1mmacb0b8gZPxVuOgkSTZVq+56uNZKqpY8bfpE/IhGB2Hs8ZggYMAi2xvK42bIb/fwAAA"
+  },
+  "/img/seeds/pak-choi/hero.jpg": {
+    "sha": "c484bd05d038b3e3",
+    "url": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JYwCdABtdo5yFZ+7+UkGBZLQA+GHZ2XpFIUp4fxI4OG7zYxjvICGHHvk9ArDbhTeAfkVNirLy8A/7WQIHS3onZaC7UOrnPIufWIcOLeQAAA=="
+  },
+  "/img/seeds/radish/cutout.webp": {
+    "sha": "7f321746ba442ac3",
+    "url": "data:image/webp;base64,UklGRloBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHgAAAART6CobSM2VhC9vd4XEQH3zL9rGpzVtm1qDwUYgAGYABGYQP/xfV8AFlDe6wb7RvR/Agy4VJBO02qtK5PIzguAxaZ8/wBugTRbLOT7UCyejfYQW2l3sYniqDIV7S/9x+qbRN3Pz/978A0AblR052VICQBRUSYugwlWUDggvAAAAHAFAJ0BKhgAGAA+3VqlTailI6I3+qgBEBuJQBmf65Kvu+ADgpEsA+AyCFsg333b2XrXZ1AA+PPUwnCD6TH1bWNK9yc3u7LzeGE0cM0YX+yL3RZVdMdFdmxtW/i+C263dvBqN8M2t4MlKyQUKSgQJEk8rH6gvb/vuxVuXCDnGwLu/hzWvGBwBsj5Rwz5JUzx/Oi2o4iJJjeIs/fnNAYSQxvuRw2El7kVmJ6HFtG1iCDPTEhwIgab+8ZaAAAA"
+  },
+  "/img/seeds/radish/hero.jpg": {
+    "sha": "ea6bda8abf60e069",
+    "url": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZgCdMoRwABhxVVewAblOlXHAAP6azYrlXEebcxvryNpb6/hZn5bPBNrt65Loy6aELF6ghvTn6ItzVR3Dw0Ot76oLmqkaBjSF5aWb8pLRn1rJUo/DUhXXedRCv8r/yVXsngAA"
+  },
+  "/img/seeds/red-amaranthus/cutout.webp": {
+    "sha": "79a31fde688b55b5",
+    "url": "data:image/webp;base64,UklGRjoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHoAAAART6CgjSQ1dxr47pk/IgJsdPk7YYaDyLad5n4U8BzQBBQHHQw0A9UATwGQGEh4eukoiOj/BAC0VdgaURzHsa023sjMXGmbYBURGZ76X6t3vDvUxn0o3zFuyPZ+78n3ps8q0jsEQI+K5iPfzgEAIr9pudwBdNOyLNo7BlZQOCCaAAAAcAQAnQEqGAAYAD7taKtPqaWjojAYCAEwHYlnAAAudg1CeRMTx8KcL931fgAA4jA5C/VzrVWUovinkOS73qUhI7a6qC3/5BzanSuf3Wff4xN//y5jxezbb+2t1f3OINdqXwOVSaAtRckAWXqB9SFJPj8IjvS7v4aePsRQDpx9DWFuC8e4QybdAmxWPKSBRfuOekTjnZr+GAAAAA=="
+  },
+  "/img/seeds/red-amaranthus/hero.jpg": {
+    "sha": "d7bd419a69df2e66",
+    "url": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JQBOgA9LHFDqvjT/wdVCNdvAAzJ5Wudh0CmcR+Y9P+sdkSec3s0ntzxybIfktzB2MXcG+t8xqHoLf5NytpwAq7qcVed5D2thQy0EBqkE8AA=="
+  },
+  "/img/seeds/red-cabbage/cutout.webp": {
+    "sha": "7d818a123914d3cd",
+    "url": "data:image/webp;base64,UklGRlIBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHsAAAART6AmABI2SQe4wHUZEQHF83NDg4Patk3rosBDAQbgD6AKCuAALKACD3mvG+wT0f8JYIi1ULP1hoh6riwfTwAXqRlnAO/USoZpdEKpNTdvV01mNygHH59A3JvQ3H80zdcqZkC03p6+8/9ScQbERXt8PC8LBYjyjsqEOQIAVlA4ILAAAACwBACdASoYABgAPu1cqE2ppKOiN/VYATAdiWMAzuwQ76go5Wn/nTPZRAT8DW34AOIwOQuzU0ey/uP71Z9Z+wJ9KAr99/HT4SRjpT45DbBxLBKES46n//1Is4Ja4/tTv+r5GXsLULm1+M39vf9f3rRmaYy8ZLV0R1f/KCCFUbTqNqD3iRUyTD04MFKGqFCB37iACNIVbGtoTKdxX9ujZSfTEhCxdE11ryoTnRy2A6AAAA=="
+  },
+  "/img/seeds/red-cabbage/hero.jpg": {
+    "sha": "e2648ce7674e884d",
+    "url": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAQBACdASoYAA0APu1iqU2ppaQiMAgBMB2JYwCdABuR5yUiO7fizk4QAAD+YVymsCnWZ0LP2WrKAoxxrrUWEjM3W2pvtMaWVc7AO+2cvDPK/CxeLotbadPCWjogGi0SkHFsAA=="
+  },
+  "/img/seeds/red-onion/cutout.webp": {
+    "sha": "67ff3af6a07172d9",
+    "url": "data:image/webp;base64,UklGRjYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHUAAAART6AmAAg2psPe3CIigCL2bx0NDmnbVq17H0EJlEAK9BNIgh8AQZACxfv6Eawb0f8JEBijDO0sV0rFchBcb0CnDZLvHzjv4jQSzPJH+o3sz4hcqxp7rHbfxeWl/vSeFKBnzeH5f7eWAAw3rA/HMcAJI09OTAIAVlA4IJoAAAAwBQCdASoYABgAPu1orE8ppiQiMBgIATAdiWkAAC52Hc4f/Or7nVkVYV7fTiKjSVRQAAD5DJI4oZta68xQaGqSv7o8ZYFiHCzjbxvk+9L+D3iyOJy/E+bXTP7FQkjl1rjtGD8CobfsbiEcpD2z04b/JbbuuKk6P2xcoiiJm2qFEIUP7MJ0haqjsx0P1GYxdcb6xAUq1OOimAAA"
+  },
+  "/img/seeds/red-onion/hero.jpg": {
+    "sha": "2b2f7d0a9731b957",
+    "url": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAAAwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JQBOmUABV7cPyHM/nDUBBvwAA/tXqbpNMUKZGFl/hIg82KMmLlGYR5hUE0+Z6COqEPom8PavbAzQTSjL9xAaRPksqxeycZs80XFAr1u8f7bNgRkzzSm4hgfNE2pF/OJ09cJ9QAAA="
+  },
+  "/img/seeds/rocket/cutout.webp": {
+    "sha": "bbb5d56ac86e007c",
+    "url": "data:image/webp;base64,UklGRkYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHcAAAART6CmbSM4VxDt9N12ERHQ/hqbcBVJkmL13hkgA+TgzgE6IAH8TRPvnw3A6F14oCCi/xMAuErITpLKQgp2IqLJV7yYmU+q5x/ZiqvRRWGZLF9wzM7SbNT9avvaer+/eY4FAGT1cONH5UluGPVEjS8BTpikkVDpAQBWUDggqAAAAPAEAJ0BKhgAGAA+7WKoTimlo6IwCAEwHYllAMzQIcw6raUtLG+HkNAhzuFYlaIZwAD+x1bBQFdrsmcSh6RRPHsc9HgGRCT0RtztnDjmUwCBFy25uW6zs7qb/N/W+Cp+NfBqMPWHFsRlOqxbmfy75wSuutsSDW/QCxqKQypNPfXMkR0dA6vz1PjA8AwMTgBmYTC2Mua/qLh4a1kGgFQuXveAMFxxm+gAAA=="
+  },
+  "/img/seeds/rocket/hero.jpg": {
+    "sha": "11f8a170743ca74a",
+    "url": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JYwCdABtdqWL1eB30r1gj9aAAAMyeVrnE5OeEz95FtWGDgxWuZWjNVhvIcbUFUSbPK+FZbt68mrIF2PuG578ipFIHXFWReKul9gsgpL+WKzQA"
+  },
+  "/img/seeds/spinach/cutout.webp": {
+    "sha": "fe67c330e1379d1c",
+    "url": "data:image/webp;base64,UklGRkwBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHsAAAART6CgbRs2VBbdvxERYNbKhxgcRJKsOnvvG/jvK4BEAAvgxAAZ+GQgVxGABuD0PnYQ0f8JALRJMMu5lYzVjZm5U5a/iMg9i6Yi/IzBMo02idB7XS2ljSJ80xy9rsryeL9F+jEByDen5iWfbkwAtJ41zN3SAPJqPp8XCAQAVlA4IKoAAABwBQCdASoYABgAPu1gpk6ppSMiMBgMATAdiWUAA+SZBwS+E5FoykVZcSBtjv6LbbRVV4VAAM4ykfXvfU6HQK95qmF53IlDWg8klaoEU5bTJjMNiHvbsHjd/KUS/StFqVQfPUUCzbGRJXIPkhsXPTvz8WPxJNw9ghGxofIp23v7IOM5t4RaHXpJpHGcHd43svkv+TNqiHZsuOlykXZ7QRjo+l5XaiCdC68eAA=="
+  },
+  "/img/seeds/spinach/hero.jpg": {
+    "sha": "db3a130d6e129a9a",
+    "url": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABwBACdASoYABAAPu1iqk4ppaQiMAgBMB2JQBOmUABqrFS0srAxy+D0TJ6fuAD8jVS5zuZXtz9Ru00z38CAI8GWNFpeJE6iwkAdYjj7bacGQ5SIbPx5+wC0iH8sHtGXtlnDscIGMNmmPEKYQtuMJKAA"
+  },
+  "/img/seeds/sunflower/cutout.webp": {
+    "sha": "1d09d73108df715b",
+    "url": "data:image/webp;base64,UklGRkABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHUAAAART6CgbRs2VBLdvxER8N9Xu6bBUWTbavTBwP9RgALIQVYxQAJ4zwJoDJDecGLgTkT/J4BALilZCndp0IXatABytrA+PwA938WuUVfKM96L4oxxEdMThj1ixX9KNf9/KAy58IJs+r1ykxJAak7SYg0Qmg4o5CAAVlA4IKQAAABwBQCdASoYABgAPu1iqE4ppSOiMAgBMB2JaQAAW+xefpWR6ZxgP2F67E3sfbgRdrz4EZSQAPjs88JLaFyY6ATQZhen1oJ7DUrJ4WNd+hKZUE7/kcm9l/pgCs8ZL8+2LBPSlKJvjzFc8gmyIMzU43Eghb7PQQneJ0NHJau2Dv0PQ0Ycz+fs8RgEl47ciZRMr20zODSaitjjrCj31taY9U4L+wAAAA=="
+  },
+  "/img/seeds/sunflower/hero.jpg": {
+    "sha": "57deb956e445b4d3",
+    "url": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABQBACdASoYABAAPu1iqk2ppaQiMAgBMB2JQBOmUABVzts6xHduBwNCrEMAAMyeVrnE5OcCwWP13SYS2aw938v+QfVi3zE7YSiOKPz9khXaW9gQ7bQboQjdJyavm9whO+W8zZjHkOUsKaQAAAA="
+  },
+  "/img/seeds/swiss-chard/cutout.webp": {
+    "sha": "7c032dfd274a6e8a",
+    "url": "data:image/webp;base64,UklGRlABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSHgAAAART6CokSQ1tQr4zYcREUC97HsNGhzUtq1EXwogBayAByADiwgaQGYKWAHLi0OBQ0T/J0BgTjJ24kk5CvsBqO1R9v0D953CLfS6YEqNnA3aqc+o2eJxEmuie11/7qklwMiL8vl/31IpwPWicqBOlRgbXnz5yAkwTABWUDggsgAAALAFAJ0BKhgAGAA+7WKnTimlIyIwGAwBMB2JZwDO7BH24qugKBAMWrIJxQgQlA7e3YiPFxWxAADiFrAuZWCteK8j/kA26nIyyMyYk1idPyrf+TxKx8/KlcN/AWv2Qb4kDHejmJJ9HqYnyGL6MWTsrC/r+ASL2hPxjFM1/tp9foxQNMYa/fohET5i3M0cWmxwfi6MKf8Nlln79GsQmfDNv2mWF2px3yNGrj3p9MhhO9M4AAA="
+  },
+  "/img/seeds/swiss-chard/hero.jpg": {
+    "sha": "3bd44147dc4a241a",
+    "url": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAACQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JQBOmUABwcpLBVzHvrLW0KIuQ0YAA/LRjs4EstuLnXaEdyE7Dk2o37xPuQX7TIoCUELLXowmgKiKIzoET/5jIiHG9wRvFh9a29BTeS/AG0UoVojoxJYAA"
+  },
+  "/img/shop/grow-media-block-cutout.webp": {
+    "sha": "de7c6beae29de627",
+    "url": "data:image/webp;base64,UklGRk4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSI0AAAART6CgbSM3diT2vvuPiACSz/0KE44jSVKc3rVgduIsEP0PLRC9WQbwm/WnkQW6tZcEFkT0fwLwS+P6sm632y3YoeVT5Hxue+7W7XzPxAxyjricKxWydqFjdhp0Cyw0aB8YKtChduRSKaQP6776DIxqzzUBMHp7FhpAunqKyKVUAKgxmU6nBcNrGg02+FsAVlA4IJoAAAAQBQCdASoYABgAPu1mq1AppSOisBgIATAdiWoAnS+iJAAOjCS7z6LD3ux4QT3uFxSIAP65x/2meBIB77vma+jYWc3cg+y22yyc5JzEcBBCU2k+5gT9TMyTVBBlZg4t66CdsZ5Jf2mGwR5PmLKJbpvH41YEi9IUZpfu/fs/P8DL1b/Z+qc/9PZff4TUOzAcE6QoStPPSfJOUoAA"
+  },
+  "/img/shop/grow-media-photo.webp": {
+    "sha": "0369fa8f7ae85951",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAADQBACdASoTABgAPu1qqU+ppiOiKA1RMB2JYgCpI68AvNnPxZ7c+OuQgxeJ2sZAAAD+yOAOa8IbBZuE0OOynLWccyThvqNo8o3w/Ds9UiAuIJ4Rd7VPTQQzPPHXhJKf/yiw0gORYbM82+GjBbGmukhwfp38OtsPnTs95uW8zyGG0IAA"
+  },
+  "/img/shop/microgreens-cutout.webp": {
+    "sha": "4f5e1da8060fcc75",
+    "url": "data:image/webp;base64,UklGRmYBAABXRUJQVlA4WAoAAAAQAAAAFwAADwAAQUxQSKcAAAART6CobRs4NRaX+11ERPkOAW5j21aVc38F9/Fp4GvuOU7sBTi553or4J2C6SGi/wmoE/xpOQwRlYkAKK7fiZtdDyGAjecxfnnLAX2Sj+pHTgX6Im30Jk8h9EW7HXbevq1g5m20HHzu+4mg97NxMvP3USqYeR7DM7nuQM+kpS/y0YU+SRu/SMtFz7T7Yef5XQc6ux3q3fB6WO4DRFXiYlcmrhTACQAFAABWUDggmAAAALAEAJ0BKhgAEAA+7WKpTamlo6IwCAEwHYlsAJ0ygyNvSO0R6rmXPTfg53lBmgAA/ro9DEezT5oYvPAGKQdbVQq3PWAxLXen3RmY4ZCbqgF7Fr7MEigySvI6p5mfn99kyBXt6fGAZFsi0ODODse6O6Yc7ph4bIY8BbwyxGRE6Pm1xGMQsLM1uiPjtgQQT6fG1+/ec8AgQAAA"
+  },
+  "/img/shop/microgreens-photo.webp": {
+    "sha": "25bd32cc52f5e7a4",
+    "url": "data:image/webp;base64,UklGRqoAAABXRUJQVlA4IJ4AAAAwBQCdASoTABgAPu1urlKppiQiqAgBMB2JaAC1F7DIVA3StpC+vBy7d3WZAdyzf1IAAAD+31xoOixbnNLevsiH+7ygR4K9pE8ZBAWhFYMYOw9faYGH8xHD3NDGA9Q/5tcbFMJHVNAx/H2Ip7qr2xQoecdE+3Fye0GeN0n/8w3YqNFsEOgtRWRN3qrkyj/9oztvrslOjT/VdSPOCy3AAA=="
+  },
+  "/img/shop/racks-photo.webp": {
+    "sha": "530790f71f84b204",
+    "url": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAADQBACdASoTABgAPu1qr1CppaSiqAqpMB2JQBWAAiAhQaJAjMB6e4QK3fARLi2yAAD+50UkIF4wgaM72bgFHcXP7GwtTgwtI7a5CW5sqOI+EYYvjgGSV6/gnQdvxHkDpw07RebucwZe3XzZNZY5hnvV7yRA0OJI8NdVwJRcAAA="
+  },
+  "/img/shop/seeds-cutout.webp": {
+    "sha": "a292d40c990a246b",
+    "url": "data:image/webp;base64,UklGRkIBAABXRUJQVlA4WAoAAAAQAAAAFwAADwAAQUxQSIcAAAART6CgbRs2VRbt/omIwKdibJNwGwCMoiTPAq89OoD3Tu1QOwO8hAHgchvk5rUZIvo/AQAAc3VFcMbJXj5Zgtb8VAudT5F1YxJiyhyGhOTbckhAfBct7BrWxtYDBNgph/lkADdx6QLi0jeDuDTeC8Y/3ydq/yUgPtaKG+aGrwid8eM8rt7reosAVlA4IJQAAADwAwCdASoYABAAPu1iqU2ppaQiMAgBMB2JZAC06BSu5GIxZADh5JoAAPxdqsSjQpYj0fdKwMcnGoWmI8BndkQaxnfVZppydQa6gZIOsL8COKkVFK7CdKP9ptOy9h+J+6j2zjO+Heyi0ns4I1tUGFAOxnD2cULadDVPL8TfyNpthMLFKvO644LeehSUp/i6URApSCgA"
+  },
+  "/img/shop/seeds-photo.webp": {
+    "sha": "e856bb907ceb7370",
+    "url": "data:image/webp;base64,UklGRqYAAABXRUJQVlA4IJoAAADwBACdASoTABgAPu1krE4ppaSiKA1RMB2JYgCdABEc3XFset9Vecdc0KKHPRQvsgAA/sjqtBpFU7gYrI/p+MdOkN43F+v/fmMcxOZfMCHuzcte9XM0Tmr04QRe7yCnugyyFregA8JBttc1IA3EGwxljh7j5uJ3DoRq0auYV3vbCZkLD4JOkfDYLzxInS0175KgcU19TR6ZFzAA"
+  },
+  "/img/shop/trays-cutout.webp": {
+    "sha": "ec27a12b4cd141aa",
+    "url": "data:image/webp;base64,UklGRjQBAABXRUJQVlA4WAoAAAAQAAAADwAAFwAAQUxQSJ4AAAART6CgbRsWl8bfIiKgiH9x4LbWtif5/t8FiH2mNvfZPlvHX2vCDwOIHxPAuy/uENH/ICIzmAgy/PHxpRxaPjV32Il7BwAfmQEAqsF/+nfrAOaLHP2YtYrIy7XmMqZRzQxc5aIFgMoZ9hrXq3uJkQHMyqE9s1axMJaFZp6LUc4MvOWiBYDGHfYT7wugKWO6d02pNhYtivM0MImMiSWICFZQOCBwAAAA0AMAnQEqEAAYAD7tYqpNqaWkIjAIATAdiWIAAR7pfVgcbqlXZkMAAP7747v7CnFSWR0cKAUb6Tk8859RfJcn4Eft7dLcbBqyiS6xMXvYBNV/NkqL/3oLov9MWSik6TmczB0mgX/JvfphG59ZDHAAAA=="
+  },
+  "/img/shop/trays-photo.webp": {
+    "sha": "e674147f579d4ba9",
+    "url": "data:image/webp;base64,UklGRqwAAABXRUJQVlA4IKAAAACQBQCdASoTABgAPu1qqVAppiOiqA1RMB2JYgCdMoABqdWWrxciAc7/yJYvviL15BV9FPSoAAD+mBUvqq5MBdBCb3wwcAu+GOM227zPDLURnN3Y13GVYfL5amhNdakG3onB5g3Y4Bbww6lcV4tT7h6Pt7gdg6nadQLlB0APKbNkOorrkiofRj2s/AJWScJa0TqEmXzo3MPQ1QIujZ4W2ugA"
+  },
+  "/img/story/clean.webp": {
+    "sha": "36301de2de8d19d0",
+    "url": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAADwAwCdASoYAA4APu1iqU2ppaOiMAgBMB2JbACdMoACObzw+OxOexngAOFZpR0ntl0QmuxP7Tgv0zFLXeN3cz3mHUNzxlQDIYucD6dOUhCFiOnotbemQf5hkLSzijen6q1xjxS4m3hU3eJ2SSp60QRvCQgYW55uLcY+M4oK+jEFCH06+dZXWSm+z77gAA=="
+  },
+  "/img/story/closing.webp": {
+    "sha": "bea1efb87bb8c385",
+    "url": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAwBACdASoYAAgAPu1kqU2ppaQiMAgBMB2JbACdMoACwSGEoD+41W43mYAA8/9YrPy2VZKuwQZRoc/A2/OBIxQrMp2s5pss00g+Sm/Rq3wc0uhxzj4yyIJ9P2Azjz7Fy+9C4YgAAAA="
+  },
+  "/img/story/concern.webp": {
+    "sha": "4701f78932e7a3c3",
+    "url": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAABQBACdASoYABAAPu1iqU2ppaQiMAgBMB2JbACdMoADVJqToGzaL55812IIAP4B/Lrs06tBXIVHNoEc0c6vjpEL4uurFYHzPiVob12TsuwOwIMG1PI0DaXGqPd/0Tx/rnOEmEEAmDkEKIBc1CU/P8BRMKqA/Y9K04715DEyK+yEYzvPSzG77CkFwAA="
+  },
+  "/img/story/cover.webp": {
+    "sha": "9a70a2901c577f48",
+    "url": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAABQBACdASoYAA4APu1iqU2ppaOiMAgBMB2JbACdMoR3CSAAlt7x7Q6RNj3gAM3S2FG/Sa+XHx4Hy2+KsQabvP18R0m4Ao5/CjIF+3WfUW51BwK10qy5ZsTOA5fJcSJLlDtAqAE+O9s721pwDFA1v4ExMLNOhUfU/LiFyIw923ipmGzIaABbEkoby5YMwAAA"
+  },
+  "/img/story/doubt.webp": {
+    "sha": "aafb6485120f9a92",
+    "url": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADwAwCdASoYABAAPu1iqU2ppaQiMAgBMB2JbACdL1AAtSL3gjLMlcIAAM4jTabvwUWYqzDPto39dST8i/UWWdLCb+Te3RjRFGCBrWVAL1zm7t0IAW5FBcrAJCWEygofDs67VNuwQNkaJXBF7DgQcnRNNLJqwAAA"
+  },
+  "/img/story/engineers.webp": {
+    "sha": "d1828c3005a00a3e",
+    "url": "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAABQBACdASoYABAAPu1yrU+pp6QiMAgBMB2JbACdMoMjbCL1nzU6gutNvGoAAPJBaXuWlkvNoIqs7wjtP60jIQHb3NltzuYwecm7P8MsYIAxUjATc90pY27jw6znahtNr8lEJlmX7eEWddJirMc0ImUMUGBL47DszIHhzzfHFjwwvuUBpCwGoAAA"
+  },
+  "/img/story/few-grams.webp": {
+    "sha": "9a70a2901c577f48",
+    "url": "data:image/webp;base64,UklGRpoAAABXRUJQVlA4II4AAABQBACdASoYAA4APu1iqU2ppaOiMAgBMB2JbACdMoR3CSAAlt7x7Q6RNj3gAM3S2FG/Sa+XHx4Hy2+KsQabvP18R0m4Ao5/CjIF+3WfUW51BwK10qy5ZsTOA5fJcSJLlDtAqAE+O9s721pwDFA1v4ExMLNOhUfU/LiFyIw923ipmGzIaABbEkoby5YMwAAA"
+  },
+  "/img/story/germinate.webp": {
+    "sha": "4eb892596ecfb68f",
+    "url": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBACdASoYABAAPu1kqU2ppaQiMAgBMB2JQBadDSvjsYd4E1Im93WtAAD+/dvxA9rbzPjCWQOUebr1xxVPe7okxi7VLFVbqEnFmd2KVnohyu6ilD6LgU6e5NCq8RlmzmPk4AAA"
+  },
+  "/img/story/harvest.webp": {
+    "sha": "42166b31341b8a18",
+    "url": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAABQBACdASoYAA4APu1iqU2ppaQiMAgBMB2JbACdMoRwJoACYU32kbN7oEb4AOFZpR0Vj65UlIK/jCR07PqPhOV+9tsgNvY6LDhwz+W4zW3Ue41jZOP3ER/cGsqh+gB1NgerlA5UwC3xTqc7lPeXnEHw0jBeusdNSAlCfQ3fFTMD+pM0owDS+yGiAAA="
+  },
+  "/img/story/reset.webp": {
+    "sha": "eb80506fd8708714",
+    "url": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAABwAwCdASoYAA4APu1iqU2ppaOiMAgBMB2JZgCdABQKk6SdWEQAyW0t8PC40KFdOz36JjSXqzhzLdyDPH6OVdZKjMcah2AoM3z3PJ1ReTh8Mq2a00z3Cfq/KwIsD1IrA+vq1APx94V6HEUvcXIfYrkPTzNTLXkleZGGrHDG+E0q10QlCTK0zSxcbEAAAA=="
+  },
+  "/img/story/seed.webp": {
+    "sha": "a9bae84e0caf54ac",
+    "url": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAAAwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbACdMoRwACPeHuW019qh4QAA/O6kQSMunVhmofW5+Ef54oUOexzkmFiC7F8wtCCm/Me2awzVlSuHVAqx51vVCbQrKoHqcuO0xFj3kJwsZOkLtO25d7hcCIpdjBYCU/TILYdAAAA="
+  },
+  "/img/story/sow.webp": {
+    "sha": "d622191127ac38ee",
+    "url": "data:image/webp;base64,UklGRpwAAABXRUJQVlA4IJAAAAAQBACdASoYAA4APu1iqU2ppaOiMAgBMB2JbACdMoRwABt0JOtLX57soADhWaUdRtLizpXc02EqRe5bOfDcH7EoVccLIj1l8/XtHMVGtW/jxjw/iP/Ic7XFxgRWdPNXPcmjb1ZJsBodnMBiQoeGP0UDySCwY9zDI0EcLlPhDOJ7coVmVlai4JpzEzBjmHEAAAA="
+  },
+  "/img/story/turning-point.webp": {
+    "sha": "14ec0547d4a71d56",
+    "url": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAAAwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbACdMoMYACFparFi52nhQAAA/oO1ruS93uzgnmtxPO/9Szr6zzqemZL6Qwp9a6pWmfX4P8bFFLR05vhh4mzMt+1nd8vQp90Di99LA7yZliw34Okpg4BWD0GzFVkfIQ9YmDXa37lSCACpa0WAAA=="
+  },
+  "/img/trays/drain-cell-mat/cutout.webp": {
+    "sha": "4077ce2e4a086dde",
+    "url": "data:image/webp;base64,UklGRvIAAABXRUJQVlA4WAoAAAAQAAAAFwAADwAAQUxQSHcAAAART6CgbRsWl8bdiYhAmfTFwnFt20l1CQ3ECoBUgM+1Ax3Lt7k3gFTwSb9YCRH9nwAcp8xWHABjykuLy7smoGl5/YzTon8SzjDp9Qjxojcbsudnnuf8dxBr2HoQ+lyZp29toNXT9LlVeSCA+FrlgeKMAaCKMwMnAgBWUDggVAAAALADAJ0BKhgAEAA+7WKqTimlpCIwCAEwHYlpAABh/3/F4nw/v8AAAP7o8lyZz87YLQm7wHjt4cTGaL6nbQN4XcNL3ZP4tcKB2HdTS9sLcRYTthAAAA=="
+  },
+  "/img/trays/drain-cell-mat/hero.jpg": {
+    "sha": "25d21f8748eaac96",
+    "url": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAACwAwCdASoYABAALrV2u12jqampiYC0SzgGYOIgDfcAVaQBGQl6wAD+8I4fi+qXeSCTFwt4t4ymEveUyegDPSjTKNRYGJ1V4pw1SN7scCevAVD4VKPOSsqlM+r2zD8xMAA="
+  },
+  "/img/trays/drain-cell-mat/in-use.webp": {
+    "sha": "5d6118b4d2c6a2c2",
+    "url": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAADQAwCdASoYABAAPu1iqU2ppaOiMAgBMB2JQAAKVEBahUs6jgWRWQAA/rbBBB8fbJr45ymHC2kVTLoKR8IxyUgrCJfjnOJfZaDHq+fr++jNJc4BoJxcmo+gJS4cikNjFIyQdM2WFeknur3lgLXxb/XSQfIUZ6yJWKGO1gAA"
+  },
+  "/img/trays/drain-cell-mat/on-rack.webp": {
+    "sha": "b16308cebdd7dd34",
+    "url": "data:image/webp;base64,UklGRrgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFgAAQUxQSM0AAAART6CobSM2VhK9vV4XEYGTD3Znw0Ftu20jG4EUBB6nALIQxC0BDwRZBBaDKhBMNwtDRP8Vtm3byOmucghg2RgiuKVatjG62hQE2K/MzNuUWqFiN44bc+ZJYqNbU3XDuqeLDwDpKoWT8mdIALpOYuh5+tZGn6jlnzPvU0xRqmFkzjkzzxJdlcL653zMt0Zk6mHd46UlS1cjJ9HdtOJVSy6Fi8s8eJ+kivWwcT5zaaSrsHI+phMBQJVf5yjRnlyb5CQQ3KKcEfAIOgEv1AIAAFZQOCDEAAAAsAUAnQEqGAAXAD7tYKtQKaSjorAYCAEwHYlnAARCYLZz8HMj3RhGDFnYXg0HWnpZ8AmvE3VIAP62GfyNOqxyj+AE1Y4I/ZR0x1MwwLnlFfKq0zBAfo9f9VKSlSX5mg6f2bzEb8D0glwakxfL/Jg7DhGZHr3Naemqe75kvE3J3f4rIPjNQEoLj9tTnWe66Tm3EhsSRA2Y0a6Bf92hifFbOXut6FfzSVwf1AH1k1cUL+x9fHUQbsZYas4NvicmfS9+KUBAAA=="
+  },
+  "/img/trays/drain-cell-mat/planted-2.webp": {
+    "sha": "36672da1ddebc684",
+    "url": "data:image/webp;base64,UklGRiQBAABXRUJQVlA4WAoAAAAQAAAAFwAADgAAQUxQSH4AAAART6CobSM2VRbrxqsREVhN2bfgILbtNHpxQAbaXQUlAyhg0UBJADpI4iBfb0BDRP8nAEEuEBWirVmA5/3nXBsBQJSfSzu71QxZN2siIrvWsj0NBe3a7I7i/50St9cZMyNvdegeFPikvbuRDMgnR3ZtGPziML+nQLgdJeKZQhBWUDgggAAAADAEAJ0BKhgADwA+7WKqTamlpCIwCAEwHYloAJ0Bi9bGQCKEZtjtAEb6AAD+fH74WwAV2HB/img9WoDBZ0zQkfzJPQDoRR2CO/A8q24RXVrOeke2GnLHQd1+fg+55hDyJJ9KHWx2npazD+4WS9CH+BUvFeL/nlEdRyTGOiWxIPAA"
+  },
+  "/img/trays/tray-pair-food-grade/cutout.webp": {
+    "sha": "1a81138316adcb5c",
+    "url": "data:image/webp;base64,UklGRkYBAABXRUJQVlA4WAoAAAAQAAAAFwAADwAAQUxQSHsAAAART6CgbRsWF8bdiYgAX5n9CK4iSVKsnqdgScCRgkcG6J8t3PvnZ2DBwbbeQwkR/Z8AzKllSC+vtk8vr594NAB0df1E8ncUqMsnsPt3KHxmb9pK4Tn4WKjnGJxyT2o3gsKTTL97rQF1yYzt2ggAlJ/voRb0ql1jMKwFcwIAVlA4IKQAAABwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbACdAYu/8AEt3LZ3qx74xUjwYAD+cbCPewpY5ciADXKfSZ9sSlqze1nvnbnh/veCOJ/Sh4gEU8rQeop+OV5Sq5pX2AVz0GPomVIUWVxMmhgjtenqrnhx81+oTPfcdEsqJFGz2mCdTN/0w3j8NZQVAZNg8rUAn5+EdNwgOLMwjSEBsrKvEHQPHAAAAA=="
+  },
+  "/img/trays/tray-pair-food-grade/dimensions.webp": {
+    "sha": "fc11756acfde7723",
+    "url": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JaACdL1AB7/3R96Vt10ykkUDAAP7rMnVPlJPXK7Jx6J599r2DSPWZ/7v/Z34HphlQCYezAG4xBWB/chBokCYoPKOnE8fUNCNpDdeuhG4ugmoAAAA="
+  },
+  "/img/trays/tray-pair-food-grade/hero.jpg": {
+    "sha": "a9bc1587aabdc4d1",
+    "url": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBACdASoYABAAPu1kqU4ppaOiMAgBMB2JbACdMoADTpP28ptnr+bTG0gA/u1IHj2RZCsb4twVm1dQQqwKyO5hpzbfyWkGqivqO88gv3G+9/2CNRe2O1o3LKog+N3r0zMG4af0gWaAAA=="
+  },
+  "/img/trays/tray-pair-food-grade/how-it-works.webp": {
+    "sha": "9a2f8849060c6115",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JYgC1B8AC+QKeDW9rPvN6icAA/tOkFUOYi5J665o5h8Et8PXfmN8CWT5uYEdReR9Mhsh70OWyrK5Cr47vxiEAezCIYAEpi+DJ6Kq93xw+Wm+wmCS+JL5yk6vxszYFXJEtXbARswagAAAA"
+  },
+  "/img/trays/tray-pair/cutout.webp": {
+    "sha": "c374c34708ad5997",
+    "url": "data:image/webp;base64,UklGRvgAAABXRUJQVlA4WAoAAAAQAAAAFwAADwAAQUxQSHoAAAART6CgbSQUvwpmiIgA3PB3coJD2rZVa99HcEPglUAD/BBoghcASVAGd/O+RIjo/wTgSnVA+onekt696DMNQHq3oresMwEZf7qZ5FIbRO3MzSUX7sjd2pGN3TN4bc1VJhCNJJf+GShAvu0y/EKNtdf+Uy2wKWNfYV/iUlZQOCBYAAAAEAQAnQEqGAAQAD7tZKpNqaWkIjAIATAdiWkAAFwb8n8+fbvyGmhfWAAA/u6JBIJsNecxMYIDNaEHOgQmCBcgFz6AzVGAK5k8/t31OdJXtijMLuuyAagAAA=="
+  },
+  "/img/trays/tray-pair/dimensions.webp": {
+    "sha": "647c81b3a0f658b3",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBACdASoYABAAPu1iqk2ppaQiMAgBMB2JZwDKACHgQ9A1zAiZNzpNInAA/uuLu5H2OyZ91akADkFyAiuDP1nqr/2DvgoMpZiAPs63iTHjzMU1dbodC++qODtf8nCKL9WirLlX/SoBm4ha187IAGaTI94rVB0XMelGYNLDVzOgsygA"
+  },
+  "/img/trays/tray-pair/hero.jpg": {
+    "sha": "23d751e36dc95a99",
+    "url": "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAABQBACdASoYABAAPu1kqU2ppaQiMAgBMB2JZwDG9CIGn/+r77bGlQ81flgAAP7tR3Z5olCSos5xaPoMLxnjB4iwoUgvK54DrWoLuoO2T5CPrz4ECPeQNJJJnIcBGKPSuwdV4eRgAAA="
+  },
+  "/img/trays/tray-pair/how-it-works.webp": {
+    "sha": "a1882dda7a7910c9",
+    "url": "data:image/webp;base64,UklGRlYBAABXRUJQVlA4WAoAAAAQAAAAFwAADwAAQUxQSJkAAAART6CgbRs2VBT7fxERSM/YZ3K4qm27iZJRQBPQBTQD/b+DgKogRcAsHgaGPL1DPET0fwKMMk3TlJL/mHHOD+elVYh4R6ZpUpI/wAGacqwD6m7TuHN+Acwfo9/ZBYiI0omZwnfhtAq1i50/utPJf7o7apUGDkd3H3XofhFvcSECn4wOxJStChFP4g6Zb+bs2PeGEJMSYqSB71sAVlA4IJYAAACQBACdASoYABAAPu1iqU2ppaQiMAgBMB2JbACdMoMlsn/AbLd2ConHk67zj3QA/ulLaID5h2u8QQF1qLKVSXuCTQrbWpIyJT348xb0Pa2vmIbJmFVFl7NoYULEQcKRiD3Z3tsAUO0N9OfuzP74atk4N8Kz2hfqW9Onsin/qwaEvr7IqoyP57EPhJODoa0DDcbzk1ywAAA="
+  },
+  "/img/varieties/alfalfa/bunch-2.jpg": {
+    "sha": "dc437773e95384f2",
+    "url": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAABQBACdASoYABAAPu1iqU2ppaQiMAgBMB2JagCdMoACoGUC3NJqmZTb+5uAAPx3BBsgaMZpZFc1UAymM5w8g0VuNm+93Ut9Fwb0w22mP90agHghVcqvQXmRMiiJs5gxe2BjrHymEfN7MBrFiuvuZAVkAAxYaKgA"
+  },
+  "/img/varieties/alfalfa/bunch-3.jpg": {
+    "sha": "b05cc22ac52ce47d",
+    "url": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAACQBACdASoYABAAPu1kqU2ppaQiMAgBMB2JbAC06CIfxnstjOOWDYarIidkwAAA/u1esfxEIfXlXwF5LkYS3h5uNmumEruQwXNl/LtB3a6KENAbYHkR/zMAsWukoyOiKWAAAA=="
+  },
+  "/img/varieties/alfalfa/bunch.jpg": {
+    "sha": "ad90b2d590c927a3",
+    "url": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZAB3AANOCXqzJha8yDE6YADgMUxLgYMdLbTgdRc77upRYWJZ1urIzu58Rks8L/fUzqboelaVTWLIh9TBDmrbG6mvtoMYj7s+i/T+81KfYwlwAAA="
+  },
+  "/img/varieties/alfalfa/cutout.webp": {
+    "sha": "4e577f559d88e0f8",
+    "url": "data:image/webp;base64,UklGRoYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJUAAAART6CgjSQ1dCKYHyMiAPPrXlQBt5Ftq839quBDA+LY7Jids3PO2bmwAuvV+2FGHUT0fwLQLncJemHITMHmfd3HDAAPtiVRfYgY4G9LIqJ6JYFJScZfAn5qTLRiPCPr0fNz293p6PGHA8O6sYwZJrYU6PxNdQL4L9NdAZgW2nfIAPB1SfQdSuh8U36HEuZgNpCwC4F2AQBWUDggygAAAHAFAJ0BKhgAGAA+7WarTymlo6IoDVEwHYlsALDt3At3Msm1vAiPM7JgZ2Oi6Hq8//pKkAAA+eNPixOw0o6qrZeTI6CtR2xLAEisR06aGqGHvAqOv+Uzkz7Mr+1KI2Xl94uAvbUmyQAQDN/b87N+bwG2iZP6Nl11lR8NE2KoElaaDFzekNv6Fmoggv0L6A4ejdo63DwkYCi9k3Zik1fsl0UlM2B6Kx1IYyNRROU9J0oYtZNqcOo4Mzp0dKxHQWW+qoG2CRx1hvJoAAA="
+  },
+  "/img/varieties/alfalfa/hero.jpg": {
+    "sha": "c949f06afdb091e8",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBACdASoYABAAPu1kqU2ppaOiMAgBMB2JagC06B6Cy4pnlKPwTK5w9wAA/urIhnMKB7RPDlsmyoR6HsCvVc2TOVZv7N1k4i2dpjHhIlxStEvv9Jj+ElCsHFXhAwyqgp1/p6AVrfA47wrIbma0oVfCZPs8QtdFyTROJBHcIeBKDAAA"
+  },
+  "/img/varieties/basil/bunch.jpg": {
+    "sha": "ff94287221f13938",
+    "url": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABQBACdASoYABAAPu1kq04ppaQiMAgBMB2JbACsABulWQBTdanUc+j/hiAAAP7tYA2mCJaQqYb7uQihlao9X21JmOJMMY9EnNJGtHye//VsPAY1GD5L/br2NBo+mBg7hX9gAA=="
+  },
+  "/img/varieties/basil/cutout.webp": {
+    "sha": "6f74115944750a49",
+    "url": "data:image/webp;base64,UklGRnABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJEAAAART6CgbRs2VBb7fxERULI36RS4ra29TT6JBSTbA5DrDHWGPteZPtM7TmD98yoQJojo/wTgb0WpzCyl0XHd8QzF5TNNn2sfgFgkRETplAPNiIzvGsRemWjGREjWC3fZclxtc4adsvQZBpasDjRySwAUY9O7AIh9rmVTBqB0UETZxofevKts48M8fGx8WEXLw/8CAFZQOCC4AAAAMAUAnQEqGAAYAD7taqhQKaYjoqgNUTAdiWwAsO3cC3ghDLDrqb9wpEjcXWkeAXJXn+AA/rn5+36LC1eiPoCyMUIr0saCW5vy27l8N1c0V0gstWVL1PQXR2cHUMArJlWlwJWzOgFBil2LFOHnqXT4RMuT4MIffQxyReAY+LssJCem9hfP8M0WFDRwMzsN6jMwjgdnmw/C3/S6ZK1OcV21SlPSdTTykHprW8yjSdrDgvRkOaAzTfAAAA=="
+  },
+  "/img/varieties/basil/hero.jpg": {
+    "sha": "241132c08dc6a3e9",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JaACdMoAC/IUsGeuhSf10tGAA/rYRhx9BWfBGWTlFVTDjiiKff6OmjT/r6Qv4YcE2xh6mvtsHQeIojmEfSdmfyvwGBWs0YmVtz86rEMXx1nDJvPIuQaHQb4Bq5YOhCK+vAhHtJJUCYAAA"
+  },
+  "/img/varieties/beetroot/bunch-2.jpg": {
+    "sha": "b80c67fe1d467be4",
+    "url": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAADQBACdASoYABAAPu1iqk2ppaQiMAgBMB2JZACdMoR4GCf3IidYGW+bkZOi5uy38AD3htcavTpU0VKHSVgZxtJv1rcVl+5xttpoQlvvUpx+99cQ+yKxcofTFrrqrXsUlMxrn2/URzYjWrQ9ducRwhzm2OiUPGHRa7cC8r0JWSIAAA=="
+  },
+  "/img/varieties/beetroot/bunch-3.jpg": {
+    "sha": "04b46c87ac2017ff",
+    "url": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQBACdASoYABAAPu1kqk4ppaQiMAgBMB2JagCdMoACsNGVavQbz2q1arcQAP7tX+G94rh5n+8bGegkELWMdLGa2MjfF5WlH+evO99Ylg+Pd0MZ0ryj3mg2bx1CGfnl/BWca0V93bNdIAAA"
+  },
+  "/img/varieties/beetroot/bunch.jpg": {
+    "sha": "bcc0bac8263d6e88",
+    "url": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAABwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JQBOmUABflmc3eAnRdXOpqfgvUADMlb1R28gjc654elb0TDJVA1h1tN4vCGs6a3EFUuJfvq/+e/GXVAmpsf8o8cFt5EODSxb8jOwYBNZsOHPSW1ChcMTB9GUgAA=="
+  },
+  "/img/varieties/beetroot/cutout.webp": {
+    "sha": "825ab0bdfd4b386f",
+    "url": "data:image/webp;base64,UklGRnABAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJEAAAART6CgbRs2VBL7fxEREH99/yK4jWxbbc5XBZybc3bOOTtmFyBqACuwfrtiuYKI/its27aRkNlxCH+z2+tpRdTJ6X2Z66IQryiO/ctAwNiJZWb8GaA+CiFlsheqLUt+lU7QjJuiVlC9XgruZUZwSEsfWTAOSy8NUB+/HH8ugK6d5qGTO3ZSf1cM1JVbDlB7On8TAFZQOCC4AAAAsAQAnQEqGAAYAD7tZqtPKaWjoigNUTAdiWwAsO2LSiGfBUZsp8TtQPR/c0h4AAD+nvTNGgyDbpmzSq607CetI47At+yYyUrvmaJSUKgaZdhvGDKBU1ZfkakCQw407jJNWbHatynp5NWsbQsYOj4iAIkIXzveYsT35pKRztjiQinsmCIeXpAuexWes/8eOtuwy/2UhjvdrjXiTYR2CWhdLHneRrNme4u6387ObO0wX+NhXoE90inwAA=="
+  },
+  "/img/varieties/beetroot/hero.jpg": {
+    "sha": "31d21f128b681ee4",
+    "url": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZACdMoR3ACktNRDPPSKsKQIAAPyPe9Y8DurGC9mJp5lLbAc8Xw3njI8eSTuLWJKLPNhMhgBRcz5kgT0vylFcaJTWohxEEPRv+SMZHfT7z5Hkc7a7tY4sxbaQ+uOmJgCgkB+gKEHtnXxAAAA="
+  },
+  "/img/varieties/broccoli/bunch.jpg": {
+    "sha": "cd9563bb20df5242",
+    "url": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZAAAYcxGDc4wKg88He57Z5ZwAOAkvsEKhKGmKVe1BKXFoLG8RXzX3zP/W5wY7uZNy+4376RmzKtD8QJdQyh5VczZjqNtoXP3K3wE8IrPNWIbDgAAAA=="
+  },
+  "/img/varieties/broccoli/cutout.webp": {
+    "sha": "09f8c0f75f778b39",
+    "url": "data:image/webp;base64,UklGRkgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIIAAAART6CobSM2VhC99doXEYGUempWwFFt225yXhT0eSKhAeMOAuoYJHQDaQ7+tws/3UBE/w0mbZPOHcM0c1xpZCfHc+Y0vKvqO5O/9Vtprb8zF1bFj3FiP3VjBwmLZlex85Yn9qPZAm6N6gCWpeligX1XBg8geqomiIuqCXt1bgLbZZoBVlA4IKAAAAAQBQCdASoYABgAPu1gp04ppSMiMBgMATAdiWYAwPz/IKIL1AGnjWUNLRwf0olG0PTAAP6dfE0uxHWjzBxmgIF6fOpOVePFQmj5sqiQK499dt0spKWYBhPdfn+1OQBsE4HzobBVmeQmhbfyL+/i7B18T/mlITpOOgxZXFZMBjETCCGSFNFY+3BpOxQff4xp+Q767k++yeaX8dJjnt3iyAAA"
+  },
+  "/img/varieties/broccoli/hero.jpg": {
+    "sha": "32306a71e5e0f160",
+    "url": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JYgCsACHhGkL7+3DPfjCzspAA/uqmPJd4vPPgeeX8wHhZgNEs15W+MzWX6yQEVKgqZbeZ6G+oyN7s/D0HZNap5Fr/Njj5VCY1NASF/CCqYXAbtWSMf/stiyrQJlaE0sAAAA=="
+  },
+  "/img/varieties/cabbage/bunch-2.jpg": {
+    "sha": "9320d7717298794c",
+    "url": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAABwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbACdMoACqE+5HSwjFkZFRA+wAAD+1hL0gZK5pFB+G/Kf1PVyGD3MVenP+CFC/h0vXTwdmMDWNNOBV8YvT+Llj/Os/CPAS67lcWWhKYkfPk2KrYbZwUrxVMn9gxIECt0rfYsfGZQnnQXCT+1QAA=="
+  },
+  "/img/varieties/cabbage/bunch-3.jpg": {
+    "sha": "bae46c0f9e564aa5",
+    "url": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbAC2yCBviEC+8SxfYAdU1BIAAP7tYQTdGuVMMNVK43roxr0djUc9C2zcbNb0mqh0fsYl8kOIeNpcig8Qo/HvXgaSN5PEoc1S+AAA"
+  },
+  "/img/varieties/cabbage/bunch.jpg": {
+    "sha": "93e4aa946d7c7968",
+    "url": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAwBACdASoYABAAPu1iqk2ppaQiMAgBMB2JaAC7AB6VW2v/pUPrPxGTCpwA+F6RbhDlWSFJEe3TX/8WdxM8jNCnpd4yMvVjHCokzUBXb/eyPBqQx7cDHahPlSSm3CXpYIACNqN2Ovn2AAAA"
+  },
+  "/img/varieties/cabbage/cutout.webp": {
+    "sha": "418d938a39cf6209",
+    "url": "data:image/webp;base64,UklGRmYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIwAAAART6CgbRs2VBTdvxER8LS/HCrcxLatOuc+BSgg3KMATs8RwDVHwCcF/1+9/76Qgoj+TwD+11gK6M5y1TCCHt3T9Ni3APQwZmZ+Ti3Qjll89knvCom3qhJz8PyBjkJbpS+hGWFeSFkLGOTSywOVm7RRAIZx6dQgAHqRM58ahHJll556BLm96hHCVcL/AlZQOCC0AAAAcAQAnQEqGAAYAD7taKpPqaYjoigNUTAdiWoNsAUaWrrzW/qzzlDTvAf2PAAA/R/8ma+AbCFD9gDD0ApesC13m0raktJGmNPzs4DtQ6YBP6A0UywLv55r1WGjY03wi+yuHOJYIe6K4kT/lxWoYzaTXrLIdyqywpDFUr6fyznX+HwZ2DPxqFFogdZltXHI0WqfPESqbNEZyV/MfcVVIU0K39sW3tbsaNnRuUdjL3C4eHZ9U3wA"
+  },
+  "/img/varieties/cabbage/hero.jpg": {
+    "sha": "ca6f45ea34143071",
+    "url": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAACwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZgCsMoMjbEmjp94RzlDhHN8dTC6AAP7F0h8vdEc53QDVAS0zWzOKn2j7taq+YTu4fBMHnWZuqJvXHOg3Vm4094VNrPhVDc+FN+dl+RbidPXhGF7WJ8Jep0wvbR/6JkQaeG13F1avqVncAAA="
+  },
+  "/img/varieties/dill/bunch-2.jpg": {
+    "sha": "d0d10fc4ef10b208",
+    "url": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JagCdMoR3ACxoQZgU2DbzjPUkAP7EQINfu/j2JHj4PGeg5nAsZ5ieAaxnI87cn/RBi3c0rbfQeiQhgJ7XnoydAu810bXnag/9kVcaKWTO1RAplOwqAA=="
+  },
+  "/img/varieties/dill/bunch-3.jpg": {
+    "sha": "fc72110c5d9988f7",
+    "url": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABwBACdASoYABAAPu1kqk4ppaQiMAgBMB2JbAC7ACBv2jDiodPlDnslP66NAAD+7WF4ksdSOsRzla+wh0XgphoTScGNjGf1jQbARgj+pKp0YAmQAJzVOlKnDbh/yjJZsYQAAA=="
+  },
+  "/img/varieties/dill/bunch.jpg": {
+    "sha": "eabfa47f6b6cc36b",
+    "url": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABQBACdASoYABAAPu1iqU2ppaQiMAgBMB2JZgC7AB6VmvEcDB7jpQYI2KyAAOAxO+4Q5VgDCQOYKq4a4gjeXxcUcTsc5BPfi38FykmzOEtd0bjb9AlVW8orO2zL4eKgx1MsPHQfxqvHetzLkAA="
+  },
+  "/img/varieties/dill/cutout.webp": {
+    "sha": "6d6b298ad04f1f81",
+    "url": "data:image/webp;base64,UklGRlYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSI8AAAART6CgbRs2VBhnfxERUJzdT8NxbdtKcx8V/I/Mic69Apt75lgB8QKQXwG8er9EKojo/wTgf6W0id5q7pNBTLP6eRpIbXJvmJtiTsAkbZmZVRFAJDUb1ZJEydaLFzsJFxJX25aw6yxjYNKaVATElekdAiJpNXX2APTSjlmdA+i9e6fOAzJgkp0GBLPo+YS/BQBWUDggoAAAAFAFAJ0BKhgAGAA+7VyqTimkpCIwGAwBMB2JbAC+d1AAu0mYBAEAJxbH6rIv31qiugYwgAD51/3xYbzzwc/TFfi1zPDaFZn67f74mRmVcid1Pg1hoFJ9h9FCipmPEY5c4y9bCU2NjEEtuKXIib3w25tKizQYTVAhN5yAE4TO4pOKTvd4A38+qG3bp9U6GrFYYjRM5RzMxWuSBP5n6ALzwAA="
+  },
+  "/img/varieties/dill/hero.jpg": {
+    "sha": "87efdb61f1390843",
+    "url": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAAAQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZgC06B52Z2qD2MuBbS6PwAD+4AXIRCINFhJuFNYl8sjot/C3WrjxKCfO8ndjuHNyHZfvnQHpuJSM9b134vRYKnDkSSySbXtmjq4zRuOJjIjkWAmzOdtOBR6njhrek83Bejyzh9AAAA=="
+  },
+  "/img/varieties/garden-cress/bunch-2.jpg": {
+    "sha": "2ea42b05262cea81",
+    "url": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAADwAwCdASoYABAAPu1iqk4ppaQiMAgBMB2JbACdMoACoyYPolYW3oVIAP3h5JnkF+YqCPbLN7Odr0zrdS2mV8UrMuJb16c18t0AfjSQK1RL8GxhqkahazQjwY//L7+WqTQXXCur2LwDOsclykHagUfIhNeYAAAA"
+  },
+  "/img/varieties/garden-cress/bunch-3.jpg": {
+    "sha": "bb7fca9caacd2543",
+    "url": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAwBACdASoYABAAPu1mq04ppaQiMAgBMB2JbACsABulZhwYM4hnXAl8iWAA/u1f4b3iuHmR2eQqVlNDOXJORWe/h9iqBCxXsjxRn9S8CfQjk4keJ/GhhPqbZe/iWDnpR0KVtwAA"
+  },
+  "/img/varieties/garden-cress/bunch.jpg": {
+    "sha": "64b194740b34166c",
+    "url": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JaAAAVMHGkTLmpj9y3bguJQAA4DE77hDsGMZo3VI4ROM72saPQ7BIrjg0IP9LvGRl6sY4bF7Ct3neaKhBTy+CyOL4D3So5W0ArCuoeU5sRy+/gy1SKAAA"
+  },
+  "/img/varieties/garden-cress/cutout.webp": {
+    "sha": "8d81fc4511500ca0",
+    "url": "data:image/webp;base64,UklGRngBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSI8AAAART6CgbSQUvwpmiIgA9m/CSYLb2toU5ZulgVkpAI8dYofYiZ18tQDvYP56R5AKIvo/Afhbu9lkKt5YPJ6jJpP6j6Isk1OLAY1AEBFVZxfYFaSsJowHpH1bPDOpG1wsnuq2jPu6KcNVqKouMNN5QC9XvWsAvwkpGTMAjUAQJWMHcj+iZOJAyefRxIGWNx38LwBWUDggwgAAAJAFAJ0BKhgAGAA+7WSrTqmlpCIoDVEwHYlsALDt3At3g6ByfrlNRRuZpvV0iSgJR/ZM2l8AAP4WWPfG29z0n8472B2B6HYP6xhj6eKEQyfox+R35eeit8rZX8kDXn0YYX2dwCHQ1pyVuk/MlyOO4wl1n7+49385rskFPhfNU+VvPi11Ke7KcMdsiRZLBP2sKrYmyVtC3cR5xkE5zOHttTEl5DASo0iBwFLrN+Cqj1/LT5/rc314UjF+F3YPozD4w+gA"
+  },
+  "/img/varieties/garden-cress/hero.jpg": {
+    "sha": "b9f485e01fdf076d",
+    "url": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JaAC1CExCuF7m4Hoh4H/06WYA/rItNhLM6vSGJ1uHG1V5ZS5+0+RrxB+mv88t4j9bYWgwSCf4mNdCrLNLA7p75GhxKn8K5XZuFKMKKvNeKRibkrKSCuN9/06fPRB5z0RbHBXJ7YAAAA=="
+  },
+  "/img/varieties/kale/bunch-2.jpg": {
+    "sha": "e7c90619494c0146",
+    "url": "data:image/webp;base64,UklGRooAAABXRUJQVlA4IH4AAACwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JagCdMoMYAEiZp8dcFgMfqfdFu57gAPeNaKbSpiJy/ROvkGQ04z6psW8r9BM/WV0Xez/155kwlpkj3ehJsQtS8WkYVyrG7j1EL8t888mu+y+bHvwC6Obn8Lm1AYcxmQkCzEdoAAA="
+  },
+  "/img/varieties/kale/bunch-3.jpg": {
+    "sha": "e8c030bf9e154286",
+    "url": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBACdASoYABAAPu1kqk4ppaQiMAgBMB2JZgCsABulQpBhfsaFkqUAQAD+7WANpdsiTssK23gWtPcRL+TjqlFW4/xKSjs5dljP2dTnr73EAS5gxNOLkmAE1g05RmJYpeACFYAA"
+  },
+  "/img/varieties/kale/bunch.jpg": {
+    "sha": "ea0e0fcd523f6962",
+    "url": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABQBACdASoYABAAPu1iqU2ppaQiMAgBMB2JZgC7MoAC/KSVgvdXBpL1yMdwAOAkvsDBhMF4KLLA5XebFE68Jsjsnxxs7gKj0fqMK9BGjbS1NgJDssirvXsI0SYoAEBg12VO0noO8WkmLTaIvvExYAAA"
+  },
+  "/img/varieties/kale/cutout.webp": {
+    "sha": "6996a78624c4f74c",
+    "url": "data:image/webp;base64,UklGRn4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJUAAAART6AmAAg2JsPeLiIiIBfvLTfgtrb2NvlkFnAaIPdk6gxtXsCxJ/eOC4D+eSWbMEFE/ycA/6rag4HOJOosut9PHhN6V05UJ0MG2CEnIqpTD2pQknzNrJwaU6X7bnp2uq82VtFCUbOmVMG5acOw5Q0TYNpQ+4BVyB4moO5LoVoxAHbIieqVDtEOy8dKh9xeLHQ0axp+CwBWUDggwgAAAFAFAJ0BKhgAGAA+7WiuUKmlpCKoCqkwHYlqAJ0BjBn0kOFvILQYzQmRp6u6z78tDYblAAD+norfYyBBlklr0Bngn8CbsF4rikvyGVnELe5Z/kWR08DSVVmKpkcW6M8M4z4fqz+pu1A9zXubQC8B+yz6uvIeVNXrkg1IO87zXl0CcTBHve7pbtVyj00AHB5Q9HLrfFiQqFGpNUOP1bcXOKHXWE1XORpJtx5LW4tRBKCx4N5x3HkpqOXTyYenzCV78AAA"
+  },
+  "/img/varieties/kale/hero.jpg": {
+    "sha": "9df4166ca91ba0da",
+    "url": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAABwBACdASoYABAAPu1iqk2ppaQiMAgBMB2JZAC7MoMYAEEVXj/Q30w5qTmNgAD+1RT16q+2jktBxRpdyR+EWiZ6nrTzW9nJC+TcmgVWkkPhkTy6pwvDyMm37BP7UMzbN3znYJK5NZZt9jEqgwVdN5mh9RYS4/gHRSMG7QjEY+v+PExAAAA="
+  },
+  "/img/varieties/mustard/bunch-2.jpg": {
+    "sha": "351aab6a6499cc45",
+    "url": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbACdMoACNvCYpFhY+8dCQADbotUZBonvrXSYr3Osk6zilBVeks4N2cIPXnlZiVVwHtwdc4bJWZb7+xRLlaLVMYgVO5wsAp9oD7qKBAFAGh9HNdsSiViUcOWApH5vBjUuAA=="
+  },
+  "/img/varieties/mustard/bunch-3.jpg": {
+    "sha": "1afa0743b92bfa84",
+    "url": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwAwCdASoYABAAPu1mqk4ppaOiMAgBMB2JZgC06CBuTZFokvkBoOhwAP7tYA2mAL7HrirAwQ1lMCThhZq0opMuw9I5XM5UeeQXmvYDgxsX19/zp/lFeAmSeBm64karXkAAAA=="
+  },
+  "/img/varieties/mustard/bunch.jpg": {
+    "sha": "2462e00692490527",
+    "url": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZAB3AANOWW+jLOJ9pEIFXMuQAADgMUxLgYMdLbTgdRdG90cdUm3fIuS9EYUAEv76mdTdD0rSqwIIcN0Ozvks5RePuz6L9P+O8t5boAAAAA=="
+  },
+  "/img/varieties/mustard/cutout.webp": {
+    "sha": "ebd76c849ee754a7",
+    "url": "data:image/webp;base64,UklGRlYBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIcAAAART6AmABo0SAUumFwWEYFozccW4ai2bbU5rwoCBlhARh1zBfCYKwANhAx0/ec3HAMR/ReQJIVnGGUrCGwAwF/c7itHAJLd15S/QyTgX3NV1fIRYVWplhvxMq39nHj/xtJ6J7Fe9aZwNtXKGGZZ1dEFa5uravmIBPCvpg6Sd1GHNb/XgRUI4wwAVlA4IKgAAAAwBQCdASoYABgAPu1kp02ppaMiMBgMATAdiWYAwoGLVGxrKsUgAXmHisJPpXawpwm0AAD9DNC+RjDYkfWXVXRqjSC2vxpd8/RcYJw2Fi1UGzG+FDI0iR6xZuOlDxsjCGtUIlfIbuW9ZF0R/oa0ojRIMfxYx4Ch2J9Llswl/fFMhQoWR9B721B9B1WdKvmY9EtwQmgClF7mLg8cCkztZqaBzNAqgZLgAAA="
+  },
+  "/img/varieties/mustard/hero.jpg": {
+    "sha": "6bf7f1de1b2cd5a9",
+    "url": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAADwAwCdASoYABAAPu1iqU2ppaOiMAgBMB2JagC06CB+3uDDhMkSwRz8AP7F0Fvw4h1nbpiT3gKMpPnin04p1phCMpDdvRQTMWq3mZeUSLVmNgu+ac6Y/WVNKOXILKHQpb1JpmaSFLQ6txwTkFXTiR5v48dhN0cnNtALwbQI/ymLtr2AAAA="
+  },
+  "/img/varieties/pak-choi/bunch-2.jpg": {
+    "sha": "95315ff8b93fc52a",
+    "url": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAACwAwCdASoYABAAPu1kqU2ppaQiMAgBMB2JbACdMoACkDzV3UQYtAD8hYIo08WGpK9CUAgpeSd645PighA03KUgKVOrmPhTgybJMbf6ggjYnxVLXv8P9XvBZmaM8c5ji9g73hWJI4HKK9HhnRUQhbv/wkVWQwRsliGYFgHoGxwgzJTBIoBWsDqYoAA="
+  },
+  "/img/varieties/pak-choi/bunch-3.jpg": {
+    "sha": "17bb9c174f6530a6",
+    "url": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAQBACdASoYABAAPu1iqk2ppaQiMAgBMB2JbAC7MoAC87JUhtPrgUImgAD+7Uskz5IQuSnNiri0RdFrjMso5N2ARlmXmqXgmm8nZOYiTe6MWgMwX4q7POP4tSIenEAA"
+  },
+  "/img/varieties/pak-choi/bunch.jpg": {
+    "sha": "e80081c6ec7c837c",
+    "url": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JZgC7AB6VkKSmoHaB25araQAA4DFMS4GDCKwmw9WgwDmEHllCF8sm1uxzkBPjW/eM+aXH7BEdbT283zq9UOQk7rKWdIN2iiYqWWoo5QAAAA=="
+  },
+  "/img/varieties/pak-choi/cutout.webp": {
+    "sha": "af5d683347a9a7ba",
+    "url": "data:image/webp;base64,UklGRn4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIwAAAART6CgbRsWl8bdiYiAyad2CrexbavKOa+CbwV8NHdiJ3dyJ/YGvlXw36vXkAoi+j8B+FfPr/o+DZXx6rRedwmgcsjyPM/fXcJblMp46TFOlPUi4tR2dboIL7Ht6N1tc3o32wBYSFPRBIalJQLixHQRAEaZ9m4QgLeXSr17hF65y3ePMLeOPQF7xcf/AlZQOCDMAAAAcAQAnQEqGAAYAD7tZqpPKaWjoigNUTAdiWQArAGK0jTZAHjlx9MbVm+kI0AA/SEEiYxpE5VmbYO/CepLqz9Ohs2C2DZS8MFrawseVrbMTsEaYP1WB34qk3dNwR0nIDVA0BKRZscuuO1WVQWOaEWKSwH300eq46RyfawrBBFuwixMLA6DhxgzmCebx940oXX4sJcaiJvDGapHlrCtNv20+4phDIBdjd+A699Urax/dV9EfJ/0H+ZR8fz/InlubLBxCFngbGhPFHsfAAAA"
+  },
+  "/img/varieties/pak-choi/hero.jpg": {
+    "sha": "949e432691e70734",
+    "url": "data:image/webp;base64,UklGRpQAAABXRUJQVlA4IIgAAABQBACdASoYABAAPu1iqk2ppaQiMAgBMB2JaACsMoADQxsOoVOd7Gm545QAAP7WJL/RiKYIeOPn9sbB3vaeuWYYAd/od/6wTd5YKUqEp4Jg86zN7lHp+R1IAJkK7qbP6flHPtU2kJ0Fc9f1wKeRVzAd4Z77qehsCxsSLQfK3Xc5ujW/lalM3mgA"
+  },
+  "/img/varieties/radish/bunch-2.jpg": {
+    "sha": "3a1c12999a9ba646",
+    "url": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAABQBACdASoYABAAPu1iqU2ppaQiMAgBMB2JaACdMoR3ABK17y0P+0kamo0AAPsgybRcOPF8wYaGloi7cTKvD6VOTltHPE/wflwUogOLn0yidtyIMCSJj3/ysuKqtoTrUeWQcMT0FI1LQWeFN7CQYE3fYWet2e0LDYPsepTJiMk5lgMzkz5DqAOoAAA="
+  },
+  "/img/varieties/radish/bunch-3.jpg": {
+    "sha": "75bd9b29d10c1278",
+    "url": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAABQBACdASoYABAAPu1kqk4ppaQiMAgBMB2JaAC06CBv2hx5zZIIHZUdbKlAAP7tYQTdeFwvkjO5BWn3S2dxquaNQSL3yvI4oh1gd/ooQTdbGqp3q9NsJO5L78Vyf4QYAAA="
+  },
+  "/img/varieties/radish/bunch.jpg": {
+    "sha": "ae284df02e61a54d",
+    "url": "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAABQBACdASoYABAAPu1iqU2ppaQiMAgBMB2JZAC06B6VvYQu1Zr5l31zsbgoAMye/cem9hs9Op0r4RUWEmEEsxOltTLdppbI0u8XbyJWrvM2PJKt1HO2Ywqgje7dh7L1PBTffaO+O/0zllXrMWpekpQpRlLHUAAA"
+  },
+  "/img/varieties/radish/cutout.webp": {
+    "sha": "8caa76cc72cf9c8d",
+    "url": "data:image/webp;base64,UklGRn4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIsAAAART6CgbRs2VBTdvxERkHwd2Scc1batNvdFwQcDSWnOHXM7BwNcASED6OA9veEoiOj/BGCwShuqUYv7Y6wr9CLI89/aAaAOIYtIvCZgnrKU/xMon6WyuJCbSu3faZE0UX7dlfDkmi2wqylmgJtWxRZQt6wUrwmA92aReG1Q9gKONwbVi/BsUKtGBsMFAFZQOCDMAAAAUAUAnQEqGAAYAD7tYqxQKaUkIrAYCAEwHYlqALUIv+CZ0isOvblk/FjpgSbEpDbdXYOYAP4RFaXRg0wcY8whMV/yow3k4hkmwLbKdHOS0Taz5tE667iISQBGL7+P0x0h/RH08Y20NdP8QejdmL67oue5KmeSSRI5/BtDAD9a5qAOFkt0eblX8NnUFidMsjAIXJhc4Dyr4NaqxDspSfkiR/E052YtxSKhlJ4Lh8bADNyczcKb/8uBccucgJGbasMsNyI5VSacEXV86wAA"
+  },
+  "/img/varieties/radish/hero.jpg": {
+    "sha": "3d665b6d0f100169",
+    "url": "data:image/webp;base64,UklGRpYAAABXRUJQVlA4IIoAAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JagCdICdJ/gMP85jdCQJtAKv0AP5bMCNVGpu3IDzhNHalFb0TAOLx8H8YLM39b4diFBTxGHI42GIUJV2w9RjKJcfADSimLNMfEnWrI44gtH2fdPZ7yQqZdYUvOxt/eV+Eh7v2rKnZSS0FPQmJb0jgAAA="
+  },
+  "/img/varieties/red-amaranthus/bunch-2.jpg": {
+    "sha": "296df1da790083c0",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAABwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZgCdMoACwMJGKQx4NYtcRRuSYADbPBX+rWuZexCK/BgQZ07txlDLZ4BZO9lmpLCiq+VzGs6y1dU/6Paz3XqzTCduIiGfHC0fCx+d/MmI6FGyJ9X2VJyCEcsJpObKeoC8FGxLHSQqAAAA"
+  },
+  "/img/varieties/red-amaranthus/bunch-3.jpg": {
+    "sha": "31d21532937c1a4a",
+    "url": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABwBACdASoYABAAPu1kqk2ppaQiMAgBMB2JbACdMoADKjMozDuLmmiUjSnTAAD+7WANpj9LHQrXFwkZOeymiFw5jzH3QcaBpAqkggMoxpdSRLdjAulNfJDxp6fuOpqiwXHJlhfVU9EKZ4Ut9yXSAAAA"
+  },
+  "/img/varieties/red-amaranthus/bunch.jpg": {
+    "sha": "cdc94bdb87020b73",
+    "url": "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAABwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JaACdMoAC/LML94BJt6OdT81DAADgMUxLgYMJbsoC8a7OdoqLACLWPK8hszg1BIbqUyR97NebBI8PVb/eOsdU6PRQgEqTD9CLCY/e6qrxo1u0phxbrjwAAAA="
+  },
+  "/img/varieties/red-amaranthus/cutout.webp": {
+    "sha": "ceb2db8586b170bf",
+    "url": "data:image/webp;base64,UklGRk4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIoAAAART6CgbRs2VBDdvxER4P687hQc1batNvdHwQcDKc6DAv6oDn7H3AoICGAHeX7fS0FBRP/JJm2SdOon+KNmBb3JdkosvTWBp3090czSabUQ0RwckLARzaXSVz6icxT3JHxH8SB5rXJSuhPMR+Cy8AUHJD3/9wrQfpQD4ttCLR+Q1G0hBu1zC6k2+KNWUDggngAAALAEAJ0BKhgAGAA+5V6kTaklI6IwDAEgHIlAFtkxdxwO1f11HzEjAZZ6LagcwIAA/rkgT3gJOhFltJspqPrYFK8MOmHkoXerDQBh6XdxDENC/MjU0vlToW9br+yPiRN+bS9TTvOhDp4AnJF/jKXRaST2KxSVyR+Y9A0EE+lASNn1UlOOfWZyejf8SwI+Gl/EQBa323keOhGboScvAAAA"
+  },
+  "/img/varieties/red-amaranthus/hero.jpg": {
+    "sha": "b37cb4e74ccf4fba",
+    "url": "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAADwAwCdASoYABAAPu1kqU2ppaOiMAgBMB2JZgCdAB6C/UGg2OQm4GUQAP7VFPXk4ZwmweTCgUboM1zjIP7CeLr+xcYrA4p+1Zalcr0Wv9MExQ2lxuy1GRKHSJNg5eSNZXV1TZp7BRzVypTfwqjJKCXhf5YCvU9WVcbpM8E2mG+aHEAA"
+  },
+  "/img/varieties/red-cabbage/bunch-2.jpg": {
+    "sha": "966759145677c4bb",
+    "url": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAACQBACdASoYABAAPu1kqU2ppaOiMAgBMB2JZACdMoR4GCxsS/beZsVyM8hsLgAAzXMjaOssNsePgLlGhfSR9yBU2r/LRjiCR4JbTXIcykwAG1/Wn6N7dhKSTda0wzM88BSwNRSB3JrmJP0E7vVi4rY8tmR/UT49UYegKzwurHGgAA=="
+  },
+  "/img/varieties/red-cabbage/bunch-3.jpg": {
+    "sha": "a68746bbe324b135",
+    "url": "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAABQBACdASoYABAAPu1iqk4ppaQiMAgBMB2JQBOmUABWuEeC6l7q+1ny4vZAAP7tXU957/CXmGkHeyTYBI1XcEqmemooS6Gs+8vPsG8ICZ/BLPR/UUOqxJA6EWM+FV5QJbXhwAAA"
+  },
+  "/img/varieties/red-cabbage/bunch.jpg": {
+    "sha": "630e48a99c43944a",
+    "url": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JQBWAA83yNNQ22A/uwMm+SAAA4DFMS4GC5aP26/29SfqwHMsDvhXE6BERIn9etBB+boDGAWRNleEpLFp0+QdRz+rdvI9rLZpfZRO3prijMAViPQAAAA=="
+  },
+  "/img/varieties/red-cabbage/cutout.webp": {
+    "sha": "20554cfd9ddea532",
+    "url": "data:image/webp;base64,UklGRmoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIgAAAART6CgjSQ1dRqYniEiAjh/TTzH4ba2bSW6nwq+NIDnMBb75D6xT+4NYB38Vy8ODUT0fwLQS8u2RYm12x+GDstZ2yRN/0eHAdY1ISLKjg74JqHCbM34m0qfhhk1czL4q2zCcNZFmQ9Mk6KnAvhF5/4jBsB6a6L/SCIfxPQfSxTy2W8lUcoHEv0EVlA4ILwAAAAQBQCdASoYABgAPu1mqk2ppaQiMAgBMB2JZAC06YvC33IPyf/Visduxj3zB9N9wTegAP6djLy8FduQb4lDUU151S1Opo7sdyK+G/lTrlMcuODqcaNVKrYAtZnztTSw0Xzut3sRvH9Am4JqeHxr5LM9SBhvS6xeXwakrojkH170Z2WA4r323ssyEohqcrXTOhknfZcVjLd9T+VYEquu6CCcI2/YuPaNG+GBi6pPgnONoKc7dbGc/TJdCAAAAA=="
+  },
+  "/img/varieties/red-cabbage/hero.jpg": {
+    "sha": "118a5520fa48b0a4",
+    "url": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAABQBACdASoYABAAPu1iqk2ppaQiMAgBMB2JQBOmUABoYFi2p2W9w/UYRlIAAP6YSyX+HSmofzNnGcocvEsUXVS3cDji58jb5y8A7DvrDoiTi96G5GmFKPCCGn8IrmrBC5y1MahyyhLl22nTM2t8g3AhBWYLqHANgsQBBAAA"
+  },
+  "/img/varieties/red-onion/bunch-2.jpg": {
+    "sha": "c92dda1a9652e9a1",
+    "url": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAACwBACdASoYABAAPu1kqk4ppaQiMAgBMB2JbACdMoACSgd3mm/TJuUmr/IQhDuAAOAN3uRbELAAz4iRKdgkL1Wfb1gqiJAUWRij64kabN0mJswvHLx80xKYhISdQm+GWVrkPcbM4SkJVl6cTVsYQM21/vpD/I/KADgnp/+v7aK3F/uAAAA="
+  },
+  "/img/varieties/red-onion/bunch-3.jpg": {
+    "sha": "0df8687ab5cec093",
+    "url": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwBACdASoYABAAPu1kqU2ppaQiMAgBMB2JZgC2yB6MVy5YvbFmoMPnGVAA/u1hBN2bAvt84tKOyiXFQbYDHZXJQ/UoxdO5Klmr/pMdt4QtC6up2LvjUcqvu7hIA9Xql8AAAA=="
+  },
+  "/img/varieties/red-onion/bunch.jpg": {
+    "sha": "70cd1023330aa40b",
+    "url": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAACQBACdASoYABAAPu1iqk4ppaQiMAgBMB2JYgC7MoRwACIbOj9GcoUpbzUcegAA4DBMr/Xye8IlKUvwnYDYf5NWPA+GPpl30sHlDLkIuL4loRU1ip2rn4X8KWVPow/hxOo6M4z1ylPr6gAA"
+  },
+  "/img/varieties/red-onion/cutout.webp": {
+    "sha": "a47eecc46b9f5cf4",
+    "url": "data:image/webp;base64,UklGRlgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJQAAAART6CgbSM3dij2vvuPiADGPxKNBse1bSvN/T8NYAU48/jcM/bM0QKiBXykguTVi0MDEf2fAAxRMkxTYSXSZHO+bKcKAGniv9PsE805MPZTIqI8tiF5KZXmO6YLqrzzOgcuPaqWDF5F7gLHf4UGjH9l3xGgP0vyPQewSogojywAkE4pUWyzAnQvi22GcuM8Y6g2GPoLVlA4IJ4AAADwBACdASoYABgAPu1or1AppaSiqAqpMB2JagDImYuh8ADhZ9RjfTgFiUBW/shbzxAA/stJPkN7mGiUT7KusSaT1fr6g9e/6gh854oaU2vTZAkqO2DsLRcEAqL7kJZMCSksFD3D3woUSYFmPB+0RShskubkENsa6ykrSiw74k3m9SQNji/nONCO+zfPrHPfit0QnQwRh65RuxgXglgAAA=="
+  },
+  "/img/varieties/red-onion/hero.jpg": {
+    "sha": "e7ec5a63d9d67b34",
+    "url": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAADwAwCdASoYABAAPu1kqU4ppaOiMAgBMB2JaACdAB7HTaE0FZVuaU7AAP7HgHonqOX09ipm9A/teK1nFbNSiBnjbK/VF7E5FjkHjBwTZu7Epvs6XS1tcCA7imxORo2CWK42V8AVETUGlEdb0W9J0VBFFAnyy8r+aaijZloJyYAAAA=="
+  },
+  "/img/varieties/rocket/bunch-2.jpg": {
+    "sha": "7bbc026131700595",
+    "url": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAAAQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbACdMoR2WCg7NB91rOeyAAD+X9nJqXve18w1Z/ghRWe4vt1sqh9KphgNyNJW2etdX1yWF7DutLHYh7XFz5DHIbVxfpZWh+whBlD4pXvGvVzZS+GYxh1ih6OtcbM6zBOUwgojVC/AbovlldAAAA=="
+  },
+  "/img/varieties/rocket/bunch-3.jpg": {
+    "sha": "23607e32ab953ecb",
+    "url": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAAAwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JbACsACHgEXl0HRqiHxJcAgAA/u1esf+p/NXQpdi4wG2cWeoTpQ/Uoxf6LqraRM/glSJAPz7o/OmSm/t1VmrbZVQ2iMAA"
+  },
+  "/img/varieties/rocket/bunch.jpg": {
+    "sha": "63240224bf922d59",
+    "url": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZgC7L1yBpA/nc/jX6cGXqXHw4ADgMInnAwYShNu5JPh+4MdSGz5rokaKAeNnbeP+0aIE5DSyaACyXDRsWYLFzL7TUkLmGCbsPKc2IDtEMoAA"
+  },
+  "/img/varieties/rocket/cutout.webp": {
+    "sha": "b84fe35a58ef0b90",
+    "url": "data:image/webp;base64,UklGRnoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJIAAAART6CgbRsWF8ffIiIg8hVWcBvbtqqc+yr4VoD/HI+d3IkdYif/WgHcet97H6kgov8TgL81vMAkldefLeahKdVm96IsDk0CvEvBzFweHRiTFyvLMRln1p6Ekeiewkh1R2FcdCsyzroOoQqwfqvKGOi+VE8HcK+qlQDQy6RjCADGNGd+hCTB3RaPFkHtzVoEvUf4LVZQOCDCAAAAMAUAnQEqGAAYAD7taqxRKaWkIqgKqTAdiWgAnQGL9HPZCItUPewvUYAx1ULBBCULPQAA/nGwviA4Qk7gB7a9/KgI+A6cM1xKJsqdg0CQ5SOrd3lOuXsO92JYTZNMZ2CbCX6j9LciMxlkXr1wTc2eH6Aj1zpFT18jE638JP/1ONOD7FidNlTSwZhzVbNXiRbAXoAEGGmkY41WLomjcTgbi6Vd4M4XwHngRX9vkOlNXgAfkpTXNv86yRpNjBAfoBvAAAA="
+  },
+  "/img/varieties/rocket/hero.jpg": {
+    "sha": "bfab38b97358e3d2",
+    "url": "data:image/webp;base64,UklGRpgAAABXRUJQVlA4IIwAAABQBACdASoYABAAPu1iqk2ppaQiMAgBMB2JaACdMoAC+y88QsIYJjFLZkCwAP7WJcR/a6b1FKTPdZEdMqevFhB4H0OlRYHZPMv6VP3T2mET11v8fT6zL+aJcQ3GTngHGjARvZtIDDC+YLiDXTsmrunPNmYEEJJtmkbDeV+ROngJuzSd8BWwuLUCjAAAAA=="
+  },
+  "/img/varieties/spinach/bunch-2.jpg": {
+    "sha": "a7fefb1f05bda95b",
+    "url": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAABwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JbACdACHu5KPPeRlfjADb8LwuAAD9/EsuP0eoGalPHUzEeNnm96nyK828jb5bMZK3z+eulJM5SMowGj8AweWl57eu8HBe2I1aM8zDiyZZqbXIMC13XShZjzIAAA=="
+  },
+  "/img/varieties/spinach/bunch-3.jpg": {
+    "sha": "8c49701d400709d2",
+    "url": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABwBACdASoYABAAPu1kqU2ppaQiMAgBMB2JbACsACIfxep0crBHOH7/DfQsAAD+7V6x/EyqkTJYJjagEM9YTCkDmbyhyL2yQe+nCQHjs+Aai1/9UYKPfefZIESFHzwK/sAAAA=="
+  },
+  "/img/varieties/spinach/bunch.jpg": {
+    "sha": "6c9aea44c7ea97f9",
+    "url": "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAABwBACdASoYABAAPu1iqk2ppaQiMAgBMB2JZAC7AB0/eQ2eS7EwXoDKokOUAADgJL7AwY6W1axBnPVO9Bg469+NBvqDYIOeNncENedLPNFv6Qle/nJn52z+CcPVCt+xwW+ttEfuX+oLWlcHgAA="
+  },
+  "/img/varieties/spinach/cutout.webp": {
+    "sha": "50fe4c481ecdc4f8",
+    "url": "data:image/webp;base64,UklGRn4BAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSI8AAAART6CgbSQUvwlmiIgAtPrUaoGb2rbV6P6vABIBnH64555HANcsIOggT++HAQUR/Z8A/K2IesokwvHpNIuZ1lk/67rexQwIDlVLRM3OA5YVGZshEzlZ9zwobVeni9OeB4VtwcTdNgJuliYDlq3FBzql6eIBYlVp7wEDEB5aoveAQw/v9XugYO5sBgpWEUr8FgBWUDggyAAAADAFAJ0BKhgAGAA+3VqkTailI6I3+qgBEBuJbACw/f/i1hzNgTAFrSt83CQaWA+nO082APnYdYYoaFH6Dg1m/sXX9/9O47H78buI/7kBT6v0R0eYVU7IbzBO7VYYSF8/iAw+KRKbXzavbNing/MK+XzQLd8+cYWEw8ns0n5Tdta4jEyg8dp/gRwp+RCJCKCPIkLnMArIgh9xYh8XMiNiND3rKE1iz/2oIREuQIPIaCKLss6NE+rXFM0ra8ohrJCT40SA5KdHgkAA"
+  },
+  "/img/varieties/spinach/hero.jpg": {
+    "sha": "17e1329250ad649e",
+    "url": "data:image/webp;base64,UklGRpIAAABXRUJQVlA4IIYAAAAwBACdASoYABAAPu1iqU2ppaQiMAgBMB2JaACdMoADQuhYIydQnLCGPYAA/LPySraRsR9qXqli11T8MWRaRsFZ4z0n+jsp6fZ3PtQrIfTYRCyz+g6gKDhZS53yQ1QeM0g6G6vCXmd4Q40Sith2qVhWctxTzS+27xyVJy/DwFa49VhuvggAAA=="
+  },
+  "/img/varieties/sunflower/bunch-2.jpg": {
+    "sha": "e6c614c5892c4e61",
+    "url": "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAQBACdASoYABAAPu1iqk2ppaQiMAgBMB2JbACxGwAAiB1cOZkzmkycAAD30DcYmBKd7ksFwdNv2YQjXkVVJA7HXifLDeQ48mVH9EYNs4DEUWctIX12//AqAdRyD0gSlSUMl86bXqseaPcN1o7++XORqDfIAA=="
+  },
+  "/img/varieties/sunflower/bunch-3.jpg": {
+    "sha": "2e5d066cd6809644",
+    "url": "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAAAwBACdASoYABAAPu1kq04ppaQiMAgBMB2JZgC06Bu1WCKMuQDYHJo8qagA/u1T9GW5XgYCQMeLKa2YSF7W3+JOyu+3aBoftr2ImJllTN3sQKdJ+JIdUsEpLoERebEwAAA="
+  },
+  "/img/varieties/sunflower/bunch.jpg": {
+    "sha": "d60f6e722005185b",
+    "url": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAABQBACdASoYABAAPu1iqU2ppaOiMAgBMB2JZgC7AB6VvagNc5v0ND2WYkgAAOAiBxGRCo8GE0AT9LkS049gM7KQCiug2OcgJ8ayijZJ6BgyLy8Kp8/BMoRyN/nBxLTBVd52WQd0u5mzhNcAfOAAAA=="
+  },
+  "/img/varieties/sunflower/cutout.webp": {
+    "sha": "6d939af150032ed9",
+    "url": "data:image/webp;base64,UklGRnoBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSJMAAAART6AgbQMWT0f3IiIUe4wDt7Ftq8q5r4Kv+cdTJ3cK8Nghdgr41gC8W+8TpIKI/k8A/tYtFl3SOM3Zfj/3CYDTu2Uyz8YlAI2LZGbOlh6cjWRt3iUnZuNRRC/TSUSJaSWiqwU5Z9OEsJaGGtAz5CFQf+ueAeBcpZIvBYB+ohzLAOD0U+ZjmRQ40/uhTNA7zRLhbwEAVlA4IMAAAACQBQCdASoYABgAPu1osFAppaSiqAqpMB2JZgCw7dwLeRN1rtMHr969Vlg/7zw8IfK32U3AAAD+ubqHbXtsq5ifYACUubqADaoovDveE++pmKuv+rLr8RoMWMESUwbv1sxQU2wx7NRPzX0U/lPEN/W3vQ2vhDP15HC0dRfO5wCDRzrX8I4bCRjmB8naJifB2WaUlSxUJ9aDFWzbd4evEudj5wizRtsX1erjCIeKg3nyh/k6KZqnmq+SXM/ZNIpEYAA="
+  },
+  "/img/varieties/sunflower/hero.jpg": {
+    "sha": "2cf1fb4bbdcad90c",
+    "url": "data:image/webp;base64,UklGRpAAAABXRUJQVlA4IIQAAAAwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JagC06Bt199S/Lnfnx3vcSAAA/lvJ/ee5F6TZ8e6OHEJj/hZB/aQ4NWwptPp1p/K+px9wyRqQD1OSHbHHqvrXCGFlxBXrVUI88V/CVUzrEu7zPwh5CdJC7+oEmomeDHsYYziE0xBWir4IAAA="
+  },
+  "/img/varieties/wheatgrass/bunch.jpg": {
+    "sha": "989e6ddaa9bd8c0d",
+    "url": "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABwBACdASoYABAAPu1kqU2ppaQiMAgBMB2JagCdL1yBo4+Lq5P0JU4jbOC8SAD8j41YWmlAjLFqKBoQCmzl3uS/CdwBg/z5Q+h0s2BaEwGwKyQ/2bapVV3VUO+lGRRjw+K/5i+RCukp4lzjHKhn5cIA"
+  },
+  "/img/varieties/wheatgrass/cutout.webp": {
+    "sha": "e6fd55694531668c",
+    "url": "data:image/webp;base64,UklGRmgBAABXRUJQVlA4WAoAAAAQAAAAFwAAFwAAQUxQSIoAAAART6CgbRs2VBLdvxEREP7NZCcc1bbtNPeh4DcBkDbvmdMEpAuIgy6A6uA/vXQwENH/CcAkhTdTDd7mco3mVHHP36L43+YEiCCzzFzeNeBnlqvlgcTLcv2D3JSbnFYkkqYj4dVQroCTrfsbwPvYyv9AAPyMmctYAYA451zGCrXus4g1GtehRkuJEQNWUDgguAAAAFAFAJ0BKhgAGAA+7WSoTamlo6IwGAwBMB2JaAAu/8WsEb9YxD5nPWcTxl05atBTNVHYAAD+nVZqGyhb1piSRNTriRAkRtc0Nt64+N4bvIXeLuHnQyaqd8e0R6JBtOkcGffY0uZvBScV+oT68skuzSDuIsjJmx6PwYA2BJIPTfARi3iJJzlFh1Q3R+9YLE68FBNhuIsvxNwrEgUEYaUcw1zFA3Vliry+1BqY7IkOz2arx3lbjmwJMAA="
+  },
+  "/img/varieties/wheatgrass/hero.jpg": {
+    "sha": "c70fa9d069969127",
+    "url": "data:image/webp;base64,UklGRowAAABXRUJQVlA4IIAAAABwBACdASoYABAAPu1iqU2ppaOiMAgBMB2JaACsMoMYAEmf+XVHxNcpN8PEQAD+5+A7/qrh8N8JeZlUD0Fr2LphOSnWAW/eQTIpluH1oG0HDL3ZJgwWenPyLPXCvtxOp/wPuVZQ+d3AQBM6o5yLStPnZ3FDYFXUp82HkxUvU+4AAA=="
+  }
+}

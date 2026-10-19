@@ -9,6 +9,7 @@ import type { PlanText } from "@/lib/content/plans";
 import { firstDeliveryDate, formatDeliveryDate } from "@/lib/delivery-date";
 import { subscriptionSchedule, type ScheduledBox } from "@/lib/subscriptions/rotation";
 import Image from "next/image";
+import { placeholderProps, type Placeholder } from "@/lib/images/placeholder-props";
 import { Sprout } from "@/components/ui/Sprout";
 
 /**
@@ -24,7 +25,14 @@ import { Sprout } from "@/components/ui/Sprout";
  * holds no plan copy at all: `highlights` in particular used to be a plain
  * `string[]` there, so this list rendered in English on the Kannada page.
  */
-export type PlanWithWeeks = { plan: Plan; weeks: PlanWeek[]; text: PlanText };
+export type PlanWithWeeks = {
+  plan: Plan;
+  weeks: PlanWeek[];
+  text: PlanText;
+  /** The rotation panel's header photograph. Its placeholder is resolved by
+   *  the page, because the lookup is server-only. */
+  photo: { src: string; placeholder?: Placeholder };
+};
 
 /**
  * Everything that changes with a card's ground — SPEC §17.1 / §18.4.
@@ -584,11 +592,12 @@ function RotationModal({
             empty. */}
         <div className="relative aspect-[16/5] bg-sage">
           <Image
-            src={`/img/plans/${entry.plan.contentKey}.webp`}
+            src={entry.photo.src}
             alt=""
             fill
             sizes="(min-width: 57rem) 52rem, 92vw"
             className="object-cover"
+            {...placeholderProps(entry.photo.placeholder, "cover")}
           />
         </div>
 

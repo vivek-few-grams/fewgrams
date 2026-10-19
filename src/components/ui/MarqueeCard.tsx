@@ -1,6 +1,8 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
+import { placeholderFor } from "@/lib/images/placeholder";
+import { placeholderProps } from "@/lib/images/placeholder-props";
 import { ScatterMarquee } from "./ScatterMarquee";
 
 /**
@@ -117,7 +119,14 @@ export function MarqueeCard({
         <div className={`mcard__media flex items-center justify-center ${mediaClass}`}>{media}</div>
         {photo && (
           <div className="mcard__photo" aria-hidden="true">
-            <Image src={photo} alt="" fill sizes="(min-width: 768px) 20vw, 50vw" className="object-cover" />
+            <Image
+              src={photo}
+              alt=""
+              fill
+              sizes="(min-width: 768px) 20vw, 50vw"
+              className="object-cover"
+              {...placeholderProps(placeholderFor(photo), "cover")}
+            />
           </div>
         )}
       </div>

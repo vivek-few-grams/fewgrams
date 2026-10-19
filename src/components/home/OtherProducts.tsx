@@ -5,6 +5,8 @@ import { CategoryMedia, categoryMediaClass, categoryPhoto } from "@/components/c
 import { getTranslations } from "next-intl/server";
 import type { Category } from "@/lib/types";
 import { CATEGORY_COUNT, CATEGORY_HREF, CATEGORY_PANELS } from "@/lib/shop";
+import { placeholderFor } from "@/lib/images/placeholder";
+import { placeholderProps } from "@/lib/images/placeholder-props";
 
 /**
  * Other products — SPEC §18.3 section 5. One scrolling row of tiles, full Don Molinico
@@ -95,6 +97,7 @@ export async function OtherProducts({
                   fill
                   sizes="(min-width: 768px) 22vw, 42vw"
                   className="object-contain"
+                  {...placeholderProps(placeholderFor("/img/shop/microgreens-cutout.webp"), "contain")}
                 />
               }
               mediaClass="aspect-[3/2] w-[93%]"

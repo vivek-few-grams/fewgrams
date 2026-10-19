@@ -3,8 +3,14 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { placeholderProps, type Placeholder } from "@/lib/images/placeholder-props";
 
-export type Shot = { src: string; alt: string };
+export type Shot = {
+  src: string;
+  alt: string;
+  /** Resolved by `DetailPage` — the lookup is server-only. */
+  placeholder?: Placeholder;
+};
 
 /**
  * A catalogue item's photographs — one large image with a thumbnail strip
@@ -121,6 +127,7 @@ export function Gallery({
                  instant, but they are not part of the page for a screen
                  reader — two descriptions of one visible image is noise. */
               aria-hidden={i === active ? undefined : true}
+              {...placeholderProps(shot.placeholder, "contain")}
             />
           ) : null,
         )}
@@ -157,7 +164,14 @@ export function Gallery({
                   i === active ? "border-forest" : "border-transparent hover:border-forest/40"
                 }`}
               >
-                <Image src={shot.src} alt="" fill sizes="96px" className="object-contain" />
+                <Image
+                  src={shot.src}
+                  alt=""
+                  fill
+                  sizes="96px"
+                  className="object-contain"
+                  {...placeholderProps(shot.placeholder, "contain")}
+                />
               </button>
             ))}
           </div>

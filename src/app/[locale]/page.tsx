@@ -25,6 +25,7 @@ import { growMediumNameMap } from "@/lib/content/grow-media";
 import { GROW_MEDIA_TILE_WORDS } from "@/lib/shop";
 import { RACK_RANGES } from "@/lib/racks/cart-key";
 import { attachPlanContent } from "@/lib/content/plans";
+import { placeholderFor } from "@/lib/images/placeholder";
 import { currentActor } from "@/lib/auth/guard";
 
 /**
@@ -136,7 +137,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   );
   const plans = withContent
     .filter((p) => p.content !== null)
-    .map(({ weeks, content, ...plan }) => ({ plan, weeks, text: content!.text }));
+    .map(({ weeks, content, ...plan }) => {
+      const src = `/img/plans/${plan.contentKey}.webp`;
+      return { plan, weeks, text: content!.text, photo: { src, placeholder: placeholderFor(src) } };
+    });
 
   /* The empty plans panel used to tell every visitor to "create Essential,
      Exotic or Build Your Own" and offered a button into /admin/plans. The

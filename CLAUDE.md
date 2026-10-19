@@ -458,6 +458,24 @@ skewed rectangle rather than a tilted product.
   which is a different kind of statement. Neither may restate a figure the admin
   screens tune: no price, no height, no shelf count, no lead time.
 
+## Every photo has a blurred stand-in — run the script when you add one
+
+The page's HTML lands well before its photos, so each photo paints a 24px
+blurred copy of itself first (the owner, 19 Oct 2026). `npm run
+images:placeholders` writes them into `src/lib/images/placeholders.json`,
+keyed by path; **run it after adding or replacing anything under
+`public/img/`** — `placeholders.test.ts` fails until you do, naming the file.
+
+- **Look one up on the server only** — `placeholderFor(src)` imports the whole
+  manifest. A client component takes it as a prop (`Shot`, `HeroSlide`, a
+  plan's `photo`); the test fails on a `"use client"` import.
+- **Spread `placeholderProps(placeholder, fit)` into `<Image>`**, with `fit`
+  matching the `object-*` class. Next sizes the placeholder from `style`, not
+  from a class, so without it a cut-out's blur overfills its box.
+- **Not prebuilt image sizes.** Serving pre-resized files from S3 instead of
+  the Lambda optimiser was costed on 19 Oct 2026 — about ₹17/month against
+  ₹0–3 until ~400k page views — and the owner chose the stand-ins alone.
+
 ## Interactive affordance is a base rule, not a class
 
 **Tailwind v4 removed `cursor: pointer` from buttons in Preflight.** A base
