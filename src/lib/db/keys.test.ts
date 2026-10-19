@@ -23,6 +23,7 @@ import {
   RackSettingsEntity,
   SeedEntity,
   SeedSettingsEntity,
+  VarietySettingsEntity,
   PinPlaceEntity,
   ShippingSettingsEntity,
   TrayEntity,
@@ -57,7 +58,7 @@ import {
 const variety = {
   id: "radish",
   contentKey: "radish",
-  pricePerTray: 90,
+  pricePer100g: 90,
   yieldGramsPerTrayMin: 250,
   yieldGramsPerTrayMax: 350,
   growDays: 7,
@@ -118,7 +119,7 @@ describe("variety keys", () => {
       GSI1SK: "radish",
       id: "radish",
       contentKey: "radish",
-      pricePerTray: 60,
+      pricePerTray: 60, // a row from before 19 Oct 2026 still reads
       yieldGramsPerTrayMin: 250,
       yieldGramsPerTrayMax: 350,
       growDays: 7,
@@ -683,6 +684,22 @@ describe("seeds margin — markup and rounding on cost", () => {
   it("is its own singleton, off GSI1, so listing seeds never sees it", () => {
     const params = SeedSettingsEntity.put({ markupPercent: 50, roundUpToNearest: 10 }).params();
     expect(params.Item.PK).toBe("SEEDSETTINGS");
+    expect(params.Item.SK).toBe("SETTINGS");
+    expect(params.TableName).toBe(TABLES.catalogue);
+    expect(params.Item.GSI1PK).toBeUndefined();
+  });
+});
+
+describe("microgreens costing — cocopeat, power and water, margin", () => {
+  it("is its own singleton, off GSI1, so listing varieties never sees it", () => {
+    const params = VarietySettingsEntity.put({
+      cocopeatBlockCost: 300,
+      traysPerBlock: 16,
+      overheadPerTray: 30,
+      markupPercent: 50,
+      roundUpToNearest: 5,
+    }).params();
+    expect(params.Item.PK).toBe("VARIETYSETTINGS");
     expect(params.Item.SK).toBe("SETTINGS");
     expect(params.TableName).toBe(TABLES.catalogue);
     expect(params.Item.GSI1PK).toBeUndefined();

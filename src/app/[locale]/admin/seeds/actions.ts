@@ -6,6 +6,7 @@ import { isOnABill } from "@/lib/repo/purchases";
 import { forgetSupply } from "@/lib/repo/vendors";
 import { deleteSeed, getSeed, listSeeds, patchSeed, putSeedMargin, setSeedStock } from "@/lib/repo/seeds";
 import { retailPrice } from "@/lib/pricing/margin";
+import { repriceVarieties } from "@/lib/varieties/reprice";
 import { count, err, zeroOrMore, type FormState } from "@/lib/forms";
 
 /**
@@ -96,6 +97,12 @@ export async function removeSeed(fd: FormData): Promise<void> {
      request made without the screen. */
   if (row && (await isOnABill(`seed:${row.contentKey}`))) throw new Error("This seed is on a purchase bill");
   await deleteSeed(id);
-  if (row) await forgetSupply(`seed:${row.contentKey}`);
+  if (row) {
+    await forgetSupply(`seed:${row.contentKey}`);
+    /* The microgreen of the same key loses the seed cost it was priced from,
+       and with it every page that sells it. */
+    await repriceVarieties([row.contentKey]);
+    revalidatePath("/[locale]", "layout");
+  }
   refresh();
 }

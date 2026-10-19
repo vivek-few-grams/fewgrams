@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Search, X } from "lucide-react";
 import type { Variety } from "@/lib/types";
 import { sanitiseKey } from "@/lib/content/content-key";
-import { VarietyRow } from "./VarietyRow";
+import { VarietyRow, type VarietyWorking } from "./VarietyRow";
 
 /**
  * The saved varieties, as an editable table with a filter.
@@ -25,7 +25,7 @@ import { VarietyRow } from "./VarietyRow";
  * would lose any unsaved edits in the other rows. If this ever grows past a
  * few hundred, move it to a query — not before.
  */
-const COLUMNS = "minmax(11rem,1.6fr) repeat(5, minmax(4.5rem, 0.7fr)) 6rem 5.5rem 4rem";
+const COLUMNS = "minmax(11rem,1.6fr) repeat(6, minmax(4.5rem, 0.7fr)) 6rem 5.5rem 4rem";
 
 /**
  * Below this the rows scroll sideways inside their own box rather than
@@ -41,9 +41,13 @@ const COLUMNS = "minmax(11rem,1.6fr) repeat(5, minmax(4.5rem, 0.7fr)) 6rem 5.5re
  * their label only as an `aria-label`, so it would give an operator four
  * unlabelled boxes.
  */
-const MIN_WIDTH = "min-w-[52rem]";
+const MIN_WIDTH = "min-w-[57rem]";
 
-export function VarietyTable({ varieties }: { varieties: Array<{ variety: Variety; name: string | null }> }) {
+export function VarietyTable({
+  varieties,
+}: {
+  varieties: Array<{ variety: Variety; name: string | null; working: VarietyWorking }>;
+}) {
   const t = useTranslations("admin.varieties");
   const [query, setQuery] = useState("");
 
@@ -126,8 +130,9 @@ export function VarietyTable({ varieties }: { varieties: Array<{ variety: Variet
                 t("colGrowDays"),
                 t("colYieldMin"),
                 t("colYieldMax"),
-                t("colPrice"),
                 t("colSeed"),
+                t("colCost"),
+                t("colPrice"),
                 "",
                 t("colActive"),
                 "",
@@ -138,8 +143,14 @@ export function VarietyTable({ varieties }: { varieties: Array<{ variety: Variet
               ))}
             </div>
 
-            {shown.map(({ variety, name }) => (
-              <VarietyRow key={variety.id} variety={variety} name={name} columns={COLUMNS} />
+            {shown.map(({ variety, name, working }) => (
+              <VarietyRow
+                key={variety.id}
+                variety={variety}
+                name={name}
+                working={working}
+                columns={COLUMNS}
+              />
             ))}
           </div>
         </div>

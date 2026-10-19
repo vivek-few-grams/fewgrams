@@ -74,7 +74,12 @@ export const VarietyEntity = new Entity(
     attributes: {
       id: { type: "string", required: true },
       contentKey: { type: "string", required: true },
-      pricePerTray: { type: "number", required: true },
+      /** Worked out from cost, never typed (19 Oct 2026). Not required: a row
+       *  priced per tray before then has none, and reads as 0 — off sale —
+       *  until it is repriced. Its stale `pricePerTray` is dropped by the
+       *  next put. */
+      pricePer100g: { type: "number" },
+      costPer100g: { type: "number" },
       /** The two fields the whole operation computes from (SPEC §3.1), so
        *  both are required on every variety. */
       yieldGramsPerTrayMin: { type: "number", required: true },
@@ -99,6 +104,31 @@ export const VarietyEntity = new Entity(
           template: "${contentKey}",
           casing: "none",
         },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
+ * The microgreens costing — cocopeat and power-and-water per tray, and the
+ * margin — one for every variety (19 Oct 2026). A singleton, off GSI1, so
+ * listing varieties never sees it.
+ */
+export const VarietySettingsEntity = new Entity(
+  {
+    model: { ...model, entity: "varietySettings" },
+    attributes: {
+      cocopeatBlockCost: { type: "number", required: true },
+      traysPerBlock: { type: "number", required: true },
+      overheadPerTray: { type: "number", required: true },
+      markupPercent: { type: "number", required: true },
+      roundUpToNearest: { type: "number", required: true },
+    },
+    indexes: {
+      single: {
+        pk: { field: "PK", composite: [], template: "VARIETYSETTINGS", casing: "none" },
+        sk: { field: "SK", composite: [], template: "SETTINGS", casing: "none" },
       },
     },
   },

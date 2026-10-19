@@ -11,12 +11,16 @@
  *
  * **The numbers are dummy on purpose.** The owner's instruction (19 Sep 2026)
  * was *"add dummy prices for now, i will update later"* — real
- * `pricePerTray` / `yieldGramsPerTrayMin` / `yieldGramsPerTrayMax` /
- * `growDays` are business numbers this script cannot know, unlike
+ * `yieldGramsPerTrayMin` / `yieldGramsPerTrayMax` / `growDays` are business
+ * numbers this script cannot know, unlike
  * `seeds-fill.mjs` which has a real supplier price list to work from. The
  * placeholder values below are exactly `AddVarietyForm`'s own default
  * values, so a row this script writes looks identical to what typing nothing
  * into that form and clicking save would produce.
+ *
+ * **No price** (19 Oct 2026): a green is priced per 100 g from its seed rate
+ * and cost, on admin → varieties, so a row from here is off sale at 0 until
+ * its seed per tray is entered there.
  *
  * **Additive, and it never overwrites — like `racks-fill.mjs`, unlike
  * `seeds-fill.mjs`.** A variety already on sale (real numbers or a dummy row
@@ -44,9 +48,9 @@ async function contentKeys() {
 /** `AddVarietyForm`'s own defaults — see src/app/[locale]/admin/varieties/AddVarietyForm.tsx. */
 const PLACEHOLDER = {
   growDays: 7,
-  yieldGramsPerTrayMin: 250,
-  yieldGramsPerTrayMax: 350,
-  pricePerTray: 200,
+  yieldGramsPerTrayMin: 100,
+  yieldGramsPerTrayMax: 150,
+  pricePer100g: 0,
 };
 
 function flag(name, fallback = null) {
@@ -98,7 +102,7 @@ async function main() {
     };
 
     console.log(
-      `${key.padEnd(16)} add     ₹${row.pricePerTray}/tray, ` +
+      `${key.padEnd(16)} add     unpriced, ` +
         `${row.yieldGramsPerTrayMin}-${row.yieldGramsPerTrayMax} g/tray, ` +
         `${row.growDays} days — DUMMY, correct in /admin/varieties`,
     );

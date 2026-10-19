@@ -6,8 +6,19 @@ import { AlertTriangle, Check } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { Variety } from "@/lib/types";
+import type { TrayCost, Unpriced } from "@/lib/varieties/pricing";
 import { removeVariety, toggleVarietyActive, updateVariety } from "./actions";
 import { NumberField } from "../fields";
+
+/** A variety's price, worked — what the row prints under itself. Built by the
+ *  page with `varietyCost`, which is pure, so the row shows the very figures
+ *  the price was set from. */
+export type VarietyWorking =
+  | ({ ok: true; yieldMin: number } & TrayCost)
+  | { ok: false; reason: Unpriced; /** Seed per tray in the sowing log, to copy in. */ logSeed?: number };
+
+/** Rupees to the paisa, for the working line. */
+const round2 = (n: number) => Math.round(n * 100) / 100;
 
 /**
  * One row of the variety table, with its numbers editable in place.
@@ -36,11 +47,14 @@ import { NumberField } from "../fields";
 export function VarietyRow({
   variety,
   name,
+  working,
   columns,
 }: {
   variety: Variety;
   /** From the content file; null when the file does not exist yet. */
   name: string | null;
+  /** How its price was reached, or what stops it being priced. */
+  working: VarietyWorking;
   /** Shared with the header so the columns agree. */
   columns: string;
 }) {
@@ -97,19 +111,19 @@ export function VarietyRow({
         />
         <NumberField
           compact
-          label={t("colPrice")}
-          name="pricePerTray"
-          min={1}
-          defaultValue={variety.pricePerTray}
-          error={errorFor("pricePerTray")}
-        />
-        <NumberField
-          compact
           label={t("colSeed")}
           name="seedGramsPerTray"
           min={1}
           defaultValue={variety.seedGramsPerTray ?? ""}
+          error={errorFor("seedGramsPerTray")}
         />
+        {/* Worked out, never typed — see `working` below the row. */}
+        <p className="text-right font-body text-sm tabular-nums text-stone">
+          {variety.costPer100g === undefined ? t("none") : t("rupees", { amount: variety.costPer100g })}
+        </p>
+        <p className="text-right font-body text-sm font-semibold tabular-nums text-forest">
+          {variety.pricePer100g > 0 ? t("rupees", { amount: variety.pricePer100g }) : t("none")}
+        </p>
 
         <button
           type="submit"
@@ -126,12 +140,15 @@ export function VarietyRow({
       <form action={toggleVarietyActive} className="contents">
         <input type="hidden" name="id" value={variety.id} />
         <button
+          /* Off and unpriced: switching it on would sell nothing, so it waits
+             for a price (the line under the row says what is missing). */
+          disabled={!variety.active && variety.pricePer100g <= 0}
           /* Hover has to move in the direction of what the click does:
              darker/greener when it will switch ON, plain when OFF. */
-          className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
+          className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
             variety.active
               ? "bg-sage text-forest hover:bg-forest hover:text-cream"
-              : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
+              : "bg-forest/10 text-stone enabled:hover:bg-sage enabled:hover:text-forest"
           }`}
         >
           {variety.active ? t("colActive") : t("hidden")}
@@ -149,6 +166,26 @@ export function VarietyRow({
           className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
         />
       </form>
+
+      {working.ok ? (
+        <p className="col-span-full font-body text-[11px] tabular-nums text-stone">
+          {t("working", {
+            seed: round2(working.seed),
+            cocopeat: round2(working.cocopeat),
+            overhead: round2(working.overhead),
+            tray: round2(working.tray),
+            yield: working.yieldMin,
+            cost: round2(working.per100g),
+          })}
+        </p>
+      ) : (
+        <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">
+          <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
+          {working.reason === "noSeedRate" && working.logSeed !== undefined
+            ? t("unpriced.noSeedRateLog", { grams: working.logSeed })
+            : t(`unpriced.${working.reason}`, { key: variety.contentKey })}
+        </p>
+      )}
 
       {!name && (
         <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">

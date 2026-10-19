@@ -91,7 +91,7 @@
     "added": "ನಿಮ್ಮ ಬುಟ್ಟಿಯಲ್ಲಿದೆ",
     "recommended": "Fewgrams ಶಿಫಾರಸು",
     "failed": "ಈಗ ಇದನ್ನು ಸೇರಿಸಲಾಗಲಿಲ್ಲ.",
-    "priceTray": "ಒಂದು ಟ್ರೇಗೆ ₹{price, number}",
+    "priceGreens": "100 ಗ್ರಾಂಗೆ ₹{price, number}",
     "forSale": "ಖರೀದಿಗೆ ಲಭ್ಯವಿದೆ",
     "newTab": "ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ",
     "allSeeds": "ನಮ್ಮ ಎಲ್ಲಾ ಬೀಜಗಳನ್ನು ನೋಡಿ",

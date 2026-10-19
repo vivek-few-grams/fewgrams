@@ -38,11 +38,12 @@ import { isValidRackCartKey } from "@/lib/racks/cart-key";
  *
  * Trays followed the same day and made the kind carry a second job: **what a
  * unit *is*.** A seed unit is 100 g (50 g from 25 Sep to 3 Oct 2026); a tray-product unit is one pack, of two
- * trays or five mats. A variety unit joined them on 19 Sep 2026 — it is now
- * one grown tray, not 100 g — so `GRAMS_PER_UNIT` applies to a shrinking
- * minority of kinds, and `isWeighed` is what says which. A cart holding one
- * green tray or one tray-product pack has a weight of zero and a real
- * subtotal, and both of those are correct.
+ * trays or five mats. A variety unit is a 100 g box again since 19 Oct 2026
+ * (one grown tray from 19 Sep), so a cookie written in that month reads its
+ * trays back as boxes — the cart is a wish, re-priced on every read.
+ * `isWeighed` says which kinds `GRAMS_PER_UNIT` applies to. A cart holding
+ * one tray-product pack has a weight of zero and a real subtotal, and both of
+ * those are correct.
  *
  * The kind is therefore part of a line's identity everywhere: `unitsFor`,
  * `upsertLine` and `removeFromCart` all take it, and there is no overload that
@@ -146,15 +147,15 @@ export function isValidKeyFor(kind: CartKind, key: string): boolean {
  * weight's name: a 5 kg block is one unit at one price, and "1 block · 5,000 g"
  * would invite reading the price as per kilo. The kilos are in its name.
  */
-const WEIGHED: ReadonlySet<CartKind> = new Set<CartKind>(["seed"]);
+const WEIGHED: ReadonlySet<CartKind> = new Set<CartKind>(["seed", "variety"]);
 
 export function isWeighed(kind: CartKind): boolean {
   return WEIGHED.has(kind);
 }
 
 /**
- * One line caps at twenty units of a single item — twenty trays of a green,
- * 2 kg of a seed, or twenty packs of trays. Past this it is not an ad-hoc
+ * One line caps at twenty units of a single item — 2 kg of a green or of a
+ * seed, or twenty packs of trays. Past this it is not an ad-hoc
  * order, it is a wholesale enquiry, and the sow plan (or the supplier) should
  * be told about it deliberately rather than by a spinner someone held down.
  *
@@ -175,7 +176,7 @@ export const CART_COOKIE = "fewgrams_cart";
  *  §22.2) — 100 g again from 3 Oct 2026 (the owner: "seeds should be always
  *  purchasable in 100 gm qty"), after 50 g from 25 Sep. A cookie written in
  *  that week counted 50 g units, so its seed lines read back at double — the cart is
- *  a wish and is re-priced on every read, and the customer sees the change. It does not apply to a green, a tray or a rack — see `isWeighed`. */
+ *  a wish and is re-priced on every read, and the customer sees the change. A green is sold in the same 100 g (19 Oct 2026). It does not apply to a tray or a rack — see `isWeighed`. */
 export const GRAMS_PER_UNIT = 100;
 
 /** A line's identity — kind **and** key. Used as a React key and to compare

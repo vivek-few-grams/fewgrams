@@ -2,9 +2,17 @@
 
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
-import { deleteVariety, getVariety, listVarieties, putVariety } from "@/lib/repo/varieties";
+import {
+  deleteVariety,
+  getVariety,
+  listVarieties,
+  putVariety,
+  putVarietyCosting,
+  setVarietyActive,
+} from "@/lib/repo/varieties";
 import { isValidContentKey } from "@/lib/content/varieties";
-import type { FormState } from "@/lib/forms";
+import { count, err, zeroOrMore, type FormState } from "@/lib/forms";
+import { repriceVarieties } from "@/lib/varieties/reprice";
 import type { Variety } from "@/lib/types";
 
 /**
@@ -18,13 +26,17 @@ import type { Variety } from "@/lib/types";
  * these actions take is a content key, and a key with no file on disk is
  * refused. That is what makes "a variety with no copy" unrepresentable rather
  * than merely discouraged.
+ *
+ * **Nor a price** (the owner, 19 Oct 2026). A green is priced per 100 g from
+ * what a tray costs — its seed, cocopeat, and power and water — over its low
+ * yield, with the microgreens margin. Every save here ends in
+ * `repriceVarieties`, which writes it.
  */
 
-/** Public pages that change when the catalogue does. */
+/** Public pages that change when the catalogue does — every one that prints
+ *  a green's price. */
 function refresh() {
-  revalidatePath("/[locale]/admin/varieties", "page");
-  revalidatePath("/[locale]", "page");
-  revalidatePath("/[locale]/microgreens", "page");
+  revalidatePath("/[locale]", "layout");
 }
 
 function positive(fd: FormData, key: string, min: number): number | null {
@@ -38,12 +50,7 @@ function positive(fd: FormData, key: string, min: number): number | null {
  *  (SPEC §5.1), so grouping varieties by tier earned nothing. */
 type Ops = Pick<
   Variety,
-  | "pricePerTray"
-  | "yieldGramsPerTrayMin"
-  | "yieldGramsPerTrayMax"
-  | "growDays"
-  | "seedGramsPerTray"
-  | "active"
+  "yieldGramsPerTrayMin" | "yieldGramsPerTrayMax" | "growDays" | "seedGramsPerTray" | "active"
 >;
 
 function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: FormState } {
@@ -73,12 +80,12 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
       state: { status: "error", code: "yieldRangeInvalid", field: "yieldGramsPerTrayMax" },
     };
 
-  const pricePerTray = positive(fd, "pricePerTray", 1);
-  if (pricePerTray === null)
-    return { ok: false, state: { status: "error", code: "priceInvalid", field: "pricePerTray" } };
-
   const seedRaw = String(fd.get("seedGramsPerTray") ?? "").trim();
   const seed = seedRaw ? Number(seedRaw) : null;
+  /* Blank is allowed — the variety just cannot be priced yet — but a typed
+     figure has to be one. */
+  if (seed !== null && !(Number.isFinite(seed) && seed > 0))
+    return { ok: false, state: { status: "error", code: "seedInvalid", field: "seedGramsPerTray" } };
 
   return {
     ok: true,
@@ -86,8 +93,7 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
       growDays,
       yieldGramsPerTrayMin,
       yieldGramsPerTrayMax,
-      pricePerTray,
-      ...(seed !== null && Number.isFinite(seed) && seed > 0 ? { seedGramsPerTray: seed } : {}),
+      ...(seed !== null ? { seedGramsPerTray: seed } : {}),
       active: fd.get("active") === "on",
     },
   };
@@ -132,7 +138,8 @@ export async function addVariety(_prev: FormState, fd: FormData): Promise<FormSt
   const ops = readOps(fd);
   if (!ops.ok) return ops.state;
 
-  await putVariety({ id: crypto.randomUUID(), contentKey, ...ops.value });
+  await putVariety({ id: crypto.randomUUID(), contentKey, pricePer100g: 0, ...ops.value });
+  await repriceVarieties([contentKey]);
   refresh();
   return { status: "saved" };
 }
@@ -150,16 +157,24 @@ export async function updateVariety(_prev: FormState, fd: FormData): Promise<For
   const ops = readOps(fd);
   if (!ops.ok) return ops.state;
 
-  await putVariety({ ...current, ...ops.value });
+  /* Clearing the seed rate has to clear it, not keep the old one under the
+     spread. The price is the old one until the reprice straight after. */
+  const next: Variety = { ...current, ...ops.value };
+  if (ops.value.seedGramsPerTray === undefined) delete next.seedGramsPerTray;
+  await putVariety(next);
+  await repriceVarieties([current.contentKey]);
   refresh();
   return { status: "saved" };
 }
 
+/** On and off sale. **Not switched on while it cannot be priced** — it would
+ *  stay off sale at 0 anyway, and the switch would say otherwise. */
 export async function toggleVarietyActive(fd: FormData): Promise<void> {
   await assertRole("admin");
   const existing = await getVariety(String(fd.get("id")));
   if (!existing) throw new Error("Variety not found");
-  await putVariety({ ...existing, active: !existing.active });
+  if (!existing.active && existing.pricePer100g <= 0) return;
+  await setVarietyActive(existing.id, !existing.active);
   refresh();
 }
 
@@ -167,4 +182,34 @@ export async function removeVariety(fd: FormData): Promise<void> {
   await assertRole("admin");
   await deleteVariety(String(fd.get("id")));
   refresh();
+}
+
+/**
+ * The microgreens costing — cocopeat block and trays it fills, power and
+ * water per tray, markup and rounding. Saving reprices **every** variety
+ * straight away.
+ */
+export async function saveVarietyCosting(_prev: FormState, fd: FormData): Promise<FormState> {
+  await assertRole("admin");
+
+  const cocopeatBlockCost = zeroOrMore(fd, "cocopeatBlockCost");
+  if (cocopeatBlockCost === null) return err("zeroOrMore", "cocopeatBlockCost");
+  const traysPerBlock = count(fd, "traysPerBlock");
+  if (traysPerBlock === null) return err("countInvalid", "traysPerBlock");
+  const overheadPerTray = zeroOrMore(fd, "overheadPerTray");
+  if (overheadPerTray === null) return err("zeroOrMore", "overheadPerTray");
+  const markupPercent = zeroOrMore(fd, "markupPercent");
+  if (markupPercent === null) return err("zeroOrMore", "markupPercent");
+  const roundUpToNearest = count(fd, "roundUpToNearest");
+  if (roundUpToNearest === null) return err("countInvalid", "roundUpToNearest");
+
+  await putVarietyCosting({
+    cocopeatBlockCost,
+    traysPerBlock,
+    overheadPerTray,
+    margin: { markupPercent, roundUpToNearest },
+  });
+  await repriceVarieties();
+  refresh();
+  return { status: "saved" };
 }

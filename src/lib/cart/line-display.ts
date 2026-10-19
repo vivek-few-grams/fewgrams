@@ -41,11 +41,11 @@ export function lineUnits(
   if (item.kind === "rack") {
     return `${t("linePriceRack", { price: item.unitPrice })} · ${t("lineRacks", { count: item.units })}`;
   }
-  /* A green moved from the 100 g to the tray on 19 Sep 2026 — its own wording
-     rather than falling into the pack branch below, because "pack" is a
-     tray-product's unit (a moulded plastic pack), not a grown tray of
-     greens. Checked first, since it is also `grams === null` now. */
-  if (item.kind === "variety") {
+  /* A green ordered between 19 Sep and 19 Oct 2026 was a tray, and its order
+     line says so by carrying no grams. Its own wording rather than the pack
+     branch below — a grown tray is not a moulded pack — so an old order or
+     invoice still reads as it was bought. A green since is weighed, below. */
+  if (isTrayGreen(item.kind, item.grams)) {
     return `${t("linePriceTray", { price: item.unitPrice })} · ${t("lineTrays", { count: item.units })}`;
   }
   /* A compressed coir block (SPEC §24). "Pack" would be true but vague — the
@@ -70,23 +70,32 @@ export function stepKey(kind: string, dir: "decrease" | "increase"): string {
   if (kind === "rack") return dir === "decrease" ? "decreaseRack" : "increaseRack";
   if (kind === "tray") return dir === "decrease" ? "decreasePack" : "increasePack";
   if (kind === "media") return dir === "decrease" ? "decreaseBlock" : "increaseBlock";
-  if (kind === "variety") return dir === "decrease" ? "decreaseTray" : "increaseTray";
   return dir;
 }
 
 /**
  * The quantity on a catalogue card's quick-add stepper, in the kind's own unit
- * — "200 g" for a seed, "2 trays" for a green. The same words the cart line
- * uses (`cart.json`), so a card and the cart never describe one line two ways.
+ * — "200 g" for a seed or a green. The same words the cart line uses
+ * (`cart.json`), so a card and the cart never describe one line two ways.
+ *
+ * `grams` is an order line's, for a tax document: null on a green bought as a
+ * tray (`isTrayGreen`). A stepper has no line yet and leaves it out.
  */
 export function lineQuantity(
   kind: string,
   units: number,
   t: (key: string, values?: Record<string, number>) => string,
+  grams?: number | null,
 ): string {
   if (kind === "rack") return t("lineRacks", { count: units });
-  if (kind === "variety") return t("lineTrays", { count: units });
+  if (grams !== undefined && isTrayGreen(kind, grams)) return t("lineTrays", { count: units });
   if (kind === "media") return t("lineBlocks", { count: units });
   if (kind === "tray") return t("linePacks", { count: units });
   return t("lineGrams", { grams: units * GRAMS_PER_UNIT });
+}
+
+/** A green bought between 19 Sep and 19 Oct 2026, when the unit was a grown
+ *  tray: its order line has no grams. One since is weighed, in 100 g. */
+function isTrayGreen(kind: string, grams: number | null): boolean {
+  return kind === "variety" && grams === null;
 }

@@ -6,7 +6,7 @@ import type { Subscription } from "./subscription";
 const variety = (contentKey: string, growDays: number, min: number, max: number, seed?: number): Variety => ({
   id: contentKey,
   contentKey,
-  pricePerTray: 100,
+  pricePer100g: 100,
   yieldGramsPerTrayMin: min,
   yieldGramsPerTrayMax: max,
   growDays,

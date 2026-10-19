@@ -259,7 +259,7 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
       kind: "variety",
       key: v.contentKey,
       name: v.content.text.name,
-      unitPrice: v.pricePerTray,
+      unitPrice: v.pricePer100g,
       image: varietyHero(v.content),
       maxUnits: MAX_UNITS_PER_LINE,
       growDays: v.growDays,

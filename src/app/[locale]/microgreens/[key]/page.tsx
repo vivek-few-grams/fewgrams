@@ -3,13 +3,13 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
-import { getVarietyByKey } from "@/lib/repo/varieties";
+import { getVarietyByKey, onSale } from "@/lib/repo/varieties";
 import { getVarietyContent, varietyHero, varietyImageUrl } from "@/lib/content/varieties";
 import { DetailPage } from "@/components/catalogue/DetailPage";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import type { Shot } from "@/components/catalogue/Gallery";
 import { adhocReadyDate, formatDeliveryDate } from "@/lib/delivery-date";
-import { MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
+import { GRAMS_PER_UNIT, MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
 import { readCartUnitsFor } from "@/lib/cart/server";
 
 /**
@@ -52,7 +52,7 @@ async function load(key: string, locale: string) {
      gating the file read on the row. `getVarietyContent` is `cache`d per
      request, so generateMetadata and the page share one file read. */
   const [row, content] = await Promise.all([getVarietyByKey(key), getVarietyContent(key, locale)]);
-  return row?.active && content ? { row, content } : null;
+  return row && onSale(row) && content ? { row, content } : null;
 }
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/microgreens/[key]">) {
@@ -154,19 +154,13 @@ export default async function VarietyPage({ params }: PageProps<"/[locale]/micro
                the client. 20 short strings is cheaper than a second
                translation system. */
             totals: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
-              d("lineTotal", { total: (i + 1) * row.pricePerTray }),
+              d("lineTotal", { total: (i + 1) * row.pricePer100g }),
             ),
-            /* Weight is `yieldGramsPerTrayMin/Max × trays` — the owner's
-               measured, approximate range (SPEC §3.1), shown for information
-               only. It prices nothing; `lineTotal` above is
-               trays × pricePerTray. */
+            /* A box is exactly 100 g (19 Oct 2026), so the weight is a fact
+               rather than the tray's "≈250–350 g", which the first harvests
+               did not reach. */
             breakdowns: Array.from({ length: MAX_UNITS_PER_LINE }, (_, i) =>
-              d("lineBreakdown", {
-                trays: i + 1,
-                gramsMin: (i + 1) * row.yieldGramsPerTrayMin,
-                gramsMax: (i + 1) * row.yieldGramsPerTrayMax,
-                price: row.pricePerTray,
-              }),
+              d("lineBreakdown", { grams: (i + 1) * GRAMS_PER_UNIT, price: row.pricePer100g }),
             ),
             note: d("readyNote"),
             errors: {

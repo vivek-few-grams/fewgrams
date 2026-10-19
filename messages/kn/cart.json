@@ -1,6 +1,6 @@
 {
   "title": "ನಿಮ್ಮ ಬುಟ್ಟಿ",
-  "description": "ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ಬಿತ್ತಿದ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್, ಟ್ರೇ ಲೆಕ್ಕದಲ್ಲಿ.",
+  "description": "ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ಬಿತ್ತಿದ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್, 100 ಗ್ರಾಂ ಲೆಕ್ಕದಲ್ಲಿ.",
   "heading": "ನಿಮ್ಮ ಬುಟ್ಟಿ",
   "empty": "ಇಲ್ಲಿ ಇನ್ನೂ ಏನೂ ಇಲ್ಲ.",
   "emptyBody": "ನೀವು ಆರ್ಡರ್ ಮಾಡಿದ ಮೇಲೆಯೇ ಸೊಪ್ಪು ಬಿತ್ತುತ್ತೇವೆ. ಹಾಗಾಗಿ ಏನು ಬಿತ್ತಬೇಕು ಎಂದು ಹೇಳುವ ಜಾಗ ಈ ಬುಟ್ಟಿ.",
@@ -35,8 +35,6 @@
   "increaseBlock": "{name} — ಒಂದು ಬ್ಲಾಕ್ ಹೆಚ್ಚು",
   "linePriceTray": "ಟ್ರೇಗೆ ₹{price, number}",
   "lineTrays": "{count, plural, one {# ಟ್ರೇ} other {# ಟ್ರೇ}}",
-  "decreaseTray": "{name} — ಒಂದು ಟ್ರೇ ಕಡಿಮೆ",
-  "increaseTray": "{name} — ಒಂದು ಟ್ರೇ ಹೆಚ್ಚು",
   "linePriceRack": "ಒಂದಕ್ಕೆ ₹{price, number}",
   "lineRacks": "{count, plural, one {# ರ್ಯಾಕ್} other {# ರ್ಯಾಕ್}}",
   "decreaseRack": "{name} ಒಂದು ರ್ಯಾಕ್ ಕಡಿಮೆ",

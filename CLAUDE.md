@@ -50,12 +50,12 @@ still takes a typed name. See below.
 
 One file per variety, `content/varieties/<contentKey>.json`, holding every word
 a visitor reads: name, description, flavour notes, nutrition, growing tips,
-image alt. DynamoDB holds only the numbers the business tunes — price, yield
-per tray, grow days, seed rate, tier, active.
+image alt. DynamoDB holds only the numbers the business tunes — yield per
+tray, grow days, seed rate, active — and the price worked out from them.
 
-A variety is a microgreen sold **by the 100 g** for ad-hoc orders. Its record
-holds nothing else — no `tier`, no plan reference. Plans reference varieties;
-varieties know nothing about plans.
+A variety is a microgreen **grown by the tray and sold in 100 g boxes** for
+ad-hoc orders. Its record holds nothing else — no `tier`, no plan reference.
+Plans reference varieties; varieties know nothing about plans.
 
 Add one in either order:
 
@@ -74,6 +74,26 @@ public pages skip it. Shape and reasoning: `content/varieties/README.md`.
   renaming the file, updating it in admin, and adding a redirect.
 - **Images are named in the content file, never stored in the database.** They
   resolve through `varietyImageUrl()` so the move to CloudFront is one change.
+
+## A microgreen's price is worked out, never typed
+
+The owner, 19 Oct 2026, after trays cut 100–150 g against a published
+250–350 g: sell **100 g boxes only**, priced from cost (SPEC §4.3).
+`src/lib/varieties/pricing.ts` is the whole formula — a tray's seed (seed per
+tray × the same-key seed's `costPer100g`, set by its bill) + cocopeat (block ÷
+trays per block) + electricity and water, spread over the **low** yield, with
+the microgreens margin on top. The costing is one singleton on
+`/admin/varieties`.
+
+- **`repriceVarieties` writes `pricePer100g`**, and every input calls it: a
+  variety's save, the costing's save, `costFromBills`, a deleted seed. A new
+  input to the price means a new caller here — nothing else will notice.
+- **Unpriceable is off sale.** No seed rate, no costed seed, no yield → price
+  0, and `onSale` (active **and** priced) gates every page and the cart. Use
+  `listVarieties({ activeOnly: true })` or `onSale`, never `v.active` alone.
+- **An old order line stays in trays.** A green bought by the tray has
+  `grams: null`; `lineUnits` / `lineQuantity` print it as trays. Do not
+  "fix" it to grams — it is what was bought.
 
 ## Seed text does not either — same rule, own folder
 
@@ -143,7 +163,8 @@ DynamoDB holds **two numbers**: the price of the pack and the packs held
   the step as before; if that is over ₹300 (`CHARM_PRICE_ABOVE`) it lands one rupee under
   instead — ₹339, ₹2,599 — never below the marked-up price, so ₹1,100 exactly becomes ₹1,199.
   At or under ₹300 it stays round (₹230). Typed prices follow the same line by hand: plans
-  ₹1,199 / ₹1,799; microgreens stay round.
+  ₹1,199 / ₹1,799. Microgreens are no longer typed (19 Oct 2026) — their margin's rounding
+  sets them.
 - **Never write the price or a dispatch day into copy.** The price is printed
   from DynamoDB and the date from the rule; the contract test scans for a
   rupee figure or a day count in either language.
@@ -333,7 +354,7 @@ business:
 
 | Kind | One unit | Priced |
 |---|---|---|
-| `variety` | one tray | per tray |
+| `variety` | 100 g (a tray from 19 Sep to 19 Oct 2026) | per 100 g |
 | `seed` | 100 g | per 100 g |
 | `tray` | one pack (2 trays, or 5 mats) | per pack |
 

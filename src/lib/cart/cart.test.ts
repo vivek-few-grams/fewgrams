@@ -298,10 +298,10 @@ describe("totals", () => {
    * ordering moved from the 100 g to the tray, so it now belongs in this
    * test rather than in the one above.
    */
-  it("counts a green and a tray in the unit count but not in the weight", () => {
+  it("weighs a green in 100 g boxes, and a tray not at all", () => {
     const lines = [green("broccoli", 3), tray("tray-pair", 2)];
     expect(cartUnitCount(lines)).toBe(5);
-    expect(cartGrams(lines)).toBe(0);
+    expect(cartGrams(lines)).toBe(300);
   });
 
   it("gives a trays-only cart no weight at all", () => {
@@ -312,8 +312,8 @@ describe("totals", () => {
 });
 
 describe("isWeighed — which kinds have a gram figure at all", () => {
-  it("weighs seed only, since a green moved to the tray on 19 Sep 2026", () => {
-    expect(isWeighed("variety")).toBe(false);
+  it("weighs seed and greens — a green is a 100 g box again since 19 Oct 2026", () => {
+    expect(isWeighed("variety")).toBe(true);
     expect(isWeighed("seed")).toBe(true);
     expect(isWeighed("tray")).toBe(false);
     /* A 5 kg block is one unit at one price; its kilos are in its name. */

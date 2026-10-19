@@ -83,7 +83,7 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
       <NumberField
         label={t("yieldMin")}
         name="yieldGramsPerTrayMin"
-        defaultValue="250"
+        defaultValue="100"
         min={1}
         hint={t("yieldHint")}
         error={errorFor("yieldGramsPerTrayMin")}
@@ -91,19 +91,17 @@ export function AddVarietyForm({ suggestions }: { suggestions: string[] }) {
       <NumberField
         label={t("yieldMax")}
         name="yieldGramsPerTrayMax"
-        defaultValue="350"
+        defaultValue="150"
         min={1}
         error={errorFor("yieldGramsPerTrayMax")}
       />
       <NumberField
-        label={t("price")}
-        name="pricePerTray"
-        defaultValue="200"
+        label={t("seed")}
+        name="seedGramsPerTray"
         min={1}
-        hint={t("priceHint")}
-        error={errorFor("pricePerTray")}
+        hint={t("seedHint")}
+        error={errorFor("seedGramsPerTray")}
       />
-      <NumberField label={t("seed")} name="seedGramsPerTray" min={1} hint={t("seedHint")} />
 
       <label className="flex items-center gap-2 font-body text-sm text-forest sm:col-span-2 lg:col-span-5">
         <input type="checkbox" name="active" defaultChecked className="size-4" />

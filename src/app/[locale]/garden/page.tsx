@@ -157,7 +157,7 @@ export default async function GardenPage({ params, searchParams }: PageProps<"/[
           kind: "variety",
           key,
           name: green.content.text.name,
-          price: t("priceTray", { price: green.pricePerTray }),
+          price: t("priceGreens", { price: green.pricePer100g }),
           /* The whole range, not this one variety (the owner, 2 Oct 2026):
              every microgreen in the garden opens `/microgreens`. */
           href: "/microgreens",

@@ -20,7 +20,14 @@ async function orderDocLines(order: Order): Promise<DocLine[]> {
   return order.lines.flatMap((line) => {
     const row = order.tax?.find((r) => r.source === "line" && r.line === lineId(line));
     return row
-      ? [{ key: row.line, name: line.name, quantity: lineQuantity(line.kind, line.units, tc), row }]
+      ? [
+          {
+            key: row.line,
+            name: line.name,
+            quantity: lineQuantity(line.kind, line.units, tc, line.grams),
+            row,
+          },
+        ]
       : [];
   });
 }

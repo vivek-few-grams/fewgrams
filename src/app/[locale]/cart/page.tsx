@@ -135,7 +135,7 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                         {item.name}
                       </span>
                       {/* The unit differs by kind, so both halves of this
-                          line do: a seed per 100 g, a green per tray, a
+                          line do: a seed or a green per 100 g, a
                           tray-product per pack, a rack per rack
                           (`lineUnits`). */}
                       <span className="mt-1 block font-body text-xs text-stone">{lineUnits(item, t)}</span>

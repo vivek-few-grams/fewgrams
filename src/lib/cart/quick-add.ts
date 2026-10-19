@@ -7,7 +7,7 @@ import { lineQuantity, stepKey } from "@/lib/cart/line-display";
  * Everything a grid needs to put `QuickAdd` on its cards: one cart read and
  * one set of messages for the whole page, then `props(kind, key, name)` per
  * card. Server-only, because the labels are resolved here — the same words
- * the cart page uses for the same line (`cart.json`), so "One more tray of
+ * the cart page uses for the same line (`cart.json`), so "One more 100 g of
  * Radish" reads identically on a card and in the basket.
  */
 export async function quickAddFor() {

@@ -33,37 +33,57 @@ export type ProductType = (typeof PRODUCT_TYPES)[number];
  * **No text.** As of 15 Sep 2026 a variety carries no name and no description
  * in DynamoDB: every word lives in `content/varieties/<contentKey>.json` and
  * is loaded by src/lib/content/varieties.ts. What is left here is exactly
- * what the business tunes — price, yield, grow days, seed rate, active.
+ * what the business tunes — yield, grow days, seed rate, active — and the
+ * price worked out from them.
  *
- * **Sold by the tray, not by weight (changed 19 Sep 2026).** `pricePer100g`
- * priced a green the same way as a seed, but a green is never weighed out of
- * a sack — it is cut from a tray that was sown whole, so a per-100 g rate
- * implied a precision the operation does not have. `pricePerTray` is what the
- * customer is actually charged per unit ordered; `yieldGramsPerTray` stays,
- * but its job changed too — it is now the owner's **approximate** weight a
- * tray of this variety yields, published for a customer's information, and it
- * prices nothing. See `isWeighed` in `src/lib/cart/cart.ts`.
+ * **Sold in 100 g boxes, priced from cost (the owner, 19 Oct 2026).** From 19
+ * Sep it was sold by the tray, but the first harvests cut 100–330 g a tray
+ * against a published 250–350 g, so one price bought three times as much of
+ * one green as of another, and less than the page said. A box of 100 g is
+ * what a customer receives, so it is what they buy; the tray is how it is
+ * grown. The price is never typed: `costPer100g` is a tray's seed, cocopeat
+ * and power-and-water cost spread over its **low** yield, and `pricePer100g`
+ * is that with the microgreens margin — `src/lib/varieties/pricing.ts`.
  *
- * **The yield is a range, not one number (also 19 Sep 2026).** A tray never
- * cuts to exactly the same weight twice, so a single `yieldGramsPerTray`
- * implied a precision the owner does not have. `yieldGramsPerTrayMin`/`Max`
- * publish the owner's observed low and high instead — still informational,
- * still pricing nothing.
+ * **The yield is a range, not one number (19 Sep 2026).** A tray never cuts
+ * to exactly the same weight twice. The low end prices the box, so a poor tray
+ * is never sold at a loss; the subscription tray plan counts at it too.
  */
 export type Variety = {
   id: string;
   /** Kebab-case, e.g. `red-amaranth`. Names the content file and the URL. */
   contentKey: string;
-  /** ₹ for **one tray**, the same unit the cart counts in. */
-  pricePerTray: number;
-  /** The owner's measured, approximate low and high grams a tray yields —
-   *  informational, shown to the customer as a range, and no part of any
-   *  price calculation. `yieldGramsPerTrayMax >= yieldGramsPerTrayMin`. */
+  /** ₹ for **100 g**, the unit the cart counts in. Worked out, never typed;
+   *  0 while it cannot be — no seed rate, no seed cost, no yield — and a
+   *  variety at 0 is never on sale (`onSale`). */
+  pricePer100g: number;
+  /** What 100 g costs us — absent while it cannot be worked out. */
+  costPer100g?: number;
+  /** The owner's measured low and high grams a tray yields.
+   *  `yieldGramsPerTrayMax >= yieldGramsPerTrayMin`. The low end prices. */
   yieldGramsPerTrayMin: number;
   yieldGramsPerTrayMax: number;
   growDays: number;
+  /** Seed sown per tray. Prices the box, with the seed's own cost per 100 g
+   *  from its latest bill. */
   seedGramsPerTray?: number;
   active: boolean;
+};
+
+/**
+ * What a tray of microgreens costs beyond its seed, and the margin on top —
+ * one set for every variety, on `/admin/varieties` (the owner, 19 Oct 2026:
+ * a 5 kg cocopeat block at about ₹300 fills sixteen trays, plus a flat ₹30 of
+ * electricity and water per tray).
+ */
+export type VarietyCosting = {
+  /** ₹ for one cocopeat block. */
+  cocopeatBlockCost: number;
+  /** Trays one block fills. */
+  traysPerBlock: number;
+  /** ₹ of electricity and water per tray. */
+  overheadPerTray: number;
+  margin: Margin;
 };
 
 /**

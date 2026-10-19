@@ -233,7 +233,7 @@ Five categories with genuinely different commerce rules — this is the heart of
 
 | Category | How it sells | Inventory |
 |---|---|---|
-| **Microgreens** | Weekly subscription (min 1 month, prepaid) **and** one-off by the tray — see §18.6, superseded 19 Sep 2026 | **No stock.** Variety catalogue carrying yield + grow-day metadata |
+| **Microgreens** | Weekly subscription (min 1 month, prepaid) **and** one-off in 100 g boxes — see §18.6 and §4.3 (by the tray from 19 Sep to 19 Oct 2026) | **No stock.** Variety catalogue carrying yield + grow-day metadata |
 | **Seeds** | One-off, buy anytime, by the 100 g — see §22 | **Real stock in grams**, but it is a *speed*, not a limit: any quantity sells, and the shelf sets the delivery date (§22.2) |
 | **Racks** | One-off, buy anytime | **None** — outsourced, assumed always available |
 | **Trays & drainage** | One-off. Bought in per order, min **7 days** — see §23 | **None, by design.** The supplier holds it; every order is a purchase order |
@@ -535,8 +535,39 @@ from the original section. **Plans no longer do** — their copy moved to `conte
 
 #### What a variety is, and what it is not
 
-A variety is a microgreen grown and sold **by the tray** for ad-hoc orders (§18.6). Its record
-holds only that: `pricePerTray`, `growDays`, `yieldGramsPerTray`, `seedGramsPerTray`, `active`.
+A variety is a microgreen **grown by the tray and sold in 100 g boxes** for ad-hoc orders (§18.6).
+Its record holds only that: `growDays`, `yieldGramsPerTrayMin`/`Max`, `seedGramsPerTray`, `active`,
+and `pricePer100g` / `costPer100g`, which are worked out and never typed.
+
+#### 19 Oct 2026 — 100 g boxes again, priced from cost
+
+The owner's call after the first harvests: most trays cut 100–150 g against a published
+250–350 g, radish 330 g, so one ₹75 tray bought three times as much of one green as of another, and
+less than the page promised. A customer receives a box of cut greens, never a tray, so the box is
+what they buy: **100 g only** (no 50 g), the cart's weighed unit (`isWeighed` covers `variety` again,
+`GRAMS_PER_UNIT`). Subscriptions were already by weight (`gramsPerBox`), so the two now agree.
+
+The price is never typed. `src/lib/varieties/pricing.ts`:
+
+    a tray  = seedGramsPerTray × the seed's costPer100g ÷ 100   (its latest bill, §26.6.1)
+            + cocopeat block ÷ trays per block                   (₹300 ÷ 16 at launch)
+            + electricity and water                              (₹30 flat)
+    100 g   = a tray × 100 ÷ yieldGramsPerTrayMin
+    price   = retailPrice(100 g, microgreens margin)
+
+- **Spread over the low yield**, so a poor tray is never sold at a loss — the subscription tray plan
+  already counts at it. The sowing log's yield table is the evidence for retuning it.
+- **One costing for every variety** — block cost, trays per block, power and water, markup and
+  rounding — a singleton (`VARIETYSETTINGS`) edited on `/admin/varieties`. Saving it reprices every
+  variety; until one is saved the owner's launch figures apply with no margin (`DEFAULT_COSTING`).
+- **Stored, and rewritten whenever an input moves** (`repriceVarieties`): a variety's own save, the
+  costing, a purchase bill that recosts its seed (`costFromBills`), and a deleted seed.
+- **Unpriceable means off sale.** No seed rate, no costed seed of the same key (wheatgrass has none)
+  or no yield leaves `pricePer100g` at 0, and `onSale` — active **and** priced — gates every page
+  and the cart. A row from the tray month reads as 0 until repriced. The admin row says what is
+  missing, with the sowing log's seed per tray to copy in.
+- **An order line keeps its unit.** A green bought as a tray has no grams on its line, and the order
+  page and the invoice still print trays (`isTrayGreen` in `line-display.ts`).
 
 #### SUPERSEDED 19 Sep 2026 — sold by the tray, not by the 100 g
 
@@ -890,7 +921,7 @@ Not done, because it is a further change rather than part of this split.
 |---|---|---|---|
 | **Everyday Essentials** | `essential` | Owner (curated) | **Flat monthly price** |
 | **Rare & Exotic** | `exotic` | Owner (curated) — premium varieties *plus* the everyday basics | **Flat monthly price** |
-| **Pick Your Own** | `build-your-own` | Customer picks varieties and quantities | **Computed by tray** — sum of `pricePerTray × trays` (superseded 19 Sep 2026; was by weight, `pricePer100g × quantity`) |
+| **Pick Your Own** | `build-your-own` | Customer picks varieties and quantities | **Computed by weight** — sum of `pricePer100g × boxes` (19 Oct 2026; by the tray, `pricePerTray × trays`, from 19 Sep) |
 
 **Named 15 Sep 2026.** They were Essential / Exotic / Build Your Own. Three problems: "Essential"
 is tier-speak (Basic / Pro / Enterprise) rather than a description of food; "Exotic" alone does not
@@ -2866,6 +2897,9 @@ because they have no book.
 A visitor can order a single variety ad-hoc from `/microgreens/[slug]`, in **100 g units**, with a
 quantity selector. The order is sown on the next sow Sunday and delivered after that variety's
 `growDays`. This is the low-commitment entry point the site otherwise lacks.
+
+**The unit went to the tray on 19 Sep 2026 and came back to 100 g on 19 Oct 2026**, now priced
+from cost rather than typed — see §4.3, "100 g boxes again, priced from cost".
 
 | Consequence | Status |
 |---|---|
@@ -5259,7 +5293,7 @@ jump anywhere.
 | 6 | sow | Choose amaranth, radish, sunflower or mustard — white Fewgrams pouches with the logo and a window onto the seed, in a row, two each side of the tray (mustard is sown here only; the home page and touch step grow the other three, `HOME_ROW`), each named above with its price and a bag that opens the seeds page, not the one seed's (the owner, 2 Oct 2026); move across to scatter | That seed, **only if in stock** (`seedMaxUnits > 0`); a tag on the packet adds 50 g |
 | 7 | dark | **Watched, not played** (the owner, 2 Oct 2026). The white tray is lifted, its green water tray slid out from under it and upturned over it as a solid cover; the camera turns left to a door in the kitchen wall, which opens onto a real, ventilated dark room (a fan turns in its vent — a room, not a box, because the tray needs air); the tray is carried in, and the camera closes in on the door as it shuts while the kitchen dims to black. The dark room fades up out of that black on its own — the covered tray close up, pale shoots lifting the cover, and under it a seed → sprout → seed leaves strip, one stage a day for `DARK_DAYS` days, all of them passing in a single day-and-night cycle (`DARK_SECONDS`), with the kitchen caption "Keep the tray in the dark room for **3 days**" carrying the count (printed from the constant). Then the kitchen slides in beside it (below it on a tall screen), turning through day and night — sun and moon across the window, the lamp on at night — while the days run. When the days are done the visitor **drags the tray out of the dark room into the light** ("Drag the tray into the light"; the kitchen half turns to the lit rack and becomes the drop zone); the kitchen then grows to fill the screen and the light step opens on that same view. "Do it for me" and the tray's label do the drop for a keyboard or a hurry. "Do it for me" runs the days faster. The water tray goes back under on Uncover | — |
 | 8 | light | **The rack we sell** (the owner, 2 Oct 2026): a 4 ft rack of three white plates on orange slotted-angle legs (`shelfRack`, `SHELF_RACK`), standing in the kitchen against the wall just left of the dark room's door and as tall as it (the owner, 2 Oct 2026) — so it is in view on the trip to the dark room and is plainly where the tray goes back to — the other shelves already growing under their lights. While the dark days end, the kitchen half turns to it; the visitor drags the tray over the seam (it is drawn over both halves, brightening as it crosses, with an arrow at the seam) and it flies onto its shelf. The covered tray slides onto the second shelf, then the camera comes in close on that shelf. The room and floor drop by the shelf's height rather than the tray rising (`RACK_DROP`), so everything aimed at the tray stays put. Lift the cover (slid out of the rack's open side, turned over beside it, back under as the water tray), switch on that shelf's light with the switch on the rack's front leg (the rocker glows until pressed; the tube flickers on), water from below, once — the white tray is lifted, the can's spout reaches in under it and pours into the green tray, then the white tray goes back down | Shelf racks: photograph, from-price, "Choose your size" → `/shop/racks/shelf` |
-| 9 | harvest | A snap-off cutter (the owner, 2 Oct 2026, in place of scissors), its blade held across the tray: a slice cuts the stems along the whole blade; cut greens heap in a bowl | **Starter kit**: tray + block + seed added in one press (`setCartQuantity` per line), and "or order it fresh" — the variety's photograph, price per tray and its own quick add |
+| 9 | harvest | A snap-off cutter (the owner, 2 Oct 2026, in place of scissors), its blade held across the tray: a slice cuts the stems along the whole blade; cut greens heap in a bowl | **Starter kit**: tray + block + seed added in one press (`setCartQuantity` per line), and "or order it fresh" — the variety's photograph, price per 100 g and its own quick add |
 
 ### 25.3 Rules
 

@@ -18,7 +18,7 @@ import { currentActor } from "@/lib/auth/guard";
  * never did. For the page selling the hero product that matters more than
  * the transition did.
  *
- * Greens are sold two ways (§18.6): by the tray ad hoc from the detail page,
+ * Greens are sold two ways (§18.6): in 100 g boxes ad hoc from the detail page,
  * or as a weekly plan. Both routes are offered here rather than assuming
  * which one a visitor wants.
  */
@@ -93,7 +93,7 @@ export default async function MicrogreensPage({ params }: PageProps<"/[locale]/m
                 name={v.content.text.name}
                 /* Price only (the owner, 24 Sep 2026) — the grow days are on the
                    detail page, where the delivery date is. */
-                meta={t("meta", { price: v.pricePerTray })}
+                meta={t("meta", { price: v.pricePer100g })}
                 index={i}
                 cutout={varietyCutout(v.content)}
                 hero={varietyHero(v.content)}

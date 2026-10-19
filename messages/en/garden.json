@@ -91,7 +91,7 @@
     "added": "In your basket",
     "recommended": "Recommended by Fewgrams",
     "failed": "That couldn't be added just now.",
-    "priceTray": "₹{price, number} a tray",
+    "priceGreens": "₹{price, number} for 100 g",
     "forSale": "Available to buy",
     "newTab": "opens in a new tab",
     "allSeeds": "See all our seeds",

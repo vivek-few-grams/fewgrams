@@ -2,6 +2,7 @@ import { setGrowMediumCost } from "@/lib/repo/grow-media";
 import { listBills } from "@/lib/repo/purchases";
 import { getSeedMargin, setSeedCost } from "@/lib/repo/seeds";
 import { setTrayCost } from "@/lib/repo/trays";
+import { repriceVarieties } from "@/lib/varieties/reprice";
 import type { StockKind } from "./bill";
 import { latestCosts, type ItemCost } from "./cost";
 
@@ -25,8 +26,12 @@ export async function costFromBills(items: Iterable<string>): Promise<void> {
     tray: setTrayCost,
     media: setGrowMediumCost,
   };
+  const seedKeys: string[] = [];
   for (const id of ids) {
     const [kind, key] = id.split(":") as [StockKind, string];
     await SET[kind](key, costs.get(id) ?? null);
+    if (kind === "seed") seedKeys.push(key);
   }
+  /* A microgreen of the same key is priced from this seed's cost. */
+  await repriceVarieties(seedKeys);
 }
