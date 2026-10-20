@@ -5,9 +5,9 @@
   },
   "en": {
     "name": "Rocket (cultivated)",
-    "shortDescription": "Nutty, peppery and grown-up — the salad leaf everybody already knows, at ten days old.",
-    "description": "Cultivated rocket — the salad arugula, not the wild variety — gives a microgreen that tastes unmistakably like what it will become: nutty, peppery, slightly bitter at the back, and adult in a way that broccoli and cabbage are not. It is the one to grow for people who order rocket in restaurants, and it earns its place in a mix by being the flavour that carries.\n\nThe seed is very small and slightly mucilaginous, so it is a dry sow and a light one. Cultivated rocket grows faster and milder than wild rocket, which is the right trade for a tray: wild rocket takes half again as long and comes out sharp enough to dominate anything it is served with.",
-    "sowing": "Sow dry, 20 to 25 grams for a 10 by 20 inch tray, spread as evenly as you can — the seed is small enough that clumps show up as bald patches later. Do not soak: rocket seed goes slippery and gels. Cover for two days, unweighted, then uncover into bright indirect light. Bottom-water. Cut at seven to ten days; the pepper builds as it ages, so cut early for a milder tray and late for a sharper one.",
+    "shortDescription": "Nutty, peppery and grown-up: the salad leaf everybody already knows, at ten days old.",
+    "description": "Cultivated rocket (the salad arugula, not the wild variety) gives a microgreen that tastes unmistakably like what it will become: nutty, peppery, slightly bitter at the back, and adult in a way that broccoli and cabbage are not. It is the one to grow for people who order rocket in restaurants, and it earns its place in a mix by being the flavour that carries.\n\nThe seed is very small and slightly mucilaginous, so it is a dry sow and a light one. Cultivated rocket grows faster and milder than wild rocket, which is the right trade for a tray: wild rocket takes half again as long and comes out sharp enough to dominate anything it is served with.",
+    "sowing": "Sow dry, 20 to 25 grams for a 10 by 20 inch tray, spread as evenly as you can, because the seed is small enough that clumps show up as bald patches later. Do not soak: rocket seed goes slippery and gels. Cover for two days, unweighted, then uncover into bright indirect light. Bottom-water. Cut at seven to ten days; the pepper builds as it ages, so cut early for a milder tray and late for a sharper one.",
     "specs": [
       {
         "label": "Germination",
@@ -15,11 +15,11 @@
       },
       {
         "label": "Treatment",
-        "value": "Untreated — no fungicide, no seed dressing"
+        "value": "Untreated, with no fungicide or seed dressing"
       },
       {
         "label": "Soak",
-        "value": "None — sow dry, it gels if soaked"
+        "value": "None; sow dry, because it gels if soaked"
       },
       {
         "label": "Sow rate",
@@ -34,9 +34,9 @@
         "value": "7 to 10 days from sowing"
       }
     ],
-    "specsNote": "Germination is a lot-by-lot fact, not a promise about every seed in the bag. These figures are what we measure on our own trays at Bengaluru room temperature, and a hot dry week will shorten the harvest window while a cool one stretches it. Treat the sow rate as a starting point and adjust once you have grown one tray of your own.",
+    "specsNote": "Germination is a lot-by-lot fact, not a promise about every seed in the bag. These figures are what we measure on our own trays at room temperature in our grow room, and a hot dry week will shorten the harvest window while a cool one stretches it. Treat the sow rate as a starting point and adjust once you have grown one tray of your own.",
     "uses": [
-      "Microgreen trays — the flavour leader in a salad mix.",
+      "Microgreen trays, as the flavour leader in a salad mix.",
       "Sowing on into a pot or bed for full rocket leaves, cut and come again.",
       "Jar sprouting, though the mucilage makes rinsing fiddly."
     ],
@@ -44,7 +44,8 @@
       "Rocket is a brassica, and brassica microgreens contain goitrogens. In large regular amounts they can interfere with thyroid function; if that applies to you, keep portions moderate and ask your doctor.",
       "Do not soak it. Rocket seed releases a gel when wet that glues the seed into lumps, and a lumpy sow is a patchy tray.",
       "This is seed for sowing. It is clean and untreated, but it is not packed, washed or processed as a ready-to-eat food.",
-      "Keep it cool, dark and dry, in a sealed jar once the monsoon arrives — heat and humidity take the germination rate down faster than age does."
+      "Keep it cool, dark and dry, and move it to a sealed jar once the monsoon arrives. Heat and humidity take the germination rate down faster than age does.",
+      "Raw sprouts are a recognised food-safety risk. Because sprouting conditions are warm and wet, any bacteria present on the seed can multiply, and food-safety authorities advise that young children, older adults, pregnant women and anyone immunocompromised avoid raw sprouts. Rinse twice daily, keep the jar draining, and cook them if you are serving any of those groups."
     ],
     "faq": [
       {
@@ -61,7 +62,7 @@
       },
       {
         "question": "Can I mix it with other seed in one tray?",
-        "answer": "Yes, with anything on a similar clock — pak choi, mustard, radish. Do not mix it with beet or onion, which need twice as long and would still be seedlings when the rocket needs cutting."
+        "answer": "Yes, with anything on a similar clock, such as pak choi, mustard or radish. Do not mix it with beet or onion, which take much longer and would still be seedlings when the rocket needs cutting."
       },
       {
         "question": "Does it regrow after cutting?",
@@ -72,9 +73,9 @@
   },
   "kn": {
     "name": "ರಾಕೆಟ್ (ಅರುಗುಲಾ)",
-    "shortDescription": "ಬೀಜದ ರುಚಿ, ಖಾರ ಮತ್ತು ಪ್ರಬುದ್ಧತೆ — ಎಲ್ಲರಿಗೂ ಗೊತ್ತಿರುವ ಸಲಾಡ್ ಎಲೆ, ಹತ್ತು ದಿನದ ವಯಸ್ಸಿನಲ್ಲಿ.",
-    "description": "ಕೃಷಿ ಮಾಡಿದ ರಾಕೆಟ್ — ಕಾಡು ತಳಿಯಲ್ಲ, ಸಲಾಡ್ ಅರುಗುಲಾ — ಮುಂದೆ ಏನಾಗುತ್ತದೋ ಅದರ ರುಚಿಯನ್ನೇ ಸ್ಪಷ್ಟವಾಗಿ ಕೊಡುವ ಮೈಕ್ರೋಗ್ರೀನ್: ಬೀಜದಂಥ ರುಚಿ, ಖಾರ, ಹಿಂದೆ ತುಸು ಕಹಿ, ಮತ್ತು ಬ್ರೊಕೊಲಿ ಹಾಗೂ ಎಲೆಕೋಸಿನಲ್ಲಿ ಇಲ್ಲದ ಪ್ರಬುದ್ಧತೆ. ಹೋಟೆಲಿನಲ್ಲಿ ರಾಕೆಟ್ ಕೇಳುವವರಿಗಾಗಿ ಬೆಳೆಯಬೇಕಾದ ತಳಿ ಇದು, ಮತ್ತು ಮಿಶ್ರಣದಲ್ಲಿ ರುಚಿಯನ್ನು ಹೊತ್ತು ನಡೆಯುವುದೂ ಇದೇ.\n\nಬೀಜ ಬಹಳ ಚಿಕ್ಕದು ಮತ್ತು ತುಸು ಅಂಟಾಗುವ ಗುಣದ್ದು, ಹಾಗಾಗಿ ಒಣ ಬಿತ್ತನೆ, ಅದೂ ಹಗುರ. ಕಾಡು ರಾಕೆಟ್‌ಗಿಂತ ಕೃಷಿ ರಾಕೆಟ್ ವೇಗವಾಗಿ ಮತ್ತು ಸೌಮ್ಯವಾಗಿ ಬೆಳೆಯುತ್ತದೆ — ಟ್ರೇಗೆ ಇದೇ ಸರಿಯಾದ ಆಯ್ಕೆ: ಕಾಡು ರಾಕೆಟ್ ಒಂದೂವರೆ ಪಟ್ಟು ಕಾಲ ತೆಗೆದುಕೊಂಡು, ಜೊತೆಗಿಟ್ಟ ಎಲ್ಲವನ್ನೂ ಮೀರಿಸುವಷ್ಟು ತೀಕ್ಷ್ಣವಾಗಿ ಬರುತ್ತದೆ.",
-    "sowing": "ಒಣಗಿದಂತೆ ಬಿತ್ತಿ, 10 × 20 ಇಂಚಿನ ಟ್ರೇಗೆ 20ರಿಂದ 25 ಗ್ರಾಂ, ಸಾಧ್ಯವಾದಷ್ಟು ಸಮನಾಗಿ ಹರಡಿ — ಬೀಜ ಚಿಕ್ಕದಾಗಿರುವುದರಿಂದ ಉಂಡೆಗಳು ಮುಂದೆ ಬೋಳು ಜಾಗಗಳಾಗಿ ಕಾಣುತ್ತವೆ. ನೆನೆಸಬೇಡಿ: ರಾಕೆಟ್ ಬೀಜ ಜಾರುತ್ತದೆ ಮತ್ತು ಅಂಟಾಗುತ್ತದೆ. ಭಾರ ಇಲ್ಲದೆ ಎರಡು ದಿನ ಮುಚ್ಚಿ, ನಂತರ ತೆರೆದು ಪ್ರಕಾಶಮಾನ ಪರೋಕ್ಷ ಬೆಳಕಿಗೆ ಇಡಿ. ನೀರು ಕೆಳಗಿನಿಂದ. ಏಳರಿಂದ ಹತ್ತು ದಿನಕ್ಕೆ ಕತ್ತರಿಸಿ; ವಯಸ್ಸಾದಂತೆ ಖಾರ ಹೆಚ್ಚುತ್ತದೆ, ಹಾಗಾಗಿ ಸೌಮ್ಯ ಬೇಕಿದ್ದರೆ ಬೇಗ, ತೀಕ್ಷ್ಣ ಬೇಕಿದ್ದರೆ ತಡವಾಗಿ ಕತ್ತರಿಸಿ.",
+    "shortDescription": "ಬೀಜದ ರುಚಿ, ಖಾರ ಮತ್ತು ಪ್ರಬುದ್ಧತೆ. ಎಲ್ಲರಿಗೂ ಗೊತ್ತಿರುವ ಸಲಾಡ್ ಎಲೆ, ಹತ್ತು ದಿನದ ವಯಸ್ಸಿನಲ್ಲಿ.",
+    "description": "ಕೃಷಿ ಮಾಡಿದ ರಾಕೆಟ್ (ಕಾಡು ತಳಿಯಲ್ಲ, ಸಲಾಡ್ ಅರುಗುಲಾ) ಮುಂದೆ ಏನಾಗುತ್ತದೋ ಅದರ ರುಚಿಯನ್ನೇ ಸ್ಪಷ್ಟವಾಗಿ ಕೊಡುವ ಮೈಕ್ರೋಗ್ರೀನ್: ಬೀಜದಂಥ ರುಚಿ, ಖಾರ, ಹಿಂದೆ ತುಸು ಕಹಿ, ಮತ್ತು ಬ್ರೊಕೊಲಿ ಹಾಗೂ ಎಲೆಕೋಸಿನಲ್ಲಿ ಇಲ್ಲದ ಪ್ರಬುದ್ಧತೆ. ಹೋಟೆಲಿನಲ್ಲಿ ರಾಕೆಟ್ ಕೇಳುವವರಿಗಾಗಿ ಬೆಳೆಯಬೇಕಾದ ತಳಿ ಇದು, ಮತ್ತು ಮಿಶ್ರಣದಲ್ಲಿ ರುಚಿಯನ್ನು ಹೊತ್ತು ನಡೆಯುವುದೂ ಇದೇ.\n\nಬೀಜ ಬಹಳ ಚಿಕ್ಕದು ಮತ್ತು ತುಸು ಅಂಟಾಗುವ ಗುಣದ್ದು, ಹಾಗಾಗಿ ಒಣ ಬಿತ್ತನೆ, ಅದೂ ಹಗುರ. ಕಾಡು ರಾಕೆಟ್‌ಗಿಂತ ಕೃಷಿ ರಾಕೆಟ್ ವೇಗವಾಗಿ ಮತ್ತು ಸೌಮ್ಯವಾಗಿ ಬೆಳೆಯುತ್ತದೆ, ಹಾಗಾಗಿ ಟ್ರೇಗೆ ಇದೇ ಸರಿಯಾದ ಆಯ್ಕೆ: ಕಾಡು ರಾಕೆಟ್ ಒಂದೂವರೆ ಪಟ್ಟು ಕಾಲ ತೆಗೆದುಕೊಂಡು, ಜೊತೆಗಿಟ್ಟ ಎಲ್ಲವನ್ನೂ ಮೀರಿಸುವಷ್ಟು ತೀಕ್ಷ್ಣವಾಗಿ ಬರುತ್ತದೆ.",
+    "sowing": "ಒಣಗಿದಂತೆ ಬಿತ್ತಿ, 10 × 20 ಇಂಚಿನ ಟ್ರೇಗೆ 20ರಿಂದ 25 ಗ್ರಾಂ, ಸಾಧ್ಯವಾದಷ್ಟು ಸಮನಾಗಿ ಹರಡಿ. ಬೀಜ ಚಿಕ್ಕದಾಗಿರುವುದರಿಂದ ಉಂಡೆಗಳು ಮುಂದೆ ಬೋಳು ಜಾಗಗಳಾಗಿ ಕಾಣುತ್ತವೆ. ನೆನೆಸಬೇಡಿ: ರಾಕೆಟ್ ಬೀಜ ಜಾರುತ್ತದೆ ಮತ್ತು ಅಂಟಾಗುತ್ತದೆ. ಭಾರ ಇಲ್ಲದೆ ಎರಡು ದಿನ ಮುಚ್ಚಿ, ನಂತರ ತೆರೆದು ಪ್ರಕಾಶಮಾನ ಪರೋಕ್ಷ ಬೆಳಕಿಗೆ ಇಡಿ. ನೀರು ಕೆಳಗಿನಿಂದ. ಏಳರಿಂದ ಹತ್ತು ದಿನಕ್ಕೆ ಕತ್ತರಿಸಿ; ವಯಸ್ಸಾದಂತೆ ಖಾರ ಹೆಚ್ಚುತ್ತದೆ, ಹಾಗಾಗಿ ಸೌಮ್ಯ ಬೇಕಿದ್ದರೆ ಬೇಗ, ತೀಕ್ಷ್ಣ ಬೇಕಿದ್ದರೆ ತಡವಾಗಿ ಕತ್ತರಿಸಿ.",
     "specs": [
       {
         "label": "ಮೊಳಕೆ ಪ್ರಮಾಣ",
@@ -82,11 +83,11 @@
       },
       {
         "label": "ಲೇಪನ",
-        "value": "ಲೇಪನವಿಲ್ಲ — ಶಿಲೀಂಧ್ರನಾಶಕವಿಲ್ಲ, ಬೀಜ ಔಷಧವಿಲ್ಲ"
+        "value": "ಲೇಪನವಿಲ್ಲ; ಶಿಲೀಂಧ್ರನಾಶಕವಾಗಲಿ ಬೀಜ ಔಷಧವಾಗಲಿ ಹಾಕಿಲ್ಲ"
       },
       {
         "label": "ನೆನೆಸುವಿಕೆ",
-        "value": "ಬೇಡ — ನೆನೆಸಿದರೆ ಅಂಟಾಗುತ್ತದೆ, ಒಣಗಿದಂತೆ ಬಿತ್ತಿ"
+        "value": "ಬೇಡ; ನೆನೆಸಿದರೆ ಅಂಟಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಒಣಗಿದಂತೆ ಬಿತ್ತಿ"
       },
       {
         "label": "ಬಿತ್ತನೆ ಪ್ರಮಾಣ",
@@ -101,9 +102,9 @@
         "value": "ಬಿತ್ತನೆಯಿಂದ 7ರಿಂದ 10 ದಿನ"
       }
     ],
-    "specsNote": "ಮೊಳಕೆ ಪ್ರಮಾಣ ಪ್ರತಿ ತಂಡಕ್ಕೆ ಬದಲಾಗುವ ಸಂಗತಿ — ಚೀಲದ ಪ್ರತಿ ಬೀಜದ ಭರವಸೆಯಲ್ಲ. ಇಲ್ಲಿನ ಅಂಕಿಗಳು ಬೆಂಗಳೂರಿನ ಕೋಣೆಯ ಉಷ್ಣತೆಯಲ್ಲಿ ನಮ್ಮದೇ ಟ್ರೇಗಳಲ್ಲಿ ಅಳೆದವು; ಬಿಸಿ ಒಣ ವಾರ ಕಟಾವಿನ ಅವಧಿಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ, ತಣ್ಣನೆಯದು ಹೆಚ್ಚಿಸುತ್ತದೆ. ಬಿತ್ತನೆ ಪ್ರಮಾಣವನ್ನು ಆರಂಭದ ಅಂದಾಜಾಗಿ ತೆಗೆದುಕೊಂಡು, ನಿಮ್ಮದೇ ಒಂದು ಟ್ರೇ ಬೆಳೆದ ಮೇಲೆ ಹೊಂದಿಸಿ.",
+    "specsNote": "ಮೊಳಕೆ ಪ್ರಮಾಣ ಪ್ರತಿ ತಂಡಕ್ಕೆ ಬದಲಾಗುವ ಸಂಗತಿ, ಚೀಲದ ಪ್ರತಿ ಬೀಜದ ಭರವಸೆಯಲ್ಲ. ಇಲ್ಲಿನ ಅಂಕಿಗಳು ನಮ್ಮ ಬೆಳೆ ಕೋಣೆಯ ಸಾಮಾನ್ಯ ಉಷ್ಣತೆಯಲ್ಲಿ ನಮ್ಮದೇ ಟ್ರೇಗಳಲ್ಲಿ ಅಳೆದವು; ಬಿಸಿ ಒಣ ವಾರ ಕಟಾವಿನ ಅವಧಿಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ, ತಣ್ಣನೆಯದು ಹೆಚ್ಚಿಸುತ್ತದೆ. ಬಿತ್ತನೆ ಪ್ರಮಾಣವನ್ನು ಆರಂಭದ ಅಂದಾಜಾಗಿ ತೆಗೆದುಕೊಂಡು, ನಿಮ್ಮದೇ ಒಂದು ಟ್ರೇ ಬೆಳೆದ ಮೇಲೆ ಹೊಂದಿಸಿ.",
     "uses": [
-      "ಮೈಕ್ರೋಗ್ರೀನ್ ಟ್ರೇ — ಸಲಾಡ್ ಮಿಶ್ರಣದ ರುಚಿಯ ನಾಯಕ.",
+      "ಮೈಕ್ರೋಗ್ರೀನ್ ಟ್ರೇ, ಸಲಾಡ್ ಮಿಶ್ರಣದ ರುಚಿಯ ನಾಯಕನಾಗಿ.",
       "ಕುಂಡ ಅಥವಾ ಮಡಿಯಲ್ಲಿ ಬಿತ್ತಿ ಪೂರ್ಣ ರಾಕೆಟ್ ಎಲೆಗಳಿಗೆ, ಕತ್ತರಿಸಿ ಮತ್ತೆ ಬೆಳೆಸಲು.",
       "ಜಾರ್‌ನಲ್ಲಿ ಮೊಳಕೆ, ಆದರೆ ಅಂಟಿನಿಂದ ತೊಳೆಯುವುದು ಕಿರಿಕಿರಿ."
     ],
@@ -111,7 +112,8 @@
       "ರಾಕೆಟ್ ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು, ಮತ್ತು ಬ್ರಾಸಿಕಾ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನಲ್ಲಿ ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳಿವೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು; ಸಂಬಂಧಿಸಿದರೆ ಪ್ರಮಾಣ ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
       "ನೆನೆಸಬೇಡಿ. ರಾಕೆಟ್ ಬೀಜ ಒದ್ದೆಯಾದಾಗ ಅಂಟು ಬಿಡುತ್ತದೆ ಮತ್ತು ಬೀಜಗಳನ್ನು ಉಂಡೆಯಾಗಿ ಜೋಡಿಸುತ್ತದೆ; ಉಂಡೆಯಾದ ಬಿತ್ತನೆ ಎಂದರೆ ಅಸಮ ಟ್ರೇ.",
       "ಇದು ಬಿತ್ತನೆಗಾಗಿನ ಬೀಜ. ಶುದ್ಧ ಮತ್ತು ಲೇಪನವಿಲ್ಲದ್ದು, ಆದರೆ ತಕ್ಷಣ ತಿನ್ನುವ ಆಹಾರವಾಗಿ ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದ್ದಲ್ಲ.",
-      "ತಣ್ಣನೆಯ, ಕತ್ತಲ, ಒಣ ಜಾಗದಲ್ಲಿ ಇಡಿ; ಮಳೆಗಾಲದಲ್ಲಿ ಗಾಳಿ ಹೋಗದ ಡಬ್ಬಿಯಲ್ಲಿ — ವಯಸ್ಸಿಗಿಂತ ಶಾಖ ಮತ್ತು ತೇವವೇ ಮೊಳಕೆ ಪ್ರಮಾಣವನ್ನು ಬೇಗ ಇಳಿಸುತ್ತವೆ."
+      "ತಣ್ಣನೆಯ, ಕತ್ತಲ, ಒಣ ಜಾಗದಲ್ಲಿ ಇಡಿ; ಮಳೆಗಾಲದಲ್ಲಿ ಗಾಳಿ ಹೋಗದ ಡಬ್ಬಿಗೆ ಬದಲಿಸಿ. ವಯಸ್ಸಿಗಿಂತ ಶಾಖ ಮತ್ತು ತೇವವೇ ಮೊಳಕೆ ಪ್ರಮಾಣವನ್ನು ಬೇಗ ಇಳಿಸುತ್ತವೆ.",
+      "ಹಸಿ ಮೊಳಕೆ ಗುರುತಿಸಲಾದ ಆಹಾರ ಸುರಕ್ಷತೆಯ ಅಪಾಯ. ಮೊಳಕೆ ಬರುವ ಪರಿಸ್ಥಿತಿ ಬೆಚ್ಚಗೆ ಮತ್ತು ಒದ್ದೆ ಇರುವುದರಿಂದ ಬೀಜದ ಮೇಲಿನ ಬ್ಯಾಕ್ಟೀರಿಯಾ ವೃದ್ಧಿಯಾಗಬಹುದು; ಸಣ್ಣ ಮಕ್ಕಳು, ವೃದ್ಧರು, ಗರ್ಭಿಣಿಯರು ಮತ್ತು ರೋಗನಿರೋಧಕ ಶಕ್ತಿ ಕಡಿಮೆ ಇರುವವರು ಹಸಿ ಮೊಳಕೆ ದೂರವಿಡಬೇಕೆಂದು ಆಹಾರ ಸುರಕ್ಷತೆ ಪ್ರಾಧಿಕಾರಗಳು ಸಲಹೆ ನೀಡುತ್ತವೆ. ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ತೊಳೆಯಿರಿ, ಜಾರ್ ಬಸಿಯುತ್ತಿರಲಿ, ಮತ್ತು ಆ ಗುಂಪುಗಳಿಗೆ ಬಡಿಸುವುದಾದರೆ ಬೇಯಿಸಿ."
     ],
     "faq": [
       {
@@ -128,13 +130,13 @@
       },
       {
         "question": "ಒಂದೇ ಟ್ರೇಯಲ್ಲಿ ಬೇರೆ ಬೀಜದ ಜೊತೆ ಬೆರೆಸಬಹುದೇ?",
-        "answer": "ಒಂದೇ ಸಮಯದ ಬೆಳೆಗಳ ಜೊತೆ ಹೌದು — ಪಾಕ್ ಚಾಯ್, ಸಾಸಿವೆ, ಮೂಲಂಗಿ. ಬೀಟ್‌ರೂಟ್ ಅಥವಾ ಈರುಳ್ಳಿ ಜೊತೆ ಬೆರೆಸಬೇಡಿ — ಅವಕ್ಕೆ ಎರಡು ಪಟ್ಟು ಕಾಲ ಬೇಕು, ರಾಕೆಟ್ ಕತ್ತರಿಸುವ ಹೊತ್ತಿಗೆ ಅವು ಇನ್ನೂ ಸಸಿಗಳಾಗಿರುತ್ತವೆ."
+        "answer": "ಹೌದು, ಪಾಕ್ ಚಾಯ್, ಸಾಸಿವೆ, ಮೂಲಂಗಿಯಂತೆ ಅದೇ ಅವಧಿಯಲ್ಲಿ ಬೆಳೆಯುವ ಬೀಜಗಳ ಜೊತೆ ಬೆರೆಸಬಹುದು. ಬೀಟ್‌ರೂಟ್ ಅಥವಾ ಈರುಳ್ಳಿ ಜೊತೆ ಬೆರೆಸಬೇಡಿ. ಅವಕ್ಕೆ ಬಹಳ ಹೆಚ್ಚು ಕಾಲ ಬೇಕು, ಹಾಗಾಗಿ ರಾಕೆಟ್ ಕತ್ತರಿಸುವ ಹೊತ್ತಿಗೆ ಅವು ಇನ್ನೂ ಸಸಿಗಳಾಗಿರುತ್ತವೆ."
       },
       {
         "question": "ಕತ್ತರಿಸಿದ ಮೇಲೆ ಮತ್ತೆ ಬೆಳೆಯುತ್ತದೆಯೇ?",
         "answer": "ಮೈಕ್ರೋಗ್ರೀನ್ ಆಗಿ ಉಪಯುಕ್ತವಾಗಿ ಬೆಳೆಯುವುದಿಲ್ಲ. ಮಾಧ್ಯಮದ ಮೇಲೆ ಕತ್ತರಿಸಿದಾಗ ಬೀಜದ ಎಲೆಗಳ ಜೊತೆ ಬೆಳವಣಿಗೆಯ ಬಿಂದುವೂ ಹೋಗುತ್ತದೆ. ಕತ್ತರಿಸಿ ಮತ್ತೆ ಬೆಳೆಯುವ ಗಿಡ ಬೇಕಿದ್ದರೆ ಕುಂಡದಲ್ಲಿ ಬಿತ್ತಿ."
       }
     ],
-    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಸೂಕ್ಷ್ಮ ಕೆಂಪು-ಕಂದು ರಾಕೆಟ್ ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಸೂಕ್ಷ್ಮ, ಕೆಂಪು ಮಿಶ್ರಿತ ಕಂದು ಬಣ್ಣದ ರಾಕೆಟ್ ಬೀಜ"
   }
 }

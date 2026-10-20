@@ -2,23 +2,23 @@
   "index": {
     "title": "Shop",
     "heading": "Healthy greens, made easy. Everything you need to grow your own.",
-    "body": "Seeds ship from our shelf; racks, trays and snacks arrive in a few days.",
+    "body": "Seeds, trays and cocopeat usually leave our shelf the next day. Racks are built for your order, so they take a little longer.",
     "plansPrompt": "Looking for a weekly box instead?",
     "plansLink": "See the plans"
   },
   "category": {
-    "body": "Delivered on the same Saturday run as the greens.",
-    "empty": "No {category} are listed right now — check back shortly.",
-    "from": "From ₹{price}",
-    "price": "₹{price}",
+    "body": "Sent by courier, or with your greens on our own delivery when you order both.",
+    "empty": "No {category} are listed right now. Check back shortly.",
+    "from": "From ₹{price, number}",
+    "price": "₹{price, number}",
     "options": "{count} options"
   },
   "racks": {
-    "body": "Built to order in the size you need — the height, the width and the number of levels are all yours to pick. Three ranges, and the difference between them is what a level is made of.",
+    "body": "Built to order in the size you need: the height, the width and the number of levels are all yours to pick. Three ranges, and the difference between them is what a level is made of.",
     "ranges": {
       "shelf": {
         "name": "Shelf racks",
-        "line": "Slotted steel angle uprights with a pressed steel plate bolted on at every level. A closed shelf, so it carries anything — not only trays.",
+        "line": "Slotted steel angle uprights with a pressed steel plate bolted on at every level. A closed shelf, so it carries anything, not only trays.",
         "imageAlt": "A four-level rack of orange slotted steel angle with white pressed steel shelf plates bolted on",
         "jointAlt": "Close-up of the bolted joint where a white pressed steel shelf meets the orange slotted steel angle post",
         "includedAlt": "What's included: shelves sized to the rack height, four slotted angle posts, nuts and bolts, and wall-mounting bushes",
@@ -72,7 +72,7 @@
       "black": "Black",
       "white": "White"
     },
-    "dispatch": "Built for you — with you by {date}",
+    "dispatch": "Built for you, with you by {date}",
     "leadNote": "Racks are built for your order in three days, then sent by courier anywhere in India. The delivery price for your address is worked out at checkout.",
     "detail": {
       "back": "All racks",
@@ -80,7 +80,7 @@
       "heightOption": "{height, number} ft · {shelves, plural, one {# shelf} other {# shelves}}",
       "size": "Shelf size",
       "colour": "Colour",
-      "colourNone": "White — the only finish UPVC pipe comes in",
+      "colourNone": "White, the only finish this pipe comes in",
       "capacity": "Load",
       "capacityValue": "{kg, number} kg across {shelves, plural, one {# shelf} other {# shelves}}",
       "steel": "Steel",
@@ -104,7 +104,7 @@
     "cardLink": "See sizes and prices"
   },
   "trays": {
-    "body": "Kept in stock in Bengaluru, so most orders leave the next day. The price is for the whole pack.",
+    "body": "Kept in stock here, so most orders leave the next day. The price is for the whole pack.",
     "note": "Trays and mats travel with the rest of your order.",
     "cardLink": "See the detail",
     "detail": {
@@ -131,11 +131,11 @@
         "generic": "That did not save. Please try again."
       }
     },
-    "dispatchShelf": "From our shelf — ready to ship {date}",
-    "dispatchRestock": "We bring it in for you — ready to ship {date}"
+    "dispatchShelf": "From our shelf, ready to ship {date}",
+    "dispatchRestock": "We bring it in for you, ready to ship {date}"
   },
   "growMedia": {
-    "body": "The cocopeat we grow our own microgreens in, now available to you. Kept in stock in Bengaluru, and the price is for the whole block.",
+    "body": "The cocopeat we grow our own microgreens in, now available to you. We keep it in stock, and the price is for the whole block.",
     "badge": "Recommended by Fewgrams",
     "tileWords": {
       "cocopeat": "Cocopeat",
@@ -174,7 +174,7 @@
         "generic": "That did not save. Please try again."
       }
     },
-    "dispatchShelf": "From our shelf — ready to ship {date}",
-    "dispatchRestock": "We bring it in for you — ready to ship {date}"
+    "dispatchShelf": "From our shelf, ready to ship {date}",
+    "dispatchRestock": "We bring it in for you, ready to ship {date}"
   }
 }

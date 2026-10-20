@@ -4,11 +4,11 @@
   "firstDelivery": "Order by Friday night and your first box arrives",
   "empty": {
     "title": "Weekly plans open soon",
-    "body": "None are published yet. Greens are still available by the 100 g, on the same Saturday run.",
+    "body": "None are published yet. Greens are still available by the 100 g, sown when you order them.",
     "cta": "Order by the 100 g"
   },
   "card": {
-    "perBox": "~{grams} g per box",
+    "perBox": "~{grams, number} g per box",
     "gramsYouChoose": "Grams you choose",
     "pricedByWeight": "Priced by weight",
     "subscribe": "Subscribe",
@@ -18,18 +18,18 @@
     "week": "Week {n}",
     "weeklyBoxes": "{count} weekly boxes",
     "perMonth": "/month",
-    "per100g": "₹{price} per 100 g",
+    "per100g": "₹{price, number} per 100 g",
     "firstBox": "First box:"
   },
   "rotationNote": "A month is a rotation, not the same box four times. Each Sunday we sow both next week's fast crops and the week after's slow ones.",
   "cheaperNote": "Cheaper per 100 g than buying one at a time.",
-  "rotationHeading": "{plan} — what arrives each Saturday",
+  "rotationHeading": "{plan}: what arrives each Saturday",
   "close": "Close",
   "noDate": "—",
   "subscribe": {
     "title": "Subscribe",
     "heading": "Your weekly greens",
-    "subheading": "Choose how many boxes of each plan you want every Saturday. Take two of one plan for two boxes, or mix plans — every box arrives on the same Saturday run.",
+    "subheading": "Choose how many boxes of each plan you want every Saturday. Take two of one plan for two boxes, or mix plans. Every box arrives on the same Saturday run.",
     "noneHeading": "Weekly plans open soon",
     "noneBody": "No plan is open for subscription yet. Greens are still available 100 g at a time.",
     "noneCta": "Order greens",
@@ -56,7 +56,7 @@
     "deliveryIncluded": "Included",
     "pay": "Pay ₹{amount, number}",
     "paying": "Starting your subscription…",
-    "termNote": "Paid once for four Saturdays. It does not renew by itself — we'll remind you before the last box.",
+    "termNote": "Paid once for four Saturdays. It does not renew by itself, but we'll remind you before the last box.",
     "confirmingTitle": "Confirming your payment",
     "confirmingBody": "Setting up your Saturdays. This takes a few seconds.",
     "errors": {
@@ -64,6 +64,6 @@
       "nothingChosen": "Choose at least one box.",
       "notCompleted": "The payment was not completed. Nothing has been charged, so you can try again."
     },
-    "lockedHint": "Confirm where we deliver first — then choose your boxes."
+    "lockedHint": "Confirm where we deliver first, then choose your boxes."
   }
 }

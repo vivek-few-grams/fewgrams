@@ -17,6 +17,16 @@ import { Link, usePathname } from "@/i18n/navigation";
  * motion). Below `sm` it is the round mark alone, with its name as the
  * accessible label; from `sm` the name shows beside it. Forest ground, so the
  * icon circle is `bg-forest-deep text-cream` (CLAUDE.md).
+ *
+ * **A cream ring keeps it apart from what it floats over** (the owner,
+ * 20 Oct 2026: on the home page's first screen it sat on the last forest
+ * step marker of the process strip, and the two read as one shape). The
+ * ring is the page's own cream, so on the page it disappears, and over
+ * anything dark — a marker, a photo, the footer — it cuts a clear gap. A
+ * fixed badge will always cross something somewhere; this separates it from
+ * all of it at once, where moving it would only move the collision. A sage
+ * light runs round the ring (`.garden-badge::before` / `::after` in
+ * globals.css), off under reduced motion.
  */
 const HIDDEN = ["/garden", "/admin", "/cart", "/checkout"];
 
@@ -29,7 +39,7 @@ export function GardenBadge() {
     <Link
       href="/garden"
       aria-label={t("aria")}
-      className="garden-badge group fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-[60] flex items-center gap-2 rounded-full bg-forest p-1.5 text-cream shadow-[0_8px_24px_rgba(3,57,35,0.28)] transition-colors hover:bg-forest-deep sm:right-6 sm:pr-4 md:bottom-6"
+      className="garden-badge group fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-[60] flex items-center gap-2 rounded-full bg-forest p-1.5 text-cream shadow-[0_8px_24px_rgba(3,57,35,0.28)] ring-4 ring-cream transition-colors hover:bg-forest-deep sm:right-6 sm:pr-4 md:bottom-6"
     >
       <span className="grid size-11 place-items-center rounded-full bg-forest-deep text-cream">
         <svg viewBox="0 0 32 32" fill="none" aria-hidden="true" className="size-7">

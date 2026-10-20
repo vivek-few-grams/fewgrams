@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-10",
+  "updated": "2026-10-20",
   "sections": [
     "about",
     "collect",
@@ -34,7 +34,8 @@
           "Your account: your email address. If you sign in with Google, Google also gives us the name and profile photo on your Google account.",
           "Your profile: your name and phone number, if you add them.",
           "Your addresses: the recipient's name and phone number, the address and PIN code, a landmark and any delivery notes you type. If you choose \"use my location\", we also save the map coordinates your browser gives us, so our driver can find you. We only ask for your location when you press that button.",
-          "Your orders and plans: what you bought, the prices, the delivery address and date, and the receipt. We keep a copy of the delivery address with each order, so a later change to your address book does not change a past order.",
+          "Your orders and plans: what you bought, the prices, the delivery address and date, and the invoice. We keep a copy of the delivery address with each order, so a later change to your address book does not change a past order.",
+          "Buying for a business: if you add a GSTIN at checkout, the GSTIN and business name you enter. We print them on your tax invoice and report the sale against that GSTIN in our GST returns, as the law requires.",
           "Your payments: the payment partner's reference, the amount, whether it succeeded, and the kind of method used (for example UPI or card). We never receive or store your card number, UPI PIN or bank details.",
           "Your messages: what you send us on WhatsApp or by email, including any photographs, for example of an order that arrived damaged."
         ]
@@ -63,9 +64,10 @@
         "body": [
           "We share your data only with the services that do part of the job for us, and only what each one needs:",
           "Payment partners (Razorpay or Cashfree): your name, email address and phone number, with the order amount, so they can take and confirm your payment. They process your card or UPI details under their own policies and the Reserve Bank of India's rules.",
-          "Courier partners (Delhivery, Ekart or Shiprocket and the carrier it books): when we send you a parcel, the recipient's name, phone number and address. To quote a price at checkout we send them only the PIN codes and the parcel's size and weight. Fresh greens are delivered by us, not by a courier.",
+          "Courier partners (Delhivery, Ekart, Shiprocket or Velocity, and the carrier Shiprocket or Velocity books): when we send you a parcel, the recipient's name, phone number and address. To quote a price at checkout we send them only the PIN codes and the parcel's size and weight. Fresh greens are delivered by us, not by a courier.",
+          "The workshop that builds shelf racks: it packs a shelf rack and hands it to the courier itself, so it sees the recipient's name, phone number and address on the parcel's label.",
           "Hosting (Amazon Web Services): our website and database run on AWS, which stores the data for us.",
-          "Email delivery: the service that sends your sign-in links receives your email address.",
+          "Email: Amazon SES sends your sign-in links, so it receives your email address. Emails you send to {email} arrive in, and are kept in, our mailbox at Zoho Mail.",
           "Google: only if you choose to sign in with Google.",
           "India Post's PIN code directory (data.gov.in): only the PIN code you enter, never your name or address.",
           "WhatsApp: if you message us there, the message is carried under WhatsApp's own policy.",
@@ -147,9 +149,10 @@
           "ನಿಮ್ಮ ಖಾತೆ: ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸ. ನೀವು ಗೂಗಲ್ ಮೂಲಕ ಸೈನ್ ಇನ್ ಆದರೆ, ನಿಮ್ಮ ಗೂಗಲ್ ಖಾತೆಯ ಹೆಸರು ಮತ್ತು ಪ್ರೊಫೈಲ್ ಫೋಟೋವನ್ನೂ ಗೂಗಲ್ ನಮಗೆ ನೀಡುತ್ತದೆ.",
           "ನಿಮ್ಮ ಪ್ರೊಫೈಲ್: ನೀವು ಸೇರಿಸಿದರೆ, ನಿಮ್ಮ ಹೆಸರು ಮತ್ತು ಫೋನ್ ಸಂಖ್ಯೆ.",
           "ನಿಮ್ಮ ವಿಳಾಸಗಳು: ಸ್ವೀಕರಿಸುವವರ ಹೆಸರು ಮತ್ತು ಫೋನ್ ಸಂಖ್ಯೆ, ವಿಳಾಸ ಮತ್ತು ಪಿನ್ ಕೋಡ್, ಹೆಗ್ಗುರುತು ಮತ್ತು ನೀವು ಬರೆಯುವ ಡೆಲಿವರಿ ಟಿಪ್ಪಣಿಗಳು. ನೀವು \"ನನ್ನ ಸ್ಥಳ ಬಳಸಿ\" ಆರಿಸಿದರೆ, ನಮ್ಮ ಡ್ರೈವರ್ ನಿಮ್ಮನ್ನು ಹುಡುಕಲು ನಿಮ್ಮ ಬ್ರೌಸರ್ ನೀಡುವ ನಕ್ಷೆ ನಿರ್ದೇಶಾಂಕಗಳನ್ನೂ ಉಳಿಸುತ್ತೇವೆ. ನೀವು ಆ ಬಟನ್ ಒತ್ತಿದಾಗ ಮಾತ್ರ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಕೇಳುತ್ತೇವೆ.",
-          "ನಿಮ್ಮ ಆರ್ಡರ್‌ಗಳು ಮತ್ತು ಯೋಜನೆಗಳು: ನೀವು ಏನು ಖರೀದಿಸಿದಿರಿ, ಬೆಲೆಗಳು, ಡೆಲಿವರಿ ವಿಳಾಸ ಮತ್ತು ದಿನಾಂಕ, ಮತ್ತು ರಸೀದಿ. ಪ್ರತಿ ಆರ್ಡರ್‌ನೊಂದಿಗೆ ಡೆಲಿವರಿ ವಿಳಾಸದ ಪ್ರತಿಯನ್ನು ಇಡುತ್ತೇವೆ, ಹಾಗಾಗಿ ನಂತರ ನಿಮ್ಮ ವಿಳಾಸ ಪುಸ್ತಕ ಬದಲಾದರೂ ಹಿಂದಿನ ಆರ್ಡರ್ ಬದಲಾಗುವುದಿಲ್ಲ.",
+          "ನಿಮ್ಮ ಆರ್ಡರ್‌ಗಳು ಮತ್ತು ಯೋಜನೆಗಳು: ನೀವು ಏನು ಖರೀದಿಸಿದಿರಿ, ಬೆಲೆಗಳು, ಡೆಲಿವರಿ ವಿಳಾಸ ಮತ್ತು ದಿನಾಂಕ, ಮತ್ತು ಇನ್‌ವಾಯ್ಸ್. ಪ್ರತಿ ಆರ್ಡರ್‌ನೊಂದಿಗೆ ಡೆಲಿವರಿ ವಿಳಾಸದ ಪ್ರತಿಯನ್ನು ಇಡುತ್ತೇವೆ, ಹಾಗಾಗಿ ನಂತರ ನಿಮ್ಮ ವಿಳಾಸ ಪುಸ್ತಕ ಬದಲಾದರೂ ಹಿಂದಿನ ಆರ್ಡರ್ ಬದಲಾಗುವುದಿಲ್ಲ.",
+          "ವ್ಯಾಪಾರಕ್ಕಾಗಿ ಖರೀದಿಸಿದರೆ: ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ನೀವು ಜಿಎಸ್‌ಟಿಐಎನ್ ಸೇರಿಸಿದರೆ, ನೀವು ನಮೂದಿಸುವ ಜಿಎಸ್‌ಟಿಐಎನ್ ಮತ್ತು ವ್ಯಾಪಾರದ ಹೆಸರು. ಅವನ್ನು ನಿಮ್ಮ ತೆರಿಗೆ ಇನ್‌ವಾಯ್ಸ್‌ನಲ್ಲಿ ಮುದ್ರಿಸುತ್ತೇವೆ, ಮತ್ತು ಕಾನೂನು ಬಯಸುವಂತೆ ನಮ್ಮ ಜಿಎಸ್‌ಟಿ ರಿಟರ್ನ್‌ಗಳಲ್ಲಿ ಆ ಜಿಎಸ್‌ಟಿಐಎನ್‌ಗೆ ಮಾರಾಟವನ್ನು ವರದಿ ಮಾಡುತ್ತೇವೆ.",
           "ನಿಮ್ಮ ಪಾವತಿಗಳು: ಪಾವತಿ ಪಾಲುದಾರರ ಉಲ್ಲೇಖ ಸಂಖ್ಯೆ, ಮೊತ್ತ, ಅದು ಯಶಸ್ವಿಯಾಯಿತೇ, ಮತ್ತು ಬಳಸಿದ ವಿಧಾನದ ಬಗೆ (ಉದಾಹರಣೆಗೆ ಯುಪಿಐ ಅಥವಾ ಕಾರ್ಡ್). ನಿಮ್ಮ ಕಾರ್ಡ್ ಸಂಖ್ಯೆ, ಯುಪಿಐ ಪಿನ್ ಅಥವಾ ಬ್ಯಾಂಕ್ ವಿವರಗಳನ್ನು ನಾವು ಎಂದಿಗೂ ಪಡೆಯುವುದಿಲ್ಲ, ಸಂಗ್ರಹಿಸುವುದಿಲ್ಲ.",
-          "ನಿಮ್ಮ ಸಂದೇಶಗಳು: ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ ಅಥವಾ ಇಮೇಲ್ ಮೂಲಕ ನೀವು ಕಳುಹಿಸುವುದು, ಯಾವುದೇ ಫೋಟೋಗಳೂ ಸೇರಿ — ಉದಾಹರಣೆಗೆ ಹಾನಿಯಾಗಿ ಬಂದ ಆರ್ಡರ್‌ನದು."
+          "ನಿಮ್ಮ ಸಂದೇಶಗಳು: ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ ಅಥವಾ ಇಮೇಲ್ ಮೂಲಕ ನೀವು ಕಳುಹಿಸುವುದು, ಯಾವುದೇ ಫೋಟೋಗಳೂ ಸೇರಿ (ಉದಾಹರಣೆಗೆ ಹಾನಿಯಾಗಿ ಬಂದ ಆರ್ಡರ್‌ನ ಫೋಟೋ)."
         ]
       },
       "not-collected": {
@@ -176,13 +179,14 @@
         "body": [
           "ನಮಗಾಗಿ ಕೆಲಸದ ಒಂದು ಭಾಗ ಮಾಡುವ ಸೇವೆಗಳೊಂದಿಗೆ ಮಾತ್ರ, ಪ್ರತಿಯೊಂದಕ್ಕೂ ಬೇಕಾದಷ್ಟನ್ನು ಮಾತ್ರ ನಿಮ್ಮ ಮಾಹಿತಿಯನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತೇವೆ:",
           "ಪಾವತಿ ಪಾಲುದಾರರು (ರೇಜರ್‌ಪೇ ಅಥವಾ ಕ್ಯಾಶ್‌ಫ್ರೀ): ನಿಮ್ಮ ಪಾವತಿ ಪಡೆದು ದೃಢೀಕರಿಸಲು, ಆರ್ಡರ್ ಮೊತ್ತದೊಂದಿಗೆ ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್ ವಿಳಾಸ ಮತ್ತು ಫೋನ್ ಸಂಖ್ಯೆ. ನಿಮ್ಮ ಕಾರ್ಡ್ ಅಥವಾ ಯುಪಿಐ ವಿವರಗಳನ್ನು ಅವರು ತಮ್ಮದೇ ನೀತಿಗಳು ಮತ್ತು ಭಾರತೀಯ ರಿಸರ್ವ್ ಬ್ಯಾಂಕ್‌ನ ನಿಯಮಗಳಡಿ ನಿರ್ವಹಿಸುತ್ತಾರೆ.",
-          "ಕೊರಿಯರ್ ಪಾಲುದಾರರು (ಡೆಲ್ಹಿವರಿ, ಎಕಾರ್ಟ್ ಅಥವಾ ಶಿಪ್‌ರಾಕೆಟ್ ಮತ್ತು ಅದು ಬುಕ್ ಮಾಡುವ ಕ್ಯಾರಿಯರ್): ನಿಮಗೆ ಪಾರ್ಸೆಲ್ ಕಳುಹಿಸುವಾಗ, ಸ್ವೀಕರಿಸುವವರ ಹೆಸರು, ಫೋನ್ ಸಂಖ್ಯೆ ಮತ್ತು ವಿಳಾಸ. ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ಬೆಲೆ ತಿಳಿಸಲು ಅವರಿಗೆ ಪಿನ್ ಕೋಡ್‌ಗಳು ಮತ್ತು ಪಾರ್ಸೆಲ್‌ನ ಗಾತ್ರ ಹಾಗೂ ತೂಕವನ್ನು ಮಾತ್ರ ಕಳುಹಿಸುತ್ತೇವೆ. ತಾಜಾ ಸೊಪ್ಪನ್ನು ಕೊರಿಯರ್ ಅಲ್ಲ, ನಾವೇ ತಲುಪಿಸುತ್ತೇವೆ.",
+          "ಕೊರಿಯರ್ ಪಾಲುದಾರರು (ಡೆಲ್ಹಿವರಿ, ಇಕಾರ್ಟ್, ಶಿಪ್‌ರಾಕೆಟ್ ಅಥವಾ ವೆಲಾಸಿಟಿ, ಮತ್ತು ಶಿಪ್‌ರಾಕೆಟ್ ಅಥವಾ ವೆಲಾಸಿಟಿ ಬುಕ್ ಮಾಡುವ ಕ್ಯಾರಿಯರ್): ನಿಮಗೆ ಪಾರ್ಸೆಲ್ ಕಳುಹಿಸುವಾಗ, ಸ್ವೀಕರಿಸುವವರ ಹೆಸರು, ಫೋನ್ ಸಂಖ್ಯೆ ಮತ್ತು ವಿಳಾಸ. ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ಬೆಲೆ ತಿಳಿಸಲು ಅವರಿಗೆ ಪಿನ್ ಕೋಡ್‌ಗಳು ಮತ್ತು ಪಾರ್ಸೆಲ್‌ನ ಗಾತ್ರ ಹಾಗೂ ತೂಕವನ್ನು ಮಾತ್ರ ಕಳುಹಿಸುತ್ತೇವೆ. ತಾಜಾ ಸೊಪ್ಪನ್ನು ಕೊರಿಯರ್ ಅಲ್ಲ, ನಾವೇ ತಲುಪಿಸುತ್ತೇವೆ.",
+          "ಶೆಲ್ಫ್ ರ್ಯಾಕ್‌ಗಳನ್ನು ತಯಾರಿಸುವ ಕಾರ್ಯಾಗಾರ: ಅದು ಶೆಲ್ಫ್ ರ್ಯಾಕ್ ಅನ್ನು ಪ್ಯಾಕ್ ಮಾಡಿ ತಾನೇ ಕೊರಿಯರ್‌ಗೆ ಹಸ್ತಾಂತರಿಸುತ್ತದೆ, ಹಾಗಾಗಿ ಪಾರ್ಸೆಲ್‌ನ ಲೇಬಲ್‌ನಲ್ಲಿರುವ ಸ್ವೀಕರಿಸುವವರ ಹೆಸರು, ಫೋನ್ ಸಂಖ್ಯೆ ಮತ್ತು ವಿಳಾಸವನ್ನು ಅದು ನೋಡುತ್ತದೆ.",
           "ಹೋಸ್ಟಿಂಗ್ (ಅಮೆಜಾನ್ ವೆಬ್ ಸರ್ವಿಸಸ್): ನಮ್ಮ ವೆಬ್‌ಸೈಟ್ ಮತ್ತು ಡೇಟಾಬೇಸ್ ಎಡಬ್ಲ್ಯೂಎಸ್‌ನಲ್ಲಿ ನಡೆಯುತ್ತವೆ, ಅದು ನಮಗಾಗಿ ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ.",
-          "ಇಮೇಲ್ ವಿತರಣೆ: ನಿಮ್ಮ ಸೈನ್ ಇನ್ ಲಿಂಕ್‌ಗಳನ್ನು ಕಳುಹಿಸುವ ಸೇವೆಗೆ ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸ ಸಿಗುತ್ತದೆ.",
+          "ಇಮೇಲ್: ಅಮೆಜಾನ್ ಎಸ್‌ಇಎಸ್ ನಿಮ್ಮ ಸೈನ್ ಇನ್ ಲಿಂಕ್‌ಗಳನ್ನು ಕಳುಹಿಸುತ್ತದೆ, ಹಾಗಾಗಿ ಅದಕ್ಕೆ ನಿಮ್ಮ ಇಮೇಲ್ ವಿಳಾಸ ಸಿಗುತ್ತದೆ. ನೀವು {email} ಗೆ ಕಳುಹಿಸುವ ಇಮೇಲ್‌ಗಳು ಝೋಹೋ ಮೇಲ್‌ನಲ್ಲಿರುವ ನಮ್ಮ ಮೇಲ್‌ಬಾಕ್ಸ್‌ಗೆ ಬಂದು ಅಲ್ಲೇ ಉಳಿಯುತ್ತವೆ.",
           "ಗೂಗಲ್: ನೀವು ಗೂಗಲ್ ಮೂಲಕ ಸೈನ್ ಇನ್ ಆಗಲು ಆರಿಸಿದರೆ ಮಾತ್ರ.",
           "ಭಾರತೀಯ ಅಂಚೆಯ ಪಿನ್ ಕೋಡ್ ಡೈರೆಕ್ಟರಿ (data.gov.in): ನೀವು ನಮೂದಿಸುವ ಪಿನ್ ಕೋಡ್ ಮಾತ್ರ, ನಿಮ್ಮ ಹೆಸರು ಅಥವಾ ವಿಳಾಸ ಎಂದಿಗೂ ಅಲ್ಲ.",
           "ವಾಟ್ಸ್‌ಆ್ಯಪ್: ನೀವು ಅಲ್ಲಿ ನಮಗೆ ಸಂದೇಶ ಕಳುಹಿಸಿದರೆ, ಅದು ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನ ಸ್ವಂತ ನೀತಿಯಡಿ ಸಾಗುತ್ತದೆ.",
-          "ಇವುಗಳ ಹೊರತಾಗಿ, ಕಾನೂನು ಬಯಸಿದಾಗ ಮಾತ್ರ — ಉದಾಹರಣೆಗೆ ಕಾನೂನುಬದ್ಧ ಅಧಿಕಾರವಿರುವ ಸರ್ಕಾರಿ ಸಂಸ್ಥೆಗೆ — ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಬಹಿರಂಗಪಡಿಸುತ್ತೇವೆ."
+          "ಇವುಗಳ ಹೊರತಾಗಿ, ಕಾನೂನು ಬಯಸಿದಾಗ ಮಾತ್ರ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಬಹಿರಂಗಪಡಿಸುತ್ತೇವೆ, ಉದಾಹರಣೆಗೆ ಕಾನೂನುಬದ್ಧ ಅಧಿಕಾರವಿರುವ ಸರ್ಕಾರಿ ಸಂಸ್ಥೆಗೆ."
         ]
       },
       "storage": {
@@ -236,7 +240,7 @@
       "changes": {
         "heading": "ಈ ನೀತಿಯಲ್ಲಿ ಬದಲಾವಣೆಗಳು",
         "body": [
-          "ನಾವು ಈ ನೀತಿಯನ್ನು ನವೀಕರಿಸಬಹುದು — ಉದಾಹರಣೆಗೆ ಹೊಸ ಸೇವೆ ಸೇರಿಸಿದಾಗ. ಅದು ಕೊನೆಯದಾಗಿ ಯಾವಾಗ ಬದಲಾಯಿತು ಎಂಬುದನ್ನು ಮೇಲ್ಭಾಗದ ದಿನಾಂಕ ತೋರಿಸುತ್ತದೆ. ನೀವು ಈಗಾಗಲೇ ನೀಡಿರುವ ಮಾಹಿತಿಯನ್ನು ನಾವು ಬಳಸುವ ರೀತಿಯ ಮೇಲೆ ಬದಲಾವಣೆ ಪರಿಣಾಮ ಬೀರಿದರೆ, ಅದು ಅನ್ವಯವಾಗುವ ಮೊದಲು ನಿಮಗೆ ತಿಳಿಸುತ್ತೇವೆ.",
+          "ನಾವು ಈ ನೀತಿಯನ್ನು ನವೀಕರಿಸಬಹುದು, ಉದಾಹರಣೆಗೆ ಹೊಸ ಸೇವೆಯನ್ನು ಸೇರಿಸಿದಾಗ. ಅದು ಕೊನೆಯದಾಗಿ ಯಾವಾಗ ಬದಲಾಯಿತು ಎಂಬುದನ್ನು ಮೇಲ್ಭಾಗದ ದಿನಾಂಕ ತೋರಿಸುತ್ತದೆ. ನೀವು ಈಗಾಗಲೇ ನೀಡಿರುವ ಮಾಹಿತಿಯನ್ನು ನಾವು ಬಳಸುವ ರೀತಿಯ ಮೇಲೆ ಬದಲಾವಣೆ ಪರಿಣಾಮ ಬೀರಿದರೆ, ಅದು ಅನ್ವಯವಾಗುವ ಮೊದಲು ನಿಮಗೆ ತಿಳಿಸುತ್ತೇವೆ.",
           "ಈ ನೀತಿ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲೂ ಪ್ರಕಟವಾಗಿದೆ. ಎರಡು ಆವೃತ್ತಿಗಳು ಭಿನ್ನವಾಗಿದ್ದರೆ, ಇಂಗ್ಲಿಷ್ ಆವೃತ್ತಿ ಅನ್ವಯಿಸುತ್ತದೆ."
         ]
       }

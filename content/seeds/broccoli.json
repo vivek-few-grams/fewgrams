@@ -6,8 +6,8 @@
   "en": {
     "name": "Broccoli",
     "shortDescription": "Mild, sweet and the one green nobody at the table argues about.",
-    "description": "Broccoli is the microgreen to grow if you want the whole household to eat it. The flavour is mild and faintly sweet with none of the pepper of radish or the heat of mustard, the stems stay pale and tender, and the seed leaves are broad enough that a small tray looks like a lot of green. It is the variety restaurants ask for by name and the one that converts people who think microgreens taste like grass.\n\nThe seed is small — roughly two millimetres — untreated and cleaned for sowing. That size is the only thing about broccoli that catches new growers out: it is easy to pour too much, and a tray sown thick holds water at the base and goes over in a day. Weigh it rather than eyeballing it, at least until you have grown a few.",
-    "sowing": "Sow dry, no soak. Around 25 to 30 grams for a standard 10 by 20 inch tray, scattered as evenly as you can manage — broccoli seed is small enough that a shaker or a folded sheet of paper beats a hand. Cover for two to three days with a light weight on top, which forces even rooting and keeps the seed coats from riding up on the stems. Uncover into bright indirect light, water from the bottom only, and cut at eight to eleven days when the seed leaves have opened flat and the tray has gone deep green.",
+    "description": "Broccoli is the microgreen to grow if you want the whole household to eat it. The flavour is mild and faintly sweet with none of the pepper of radish or the heat of mustard, the stems stay pale and tender, and the seed leaves are broad enough that a small tray looks like a lot of green. It is the variety restaurants ask for by name and the one that converts people who think microgreens taste like grass.\n\nThe seed is small (roughly two millimetres), untreated and cleaned for sowing. That size is the only thing about broccoli that catches new growers out: it is easy to pour too much, and a tray sown thick holds water at the base and goes over in a day. Weigh it rather than eyeballing it, at least until you have grown a few.",
+    "sowing": "Sow dry, no soak. Around 25 to 30 grams for a standard 10 by 20 inch tray, scattered as evenly as you can manage. Broccoli seed is small enough that a shaker or a folded sheet of paper beats a hand. Cover for two to three days with a light weight on top, which forces even rooting and keeps the seed coats from riding up on the stems. Uncover into bright indirect light, water from the bottom only, and cut at eight to eleven days when the seed leaves have opened flat and the tray has gone deep green.",
     "specs": [
       {
         "label": "Germination",
@@ -15,11 +15,11 @@
       },
       {
         "label": "Treatment",
-        "value": "Untreated — no fungicide, no seed dressing"
+        "value": "Untreated, with no fungicide or seed dressing"
       },
       {
         "label": "Soak",
-        "value": "None — sow dry"
+        "value": "None; sow dry"
       },
       {
         "label": "Sow rate",
@@ -34,9 +34,9 @@
         "value": "8 to 11 days from sowing"
       }
     ],
-    "specsNote": "Germination is a lot-by-lot fact, not a promise about every seed in the bag. These figures are what we measure on our own trays at Bengaluru room temperature, and a hot dry week will shorten the harvest window while a cool one stretches it. Treat the sow rate as a starting point and adjust once you have grown one tray of your own.",
+    "specsNote": "Germination is a lot-by-lot fact, not a promise about every seed in the bag. These figures are what we measure on our own trays at room temperature in our grow room, and a hot dry week will shorten the harvest window while a cool one stretches it. Treat the sow rate as a starting point and adjust once you have grown one tray of your own.",
     "uses": [
-      "Microgreen trays — the main use, and the most reliably popular green on the shelf.",
+      "Microgreen trays: the main use, and the most reliably popular green on the shelf.",
       "Jar or sieve sprouting, harvested at three to five days.",
       "Sowing on into a pot or bed if you want actual broccoli heads, given a cool enough season."
     ],
@@ -44,7 +44,8 @@
       "Broccoli is a brassica, and brassica microgreens contain goitrogens. In large regular amounts they can interfere with thyroid function; if that applies to you, keep portions moderate and ask your doctor.",
       "Broccoli is the easiest seed here to over-sow. A tray that looks generously covered when dry is a mat when the seed swells, and a mat is where damping off starts.",
       "This is seed for sowing. It is clean and untreated, but it is not packed, washed or processed as a ready-to-eat food.",
-      "Keep it cool, dark and dry, in a sealed jar once the monsoon arrives — heat and humidity take the germination rate down faster than age does."
+      "Keep it cool, dark and dry, and move it to a sealed jar once the monsoon arrives. Heat and humidity take the germination rate down faster than age does.",
+      "Raw sprouts are a recognised food-safety risk. Because sprouting conditions are warm and wet, any bacteria present on the seed can multiply, and food-safety authorities advise that young children, older adults, pregnant women and anyone immunocompromised avoid raw sprouts. Rinse twice daily, keep the jar draining, and cook them if you are serving any of those groups."
     ],
     "faq": [
       {
@@ -53,7 +54,7 @@
       },
       {
         "question": "How much seed per tray?",
-        "answer": "About 25 to 30 grams for a 10 by 20 inch tray, so 100 grams is three to four trays. Broccoli is priced high per gram, and sowing it thin is both better growing and cheaper growing."
+        "answer": "About 25 to 30 grams for a 10 by 20 inch tray, so 100 grams is three to four trays. Sowing it thin is better growing, and it makes the seed go further."
       },
       {
         "question": "Why is my broccoli tray leggy and pale?",
@@ -65,16 +66,16 @@
       },
       {
         "question": "Why do the seed coats stick to the leaves?",
-        "answer": "Not enough weight during blackout, or a tray that dried out at the top. A light weight — a second tray with a couple of bricks in it — makes the seedlings push the coats off as they lift. Misting the surface just before you uncover helps the stragglers let go."
+        "answer": "Not enough weight during blackout, or a tray that dried out at the top. A light weight, such as a second tray with a couple of bricks in it, makes the seedlings push the coats off as they lift. Misting the surface just before you uncover helps the stragglers let go."
       }
     ],
     "imageAlt": "A burlap sack spilling dark brown broccoli seed, with a broccoli floret behind it"
   },
   "kn": {
     "name": "ಬ್ರೊಕೊಲಿ",
-    "shortDescription": "ಸೌಮ್ಯ, ಸಿಹಿ — ಮನೆಯಲ್ಲಿ ಯಾರೂ ಬೇಡ ಎನ್ನದ ಒಂದೇ ಹಸಿರು.",
-    "description": "ಮನೆಯ ಎಲ್ಲರೂ ತಿನ್ನಬೇಕೆಂದರೆ ಬೆಳೆಯಬೇಕಾದ ಮೈಕ್ರೋಗ್ರೀನ್ ಬ್ರೊಕೊಲಿ. ರುಚಿ ಸೌಮ್ಯ ಮತ್ತು ತುಸು ಸಿಹಿ — ಮೂಲಂಗಿಯ ಖಾರವೂ ಇಲ್ಲ, ಸಾಸಿವೆಯ ಉರಿಯೂ ಇಲ್ಲ. ಕಾಂಡ ತಿಳಿ ಬಣ್ಣ ಮತ್ತು ಮೃದು, ಬೀಜದ ಎಲೆಗಳು ಅಗಲ — ಹಾಗಾಗಿ ಚಿಕ್ಕ ಟ್ರೇ ಕೂಡ ತುಂಬಿ ಕಾಣುತ್ತದೆ. ಹೋಟೆಲುಗಳು ಹೆಸರಿಡಿದು ಕೇಳುವ ತಳಿ ಇದು, ಮತ್ತು ಮೈಕ್ರೋಗ್ರೀನ್ ಹುಲ್ಲಿನಂತೆ ರುಚಿ ಎಂದು ಭಾವಿಸುವವರ ಮನಸ್ಸು ಬದಲಿಸುವುದೂ ಇದೇ.\n\nಬೀಜ ಚಿಕ್ಕದು — ಸುಮಾರು ಎರಡು ಮಿಲಿಮೀಟರ್ — ಲೇಪನವಿಲ್ಲದ್ದು, ಬಿತ್ತನೆಗಾಗಿ ಶುದ್ಧೀಕರಿಸಿದ್ದು. ಹೊಸ ಬೆಳೆಗಾರರಿಗೆ ತೊಂದರೆ ಕೊಡುವುದು ಈ ಗಾತ್ರವೊಂದೇ: ಹೆಚ್ಚು ಸುರಿಯುವುದು ಸುಲಭ, ಮತ್ತು ಒತ್ತೊತ್ತಾಗಿ ಬಿತ್ತಿದ ಟ್ರೇ ಬುಡದಲ್ಲಿ ನೀರು ಹಿಡಿದು ಒಂದೇ ದಿನದಲ್ಲಿ ಹಾಳಾಗುತ್ತದೆ. ಕೆಲವು ಟ್ರೇ ಬೆಳೆಯುವವರೆಗಾದರೂ ಕಣ್ಣಳತೆಯ ಬದಲು ತೂಕ ಮಾಡಿ ಬಿತ್ತಿ.",
-    "sowing": "ಒಣಗಿದಂತೆ ಬಿತ್ತಿ, ನೆನೆಸುವ ಅಗತ್ಯವಿಲ್ಲ. 10 × 20 ಇಂಚಿನ ಸಾಮಾನ್ಯ ಟ್ರೇಗೆ ಸುಮಾರು 25ರಿಂದ 30 ಗ್ರಾಂ, ಸಾಧ್ಯವಾದಷ್ಟು ಸಮನಾಗಿ ಹರಡಿ — ಬ್ರೊಕೊಲಿ ಬೀಜ ಚಿಕ್ಕದಾಗಿರುವುದರಿಂದ ಕೈಗಿಂತ ಸಣ್ಣ ಜಾಳಿಗೆ ಅಥವಾ ಮಡಚಿದ ಕಾಗದ ಉತ್ತಮ. ಎರಡು ಮೂರು ದಿನ ಮುಚ್ಚಿ, ಮೇಲೆ ಹಗುರ ಭಾರ ಇಡಿ — ಇದು ಬೇರು ಸಮನಾಗಿ ಇಳಿಯುವಂತೆ ಮಾಡುತ್ತದೆ ಮತ್ತು ಬೀಜದ ಸಿಪ್ಪೆ ಕಾಂಡದ ಮೇಲೆ ಏರಿ ಕೂರುವುದನ್ನು ತಡೆಯುತ್ತದೆ. ನಂತರ ತೆರೆದು ಪ್ರಕಾಶಮಾನ ಪರೋಕ್ಷ ಬೆಳಕಿಗೆ ಇಡಿ, ಕೆಳಗಿನಿಂದಲೇ ನೀರು ಕೊಡಿ, ಮತ್ತು ಬೀಜದ ಎಲೆಗಳು ಚಪ್ಪಟೆಯಾಗಿ ಬಿಚ್ಚಿ ಟ್ರೇ ದಟ್ಟ ಹಸಿರಾದಾಗ — ಎಂಟರಿಂದ ಹನ್ನೊಂದು ದಿನಕ್ಕೆ — ಕತ್ತರಿಸಿ.",
+    "shortDescription": "ಸೌಮ್ಯ ಮತ್ತು ಸಿಹಿ; ಮನೆಯಲ್ಲಿ ಯಾರೂ ಬೇಡ ಎನ್ನದ ಒಂದೇ ಹಸಿರು.",
+    "description": "ಮನೆಯ ಎಲ್ಲರೂ ತಿನ್ನಬೇಕೆಂದರೆ ಬೆಳೆಯಬೇಕಾದ ಮೈಕ್ರೋಗ್ರೀನ್ ಬ್ರೊಕೊಲಿ. ರುಚಿ ಸೌಮ್ಯ ಮತ್ತು ತುಸು ಸಿಹಿ; ಮೂಲಂಗಿಯ ಖಾರವೂ ಇಲ್ಲ, ಸಾಸಿವೆಯ ಉರಿಯೂ ಇಲ್ಲ. ಕಾಂಡ ತಿಳಿ ಬಣ್ಣ ಮತ್ತು ಮೃದು, ಬೀಜದ ಎಲೆಗಳು ಅಗಲ, ಹಾಗಾಗಿ ಚಿಕ್ಕ ಟ್ರೇ ಕೂಡ ತುಂಬಿ ಕಾಣುತ್ತದೆ. ಹೋಟೆಲುಗಳು ಹೆಸರು ಹಿಡಿದು ಕೇಳುವ ತಳಿ ಇದು, ಮತ್ತು ಮೈಕ್ರೋಗ್ರೀನ್ ಹುಲ್ಲಿನಂತೆ ರುಚಿ ಎಂದು ಭಾವಿಸುವವರ ಮನಸ್ಸು ಬದಲಿಸುವುದೂ ಇದೇ.\n\nಬೀಜ ಚಿಕ್ಕದು (ಸುಮಾರು ಎರಡು ಮಿಲಿಮೀಟರ್), ಲೇಪನವಿಲ್ಲದ್ದು, ಬಿತ್ತನೆಗಾಗಿ ಶುದ್ಧೀಕರಿಸಿದ್ದು. ಹೊಸ ಬೆಳೆಗಾರರಿಗೆ ತೊಂದರೆ ಕೊಡುವುದು ಈ ಗಾತ್ರವೊಂದೇ: ಹೆಚ್ಚು ಸುರಿಯುವುದು ಸುಲಭ, ಮತ್ತು ಒತ್ತೊತ್ತಾಗಿ ಬಿತ್ತಿದ ಟ್ರೇ ಬುಡದಲ್ಲಿ ನೀರು ಹಿಡಿದು ಒಂದೇ ದಿನದಲ್ಲಿ ಹಾಳಾಗುತ್ತದೆ. ಕೆಲವು ಟ್ರೇ ಬೆಳೆಯುವವರೆಗಾದರೂ ಕಣ್ಣಳತೆಯ ಬದಲು ತೂಕ ಮಾಡಿ ಬಿತ್ತಿ.",
+    "sowing": "ಒಣಗಿದಂತೆ ಬಿತ್ತಿ, ನೆನೆಸುವ ಅಗತ್ಯವಿಲ್ಲ. 10 × 20 ಇಂಚಿನ ಸಾಮಾನ್ಯ ಟ್ರೇಗೆ ಸುಮಾರು 25ರಿಂದ 30 ಗ್ರಾಂ, ಸಾಧ್ಯವಾದಷ್ಟು ಸಮನಾಗಿ ಹರಡಿ. ಬ್ರೊಕೊಲಿ ಬೀಜ ಚಿಕ್ಕದಾಗಿರುವುದರಿಂದ ಕೈಗಿಂತ ಸಣ್ಣ ಜಾಳಿಗೆ ಅಥವಾ ಮಡಚಿದ ಕಾಗದ ಉತ್ತಮ. ಎರಡು ಮೂರು ದಿನ ಮುಚ್ಚಿ, ಮೇಲೆ ಹಗುರ ಭಾರ ಇಡಿ. ಇದು ಬೇರು ಸಮನಾಗಿ ಇಳಿಯುವಂತೆ ಮಾಡುತ್ತದೆ ಮತ್ತು ಬೀಜದ ಸಿಪ್ಪೆ ಕಾಂಡದ ಮೇಲೆ ಏರಿ ಕೂರುವುದನ್ನು ತಡೆಯುತ್ತದೆ. ನಂತರ ತೆರೆದು ಪ್ರಕಾಶಮಾನ ಪರೋಕ್ಷ ಬೆಳಕಿಗೆ ಇಡಿ, ಕೆಳಗಿನಿಂದಲೇ ನೀರು ಕೊಡಿ, ಮತ್ತು ಬೀಜದ ಎಲೆಗಳು ಚಪ್ಪಟೆಯಾಗಿ ಬಿಚ್ಚಿ ಟ್ರೇ ದಟ್ಟ ಹಸಿರಾದಾಗ, ಅಂದರೆ ಎಂಟರಿಂದ ಹನ್ನೊಂದು ದಿನಕ್ಕೆ, ಕತ್ತರಿಸಿ.",
     "specs": [
       {
         "label": "ಮೊಳಕೆ ಪ್ರಮಾಣ",
@@ -82,11 +83,11 @@
       },
       {
         "label": "ಲೇಪನ",
-        "value": "ಲೇಪನವಿಲ್ಲ — ಶಿಲೀಂಧ್ರನಾಶಕವಿಲ್ಲ, ಬೀಜ ಔಷಧವಿಲ್ಲ"
+        "value": "ಲೇಪನವಿಲ್ಲ; ಶಿಲೀಂಧ್ರನಾಶಕವಾಗಲಿ ಬೀಜ ಔಷಧವಾಗಲಿ ಹಾಕಿಲ್ಲ"
       },
       {
         "label": "ನೆನೆಸುವಿಕೆ",
-        "value": "ಬೇಡ — ಒಣಗಿದಂತೆ ಬಿತ್ತಿ"
+        "value": "ಬೇಡ; ಒಣಗಿದಂತೆ ಬಿತ್ತಿ"
       },
       {
         "label": "ಬಿತ್ತನೆ ಪ್ರಮಾಣ",
@@ -101,17 +102,18 @@
         "value": "ಬಿತ್ತನೆಯಿಂದ 8ರಿಂದ 11 ದಿನ"
       }
     ],
-    "specsNote": "ಮೊಳಕೆ ಪ್ರಮಾಣ ಪ್ರತಿ ತಂಡಕ್ಕೆ ಬದಲಾಗುವ ಸಂಗತಿ — ಚೀಲದ ಪ್ರತಿ ಬೀಜದ ಭರವಸೆಯಲ್ಲ. ಇಲ್ಲಿನ ಅಂಕಿಗಳು ಬೆಂಗಳೂರಿನ ಕೋಣೆಯ ಉಷ್ಣತೆಯಲ್ಲಿ ನಮ್ಮದೇ ಟ್ರೇಗಳಲ್ಲಿ ಅಳೆದವು; ಬಿಸಿ ಒಣ ವಾರ ಕಟಾವಿನ ಅವಧಿಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ, ತಣ್ಣನೆಯದು ಹೆಚ್ಚಿಸುತ್ತದೆ. ಬಿತ್ತನೆ ಪ್ರಮಾಣವನ್ನು ಆರಂಭದ ಅಂದಾಜಾಗಿ ತೆಗೆದುಕೊಂಡು, ನಿಮ್ಮದೇ ಒಂದು ಟ್ರೇ ಬೆಳೆದ ಮೇಲೆ ಹೊಂದಿಸಿ.",
+    "specsNote": "ಮೊಳಕೆ ಪ್ರಮಾಣ ಪ್ರತಿ ತಂಡಕ್ಕೆ ಬದಲಾಗುವ ಸಂಗತಿ, ಚೀಲದ ಪ್ರತಿ ಬೀಜದ ಭರವಸೆಯಲ್ಲ. ಇಲ್ಲಿನ ಅಂಕಿಗಳು ನಮ್ಮ ಬೆಳೆ ಕೋಣೆಯ ಸಾಮಾನ್ಯ ಉಷ್ಣತೆಯಲ್ಲಿ ನಮ್ಮದೇ ಟ್ರೇಗಳಲ್ಲಿ ಅಳೆದವು; ಬಿಸಿ ಒಣ ವಾರ ಕಟಾವಿನ ಅವಧಿಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ, ತಣ್ಣನೆಯದು ಹೆಚ್ಚಿಸುತ್ತದೆ. ಬಿತ್ತನೆ ಪ್ರಮಾಣವನ್ನು ಆರಂಭದ ಅಂದಾಜಾಗಿ ತೆಗೆದುಕೊಂಡು, ನಿಮ್ಮದೇ ಒಂದು ಟ್ರೇ ಬೆಳೆದ ಮೇಲೆ ಹೊಂದಿಸಿ.",
     "uses": [
-      "ಮೈಕ್ರೋಗ್ರೀನ್ ಟ್ರೇ — ಮುಖ್ಯ ಬಳಕೆ, ಮತ್ತು ಶೆಲ್ಫಿನ ಅತಿ ಜನಪ್ರಿಯ ಹಸಿರು.",
+      "ಮೈಕ್ರೋಗ್ರೀನ್ ಟ್ರೇ. ಇದೇ ಮುಖ್ಯ ಬಳಕೆ, ಮತ್ತು ಶೆಲ್ಫಿನ ಅತಿ ಜನಪ್ರಿಯ ಹಸಿರು ಇದು.",
       "ಜಾರ್ ಅಥವಾ ಜಾಳಿಗೆಯಲ್ಲಿ ಮೊಳಕೆ, ಮೂರರಿಂದ ಐದು ದಿನಕ್ಕೆ ಕೊಯ್ಲು.",
       "ತಣ್ಣನೆಯ ಋತುವಿದ್ದರೆ ಕುಂಡ ಅಥವಾ ಮಡಿಯಲ್ಲಿ ಬಿತ್ತಿ ನಿಜವಾದ ಬ್ರೊಕೊಲಿ ಹೂಗೊಂಚಲು ಬೆಳೆಯಲು."
     ],
     "cautions": [
-      "ಬ್ರೊಕೊಲಿ ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು, ಮತ್ತು ಬ್ರಾಸಿಕಾ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನಲ್ಲಿ ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳಿವೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು; ಸಂಬಂಧಿಸಿದರೆ ಪ್ರಮಾಣ ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
-      "ಇಲ್ಲಿನ ಬೀಜಗಳಲ್ಲಿ ಅತಿ ಸುಲಭವಾಗಿ ಹೆಚ್ಚು ಬಿತ್ತಲಾಗುವುದು ಬ್ರೊಕೊಲಿ. ಒಣಗಿದಾಗ ಸರಿಯಾಗಿ ಕಾಣುವ ಟ್ರೇ, ಬೀಜ ಊದಿಕೊಂಡ ಮೇಲೆ ದಪ್ಪ ಹಾಸಿಗೆಯಾಗುತ್ತದೆ — ಮತ್ತು ಅಲ್ಲಿಂದಲೇ ಕೊಳೆ ಶುರು.",
+      "ಬ್ರೊಕೊಲಿ ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು, ಮತ್ತು ಬ್ರಾಸಿಕಾ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನಲ್ಲಿ ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳಿವೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು; ನಿಮಗೆ ಇದು ಅನ್ವಯಿಸುವುದಾದರೆ ಪ್ರಮಾಣ ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
+      "ಇಲ್ಲಿನ ಬೀಜಗಳಲ್ಲಿ ಅತಿ ಸುಲಭವಾಗಿ ಹೆಚ್ಚು ಬಿತ್ತಲಾಗುವುದು ಬ್ರೊಕೊಲಿ. ಒಣಗಿದಾಗ ಸರಿಯಾಗಿ ಕಾಣುವ ಟ್ರೇ, ಬೀಜ ಊದಿಕೊಂಡ ಮೇಲೆ ದಪ್ಪ ಹಾಸಿಗೆಯಾಗುತ್ತದೆ, ಮತ್ತು ಕೊಳೆ ಶುರುವಾಗುವುದು ಅಲ್ಲಿಂದಲೇ.",
       "ಇದು ಬಿತ್ತನೆಗಾಗಿನ ಬೀಜ. ಶುದ್ಧ ಮತ್ತು ಲೇಪನವಿಲ್ಲದ್ದು, ಆದರೆ ತಕ್ಷಣ ತಿನ್ನುವ ಆಹಾರವಾಗಿ ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದ್ದಲ್ಲ.",
-      "ತಣ್ಣನೆಯ, ಕತ್ತಲ, ಒಣ ಜಾಗದಲ್ಲಿ ಇಡಿ; ಮಳೆಗಾಲದಲ್ಲಿ ಗಾಳಿ ಹೋಗದ ಡಬ್ಬಿಯಲ್ಲಿ — ವಯಸ್ಸಿಗಿಂತ ಶಾಖ ಮತ್ತು ತೇವವೇ ಮೊಳಕೆ ಪ್ರಮಾಣವನ್ನು ಬೇಗ ಇಳಿಸುತ್ತವೆ."
+      "ತಣ್ಣನೆಯ, ಕತ್ತಲ, ಒಣ ಜಾಗದಲ್ಲಿ ಇಡಿ; ಮಳೆಗಾಲದಲ್ಲಿ ಗಾಳಿ ಹೋಗದ ಡಬ್ಬಿಗೆ ಬದಲಿಸಿ. ವಯಸ್ಸಿಗಿಂತ ಶಾಖ ಮತ್ತು ತೇವವೇ ಮೊಳಕೆ ಪ್ರಮಾಣವನ್ನು ಬೇಗ ಇಳಿಸುತ್ತವೆ.",
+      "ಹಸಿ ಮೊಳಕೆ ಗುರುತಿಸಲಾದ ಆಹಾರ ಸುರಕ್ಷತೆಯ ಅಪಾಯ. ಮೊಳಕೆ ಬರುವ ಪರಿಸ್ಥಿತಿ ಬೆಚ್ಚಗೆ ಮತ್ತು ಒದ್ದೆ ಇರುವುದರಿಂದ ಬೀಜದ ಮೇಲಿನ ಬ್ಯಾಕ್ಟೀರಿಯಾ ವೃದ್ಧಿಯಾಗಬಹುದು; ಸಣ್ಣ ಮಕ್ಕಳು, ವೃದ್ಧರು, ಗರ್ಭಿಣಿಯರು ಮತ್ತು ರೋಗನಿರೋಧಕ ಶಕ್ತಿ ಕಡಿಮೆ ಇರುವವರು ಹಸಿ ಮೊಳಕೆ ದೂರವಿಡಬೇಕೆಂದು ಆಹಾರ ಸುರಕ್ಷತೆ ಪ್ರಾಧಿಕಾರಗಳು ಸಲಹೆ ನೀಡುತ್ತವೆ. ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ತೊಳೆಯಿರಿ, ಜಾರ್ ಬಸಿಯುತ್ತಿರಲಿ, ಮತ್ತು ಆ ಗುಂಪುಗಳಿಗೆ ಬಡಿಸುವುದಾದರೆ ಬೇಯಿಸಿ."
     ],
     "faq": [
       {
@@ -120,7 +122,7 @@
       },
       {
         "question": "ಒಂದು ಟ್ರೇಗೆ ಎಷ್ಟು ಬೀಜ?",
-        "answer": "10 × 20 ಇಂಚಿನ ಟ್ರೇಗೆ ಸುಮಾರು 25ರಿಂದ 30 ಗ್ರಾಂ; ಅಂದರೆ 100 ಗ್ರಾಂ ಮೂರರಿಂದ ನಾಲ್ಕು ಟ್ರೇ. ಬ್ರೊಕೊಲಿ ಗ್ರಾಂಗೆ ದುಬಾರಿ, ಮತ್ತು ತೆಳುವಾಗಿ ಬಿತ್ತುವುದು ಒಳ್ಳೆಯ ಬೆಳೆಯೂ ಹೌದು, ಕಡಿಮೆ ಖರ್ಚೂ ಹೌದು."
+        "answer": "10 × 20 ಇಂಚಿನ ಟ್ರೇಗೆ ಸುಮಾರು 25ರಿಂದ 30 ಗ್ರಾಂ; ಅಂದರೆ 100 ಗ್ರಾಂ ಮೂರರಿಂದ ನಾಲ್ಕು ಟ್ರೇ. ತೆಳುವಾಗಿ ಬಿತ್ತುವುದು ಒಳ್ಳೆಯ ಬೆಳೆಯೂ ಹೌದು, ಮತ್ತು ಬೀಜವೂ ಹೆಚ್ಚು ಟ್ರೇಗಳಿಗೆ ಸಾಕಾಗುತ್ತದೆ."
       },
       {
         "question": "ನನ್ನ ಬ್ರೊಕೊಲಿ ಉದ್ದವಾಗಿ ಬಿಳಿಚಿದೆ ಏಕೆ?",
@@ -132,7 +134,7 @@
       },
       {
         "question": "ಬೀಜದ ಸಿಪ್ಪೆ ಎಲೆಗೆ ಅಂಟಿಕೊಂಡಿದೆ, ಏಕೆ?",
-        "answer": "ಕತ್ತಲೆ ಅವಧಿಯಲ್ಲಿ ಭಾರ ಸಾಲದು, ಅಥವಾ ಮೇಲ್ಪದರ ಒಣಗಿಹೋಗಿದೆ. ಹಗುರ ಭಾರ — ಎರಡು ಇಟ್ಟಿಗೆ ಇಟ್ಟ ಇನ್ನೊಂದು ಟ್ರೇ — ಇದ್ದರೆ ಸಸಿಗಳು ಮೇಲೆ ಏಳುವಾಗಲೇ ಸಿಪ್ಪೆಯನ್ನು ಕಳಚುತ್ತವೆ. ತೆರೆಯುವ ಮುನ್ನ ಮೇಲ್ಪದರಕ್ಕೆ ನೀರು ಸಿಂಪಡಿಸಿದರೆ ಉಳಿದವೂ ಬಿಡುತ್ತವೆ."
+        "answer": "ಕತ್ತಲೆ ಅವಧಿಯಲ್ಲಿ ಭಾರ ಸಾಲದು, ಅಥವಾ ಮೇಲ್ಪದರ ಒಣಗಿಹೋಗಿದೆ. ಎರಡು ಇಟ್ಟಿಗೆ ಇಟ್ಟ ಇನ್ನೊಂದು ಟ್ರೇಯಂಥ ಹಗುರ ಭಾರ ಇದ್ದರೆ ಸಸಿಗಳು ಮೇಲೆ ಏಳುವಾಗಲೇ ಸಿಪ್ಪೆಯನ್ನು ಕಳಚುತ್ತವೆ. ತೆರೆಯುವ ಮುನ್ನ ಮೇಲ್ಪದರಕ್ಕೆ ನೀರು ಸಿಂಪಡಿಸಿದರೆ ಉಳಿದವೂ ಬಿಡುತ್ತವೆ."
       }
     ],
     "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಕಂದು ಬ್ರೊಕೊಲಿ ಬೀಜ, ಹಿಂದೆ ಒಂದು ಬ್ರೊಕೊಲಿ ಗುಚ್ಛ"

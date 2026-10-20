@@ -303,6 +303,45 @@
   }
 }
 
+/* A card whose page is on its way — `LinkPending`. The curtain's circle at
+   the size of the card: it opens from the middle with the curtain's own
+   ease, and `circle(72%)` covers any rectangle for the same reason it covers
+   the window (see `--curtain-full`). The 120ms wait, held at a closed
+   circle by `both`, is what keeps a page that lands at once from flashing
+   it. Under reduced motion it fades in after the same wait instead. */
+@keyframes link-pending-open {
+  from {
+    clip-path: circle(0% at 50% 50%);
+  }
+  to {
+    clip-path: circle(var(--curtain-full) at 50% 50%);
+  }
+}
+
+@keyframes link-pending-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.link-pending {
+  visibility: hidden;
+}
+
+.link-pending[data-pending] {
+  visibility: visible;
+  animation: link-pending-open 520ms var(--ease-curtain) 120ms both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-pending[data-pending] {
+    animation: link-pending-fade 200ms ease-out 120ms both;
+  }
+}
+
 /* SPEC §17.4 accessibility requirement. The marquee is continuous
    motion, which is a genuine problem if it cannot be stopped. */
 @media (prefers-reduced-motion: reduce) {
@@ -407,6 +446,217 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-copy {
     animation: none;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Search sprouts — SPEC §27.2
+
+   A suggestion arrives the way a microgreen does: the row rises into
+   place (`rot-rise`, shared) and its picture grows up from its own base
+   with a little overshoot, like a shoot straightening. `--i` is the
+   row, set inline. Rows are keyed by product, so another letter typed
+   animates only the suggestions that are new; the ones still there stay
+   put rather than replaying on every keystroke.
+
+   The soil line is the band's bottom edge, drawn in left to right as
+   the band opens. The leaf is the magnifier's, out while there is a
+   query.
+   ───────────────────────────────────────────────────────────── */
+@keyframes search-shoot {
+  0% {
+    transform: scale(0.3, 0);
+  }
+  65% {
+    transform: scale(1.04, 1.1);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes search-soil {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.search-sprout {
+  animation: rot-rise 380ms var(--ease-brand) both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.search-shoot {
+  transform-origin: 50% 100%;
+  animation: search-shoot 560ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  animation-delay: calc(var(--i, 0) * 45ms + 80ms);
+}
+
+.search-soil {
+  transform-origin: 0 50%;
+  animation: search-soil 600ms var(--ease-brand) both;
+}
+
+.search-leaf {
+  transform-origin: 0 100%;
+  transform: scale(0) rotate(-45deg);
+  transition: transform 320ms cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.search-leaf[data-out] {
+  transform: none;
+}
+
+/* The two sprigs in the band's corners (`SearchSprigs`) grow in from them:
+   each is turned so its stem points into its corner, the band clips at its
+   edges, and the rise runs along the stem in that turned frame — so the
+   sprig comes out of the edge rather than fading in on the band, stretching
+   from a squat start and overshooting a little the way a shoot straightens.
+   Then they sway about their stems, each to both sides and in opposite
+   directions, at slightly different paces so they never move in lockstep.
+   The first sway was 1.5° one way over 7s, and the owner could not see it
+   move (20 Oct 2026). The three eases make one sine wave: away from upright
+   fastest, slowing into each lean, so a lean has no stop at the middle.
+   Hidden until the picture has loaded — see the component. */
+@keyframes search-sprig-rise {
+  0% {
+    transform: translateY(70%) scale(0.6, 0.4);
+  }
+  65% {
+    transform: translateY(-3%) scale(1.02, 1.05);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes search-sprig-sway {
+  0%,
+  100% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0.61, 1, 0.88, 1);
+  }
+  25% {
+    transform: rotate(var(--sway, 3deg));
+    animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+  }
+  75% {
+    transform: rotate(calc(var(--sway, 3deg) * -1));
+    animation-timing-function: cubic-bezier(0.12, 0, 0.39, 0);
+  }
+}
+
+.search-sprig {
+  visibility: hidden;
+}
+
+.search-sprig[data-grown] {
+  visibility: visible;
+}
+
+.search-sprig[data-grown] .search-sprig__rise {
+  transform-origin: 50% 100%;
+  animation: search-sprig-rise 900ms cubic-bezier(0.34, 1.3, 0.64, 1) both;
+  animation-delay: var(--delay, 250ms);
+}
+
+.search-sprig[data-grown] .search-sprig__sway {
+  transform-origin: 50% 100%;
+  animation: search-sprig-sway var(--sway-time, 3.4s) infinite;
+  animation-delay: calc(var(--delay, 250ms) + 900ms);
+}
+
+/* The header's search pill travelling into the band and back — a view
+   transition (`morph` in SearchBox.tsx), in two layers.
+
+   **`search-pill` is the outline, and the transition draws it.** Its own
+   pictures are hidden; the moving box itself carries the rounded border and
+   the cream, and its size animates, so the ends stay round and whole at
+   every width. It ends in the colour of the pill it lands as — the focused
+   field's forest going down, the header pill's faint edge coming back — so
+   the hand-over to the real field is invisible.
+
+   **`search-pill-content` is what is inside** — the magnifier, the words,
+   the close button — photographed and cross-faded within the outline. Each
+   picture keeps its own size at the left, so the words never squash, and
+   the close button comes into view as the field widens.
+
+   The live fields are never restyled for any of this. The first version hid
+   their borders while it ran and put them back after, and the border's own
+   150ms colour fade made the field flash at the end of every opening (the
+   owner, 20 Oct 2026). Before that, photographing the whole field and
+   clipping it hid its right-hand end until the last frame.
+
+   Everything else on the page changes at once — the band has its own
+   entrances — which is why the root's default cross-fade is switched off,
+   and only while this transition runs (`data-search-morph`). */
+::view-transition-group(search-pill),
+::view-transition-group(search-pill-content) {
+  animation-duration: 420ms;
+  animation-timing-function: var(--ease-brand);
+}
+
+::view-transition-group(search-pill) {
+  box-sizing: border-box;
+  border: 1px solid var(--color-forest);
+  border-radius: 9999px;
+  background-color: var(--color-cream);
+}
+
+html[data-search-morph="close"]::view-transition-group(search-pill) {
+  border-color: color-mix(in srgb, var(--color-forest) 20%, transparent);
+}
+
+::view-transition-old(search-pill),
+::view-transition-new(search-pill) {
+  visibility: hidden;
+}
+
+::view-transition-image-pair(search-pill-content) {
+  overflow: clip;
+}
+
+::view-transition-old(search-pill-content),
+::view-transition-new(search-pill-content) {
+  height: 100%;
+  object-fit: none;
+  object-position: left center;
+}
+
+html[data-search-morph]::view-transition-old(root),
+html[data-search-morph]::view-transition-new(root) {
+  animation: none;
+}
+
+/* The page under the open band dims and softens in, rather than snapping
+   — a cut to a darker page reads as something going wrong. */
+@keyframes search-scrim {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.search-scrim {
+  animation: search-scrim 240ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .search-scrim,
+  .search-sprout,
+  .search-shoot,
+  .search-soil,
+  .search-sprig[data-grown] .search-sprig__rise,
+  .search-sprig[data-grown] .search-sprig__sway {
+    animation: none;
+  }
+  .search-leaf {
+    transition: none;
   }
 }
 
@@ -2224,6 +2474,46 @@ html[data-loader="out"] .loader__mark {
   }
   .garden-badge:hover {
     transform: translateY(-2px);
+  }
+
+  /* A light running round the badge's cream ring (the owner, 20 Oct 2026:
+     "some glowing design circling in white border"). It runs **on the ring
+     and nowhere else** — exactly the ring's 4px, masked to it — after a
+     first version also threw a blurred glow outside the badge and the owner
+     asked for it to be "the size of white border". A conic gradient turned
+     by one animated angle: a tail fading up to a bright head. Sage, not
+     white: the ring is the page's own cream, so a white light would vanish
+     on it. */
+  .garden-badge::before {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    padding: 4px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: conic-gradient(
+      from var(--garden-glow-angle),
+      transparent 0deg 250deg,
+      color-mix(in srgb, var(--color-sage) 45%, transparent) 310deg,
+      var(--color-sage) 350deg,
+      transparent 360deg
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    animation: garden-glow 3.2s linear infinite;
+  }
+}
+
+@property --garden-glow-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes garden-glow {
+  to {
+    --garden-glow-angle: 360deg;
   }
 }
 @keyframes garden-badge-sway {

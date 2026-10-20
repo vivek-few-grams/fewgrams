@@ -228,6 +228,13 @@ export function Bundles({
   /* Varieties carry no name in DynamoDB (SPEC §4.3) — the caller resolves it
      from content/varieties/<key>.json and hands down a plain key→name map. */
   const nameOf = (key: string) => varietyNames[key] ?? key;
+  /* "Cheaper per 100 g than buying one at a time" is printed only while it is
+     true. Microgreens are priced from cost (19 Oct 2026) and plans are typed,
+     so either side can move; the note needs every plan under the cheapest
+     green on sale, the comparison no visitor could catch out. */
+  const planRates = plans.map(({ plan }) => pricePer100g(plan)).filter((r): r is number => r !== null);
+  const cheapestGreen = Math.min(...varieties.map((v) => v.pricePer100g).filter((r) => r > 0));
+  const plansAreCheaper = planRates.length > 0 && planRates.every((r) => r < cheapestGreen);
 
   return (
     <section id="plans" className="scroll-mt-24 bg-cream">
@@ -245,8 +252,8 @@ export function Bundles({
             {tp("heading")}
           </h2>
           <p className="mt-4 font-body text-sm leading-relaxed text-stone">
-            {tp("firstDelivery")} <strong className="font-semibold text-forest">{firstDelivery}</strong>.{" "}
-            {tp("cheaperNote")}
+            {tp("firstDelivery")} <strong className="font-semibold text-forest">{firstDelivery}</strong>.
+            {plansAreCheaper && <> {tp("cheaperNote")}</>}
           </p>
         </div>
 
@@ -395,8 +402,9 @@ function BundleCard({
           back to two lines rather than overflow, which matters in Kannada
           where both halves are longer. */}
       <dl className={`mt-5 flex flex-wrap items-baseline gap-x-2 font-body text-sm ${p.strong}`}>
-        <dd>{tp("card.weeklyBoxes", { count: weekCount > 0 ? weekCount : 4 })}</dd>
-        <dd className={`before:mr-2 before:content-['·'] ${p.body}`}>
+        {/* Pick Your Own is not subscribable, so it has no weekly boxes. */}
+        {!isByo && <dd>{tp("card.weeklyBoxes", { count: weekCount > 0 ? weekCount : 4 })}</dd>}
+        <dd className={isByo ? p.body : `before:mr-2 before:content-['·'] ${p.body}`}>
           {plan.gramsPerBox > 0 ? tp("card.perBox", { grams: plan.gramsPerBox }) : tp("card.gramsYouChoose")}
         </dd>
       </dl>
@@ -431,9 +439,11 @@ function BundleCard({
           </>
         )}
 
-        <p className={`mt-4 font-body text-sm ${p.strong}`}>
-          {tp("card.firstBox")} <strong className="font-semibold">{firstDelivery}</strong>
-        </p>
+        {!isByo && (
+          <p className={`mt-4 font-body text-sm ${p.strong}`}>
+            {tp("card.firstBox")} <strong className="font-semibold">{firstDelivery}</strong>
+          </p>
+        )}
 
         {/* `border` on every variant, transparent on all of them now that
             none is outlined. Kept rather than dropped: a 1px border top and

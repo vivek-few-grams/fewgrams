@@ -1,9 +1,9 @@
 {
   "title": "Seeds",
-  "description": "Untreated seed, cleaned for sowing — the same seed we grow our own trays from.",
+  "description": "Untreated seed, cleaned for sowing. It is the same seed we grow our own trays from.",
   "heading": "The same seed we sow.",
-  "body": "Sold by the 100 g, untreated and cleaned for sowing — the same seed that goes into our own trays. Everything ships off our shelf the next day.",
-  "empty": "No seed is listed right now — check back shortly.",
+  "body": "Sold by the 100 g, untreated and cleaned for sowing. It is the same seed that goes into our own trays, and everything ships off our shelf the next day.",
+  "empty": "No seed is listed right now. Check back shortly.",
   "emptyLink": "See the greens we grow",
   "meta": "₹{price, number}/100 g",
   "growPrompt": "Would rather we grew them for you?",
@@ -48,6 +48,6 @@
     "dispatchNote": "Order today and it is with you {date}.",
     "soldOutFact": "Sold out right now",
     "soldOutTitle": "Sold out",
-    "soldOutBody": "We have none of this seed on the shelf right now. Check back soon — we restock regularly."
+    "soldOutBody": "We have none of this seed on the shelf right now. Check back soon, as we restock regularly."
   }
 }

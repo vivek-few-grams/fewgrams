@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 import { placeholderFor } from "@/lib/images/placeholder";
 import { placeholderProps } from "@/lib/images/placeholder-props";
+import { LinkPending } from "./LinkPending";
 import { ScatterMarquee } from "./ScatterMarquee";
 
 /**
@@ -100,7 +101,7 @@ export function MarqueeCard({
     <Link
       href={href}
       className={`group block ${className}`}
-      aria-label={`${label}${note ? ` — ${note}` : ""}`}
+      aria-label={`${label}${note ? `, ${note}` : ""}`}
     >
       <div
         className={`mcard flex aspect-[580/660] items-center justify-center ${panelClass}`}
@@ -129,6 +130,8 @@ export function MarqueeCard({
             />
           </div>
         )}
+        {/* Covers the panel while the page it opens is on its way. */}
+        <LinkPending />
       </div>
 
       <div className="mt-4 flex items-baseline justify-between gap-3">

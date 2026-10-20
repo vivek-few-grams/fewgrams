@@ -19,7 +19,7 @@
     "signIn": "Sign in",
     "account": "Account",
     "admin": "Admin",
-    "signedInAs": "{label} — signed in as {who}",
+    "signedInAs": "{label}, signed in as {who}",
     "cartWithCount": "Cart, {count, plural, one {# item} other {# items}}"
   },
   "language": {
@@ -62,7 +62,7 @@
     "refunds": "Refunds",
     "shipping": "Shipping",
     "copyright": "© {year} {brand}",
-    "fssaiPending": "FSSAI registration in progress — required before launch",
+    "fssaiPending": "FSSAI registration in progress",
     "fssaiLicence": "FSSAI Lic. {number}",
     "b2bPrompt": "Like our website?",
     "b2bHover": "We can build one for you →"

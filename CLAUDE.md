@@ -38,6 +38,7 @@ checkout and a translator can be handed a single file:
 | `help.json` | `/faq` and `/contact` — **chrome only**; the questions and answers are editorial copy in `content/faq.json` (one ordered file, like the book; `faq-contract.ts` refuses a price, a day count or the city) |
 | `legal.json` | `/terms` (and the privacy, refund and shipping pages to come) — **chrome only**; the clauses are `content/legal/<doc>.json`, with names and address as tokens from `content/legal/business.json` |
 | `garden.json` | `/garden` — the play garden and its floating badge (SPEC §25) |
+| `search.json` | `/search` and the header's search box — kind labels and per-kind prices (SPEC §27) |
 | `admin.json` | Admin shell and screens — **English only by design** (SPEC §4.4 scopes Kannada to customer-facing pages) |
 
 This covers **UI chrome**. Editorial copy belongs in `content/` instead, per
@@ -409,6 +410,7 @@ of them fails loudly if you miss it:
 | `lineUnits` / `stepKey` / `lineTiming` / `lineHref` in `cart/page.tsx` | the unit, the stepper's aria-label, the reason for the date, and where the line links |
 | `sellable()` in `cart/actions.ts` | what makes it orderable |
 | `KIND_ICON` in `components/cart/KindIcon.tsx` | the line's icon — a `Record`, so a missed kind is a type error |
+| `searchCatalogue` in `search/catalogue.ts`, `SEARCH_ICON` in `components/search/SearchThumb.tsx` | whether search finds it, read the way its grid reads it (SPEC §27.3) |
 | `ParcelLine` / `parcelGrams` in `shipping/parcel.ts`, `toParcelLines` in `shipping/charge.ts` | how it is boxed and weighed for the courier — exhaustive switches |
 
 **`item.grams === null` means "not sold by weight", not "a pack".** It was the
@@ -496,6 +498,23 @@ keyed by path; **run it after adding or replacing anything under
 - **Not prebuilt image sizes.** Serving pre-resized files from S3 instead of
   the Lambda optimiser was costed on 19 Oct 2026 — about ₹17/month against
   ₹0–3 until ~400k page views — and the owner chose the stand-ins alone.
+
+## Search finds what the grids show, and nothing they hide
+
+SPEC §27. `searchCatalogue` (`src/lib/search/catalogue.ts`) reads every kind the way its category
+page does — the same `activeOnly` list (`onSale` for microgreens), the same "no content file, no
+entry", the same product-type switch. Change what a grid hides and change it here too, or search
+links to a page that turns the visitor away.
+
+- **One matcher, both surfaces.** `rank` in `src/lib/search/match.ts` runs in the header box and on
+  `/search`; never rank either one some other way.
+- **A switched-off category shows up nowhere in search** — not as an entry, a tile, a placeholder
+  name or a chip that would find nothing. Search copy names no category, so it cannot name a
+  hidden one. The lag is at most the one-minute cache on `/api/search/<locale>`; do not lengthen it.
+- **The box's list carries no price.** A price is printed only by `/search`, read fresh.
+- **A taste chip's label is its query**, so a Kannada chip is the word the Kannada files use, not a
+  translation; `match.test.ts` fails on a chip that finds fewer than two products.
+- Products only (the owner, 19 Oct 2026), and no Latin-letter Kannada aliases.
 
 ## Interactive affordance is a base rule, not a class
 

@@ -4,6 +4,7 @@ import { CounterEntity, OrderEntity, PaymentEntity } from "@/lib/db/entities";
 import type { CreditNote, Order, OrderLine } from "@/lib/orders/order";
 import type { GatewayName, PaymentAttempt } from "@/lib/payments";
 import type { OrderStatus, OrderSummary } from "@/lib/types";
+import { ordersPerProduct } from "@/lib/orders/popularity";
 import { SOLD_STATUSES, seedGramsByKey } from "@/lib/seeds/best-sellers";
 
 /**
@@ -324,25 +325,41 @@ export async function listOrdersByStatus(status: OrderStatus): Promise<Order[]> 
 }
 
 /*
- * Grams of each seed sold, for the home page's seed strip. Every sold status
- * is read, so this walks every order the shop has taken; kept for ten minutes
- * per process so the home page does not repeat that walk for each visitor. A
- * ranking that is ten minutes stale is not wrong in any way a customer sees.
+ * What has sold — grams of each seed for the home page's seed strip, and
+ * orders per product for the search box's "Most ordered" row. Every sold
+ * status is read, so this walks every order the shop has taken; one walk feeds
+ * both tallies, kept for ten minutes per process so neither surface repeats it
+ * for each visitor. A ranking that is ten minutes stale is not wrong in any
+ * way a customer sees.
+ *
+ * The tallies are kept, not the orders: they stay a few hundred bytes however
+ * many orders there are.
  */
-const SEED_SALES_TTL_MS = 10 * 60_000;
-let seedSales: { until: number; grams: Promise<Record<string, number>> } | null = null;
+const SALES_TTL_MS = 10 * 60_000;
+type SalesTally = { seedGrams: Record<string, number>; ordersPerProduct: Record<string, number> };
+let sales: { until: number; tally: Promise<SalesTally> } | null = null;
+
+function salesTally(): Promise<SalesTally> {
+  if (sales && sales.until > Date.now()) return sales.tally;
+  const tally = Promise.all(SOLD_STATUSES.map((s) => listOrdersByStatus(s))).then((lists) => {
+    const orders = lists.flat();
+    return { seedGrams: seedGramsByKey(orders), ordersPerProduct: ordersPerProduct(orders) };
+  });
+  sales = { until: Date.now() + SALES_TTL_MS, tally };
+  /* A failed read is not kept: the next visitor asks again. */
+  tally.catch(() => {
+    sales = null;
+  });
+  return tally;
+}
 
 export function seedGramsSold(): Promise<Record<string, number>> {
-  if (seedSales && seedSales.until > Date.now()) return seedSales.grams;
-  const grams = Promise.all(SOLD_STATUSES.map((s) => listOrdersByStatus(s))).then((lists) =>
-    seedGramsByKey(lists.flat()),
-  );
-  seedSales = { until: Date.now() + SEED_SALES_TTL_MS, grams };
-  /* A failed read is not kept: the next visitor asks again. */
-  grams.catch(() => {
-    seedSales = null;
-  });
-  return grams;
+  return salesTally().then((s) => s.seedGrams);
+}
+
+/** Paid orders that included each product, keyed `kind:key`. */
+export function ordersPerProductSold(): Promise<Record<string, number>> {
+  return salesTally().then((s) => s.ordersPerProduct);
 }
 
 /**

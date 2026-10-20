@@ -15,12 +15,12 @@
     "ariaLabel": "ಮುಖ್ಯ"
   },
   "header": {
-    "cart": "ಬುಟ್ಟಿ",
+    "cart": "ಕಾರ್ಟ್",
     "signIn": "ಸೈನ್ ಇನ್",
     "account": "ಖಾತೆ",
     "admin": "ನಿರ್ವಾಹಕ",
-    "signedInAs": "{label} — {who} ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದೆ",
-    "cartWithCount": "ಬುಟ್ಟಿ, {count, plural, one {# ವಸ್ತು} other {# ವಸ್ತುಗಳು}}"
+    "signedInAs": "{label}, {who} ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದೆ",
+    "cartWithCount": "ಕಾರ್ಟ್, {count, plural, one {# ವಸ್ತು} other {# ವಸ್ತುಗಳು}}"
   },
   "language": {
     "label": "ಭಾಷೆ",
@@ -62,7 +62,7 @@
     "refunds": "ಮರುಪಾವತಿ",
     "shipping": "ಸಾಗಣೆ",
     "copyright": "© {year} {brand}",
-    "fssaiPending": "FSSAI ನೋಂದಣಿ ಪ್ರಗತಿಯಲ್ಲಿದೆ — ಪ್ರಾರಂಭಕ್ಕೂ ಮೊದಲು ಅಗತ್ಯ",
+    "fssaiPending": "FSSAI ನೋಂದಣಿ ಪ್ರಗತಿಯಲ್ಲಿದೆ",
     "fssaiLicence": "FSSAI ಪರವಾನಗಿ {number}",
     "b2bPrompt": "ನಮ್ಮ ವೆಬ್‌ಸೈಟ್ ಇಷ್ಟವಾಯಿತೆ?",
     "b2bHover": "ನಿಮಗಾಗಿ ಒಂದನ್ನು ನಿರ್ಮಿಸಬಲ್ಲೆವು →"

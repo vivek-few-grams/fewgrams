@@ -1,0 +1,57 @@
+{
+  "kinds": {
+    "variety": "Microgreens",
+    "plan": "Weekly plans",
+    "seed": "Seeds",
+    "tray": "Trays & drainage",
+    "media": "Grow media",
+    "rack": "Racks"
+  },
+  "price": {
+    "variety": "₹{price, number}/100 g",
+    "plan": "₹{price, number}/month",
+    "seed": "₹{price, number}/100 g",
+    "tray": "₹{price, number} a pack",
+    "media": "₹{price, number} a block",
+    "rack": "From ₹{price, number}"
+  },
+  "tastes": {
+    "peppery": "Peppery",
+    "mild": "Mild",
+    "nutty": "Nutty",
+    "sweet": "Sweet",
+    "earthy": "Earthy"
+  },
+  "box": {
+    "open": "Search",
+    "close": "Close search",
+    "label": "Search the shop",
+    "placeholder": "What are you looking for?",
+    "pillTry": "Try “{name}”",
+    "tastesTitle": "Find by taste",
+    "popularTitle": "Most ordered",
+    "picksTitle": "Good places to start",
+    "seedsRankedTitle": "Our best-selling seeds",
+    "seedsTitle": "Seeds to start with",
+    "loading": "Searching…",
+    "failed": "Suggestions are not loading. Press Enter to see the results.",
+    "none": "Nothing matches “{query}”.",
+    "noneLink": "Browse the shop",
+    "seeAll": "See all {count, plural, one {# result} other {# results}} for “{query}”",
+    "status": "{count, plural, =0 {No suggestions} one {# suggestion} other {# suggestions}}"
+  },
+  "page": {
+    "title": "Search",
+    "titleWithQuery": "Search results for “{query}”",
+    "heading": "Search",
+    "label": "Search the shop",
+    "placeholder": "What are you looking for?",
+    "submit": "Search",
+    "prompt": "Search the shop by a product's name, or by a word that describes it.",
+    "count": "{count, plural, one {# result} other {# results}} for “{query}”",
+    "none": "Nothing matches “{query}”.",
+    "noneHelp": "Try a shorter word or check the spelling, or browse what we sell:",
+    "browseMicrogreens": "Microgreens",
+    "browseShop": "The shop"
+  }
+}

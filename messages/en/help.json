@@ -14,10 +14,10 @@
   },
   "contact": {
     "title": "Contact us",
-    "description": "Reach Fewgrams on WhatsApp or by email — about an order, a delivery, or what to grow.",
+    "description": "Reach Fewgrams on WhatsApp or by email about an order, a delivery, or what to grow.",
     "eyebrow": "Contact",
     "heading": "Talk to us",
-    "intro": "About an order, a delivery or what to grow — a person reads every message.",
+    "intro": "Ask about an order, a delivery or what to grow. A person reads every message.",
     "whatsapp": {
       "label": "WhatsApp",
       "body": "Quickest for an order or a delivery.",
@@ -31,7 +31,7 @@
     },
     "order": {
       "heading": "About an order?",
-      "body": "Include your order number — it's on each order under Account → Orders.",
+      "body": "Include your order number. It's on each order under Account → Orders.",
       "link": "Your orders"
     },
     "faq": {
@@ -42,7 +42,7 @@
     "website": {
       "eyebrow": "Websites",
       "heading": "Like our website? We can build yours.",
-      "body": "We build software as well as grow greens. If you run a small business and want a shop like this one — catalogue, checkout, delivery and an admin to run it — tell us what you sell.",
+      "body": "We build software as well as grow greens. If you run a small business and want a shop like this one (catalogue, checkout, delivery and an admin to run it), tell us what you sell.",
       "subject": "A website for my business",
       "message": "Hi, I'd like to talk about a website for my business."
     }

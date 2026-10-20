@@ -19,7 +19,7 @@
       "plate": {
         "eyebrow": "Good on everything",
         "headline": "A handful lifts the whole plate.",
-        "body": "Salads, toast, soup, a smoothie — added last, raw, at the table.",
+        "body": "Salads, toast, soup or a smoothie. Add it last, raw, at the table.",
         "alt": "A sunlit table of dishes topped with microgreens: a salad bowl, a green smoothie, soup, avocado toast and a grain bowl."
       },
       "trays": {
@@ -39,7 +39,7 @@
     "inputLabel": "Your PIN code",
     "inputPlaceholder": "560001",
     "check": "Check",
-    "served": "Yes — we deliver to {pin}. Your first box would arrive",
+    "served": "Yes, we deliver to {pin}. Your first box would arrive",
     "notServed": "We don't reach {pin} yet.",
     "emailPlaceholder": "your@email.com",
     "notifyMe": "Tell me when you do",
@@ -55,7 +55,7 @@
       },
       "trays": {
         "title": "Clean tray, new medium",
-        "body": "Trays sterilised before every sow, with fresh coco peat we never reuse."
+        "body": "Trays sanitised before every sow, with fresh cocopeat we never reuse."
       },
       "sown": {
         "title": "Sown on your order",
@@ -96,9 +96,9 @@
       "time": {
         "topic": "Grow time & sprays",
         "them": "Weeks in an open field mean more time for pests and disease to strike, and multiple types of chemical sprays to fight them",
-        "usRange": "{min, number}–{max, number} days indoors, cut before pests take hold. No pesticides, no chemicals",
-        "usSingle": "{days, number} days indoors, cut before pests take hold. No pesticides, no chemicals",
-        "usNone": "A few days indoors, cut before pests take hold. No pesticides, no chemicals"
+        "usRange": "{min, number} to {max, number} days indoors, cut before pests take hold. No pesticides, no growth agents",
+        "usSingle": "{days, number} days indoors, cut before pests take hold. No pesticides, no growth agents",
+        "usNone": "A few days indoors, cut before pests take hold. No pesticides, no growth agents"
       },
       "nutrition": {
         "topic": "Nutrition",
@@ -108,7 +108,7 @@
       "soil": {
         "topic": "Soil",
         "them": "The same field soil, crop after crop, season after season",
-        "us": "Fresh coco peat for every sow, never reused, on a tray sterilised each time"
+        "us": "Fresh cocopeat for every sow, never reused, on a tray sanitised each time"
       },
       "plate": {
         "topic": "On your plate",
@@ -120,7 +120,7 @@
   "otherProducts": {
     "eyebrow": "Everything else",
     "heading": "Grow your own, or eat them ready-made.",
-    "body": "Ordered any time and delivered on the same Saturday run as the greens."
+    "body": "Order any time. What we keep in stock leaves our shelf the next day by courier, or comes with your greens on our own delivery when you order both."
   },
   "topSeeds": {
     "eyebrow": "Seeds",
@@ -132,12 +132,12 @@
   },
   "trust": {
     "organic": {
-      "title": "Organically grown",
-      "note": "Soil and water, nothing else"
+      "title": "Grown clean",
+      "note": "Cocopeat and water, nothing else"
     },
     "noChemicals": {
-      "title": "No chemicals",
-      "note": "No pesticides, no growth agents"
+      "title": "No pesticides",
+      "note": "And no growth agents"
     },
     "seed": {
       "title": "Trusted seed sources",

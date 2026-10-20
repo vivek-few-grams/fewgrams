@@ -5,9 +5,9 @@
   },
   "en": {
     "name": "Cabbage (red)",
-    "shortDescription": "Magenta stems under a blue-green leaf — the one you grow to make a plate look built.",
-    "description": "Red cabbage is the most expensive seed on this shelf and the reason is on the plate: a vivid magenta stem holding up a blue-green seed leaf, in a colour no other microgreen produces. It tastes close to green cabbage with a little more pepper behind the sweetness, but nobody buys it for the flavour. It is bought because a pinch of it finishes a dish, and because that colour is the difference between a garnish and a decision.\n\nIt is a touch slower than green cabbage and a touch more demanding — a day longer under cover, a day or two longer to harvest, and a real need for bright light to pull the colour through. Grown dim it comes out pale pink and leggy, which is the whole point wasted.",
-    "sowing": "Sow dry, 25 to 30 grams for a 10 by 20 inch tray. Cover for three days under a light weight — one day longer than green cabbage, because the stems benefit from the stretch before they see light. Uncover into the brightest indirect light you have and leave it there: the magenta develops on exposure, and a tray finished in a dim corner never colours properly. Bottom-water only. Cut at nine to twelve days, once the stems have gone fully coloured and the leaves have flattened out.",
+    "shortDescription": "Magenta stems under a blue-green leaf. This is the one you grow to make a plate look built.",
+    "description": "Red cabbage is grown for what it does on the plate: a vivid magenta stem holding up a blue-green seed leaf, a pairing few other microgreens can match. It tastes close to green cabbage with a little more pepper behind the sweetness, but nobody buys it for the flavour. It is bought because a pinch of it finishes a dish, and because that colour is the difference between a garnish and a decision.\n\nIt is a touch slower than green cabbage and a touch more demanding: a day longer under cover, a day or two longer to harvest, and a real need for bright light to pull the colour through. Grown dim it comes out pale pink and leggy, which is the whole point wasted.",
+    "sowing": "Sow dry, 25 to 30 grams for a 10 by 20 inch tray. Cover for three days under a light weight. That is one day longer than green cabbage, because the stems benefit from the stretch before they see light. Uncover into the brightest indirect light you have and leave it there: the magenta develops on exposure, and a tray finished in a dim corner never colours properly. Bottom-water only. Cut at nine to twelve days, once the stems have gone fully coloured and the leaves have flattened out.",
     "specs": [
       {
         "label": "Germination",
@@ -15,11 +15,11 @@
       },
       {
         "label": "Treatment",
-        "value": "Untreated — no fungicide, no seed dressing"
+        "value": "Untreated, with no fungicide or seed dressing"
       },
       {
         "label": "Soak",
-        "value": "None — sow dry"
+        "value": "None; sow dry"
       },
       {
         "label": "Sow rate",
@@ -34,22 +34,23 @@
         "value": "9 to 12 days from sowing"
       }
     ],
-    "specsNote": "Germination is a lot-by-lot fact, not a promise about every seed in the bag. These figures are what we measure on our own trays at Bengaluru room temperature, and a hot dry week will shorten the harvest window while a cool one stretches it. Treat the sow rate as a starting point and adjust once you have grown one tray of your own.",
+    "specsNote": "Germination is a lot-by-lot fact, not a promise about every seed in the bag. These figures are what we measure on our own trays at room temperature in our grow room, and a hot dry week will shorten the harvest window while a cool one stretches it. Treat the sow rate as a starting point and adjust once you have grown one tray of your own.",
     "uses": [
-      "Microgreen trays, for colour — the main reason to grow it.",
+      "Microgreen trays, for colour, which is the main reason to grow it.",
       "Jar sprouting, though the colour is far weaker without light.",
       "Sowing on for full red cabbage in a cool season."
     ],
     "cautions": [
       "Red cabbage is a brassica, and brassica microgreens contain goitrogens. In large regular amounts they can interfere with thyroid function; if that applies to you, keep portions moderate and ask your doctor.",
-      "This is the priciest seed on the shelf per gram, so sow it by weight and sow it thin. An over-sown red cabbage tray wastes money twice — once in seed, once in the half of it that rots.",
+      "Sow it by weight and sow it thin. An over-sown red cabbage tray wastes seed twice: once in the sowing, and again in the half of it that rots.",
       "This is seed for sowing. It is clean and untreated, but it is not packed, washed or processed as a ready-to-eat food.",
-      "Keep it cool, dark and dry, in a sealed jar once the monsoon arrives — heat and humidity take the germination rate down faster than age does."
+      "Keep it cool, dark and dry, and move it to a sealed jar once the monsoon arrives. Heat and humidity take the germination rate down faster than age does.",
+      "Raw sprouts are a recognised food-safety risk. Because sprouting conditions are warm and wet, any bacteria present on the seed can multiply, and food-safety authorities advise that young children, older adults, pregnant women and anyone immunocompromised avoid raw sprouts. Rinse twice daily, keep the jar draining, and cook them if you are serving any of those groups."
     ],
     "faq": [
       {
-        "question": "Is it worth the price over green cabbage?",
-        "answer": "Only if you want the colour. The flavours are close, green is faster and roughly a third of the cost, and a kitchen buying by the kilo should grow green. Red earns its price on plates where it is visible."
+        "question": "Should I grow it instead of green cabbage?",
+        "answer": "Only if you want the colour. The flavours are close and green is faster, so a kitchen buying by the kilo should grow green. Red earns its place on plates where it is visible."
       },
       {
         "question": "Why are my stems pink instead of magenta?",
@@ -72,9 +73,9 @@
   },
   "kn": {
     "name": "ಎಲೆಕೋಸು (ಕೆಂಪು)",
-    "shortDescription": "ನೀಲಿ-ಹಸಿರು ಎಲೆಯ ಕೆಳಗೆ ಕಡು ಗುಲಾಬಿ ಕಾಂಡ — ತಟ್ಟೆ ಅಂದವಾಗಿ ಕಾಣಲು ಬೆಳೆಯುವ ತಳಿ.",
-    "description": "ಈ ಶೆಲ್ಫಿನ ಅತಿ ದುಬಾರಿ ಬೀಜ ಕೆಂಪು ಎಲೆಕೋಸು, ಮತ್ತು ಅದಕ್ಕೆ ಕಾರಣ ತಟ್ಟೆಯಲ್ಲೇ ಕಾಣುತ್ತದೆ: ನೀಲಿ-ಹಸಿರು ಬೀಜದ ಎಲೆಯನ್ನು ಹೊತ್ತ ಕಡು ಗುಲಾಬಿ ಕಾಂಡ — ಬೇರೆ ಯಾವ ಮೈಕ್ರೋಗ್ರೀನ್ ಕೊಡದ ಬಣ್ಣ. ರುಚಿ ಹಸಿರು ಎಲೆಕೋಸಿಗೆ ಹತ್ತಿರ, ಸಿಹಿಯ ಹಿಂದೆ ತುಸು ಹೆಚ್ಚು ಖಾರ. ಆದರೆ ಯಾರೂ ರುಚಿಗಾಗಿ ಇದನ್ನು ಕೊಳ್ಳುವುದಿಲ್ಲ; ಒಂದು ಚಿಟಿಕೆ ಖಾದ್ಯವನ್ನು ಪೂರ್ಣಗೊಳಿಸುತ್ತದೆ ಎಂಬುದಕ್ಕಾಗಿ ಕೊಳ್ಳುತ್ತಾರೆ.\n\nಹಸಿರು ಎಲೆಕೋಸಿಗಿಂತ ತುಸು ನಿಧಾನ ಮತ್ತು ತುಸು ಹೆಚ್ಚು ಕಾಳಜಿ ಬೇಡುತ್ತದೆ — ಮುಚ್ಚಿಡುವುದು ಒಂದು ದಿನ ಹೆಚ್ಚು, ಕಟಾವು ಒಂದೆರಡು ದಿನ ತಡ, ಮತ್ತು ಬಣ್ಣ ಬರಲು ಪ್ರಕಾಶಮಾನ ಬೆಳಕು ನಿಜವಾಗಿಯೂ ಬೇಕು. ಮಂದ ಬೆಳಕಿನಲ್ಲಿ ಬೆಳೆದರೆ ತಿಳಿ ಗುಲಾಬಿಯಾಗಿ ಉದ್ದವಾಗುತ್ತದೆ — ಅಂದರೆ ಇಡೀ ಉದ್ದೇಶವೇ ವ್ಯರ್ಥ.",
-    "sowing": "ಒಣಗಿದಂತೆ ಬಿತ್ತಿ, 10 × 20 ಇಂಚಿನ ಟ್ರೇಗೆ 25ರಿಂದ 30 ಗ್ರಾಂ. ಹಗುರ ಭಾರದಡಿ ಮೂರು ದಿನ ಮುಚ್ಚಿ — ಹಸಿರು ಎಲೆಕೋಸಿಗಿಂತ ಒಂದು ದಿನ ಹೆಚ್ಚು, ಏಕೆಂದರೆ ಬೆಳಕು ಕಾಣುವ ಮುನ್ನ ಕಾಂಡ ಸ್ವಲ್ಪ ಉದ್ದವಾಗುವುದು ಇಲ್ಲಿ ಪ್ರಯೋಜನ. ನಂತರ ತೆರೆದು ಇರುವ ಅತಿ ಪ್ರಕಾಶಮಾನ ಪರೋಕ್ಷ ಬೆಳಕಿನಲ್ಲಿ ಇಡಿ ಮತ್ತು ಅಲ್ಲೇ ಇರಿಸಿ: ಕಡು ಗುಲಾಬಿ ಬಣ್ಣ ಬೆಳಕಿಗೆ ಒಡ್ಡಿದಾಗ ಬರುತ್ತದೆ, ಮಂದ ಮೂಲೆಯಲ್ಲಿ ಮುಗಿಸಿದ ಟ್ರೇಗೆ ಬಣ್ಣ ಬರುವುದೇ ಇಲ್ಲ. ನೀರು ಕೆಳಗಿನಿಂದ ಮಾತ್ರ. ಕಾಂಡ ಪೂರ್ತಿ ಬಣ್ಣ ಪಡೆದು ಎಲೆ ಚಪ್ಪಟೆಯಾದ ಮೇಲೆ, ಒಂಬತ್ತರಿಂದ ಹನ್ನೆರಡು ದಿನಕ್ಕೆ ಕತ್ತರಿಸಿ.",
+    "shortDescription": "ನೀಲಿ ಮಿಶ್ರಿತ ಹಸಿರು ಎಲೆಯ ಕೆಳಗೆ ಕಡು ಗುಲಾಬಿ ಕಾಂಡ. ತಟ್ಟೆ ಅಂದವಾಗಿ ಕಾಣಲು ಬೆಳೆಯುವ ತಳಿ ಇದು.",
+    "description": "ಕೆಂಪು ಎಲೆಕೋಸನ್ನು ಬೆಳೆಯುವುದು ಅದು ತಟ್ಟೆಯಲ್ಲಿ ಕಾಣುವ ರೀತಿಗಾಗಿ: ನೀಲಿ ಮಿಶ್ರಿತ ಹಸಿರು ಬೀಜದ ಎಲೆಯನ್ನು ಹೊತ್ತ ಕಡು ಗುಲಾಬಿ ಕಾಂಡ. ಈ ಜೋಡಿ ಬಣ್ಣ ಬೇರೆ ಕೆಲವೇ ಮೈಕ್ರೋಗ್ರೀನ್‌ಗಳಲ್ಲಿ ಕಾಣುತ್ತದೆ. ರುಚಿ ಹಸಿರು ಎಲೆಕೋಸಿಗೆ ಹತ್ತಿರ, ಸಿಹಿಯ ಹಿಂದೆ ತುಸು ಹೆಚ್ಚು ಖಾರ. ಆದರೆ ಯಾರೂ ರುಚಿಗಾಗಿ ಇದನ್ನು ಕೊಳ್ಳುವುದಿಲ್ಲ; ಒಂದು ಚಿಟಿಕೆ ಖಾದ್ಯವನ್ನು ಪೂರ್ಣಗೊಳಿಸುತ್ತದೆ ಎಂಬುದಕ್ಕಾಗಿ ಕೊಳ್ಳುತ್ತಾರೆ.\n\nಹಸಿರು ಎಲೆಕೋಸಿಗಿಂತ ತುಸು ನಿಧಾನ ಮತ್ತು ತುಸು ಹೆಚ್ಚು ಕಾಳಜಿ ಬೇಡುತ್ತದೆ: ಮುಚ್ಚಿಡುವುದು ಒಂದು ದಿನ ಹೆಚ್ಚು, ಕಟಾವು ಒಂದೆರಡು ದಿನ ತಡ, ಮತ್ತು ಬಣ್ಣ ಬರಲು ಪ್ರಕಾಶಮಾನ ಬೆಳಕು ನಿಜವಾಗಿಯೂ ಬೇಕು. ಮಂದ ಬೆಳಕಿನಲ್ಲಿ ಬೆಳೆದರೆ ತಿಳಿ ಗುಲಾಬಿಯಾಗಿ ಉದ್ದವಾಗುತ್ತದೆ, ಅಂದರೆ ಇಡೀ ಉದ್ದೇಶವೇ ವ್ಯರ್ಥ.",
+    "sowing": "ಒಣಗಿದಂತೆ ಬಿತ್ತಿ, 10 × 20 ಇಂಚಿನ ಟ್ರೇಗೆ 25ರಿಂದ 30 ಗ್ರಾಂ. ಹಗುರ ಭಾರದಡಿ ಮೂರು ದಿನ ಮುಚ್ಚಿ. ಇದು ಹಸಿರು ಎಲೆಕೋಸಿಗಿಂತ ಒಂದು ದಿನ ಹೆಚ್ಚು, ಏಕೆಂದರೆ ಬೆಳಕು ಕಾಣುವ ಮುನ್ನ ಕಾಂಡ ಸ್ವಲ್ಪ ಉದ್ದವಾಗುವುದು ಇಲ್ಲಿ ಪ್ರಯೋಜನ. ನಂತರ ತೆರೆದು ಇರುವ ಅತಿ ಪ್ರಕಾಶಮಾನ ಪರೋಕ್ಷ ಬೆಳಕಿನಲ್ಲಿ ಇಡಿ ಮತ್ತು ಅಲ್ಲೇ ಇರಿಸಿ: ಕಡು ಗುಲಾಬಿ ಬಣ್ಣ ಬೆಳಕಿಗೆ ಒಡ್ಡಿದಾಗ ಬರುತ್ತದೆ, ಮಂದ ಮೂಲೆಯಲ್ಲಿ ಮುಗಿಸಿದ ಟ್ರೇಗೆ ಬಣ್ಣ ಬರುವುದೇ ಇಲ್ಲ. ನೀರು ಕೆಳಗಿನಿಂದ ಮಾತ್ರ. ಕಾಂಡ ಪೂರ್ತಿ ಬಣ್ಣ ಪಡೆದು ಎಲೆ ಚಪ್ಪಟೆಯಾದ ಮೇಲೆ, ಒಂಬತ್ತರಿಂದ ಹನ್ನೆರಡು ದಿನಕ್ಕೆ ಕತ್ತರಿಸಿ.",
     "specs": [
       {
         "label": "ಮೊಳಕೆ ಪ್ರಮಾಣ",
@@ -82,11 +83,11 @@
       },
       {
         "label": "ಲೇಪನ",
-        "value": "ಲೇಪನವಿಲ್ಲ — ಶಿಲೀಂಧ್ರನಾಶಕವಿಲ್ಲ, ಬೀಜ ಔಷಧವಿಲ್ಲ"
+        "value": "ಲೇಪನವಿಲ್ಲ; ಶಿಲೀಂಧ್ರನಾಶಕವಾಗಲಿ ಬೀಜ ಔಷಧವಾಗಲಿ ಹಾಕಿಲ್ಲ"
       },
       {
         "label": "ನೆನೆಸುವಿಕೆ",
-        "value": "ಬೇಡ — ಒಣಗಿದಂತೆ ಬಿತ್ತಿ"
+        "value": "ಬೇಡ; ಒಣಗಿದಂತೆ ಬಿತ್ತಿ"
       },
       {
         "label": "ಬಿತ್ತನೆ ಪ್ರಮಾಣ",
@@ -101,22 +102,23 @@
         "value": "ಬಿತ್ತನೆಯಿಂದ 9ರಿಂದ 12 ದಿನ"
       }
     ],
-    "specsNote": "ಮೊಳಕೆ ಪ್ರಮಾಣ ಪ್ರತಿ ತಂಡಕ್ಕೆ ಬದಲಾಗುವ ಸಂಗತಿ — ಚೀಲದ ಪ್ರತಿ ಬೀಜದ ಭರವಸೆಯಲ್ಲ. ಇಲ್ಲಿನ ಅಂಕಿಗಳು ಬೆಂಗಳೂರಿನ ಕೋಣೆಯ ಉಷ್ಣತೆಯಲ್ಲಿ ನಮ್ಮದೇ ಟ್ರೇಗಳಲ್ಲಿ ಅಳೆದವು; ಬಿಸಿ ಒಣ ವಾರ ಕಟಾವಿನ ಅವಧಿಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ, ತಣ್ಣನೆಯದು ಹೆಚ್ಚಿಸುತ್ತದೆ. ಬಿತ್ತನೆ ಪ್ರಮಾಣವನ್ನು ಆರಂಭದ ಅಂದಾಜಾಗಿ ತೆಗೆದುಕೊಂಡು, ನಿಮ್ಮದೇ ಒಂದು ಟ್ರೇ ಬೆಳೆದ ಮೇಲೆ ಹೊಂದಿಸಿ.",
+    "specsNote": "ಮೊಳಕೆ ಪ್ರಮಾಣ ಪ್ರತಿ ತಂಡಕ್ಕೆ ಬದಲಾಗುವ ಸಂಗತಿ, ಚೀಲದ ಪ್ರತಿ ಬೀಜದ ಭರವಸೆಯಲ್ಲ. ಇಲ್ಲಿನ ಅಂಕಿಗಳು ನಮ್ಮ ಬೆಳೆ ಕೋಣೆಯ ಸಾಮಾನ್ಯ ಉಷ್ಣತೆಯಲ್ಲಿ ನಮ್ಮದೇ ಟ್ರೇಗಳಲ್ಲಿ ಅಳೆದವು; ಬಿಸಿ ಒಣ ವಾರ ಕಟಾವಿನ ಅವಧಿಯನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತದೆ, ತಣ್ಣನೆಯದು ಹೆಚ್ಚಿಸುತ್ತದೆ. ಬಿತ್ತನೆ ಪ್ರಮಾಣವನ್ನು ಆರಂಭದ ಅಂದಾಜಾಗಿ ತೆಗೆದುಕೊಂಡು, ನಿಮ್ಮದೇ ಒಂದು ಟ್ರೇ ಬೆಳೆದ ಮೇಲೆ ಹೊಂದಿಸಿ.",
     "uses": [
-      "ಮೈಕ್ರೋಗ್ರೀನ್ ಟ್ರೇ, ಬಣ್ಣಕ್ಕಾಗಿ — ಇದನ್ನು ಬೆಳೆಯುವ ಮುಖ್ಯ ಕಾರಣ.",
+      "ಮೈಕ್ರೋಗ್ರೀನ್ ಟ್ರೇ, ಬಣ್ಣಕ್ಕಾಗಿ. ಇದನ್ನು ಬೆಳೆಯುವ ಮುಖ್ಯ ಕಾರಣವೇ ಅದು.",
       "ಜಾರ್‌ನಲ್ಲಿ ಮೊಳಕೆ, ಆದರೆ ಬೆಳಕಿಲ್ಲದೆ ಬಣ್ಣ ಬಹಳ ಮಂದ.",
-      "ತಣ್ಣನೆಯ ಋತುವಿನಲ್ಲಿ ಪೂರ್ಣ ಕೆಂಪು ಕೋಸು ಬೆಳೆಯಲು ಬಿತ್ತನೆ."
+      "ತಣ್ಣನೆಯ ಋತುವಿನಲ್ಲಿ ಪೂರ್ಣ ಕೆಂಪು ಎಲೆಕೋಸು ಬೆಳೆಯಲು ಬಿತ್ತನೆ."
     ],
     "cautions": [
       "ಕೆಂಪು ಎಲೆಕೋಸು ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು, ಮತ್ತು ಬ್ರಾಸಿಕಾ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನಲ್ಲಿ ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳಿವೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು; ಸಂಬಂಧಿಸಿದರೆ ಪ್ರಮಾಣ ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
-      "ಗ್ರಾಂಗೆ ಶೆಲ್ಫಿನ ಅತಿ ದುಬಾರಿ ಬೀಜ ಇದು, ಹಾಗಾಗಿ ತೂಕ ಮಾಡಿ ತೆಳುವಾಗಿ ಬಿತ್ತಿ. ಹೆಚ್ಚು ಬಿತ್ತಿದ ಕೆಂಪು ಎಲೆಕೋಸಿನ ಟ್ರೇ ಎರಡು ಬಾರಿ ದುಡ್ಡು ಹಾಳು ಮಾಡುತ್ತದೆ — ಒಮ್ಮೆ ಬೀಜದಲ್ಲಿ, ಮತ್ತೊಮ್ಮೆ ಕೊಳೆಯುವ ಅರ್ಧದಲ್ಲಿ.",
+      "ತೂಕ ಮಾಡಿ ತೆಳುವಾಗಿ ಬಿತ್ತಿ. ಹೆಚ್ಚು ಬಿತ್ತಿದ ಕೆಂಪು ಎಲೆಕೋಸಿನ ಟ್ರೇ ಬೀಜವನ್ನು ಎರಡು ಬಾರಿ ಹಾಳು ಮಾಡುತ್ತದೆ: ಒಮ್ಮೆ ಬಿತ್ತುವಾಗ, ಮತ್ತೊಮ್ಮೆ ಕೊಳೆಯುವ ಅರ್ಧದಲ್ಲಿ.",
       "ಇದು ಬಿತ್ತನೆಗಾಗಿನ ಬೀಜ. ಶುದ್ಧ ಮತ್ತು ಲೇಪನವಿಲ್ಲದ್ದು, ಆದರೆ ತಕ್ಷಣ ತಿನ್ನುವ ಆಹಾರವಾಗಿ ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದ್ದಲ್ಲ.",
-      "ತಣ್ಣನೆಯ, ಕತ್ತಲ, ಒಣ ಜಾಗದಲ್ಲಿ ಇಡಿ; ಮಳೆಗಾಲದಲ್ಲಿ ಗಾಳಿ ಹೋಗದ ಡಬ್ಬಿಯಲ್ಲಿ — ವಯಸ್ಸಿಗಿಂತ ಶಾಖ ಮತ್ತು ತೇವವೇ ಮೊಳಕೆ ಪ್ರಮಾಣವನ್ನು ಬೇಗ ಇಳಿಸುತ್ತವೆ."
+      "ತಣ್ಣನೆಯ, ಕತ್ತಲ, ಒಣ ಜಾಗದಲ್ಲಿ ಇಡಿ; ಮಳೆಗಾಲದಲ್ಲಿ ಗಾಳಿ ಹೋಗದ ಡಬ್ಬಿಗೆ ಬದಲಿಸಿ. ವಯಸ್ಸಿಗಿಂತ ಶಾಖ ಮತ್ತು ತೇವವೇ ಮೊಳಕೆ ಪ್ರಮಾಣವನ್ನು ಬೇಗ ಇಳಿಸುತ್ತವೆ.",
+      "ಹಸಿ ಮೊಳಕೆ ಗುರುತಿಸಲಾದ ಆಹಾರ ಸುರಕ್ಷತೆಯ ಅಪಾಯ. ಮೊಳಕೆ ಬರುವ ಪರಿಸ್ಥಿತಿ ಬೆಚ್ಚಗೆ ಮತ್ತು ಒದ್ದೆ ಇರುವುದರಿಂದ ಬೀಜದ ಮೇಲಿನ ಬ್ಯಾಕ್ಟೀರಿಯಾ ವೃದ್ಧಿಯಾಗಬಹುದು; ಸಣ್ಣ ಮಕ್ಕಳು, ವೃದ್ಧರು, ಗರ್ಭಿಣಿಯರು ಮತ್ತು ರೋಗನಿರೋಧಕ ಶಕ್ತಿ ಕಡಿಮೆ ಇರುವವರು ಹಸಿ ಮೊಳಕೆ ದೂರವಿಡಬೇಕೆಂದು ಆಹಾರ ಸುರಕ್ಷತೆ ಪ್ರಾಧಿಕಾರಗಳು ಸಲಹೆ ನೀಡುತ್ತವೆ. ದಿನಕ್ಕೆ ಎರಡು ಬಾರಿ ತೊಳೆಯಿರಿ, ಜಾರ್ ಬಸಿಯುತ್ತಿರಲಿ, ಮತ್ತು ಆ ಗುಂಪುಗಳಿಗೆ ಬಡಿಸುವುದಾದರೆ ಬೇಯಿಸಿ."
     ],
     "faq": [
       {
-        "question": "ಹಸಿರು ಎಲೆಕೋಸಿಗಿಂತ ಈ ಬೆಲೆ ಸಮರ್ಥನೀಯವೇ?",
-        "answer": "ಬಣ್ಣ ಬೇಕಿದ್ದರೆ ಮಾತ್ರ. ರುಚಿ ಬಹುತೇಕ ಒಂದೇ, ಹಸಿರು ಹೆಚ್ಚು ವೇಗ ಮತ್ತು ಸುಮಾರು ಮೂರನೇ ಒಂದು ಭಾಗ ಬೆಲೆ; ಕಿಲೋ ಲೆಕ್ಕದಲ್ಲಿ ಕೊಳ್ಳುವ ಅಡುಗೆಮನೆ ಹಸಿರನ್ನೇ ಬೆಳೆಯಬೇಕು. ಕೆಂಪು ತನ್ನ ಬೆಲೆ ಸಂಪಾದಿಸುವುದು ಅದು ಕಾಣುವ ತಟ್ಟೆಗಳಲ್ಲಿ."
+        "question": "ಹಸಿರು ಎಲೆಕೋಸಿನ ಬದಲು ಇದನ್ನು ಬೆಳೆಸಬೇಕೇ?",
+        "answer": "ಬಣ್ಣ ಬೇಕಿದ್ದರೆ ಮಾತ್ರ. ರುಚಿ ಬಹುತೇಕ ಒಂದೇ ಮತ್ತು ಹಸಿರು ಹೆಚ್ಚು ವೇಗ; ಕಿಲೋ ಲೆಕ್ಕದಲ್ಲಿ ಕೊಳ್ಳುವ ಅಡುಗೆಮನೆ ಹಸಿರನ್ನೇ ಬೆಳೆಯಬೇಕು. ಕೆಂಪು ತನ್ನ ಸ್ಥಾನ ಸಂಪಾದಿಸುವುದು ಅದು ಕಾಣುವ ತಟ್ಟೆಗಳಲ್ಲಿ."
       },
       {
         "question": "ಕಾಂಡ ಕಡು ಗುಲಾಬಿ ಆಗದೆ ತಿಳಿ ಗುಲಾಬಿ ಏಕೆ?",
@@ -132,9 +134,9 @@
       },
       {
         "question": "ಬೇಯಿಸಿದರೆ ಬಣ್ಣ ಉಳಿಯುತ್ತದೆಯೇ?",
-        "answer": "ಇಲ್ಲ. ಶಾಖ ಕಡು ಗುಲಾಬಿಯನ್ನು ಮಂದ ನೀಲಿ-ಬೂದು ಮಾಡುತ್ತದೆ, ಆಮ್ಲ ಅದನ್ನು ಪ್ರಕಾಶಮಾನ ಗುಲಾಬಿ ಮಾಡುತ್ತದೆ. ಹಸಿಯಾಗಿಯೇ ಬಳಸಿ, ಕೊನೆಗೆ ಸೇರಿಸಿ — ಇಲ್ಲದಿದ್ದರೆ ದುಡ್ಡು ಕೊಟ್ಟ ಬಣ್ಣವನ್ನೇ ನಾಶ ಮಾಡಿದಂತಾಗುತ್ತದೆ."
+        "answer": "ಇಲ್ಲ. ಶಾಖ ಕಡು ಗುಲಾಬಿಯನ್ನು ಮಂದ ನೀಲಿ ಮಿಶ್ರಿತ ಬೂದು ಮಾಡುತ್ತದೆ, ಆಮ್ಲ ಅದನ್ನು ಪ್ರಕಾಶಮಾನ ಗುಲಾಬಿ ಮಾಡುತ್ತದೆ. ಹಸಿಯಾಗಿಯೇ ಬಳಸಿ, ಕೊನೆಗೆ ಸೇರಿಸಿ. ಇಲ್ಲದಿದ್ದರೆ ದುಡ್ಡು ಕೊಟ್ಟ ಬಣ್ಣವನ್ನೇ ನಾಶ ಮಾಡಿದಂತಾಗುತ್ತದೆ."
       }
     ],
-    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಕಡು ಕೆಂಪು-ಕಂದು ಕೆಂಪು ಎಲೆಕೋಸು ಬೀಜ"
+    "imageAlt": "ಗೋಣಿ ಚೀಲದಿಂದ ಚೆಲ್ಲುತ್ತಿರುವ ಕಡು ಕೆಂಪು ಮಿಶ್ರಿತ ಕಂದು ಬಣ್ಣದ ಕೆಂಪು ಎಲೆಕೋಸು ಬೀಜ"
   }
 }

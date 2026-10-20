@@ -44,11 +44,11 @@
   "summaryHeading": "Order summary",
   "delivery": "Delivery",
   "deliveryLater": "At checkout",
-  "deliveryAtCheckout": "Delivery depends on where it's going. At checkout we compare our delivery partners for your address and show you each price.",
+  "deliveryAtCheckout": "Delivery depends on where it's going. At checkout we price it for your address, and anything sent by courier goes with the cheapest of our delivery partners.",
   "itemsTotal": "Items total",
   "secureNote": "Nothing is charged until you pay.",
-  "lineSoldOut": "Sold out — remove it to continue.",
-  "lineOverStock": "We have less than this now — reduce it to continue.",
+  "lineSoldOut": "Sold out. Remove it to continue.",
+  "lineOverStock": "We have less than this now. Reduce it to continue.",
   "overStockBlock": "Adjust the highlighted seed to continue.",
   "inclusive": "Inclusive of all taxes"
 }

@@ -1701,6 +1701,7 @@ real blocker is Meta Business verification and per-template approval, not the mo
 | `/recipes`, `/recipes/[slug]` | Usage ideas, cross-linked from variety pages |
 | `/faq`, `/contact` | |
 | `/garden` | **Play garden** — built 1 Oct 2026, §25. A virtual tray grown from empty to harvest in nine steps, each step's product on sale beside it. `?step=&tray=&greens=` in the URL |
+| `/search` | **Search** — built 20 Oct 2026, §27. Every product matching `?q=`, grouped by kind, with picture, description and price. Also the header box's "See all results" |
 | `/terms`, `/privacy`, `/refund-policy`, `/shipping-policy` | **Required by the payment gateway for merchant approval** — not optional |
 
 ### Customer account
@@ -2257,6 +2258,31 @@ duration: what strains the eye is the peak rate, not the average. Profiled frame
 fades keep `--ease-brand`. The exit fade is **linear**: with no motion to pace there is nothing for
 an ease to shape, and an eased fade on a full-screen flood reads as a hold followed by a rush.
 
+#### 17.5.3 A card's own curtain — 20 Oct 2026
+
+The owner, on the `/shop` category tiles and the `/search` result cards: *"when i click on any of
+this, there should be some sort of loading state if not full screen green loading."* A press on a
+card did nothing visible until the next page arrived. In development, where routes compile on
+demand, that was seconds; in production it is the server round trip for any page not prefetched.
+
+The full-screen curtain stays where §17.5.1 put it, which names these tiles as plain links. Instead
+the **clicked card gets the curtain's circle at its own size**: `LinkPending`
+(`src/components/ui/LinkPending.tsx`) opens a `forest/90` disc from the card's middle, with
+`--ease-curtain` and `circle(var(--curtain-full))`, which covers any rectangle as it covers the
+window. A cream spinner sits in the middle.
+
+- **Shown only while the page is actually late.** It reads `useLinkStatus()` from the `Link` it
+  sits in, which is false for a route already prefetched, and it waits **120ms** before opening,
+  so a page that lands at once never flashes it.
+- **Always rendered, shown by CSS** (`.link-pending[data-pending]`), so nothing in the card moves
+  when it appears. It covers its nearest positioned box with that box's own corners: inside
+  `.mcard`, the panel, not the label under it.
+- Decorative (`aria-hidden`). The browser announces no client navigation either, and text inside
+  the link would change its name while pending.
+- Under reduced motion it fades in after the same wait and the spinner holds still.
+- **On:** every `MarqueeCard` (the `/shop` tiles and the home page's other-products tiles) and the
+  `/search` result cards. Any other card takes it the same way, one element inside its link.
+
 ---
 
 ## 18. Home page & global chrome
@@ -2286,6 +2312,7 @@ The logo owns the left edge. Everything else is grouped on the right.
 | `PLANS` | Anchors to the bundles section (`/#plans`) |
 | `SHOP` | `/shop` — racks, seeds, trays, snacks. A plain link, not a dropdown |
 | `HOW WE GROW` | The animated process page (§18.5) |
+| Search | **From 1152px a field-shaped pill at the head of the utilities**, before the language switch, typing out real product names; `/` opens it. **Below that, the magnifier in a dark green circle** among the utilities, 32px so the phone bar stays 65px. Either opens a band under the bar with suggestions as you type; a plain link to `/search` without JavaScript (§27.2) |
 | `⊕ EN` | Locale switch — globe glyph plus the **active** locale only. Two locales do not warrant a dropdown; it toggles once next-intl lands (§4.4). Utility chrome, grouped with the icons |
 | Cart | Persistent count badge |
 | Account | Sign in, or the signed-in user's destination — see below |
@@ -2411,6 +2438,9 @@ consumer store and was competing with revenue navigation for attention; the hove
 
 **Revisit trigger:** past roughly **eight** categories, or when filtering or search is added,
 switch `SHOP` to option B. Full-screen navigation stops scaling around there.
+
+**20 Oct 2026:** search exists (§27) and `SHOP` is still a plain link. The trigger is open for the
+owner's call; §27.4 has the reasoning.
 
 #### Where the four product categories are exposed
 
@@ -5198,7 +5228,7 @@ to a harvest, and meets each thing we sell at the moment they would need it (the
 
 | Where | What |
 |---|---|
-| Every customer page | `GardenBadge` — a floating "Play garden" badge, bottom-right. **Hidden on `/garden`, `/admin/*`, `/cart` and `/checkout`** (the owner: nothing playful while someone is paying) |
+| Every customer page | `GardenBadge` — a floating "Play garden" badge, bottom-right, with a 4px **cream ring** (20 Oct 2026: on the home page's first screen it sat on the process strip's last forest marker and the two read as one shape; the ring vanishes on the cream page and cuts a gap over anything dark). A **sage light runs round the ring**, every 3.2s, on the ring's 4px and nowhere else (the owner, the same day: "some glowing design circling in white border", then "the size of white border" when a first version also glowed outside the badge); sage, because white would vanish on cream; off under reduced motion. **Hidden on `/garden`, `/admin/*`, `/cart` and `/checkout`** (the owner: nothing playful while someone is paying) |
 | Home page, bottom | Tray play (§18.3) with the journey button, which opens `/garden?step=pick` — the visitor has just done step 1 |
 
 ### 25.1½ The screen (the owner, 1 Oct 2026, second pass)
@@ -5556,3 +5586,211 @@ seed is not a supply at all.
 Partial refunds (credit notes are full only); emailing invoices (SES production access is
 pending); a GSTR-1 JSON export (the CSVs go through the Offline Tool); the annual Rule 42
 recalculation and GSTR-9.
+
+## 27. Search — built 20 Oct 2026
+
+Products only, by the owner's choice (19 Oct 2026): microgreens, weekly plans, seeds, trays & drainage,
+grow media and rack ranges. Not the FAQ, not the storybook, not the legal pages. Two surfaces, one
+matcher:
+
+| Surface | What it is |
+|---|---|
+| `/search?q=` (§27.1) | Every match, grouped by kind, with the picture, the one-line description and the price |
+| Header box (§27.2) | A magnifier that opens a band under the bar; up to five suggestions as you type, then "See all *N* results", pinned last |
+
+### Why there is no search service
+
+The catalogue is about fifty entries and every word of it is already in `content/`. Matching fifty
+entries in memory takes well under a millisecond. A hosted index (Algolia, OpenSearch) would add a
+monthly minimum and a sync job to keep it in step with admin, for nothing a visitor could notice.
+**Revisit** if the catalogue passes a few thousand entries, or if search has to read text that
+lives somewhere other than a content file.
+
+### What it finds is what the grids show
+
+`searchCatalogue` (`src/lib/search/catalogue.ts`) reads each kind exactly the way its category page
+does: the same `activeOnly` lists (`onSale` for microgreens, so an unpriced variety is not found),
+the same "no content file, no entry", the same product-type switch, and for racks the same "a range
+with no published model is not shown". Search is a second way into those pages, so it must never
+find something the page would turn away.
+
+- **A rack is found by its range** ("Shelf racks"), not by SKU: a model has no name to match
+  (§19.5), and the range page is where the size is chosen.
+- **A plan links where its card's button does**: `/subscribe?plan=<key>`, or `/microgreens` for
+  Pick Your Own. Its picture is `/img/plans/<key>.webp` when the placeholder manifest has one.
+- **Snacks are not in it**: nothing writes a `Product`, and the snack grid has no detail page.
+
+### Matching (`src/lib/search/match.ts`)
+
+Pure and dependency-free, because the box runs it in the browser and the page runs it on the
+server. If they disagreed, "See all results" would reshuffle the list the box had just shown.
+
+| Rule | Why |
+|---|---|
+| Every entry carries its **name, category label and one-line description in both languages** | "radish" and "ಮೂಲಂಗಿ" both work on either locale; only the name *shown* follows the page |
+| **Every query word must match something** | "red cabbage" is the red cabbage, not every red thing plus every cabbage |
+| Weighted by field: name 3, category 2, description 1, plus a bonus when the query starts a name | Typing "radish" lists the microgreen and the seed before anything whose description mentions radish |
+| Prefix from two letters; a typo forgiven from four letters (two from eight), in names and categories only, and **never in the first letter** | "brocol" and "sunflwer" work; a description is a sentence, and fuzzing every word in it matches nearly anything; "pack" is one edit from "racks" and listed every rack range |
+| English plurals cut back on both sides; a few stop words dropped | "trays" meets "tray"; "seeds for microgreens" is not refused for the word "for" |
+| Kannada vowel signs kept; zero-width joiners removed | Vowel signs are combining marks, and stripping them as one strips Latin accents would destroy the word; "ಬೀಟ್‌ರೂಟ್" may be typed with or without its joiner |
+| Ties broken by kind (microgreens, plans, seeds, trays, grow media, racks), then by name in the visitor's alphabet | Greens are the business |
+
+**Not matched: Kannada typed in Latin letters** ("moolangi"). The owner's call, 19 Oct 2026, over
+adding an `aliases` field to every content file.
+
+### 27.1 `/search`
+
+Rendered on the server from a plain GET form, so it works with no JavaScript at all, and a results
+page can be bookmarked or shared. One section per kind, in the order of each kind's best hit, so
+"trays" opens on the trays. **Prices are printed here, read fresh**, as each kind's grid prints them;
+Pick Your Own has no monthly price and shows none. `noindex, follow`: a results page is a view of
+the catalogue, and every page it lists is indexed in its own right. With no match it says so and
+links to `/microgreens` (when switched on) and `/shop`. That is customer copy only, because no
+operator action fixes a query.
+
+On a phone the price sits under the name. Beside it, at 375px, the price took a third of the row
+and wrapped a Kannada tray name onto four lines.
+
+### 27.2 The header box
+
+- **Two triggers, one at a time, both opening a full-width band under the bar** (the owner,
+  20 Oct 2026: "other websites keep it very visible"). From 1152px, a **pill at the head of the
+  utilities**, before the language switch, where people look for a shop's tools. It sat beside
+  the logo for an hour, which the owner turned down, because there it read as part of the brand.
+  The pill is shaped like a field: 176px, 208px from `xl` and 224px from `2xl`, narrowed on the
+  owner's word the same day. It types out real product names of up to 12 letters
+  (`PILL_NAME_MAX`), because a longer one was typed into an ellipsis. Its own shorter phrasing,
+  `box.pillTry`, is needed because the band's Kannada "“…” ಹುಡುಕಿ ನೋಡಿ" overflowed 176px around
+  any name. There is no key hint: a `/` drawn in the pill read as a mystery icon to the owner, so
+  it would to a shopper. The shortcut itself stays, announced by `aria-keyshortcuts`. 1152px is the first width with room for it: the gap the
+  nav's `ml-auto` gives up measures 123px at 1024, 251px at 1152 and 379px at 1280. Below
+  that, the **magnifier sits in a dark green circle** among the utilities, so it stands out from
+  the outline cart and account icons. The circle is 32px: at 36 the icon row and nav row together
+  outgrew the 64px logo and the phone bar went from 65px to 67px. Neither is a real field in the
+  bar, because the bar is measured to fit from 320px (§18.1). Swept at 17 widths from 320 to 1920
+  with both triggers: 65px on a phone, 81px from `md`, no overflow, logo centred.
+- **One field on screen at a time.** While the band is open the header pill is `invisible` (it
+  keeps its place, so nothing in the bar moves). With a mouse, and for a visitor who has not asked
+  for less motion, the pill **travels down into the band's field and back** as a view
+  transition, in two layers, each name worn by one element at a time. **`search-pill` is the
+  outline, and the transition draws it**: that layer's own pictures are hidden, and its moving box
+  carries the rounded border and the cream, so the ends stay round and whole at every width. It
+  ends in the colour of the pill it lands as — the focused field's forest going down, the header
+  pill's faint edge coming back. **`search-pill-content` is what is inside**, photographed and
+  cross-faded within the outline; each picture keeps its own size at the left, so the words never
+  squash, and the close button comes into view as the field widens. **The live fields are never
+  restyled for it.** The first version photographed the whole field and clipped it, which hid its
+  right-hand end until the last frame (the owner saw the field being cut). The second hid both
+  pills' borders while it ran and put them back after, and the border's own 150ms colour fade
+  flashed the field at the end of every opening (the owner: "it blinks"). Checked frame by frame
+  from a screencast: the field's brightness glides and holds flat from the hand-off on. The
+  page's own cross-fade is off, scoped by `data-search-morph` to this
+  transition alone. Escape, the close button and a second press travel back. A press elsewhere
+  closes at once, because a transition would hold that press up. Touch screens open the plain
+  way: a transition's update runs a frame late, outside the tap, and iOS raises the keyboard only
+  for a focus made inside it. A browser without view transitions also opens the plain way. Focus
+  moves only once the change is on screen.
+- **`/` opens the band from anywhere**, except while typing in a field, where it is a slash.
+  `aria-keyshortcuts="/"` on the trigger. The header renders `SearchBox` twice (`variant`), and
+  CSS decides which shows. The shortcut and the pill's early fetch each check that their own
+  trigger is the one on screen.
+- **The pill fetches the list once the page is idle**, so it has names to type. That is the only
+  fetch made before someone reaches for search, and it happens only where the pill shows: a phone
+  still fetches on demand.
+- **A link to `/search` until it hydrates, a button after**, so it works without JavaScript and a
+  screen reader hears that it opens something.
+- **The list is fetched once and matched in the browser**, from `/api/search/<locale>`: about fifty
+  entries, ~37 KB before gzip, cached `public, max-age=60`. Typing never calls the server.
+  Fetching starts when the pointer or focus reaches the magnifier. The locale is in the *path*, so
+  it is in the cache key whatever CloudFront does with query strings.
+- **A switched-off category does not show up anywhere in search** (the owner, 20 Oct 2026). Its
+  entries, tiles and placeholder names are gone, and so is any taste chip that would then find
+  nothing. The copy names no category ("What are you looking for?"), so it cannot name a hidden
+  one. The most a switch can lag is the one-minute cache: the box refetches a list that old
+  (`LIST_MAX_AGE_MS`), because it outlives every client navigation and would otherwise keep its
+  first list until a reload. Five minutes until that day.
+- **Never more than five suggestions** (the owner, 20 Oct 2026), and "See all *N* results" is
+  always the last row in sight: sticky at the bottom of the list, so a short phone screen with the
+  keyboard up scrolls the suggestions under it rather than pushing it away. At eight, "seeds"
+  filled the band and the row fell below the fold. The count is every match, so the visitor
+  knows how much more there is.
+- **No price in that list**, because it is cached and a price is tuned in admin.
+- Each suggestion: a 48px thumbnail (the cut-out on sand, else the photo; the kind's icon in a
+  forest circle when there is neither), the name, and the kind's label, which is what tells the
+  microgreen radish from the seed. Decorative `alt=""`: the name is beside it.
+- **An ARIA 1.2 combobox.** Focus stays in the input. Arrows move the highlight, including onto "See
+  all results". Enter opens the highlighted option, or `/search` when nothing is highlighted.
+  Escape closes the band and returns focus to the magnifier. A press or a focus outside closes
+  it, and so does any navigation. A polite status line reads the count.
+- The tap that opens it renders the band synchronously (`flushSync`) and focuses the input in the
+  same gesture, because iOS raises the keyboard only for a focus made inside the tap.
+- **Focus is the pill's own border turning forest**, not an outline: the base `:focus-visible`
+  outline sat 2px outside the border and read as a second ring (the owner, 20 Oct 2026).
+
+#### Made to feel grown — 20 Oct 2026
+
+The owner asked for search to be "more fun", and picked two of four proposals (voice search and
+add-to-cart from the box were the other two, not built):
+
+| | What it does |
+|---|---|
+| **Sprouting results** | Each suggestion rises in, staggered, and its picture grows up from its own base with a little overshoot (`.search-sprout`, `.search-shoot` in `globals.css`, reusing `rot-rise`). Rows are keyed by product, so another letter animates only the new ones. The magnifier puts out a leaf while there is a query; the band's bottom edge is a tan soil line drawn in as it opens |
+| **Typewriter placeholder** | **The header pill** types real names, one kind at a time ("Try “Broccoli”"), from `pickExamples`, by grapheme so a Kannada letter is never shown half-typed; the button's own label is what a screen reader hears. Once typing starts the frame holds between names, never falling back to the label: that fallback flicked the pill every cycle. **The band's field does not type.** It has the caret from the moment the band opens, and names typing beside a blinking caret read as the field flickering (the owner, 20 Oct 2026, twice). Its placeholder is still: "What are you looking for?" |
+| **Never an empty box** | Before there are suggestions — nothing typed, or one letter — and under "Nothing matches": **taste chips** (Peppery, Mild, Nutty, Sweet, Earthy) that type themselves in, a row of six **most-ordered** products, and under it six **best-selling seeds** (`SearchStart`; the owner, 20 Oct 2026, "top 6 seeds under Most ordered", in place of a category row the owner turned down). Rendered in one place in the tree, so a first letter or a miss does not sprout it all again |
+| **Sprigs from the corners** | From `lg`, the login page's two painted sprigs reach into the band from opposite corners, top right and bottom left, crossed as the login page sets them (the owner, 20 Oct 2026: "not straight, it should be cross"). Each is turned so its stem points into its corner, and it grows in along the stem out of the band's edge (`overflow-clip`), stretching from squat with a small overshoot, then a sway about its stem (`SearchSprigs`): 3° to either side, the two in opposite directions at different paces (3.4s and 3.9s) so they never move as a pair, eased as one sine wave so a lean never stops at the middle. The first sway, 1.5° one way over 7s, could not be seen to move (the owner, 20 Oct 2026). Behind the content (`-z-10` in an `isolate`d band). Each waits for its own picture to load, so it never pops in at the end of an animation it missed. Smaller and tucked less far into the corner at 1024px; full size from `xl` |
+
+- **A chip's label is its query**, so the Kannada chips are the words the Kannada files use
+  (ಖಾರ, ಸೌಮ್ಯ, ಕಾಯಿಯ ರುಚಿ, ಸಿಹಿ, ಮಣ್ಣಿನ), not translations of the English. `match.test.ts` fails on a
+  chip that finds fewer than two products in either language. Tastes only. A nutrient chip would
+  be a prompt to buy on that basis, which makes it a claim under the FSS (Advertising and Claims)
+  Regulations 2018.
+- **The tiles are ranked by paid orders that included each product** (`ordersPerProduct`), not by
+  units or grams: grams, packs and racks do not compare. One walk of the sold orders feeds this
+  and the home page's seed strip (`salesTally` in `repo/orders.ts`, ten minutes per process).
+  Titled "Most ordered" only when something has sold. Otherwise it is "Good places to start", one
+  of each kind at a time. Plans are left out, because a subscription is not an order line, and so
+  are seeds, which have their own row and would otherwise show twice.
+- **The seed row is ranked exactly as the home page's seed strip** (`pickTopSeeds`, reusing
+  `rankBySales`): grams sold, then the `/seeds` grid's order by name. The titles are the strip's
+  too: "Our best-selling seeds", or "Seeds to start with" before anything has sold. Switching seeds
+  off hides the row.
+- **The page under the open band is dimmed and blurred** (`.search-scrim`, `bg-forest-deep/25
+  backdrop-blur-[3px]`). The owner's complaint was the hero slideshow moving below the band, and
+  a taller band could never be enough, since what shows below depends on the screen. A press on
+  it closes the band like any press outside.
+- **From `lg` the band keeps the tallest it has been while open** (the owner, 20 Oct 2026:
+  "retain the height of the entire search area"). Fitted to its content it shrank with every
+  keystroke — to the field alone after one letter, to one line on "Nothing matches" — and cut the
+  corner sprigs to stumps. Shrinking the sprigs with it was the other option offered; a band that
+  holds still was the one taken, since sprigs resizing on every keystroke would be motion beside
+  the field. A `ResizeObserver` sets the height on the element, never through state, and the band
+  is a new element each time it opens. Capped at the screen under the header. Below `lg`, where
+  there are no sprigs, it still fits its content. The soil line is pinned to the band's bottom,
+  since the band can now be taller than the column.
+- **The band never runs past the bottom of the screen.** The header is sticky, so the page
+  scrolled beneath a band taller than the screen and its last row was out of reach (870px of
+  band on a 667px phone). The column is capped at the screen height under the header and scrolls.
+  The band itself does not, so the corner sprigs never add scroll room.
+- **All of it stands still under `prefers-reduced-motion`**: no stagger, no shoot, no soil line,
+  no leaf animation, the sprigs simply standing there, and the pill's plain label instead of
+  its typewriter.
+
+### 27.3 A new kind
+
+`SEARCH_KINDS` is the list. A kind added there needs a branch in `searchCatalogue`, an icon in
+`SEARCH_ICON` (a `Record`, so it is a type error until it has one) and `search.kinds.<kind>` /
+`search.price.<kind>` messages (`match.test.ts` fails without them).
+
+### 27.4 Not done
+
+- **§18.2's revisit trigger says to switch `SHOP` to a dropdown (option B) once search exists.** Not
+  done: search changes how a visitor *finds* an item, not how many categories the nav has to hold,
+  and the nav still has four items. Left for the owner to decide.
+- No search analytics: nothing records what people searched for or what returned nothing. That is
+  the first thing worth adding once there is traffic, because a query with no result is a product
+  someone wanted.
+- No highlighting of the matched letters in a suggestion.
+- Voice search (the browser's speech recognition, Kannada included) and add-to-cart from the box
+  were offered on 20 Oct 2026 and not chosen. Voice would need `microphone=(self)` in the
+  Permissions-Policy, which is `microphone=()` today, and a line in the privacy page: the audio goes
+  to the browser maker, not to us.

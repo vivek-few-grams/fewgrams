@@ -6,6 +6,7 @@ import { brand } from "@/lib/brand";
 import { NavLinks } from "./NavLinks";
 import { CURTAIN_ATTR } from "./curtain-anchor";
 import { LocaleSwitch } from "./LocaleSwitch";
+import { SearchBox } from "./SearchBox";
 import type { Role } from "@/lib/auth/roles";
 import { readCartCount } from "@/lib/cart/server";
 import { isProductTypeEnabled } from "@/lib/catalogue/visibility";
@@ -128,7 +129,19 @@ export async function Header({
             gap runs them together and HOW WE GROW reads as a sibling of the
             cart. */}
         <div className="col-start-2 row-start-1 flex items-center justify-self-end gap-4 lg:order-3 lg:ml-12 lg:gap-5">
+          {/* The search pill, from 1152px: first among the shop's tools, where
+              people look for search (the owner, 20 Oct 2026 — beside the logo
+              it read as part of the brand). 1152px is the first width with
+              room for it — the logo-to-nav gap it comes out of is 251px there
+              and 123px at 1024. Opens a band under the bar rather than being a
+              field in it (SPEC §27.2). */}
+          <SearchBox variant="pill" className="hidden min-[1152px]:flex" />
+
           <LocaleSwitch />
+
+          {/* The magnifier in a dark green circle, below 1152px; above it
+              the pill beside the logo takes over (SPEC §27.2). */}
+          <SearchBox variant="icon" className="flex min-[1152px]:hidden" />
 
           <Link
             href="/cart"

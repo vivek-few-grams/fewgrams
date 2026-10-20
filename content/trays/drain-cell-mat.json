@@ -5,7 +5,7 @@
     "gallery": ["in-use.webp", "planted-2.webp", "on-rack.webp"]
   },
   "en": {
-    "name": "Drainage cell mats — pack of five",
+    "name": "Drainage cell mats, pack of five",
     "shortDescription": "Interlocking mats that lift a tray or a grow bag off the floor, so water runs away underneath instead of standing around the roots. For a terrace, a balcony or the bottom shelf of a rack.",
     "specs": [
       {
@@ -18,7 +18,7 @@
       },
       {
         "label": "Thickness",
-        "value": "20 mm — the gap the water runs through"
+        "value": "20 mm: the gap the water runs through"
       },
       {
         "label": "Material",
@@ -28,8 +28,8 @@
     "imageAlt": "A stack of five black moulded plastic drainage cell mats, the open cell pattern showing on top"
   },
   "kn": {
-    "name": "ನೀರು ಹರಿಸುವ ಡ್ರೇನ್ ಸೆಲ್ ಹಾಸು — ಐದರ ಪ್ಯಾಕ್",
-    "shortDescription": "ಟ್ರೇ ಅಥವಾ ಬೆಳೆಯುವ ಚೀಲವನ್ನು ನೆಲದಿಂದ ಮೇಲೆತ್ತುವ ಜೋಡಣೆಯ ಹಾಸುಗಳು — ನೀರು ಬೇರಿನ ಸುತ್ತ ನಿಲ್ಲದೆ ಕೆಳಗಿನಿಂದ ಹರಿದುಹೋಗುತ್ತದೆ. ತಾರಸಿ, ಬಾಲ್ಕನಿ ಅಥವಾ ರ್ಯಾಕಿನ ಕೆಳಗಿನ ಅಟ್ಟಣಿಗೆಗೆ.",
+    "name": "ನೀರು ಹರಿಸುವ ಡ್ರೇನ್ ಸೆಲ್ ಹಾಸು, ಐದರ ಪ್ಯಾಕ್",
+    "shortDescription": "ಟ್ರೇ ಅಥವಾ ಗಿಡ ಬೆಳೆಸುವ ಚೀಲವನ್ನು ನೆಲದಿಂದ ಮೇಲೆತ್ತುವ, ಒಂದಕ್ಕೊಂದು ಜೋಡಿಸಬಹುದಾದ ಹಾಸುಗಳು. ಇದರಿಂದ ನೀರು ಬೇರಿನ ಸುತ್ತ ನಿಲ್ಲದೆ ಕೆಳಗಿನಿಂದ ಹರಿದುಹೋಗುತ್ತದೆ. ತಾರಸಿ, ಬಾಲ್ಕನಿ ಅಥವಾ ರ್ಯಾಕಿನ ಕೆಳಗಿನ ಅಟ್ಟಣಿಗೆಗೆ.",
     "specs": [
       {
         "label": "ಪ್ಯಾಕ್‌ನಲ್ಲಿ",
@@ -41,7 +41,7 @@
       },
       {
         "label": "ದಪ್ಪ",
-        "value": "20 ಮಿಮೀ — ನೀರು ಹರಿಯುವ ಸಂದು ಇಷ್ಟು"
+        "value": "20 ಮಿಮೀ. ನೀರು ಹರಿಯುವ ಸಂದು ಇಷ್ಟು"
       },
       {
         "label": "ವಸ್ತು",

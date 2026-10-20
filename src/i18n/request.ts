@@ -31,6 +31,7 @@ export const NAMESPACES = [
   "help",
   "legal",
   "garden",
+  "search",
   "admin",
 ] as const;
 

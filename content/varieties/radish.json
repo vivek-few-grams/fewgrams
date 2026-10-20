@@ -6,37 +6,37 @@
   },
   "en": {
     "name": "Radish",
-    "shortDescription": "Peppery and fast — the everyday microgreen, ready before you have finished missing it.",
-    "description": "Radish microgreens are the ones we recommend to anyone starting out: pink stems under crisp, rounded leaves, carrying the same peppery bite as the mature root but brighter and fresher. The heat comes from glucosinolates the whole radish plant makes, and cutting it this young concentrates far more of them — along with vitamin C — into a much smaller handful than the root delivers. It is one of the fastest things we grow and forgives an uneven sow better than most, which is why it turns up in a lot of first boxes.",
+    "shortDescription": "Peppery and fast. The everyday microgreen, ready before you have finished missing it.",
+    "description": "Radish microgreens are the ones we recommend to anyone starting out: pink stems under crisp, rounded leaves, carrying the same peppery bite as the mature root but brighter and fresher. The heat comes from glucosinolates, which the whole radish plant makes, leaf as well as root. It is one of the fastest things we grow and forgives an uneven sow better than most, which is why it turns up in a lot of first boxes.",
     "flavourNotes": "Peppery and clean, like a mild radish bulb without the crunch. Sharper raw, and the heat fades fast once it hits anything warm.",
-    "growingTips": "Soak the seed for a few hours before sowing, keep the canopy moist but never wet, and cut as soon as the first true leaf shows — leave it longer and the stem gets fibrous.",
+    "growingTips": "Soak the seed for a few hours before sowing, keep the canopy moist but never wet, and cut as soon as the first true leaf shows. Leave it longer and the stem gets fibrous.",
     "nutrition": [
       {
         "label": "Vitamin C",
-        "value": "High"
+        "value": "Present"
       },
       {
         "label": "Vitamin E",
-        "value": "Good source"
+        "value": "Present"
       },
       {
         "label": "Vitamin K",
-        "value": "Good source"
+        "value": "Present"
       },
       {
         "label": "Potassium",
-        "value": "Moderate"
+        "value": "Present"
       },
       {
         "label": "Calcium",
-        "value": "Moderate"
+        "value": "Present"
       },
       {
         "label": "Iron",
-        "value": "Moderate"
+        "value": "Present"
       },
       {
-        "label": "Glucosinolates (isothiocyanates, sulforaphane)",
+        "label": "Glucosinolates (the source of the heat)",
         "value": "Present"
       },
       {
@@ -52,27 +52,26 @@
         "value": "Present"
       }
     ],
-    "nutritionNote": "Levels are given qualitatively on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
+    "nutritionNote": "We list which nutrients are present, not how much, on purpose. Microgreen nutrient content varies with seed lot, light and harvest day, so a precise milligram figure would imply a consistency no honest grower can promise.",
     "benefits": [
       "Vitamin C contributes to normal immune function and to normal collagen formation for healthy skin and gums.",
       "Vitamin C also increases the absorption of iron from plant foods, which matters in a vegetarian diet.",
-      "Vitamin E protects cells from oxidative stress.",
-      "Vitamin K contributes to normal blood clotting and to maintaining normal bones.",
-      "Potassium contributes to normal muscle function and to the maintenance of normal blood pressure."
+      "Vitamin E contributes to the protection of cells from oxidative stress.",
+      "Vitamin K contributes to normal blood clotting and to maintaining normal bones."
     ],
     "cautions": [
       "Radish is a brassica and contains goitrogens, which in large regular amounts can interfere with thyroid function. If you have a thyroid condition, keep portions moderate and ask your doctor.",
       "The heat is mild but real. Young children and anyone with a sensitive stomach should start with a small amount.",
-      "Rinse before eating. These are grown in soil and cut fresh, not washed and packed."
+      "Rinse before eating. These are grown in cocopeat and cut fresh, not washed and packed."
     ],
     "faq": [
       {
         "question": "How peppery is it, really?",
-        "answer": "Milder than the bulb, not milder than you'd expect. It is a clean, sharp bite that fades within seconds rather than building — closer to a radish slice than a chilli."
+        "answer": "Milder than the bulb, not milder than you'd expect. It is a clean, sharp bite that fades within seconds rather than building, closer to a radish slice than a chilli."
       },
       {
         "question": "Is this the same radish I buy whole at the market?",
-        "answer": "Same plant, cut long before the root forms. You are eating the leaf and stem, not a miniature bulb, so the texture is soft rather than crunchy — the flavour is the family resemblance."
+        "answer": "Same plant, cut long before the root forms. You are eating the leaf and stem, not a miniature bulb, so the texture is soft rather than crunchy. The family resemblance is in the flavour."
       },
       {
         "question": "How should I store it and how long does it keep?",
@@ -80,7 +79,7 @@
       },
       {
         "question": "Can children eat it?",
-        "answer": "Yes — it is one of the milder peppery greens, and most children treat it more like a crunchy garnish than a spice."
+        "answer": "Yes. It is one of the milder peppery greens, and most children treat it more like a fresh garnish than a spice."
       },
       {
         "question": "What do I actually do with it?",
@@ -91,37 +90,37 @@
   },
   "kn": {
     "name": "ಮೂಲಂಗಿ",
-    "shortDescription": "ಖಾರ ಮತ್ತು ವೇಗ — ದಿನನಿತ್ಯದ ಮೈಕ್ರೋಗ್ರೀನ್, ನೀವು ಕಾಯುವ ಮೊದಲೇ ಸಿದ್ಧ.",
-    "description": "ಮೂಲಂಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಆರಂಭಿಕರಿಗೆ ನಾವು ಶಿಫಾರಸು ಮಾಡುವ ಸೊಪ್ಪು: ಗುಲಾಬಿ ಕಾಂಡಗಳ ಮೇಲೆ ಗರಿಗರಿ ದುಂಡು ಎಲೆಗಳು, ಬೆಳೆದ ಬೇರಿನಷ್ಟೇ ಖಾರ ಆದರೆ ಹೆಚ್ಚು ಪ್ರಕಾಶಮಾನ ಮತ್ತು ತಾಜಾ. ಖಾರ ಮೂಲಂಗಿ ಗಿಡ ಪೂರ್ತಿ ಹೊಂದಿರುವ ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳಿಂದ ಬರುತ್ತದೆ, ಮತ್ತು ಇಷ್ಟು ಎಳೆಯದಾಗಿ ಕತ್ತರಿಸುವುದರಿಂದ ಬೇರಿಗಿಂತ ಚಿಕ್ಕ ಹಿಡಿಯಲ್ಲಿ ಹೆಚ್ಚು ಇವು ಮತ್ತು ವಿಟಮಿನ್ C ಸೇರಿಕೊಳ್ಳುತ್ತವೆ. ನಾವು ಬೆಳೆಸುವ ಅತಿ ವೇಗದ ಸೊಪ್ಪುಗಳಲ್ಲಿ ಒಂದು ಮತ್ತು ಅಸಮ ಬಿತ್ತನೆಯನ್ನೂ ಬಹುತೇಕ ಮನ್ನಿಸುತ್ತದೆ, ಆದ್ದರಿಂದ ಇದು ಬಹಳ ಮೊದಲ ಪೆಟ್ಟಿಗೆಗಳಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ.",
+    "shortDescription": "ಖಾರ ಮತ್ತು ವೇಗ. ದಿನನಿತ್ಯದ ಮೈಕ್ರೋಗ್ರೀನ್, ನೀವು ಕಾಯುವ ಮೊದಲೇ ಸಿದ್ಧ.",
+    "description": "ಮೂಲಂಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಆರಂಭಿಕರಿಗೆ ನಾವು ಶಿಫಾರಸು ಮಾಡುವ ಸೊಪ್ಪು: ಗುಲಾಬಿ ಕಾಂಡಗಳ ಮೇಲೆ ಗರಿಗರಿ ದುಂಡು ಎಲೆಗಳು, ಬೆಳೆದ ಬೇರಿನಷ್ಟೇ ಖಾರ ಆದರೆ ಹೆಚ್ಚು ಪ್ರಕಾಶಮಾನ ಮತ್ತು ತಾಜಾ. ಖಾರ ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳಿಂದ ಬರುತ್ತದೆ, ಮತ್ತು ಅವನ್ನು ಮೂಲಂಗಿ ಗಿಡ ಪೂರ್ತಿ, ಬೇರಿನಲ್ಲಷ್ಟೇ ಅಲ್ಲ ಎಲೆಯಲ್ಲೂ, ತಯಾರಿಸುತ್ತದೆ. ನಾವು ಬೆಳೆಸುವ ಅತಿ ವೇಗದ ಸೊಪ್ಪುಗಳಲ್ಲಿ ಒಂದು, ಮತ್ತು ಅಸಮ ಬಿತ್ತನೆಯನ್ನು ಬೇರೆ ಬಹುತೇಕ ಸೊಪ್ಪುಗಳಿಗಿಂತ ಚೆನ್ನಾಗಿ ಸಹಿಸುತ್ತದೆ. ಆದ್ದರಿಂದಲೇ ಇದು ಬಹಳಷ್ಟು ಮೊದಲ ಪೆಟ್ಟಿಗೆಗಳಲ್ಲಿ ಕಾಣಿಸುತ್ತದೆ.",
     "flavourNotes": "ಖಾರ ಮತ್ತು ಸ್ವಚ್ಛ, ಸೌಮ್ಯ ಮೂಲಂಗಿಯಂತೆ ಆದರೆ ಗರಿಗರಿ ಇಲ್ಲದೆ. ಹಸಿಯಾಗಿ ಚುರುಕು, ಬಿಸಿ ಸೇರಿದ ಕೂಡಲೇ ಖಾರ ಇಳಿಯುತ್ತದೆ.",
-    "growingTips": "ಬಿತ್ತುವ ಮೊದಲು ಬೀಜವನ್ನು ಕೆಲವು ಗಂಟೆ ನೆನೆಸಿ, ಮೇಲ್ಪದರ ಒದ್ದೆಯಾಗಿರಲಿ ಆದರೆ ನೀರು ನಿಲ್ಲದಿರಲಿ, ಮತ್ತು ಮೊದಲ ನಿಜವಾದ ಎಲೆ ಬಂದ ಕೂಡಲೇ ಕತ್ತರಿಸಿ — ತಡವಾದರೆ ಕಾಂಡ ನಾರಾಗುತ್ತದೆ.",
+    "growingTips": "ಬಿತ್ತುವ ಮೊದಲು ಬೀಜವನ್ನು ಕೆಲವು ಗಂಟೆ ನೆನೆಸಿ, ಮೇಲ್ಪದರ ಒದ್ದೆಯಾಗಿರಲಿ ಆದರೆ ನೀರು ನಿಲ್ಲದಿರಲಿ, ಮತ್ತು ಮೊದಲ ನಿಜವಾದ ಎಲೆ ಬಂದ ಕೂಡಲೇ ಕತ್ತರಿಸಿ. ತಡವಾದರೆ ಕಾಂಡ ನಾರಾಗುತ್ತದೆ.",
     "nutrition": [
       {
         "label": "ವಿಟಮಿನ್ C",
-        "value": "ಅಧಿಕ"
+        "value": "ಇದೆ"
       },
       {
         "label": "ವಿಟಮಿನ್ E",
-        "value": "ಉತ್ತಮ ಮೂಲ"
+        "value": "ಇದೆ"
       },
       {
         "label": "ವಿಟಮಿನ್ K",
-        "value": "ಉತ್ತಮ ಮೂಲ"
+        "value": "ಇದೆ"
       },
       {
         "label": "ಪೊಟ್ಯಾಸಿಯಂ",
-        "value": "ಮಧ್ಯಮ"
+        "value": "ಇದೆ"
       },
       {
         "label": "ಕ್ಯಾಲ್ಸಿಯಂ",
-        "value": "ಮಧ್ಯಮ"
+        "value": "ಇದೆ"
       },
       {
         "label": "ಕಬ್ಬಿಣ",
-        "value": "ಮಧ್ಯಮ"
+        "value": "ಇದೆ"
       },
       {
-        "label": "ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು (ಐಸೊಥಿಯೊಸೈನೇಟ್, ಸಲ್ಫೊರಾಫೇನ್)",
+        "label": "ಗ್ಲುಕೊಸಿನೊಲೇಟ್‌ಗಳು (ಖಾರದ ಮೂಲ)",
         "value": "ಇದೆ"
       },
       {
@@ -137,27 +136,26 @@
         "value": "ಇದೆ"
       }
     ],
-    "nutritionNote": "ಮೌಲ್ಯಗಳನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಗುಣಾತ್ಮಕವಾಗಿ ನೀಡಲಾಗಿದೆ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
+    "nutritionNote": "ಯಾವ ಪೋಷಕಾಂಶಗಳು ಇವೆ ಎಂಬುದನ್ನು ಮಾತ್ರ ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಪಟ್ಟಿ ಮಾಡಿದ್ದೇವೆ, ಎಷ್ಟು ಎಂಬುದನ್ನಲ್ಲ. ಬೀಜದ ತಂಡ, ಬೆಳಕು ಮತ್ತು ಕಟಾವಿನ ದಿನಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್‌ನ ಪೋಷಕಾಂಶಗಳು ಬದಲಾಗುತ್ತವೆ. ಆದ್ದರಿಂದ ನಿಖರ ಮಿಲಿಗ್ರಾಂ ಅಂಕಿಯು ಯಾವ ಪ್ರಾಮಾಣಿಕ ಬೆಳೆಗಾರನೂ ಭರವಸೆ ನೀಡಲಾಗದ ಸ್ಥಿರತೆಯನ್ನು ಸೂಚಿಸುತ್ತದೆ.",
     "benefits": [
       "ವಿಟಮಿನ್ C ಸಾಮಾನ್ಯ ರೋಗನಿರೋಧಕ ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಆರೋಗ್ಯಕರ ಚರ್ಮ ಹಾಗೂ ವಸಡುಗಳಿಗಾಗಿ ಸಾಮಾನ್ಯ ಕಾಲಜನ್ ರಚನೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
-      "ವಿಟಮಿನ್ C ಸಸ್ಯ ಆಹಾರಗಳಿಂದ ಕಬ್ಬಿಣದ ಹೀರಿಕೆಯನ್ನು ಹೆಚ್ಚಿಸುತ್ತದೆ — ಸಸ್ಯಾಹಾರಿ ಆಹಾರದಲ್ಲಿ ಇದು ಮುಖ್ಯ.",
-      "ವಿಟಮಿನ್ E ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸುತ್ತದೆ.",
-      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
-      "ಪೊಟ್ಯಾಸಿಯಂ ಸಾಮಾನ್ಯ ಸ್ನಾಯು ಕಾರ್ಯಕ್ಕೆ ಮತ್ತು ಸಾಮಾನ್ಯ ರಕ್ತದೊತ್ತಡದ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
+      "ವಿಟಮಿನ್ C ಸಸ್ಯ ಆಹಾರಗಳಿಂದ ಕಬ್ಬಿಣದ ಹೀರಿಕೆಯನ್ನೂ ಹೆಚ್ಚಿಸುತ್ತದೆ, ಮತ್ತು ಸಸ್ಯಾಹಾರಿ ಆಹಾರದಲ್ಲಿ ಇದು ಮುಖ್ಯ.",
+      "ವಿಟಮಿನ್ E ಜೀವಕೋಶಗಳನ್ನು ಆಕ್ಸಿಡೇಟಿವ್ ಒತ್ತಡದಿಂದ ರಕ್ಷಿಸಲು ಕೊಡುಗೆ ನೀಡುತ್ತದೆ.",
+      "ವಿಟಮಿನ್ K ಸಾಮಾನ್ಯ ರಕ್ತ ಹೆಪ್ಪುಗಟ್ಟುವಿಕೆಗೆ ಮತ್ತು ಸಾಮಾನ್ಯ ಮೂಳೆಗಳ ನಿರ್ವಹಣೆಗೆ ಕೊಡುಗೆ ನೀಡುತ್ತದೆ."
     ],
     "cautions": [
       "ಇದು ಬ್ರಾಸಿಕಾ ಕುಟುಂಬದ್ದು ಮತ್ತು ಗಾಯ್ಟ್ರೋಜೆನ್‌ಗಳನ್ನು ಹೊಂದಿದೆ. ಹೆಚ್ಚು ಪ್ರಮಾಣದಲ್ಲಿ ನಿಯಮಿತವಾಗಿ ಸೇವಿಸಿದರೆ ಥೈರಾಯ್ಡ್ ಕಾರ್ಯಕ್ಕೆ ಅಡ್ಡಿಯಾಗಬಹುದು. ಥೈರಾಯ್ಡ್ ಸಮಸ್ಯೆ ಇದ್ದರೆ ಪ್ರಮಾಣವನ್ನು ಮಿತವಾಗಿಟ್ಟು ವೈದ್ಯರನ್ನು ಕೇಳಿ.",
       "ಖಾರ ಸೌಮ್ಯವಾದರೂ ನಿಜ. ಸಣ್ಣ ಮಕ್ಕಳು ಮತ್ತು ಸೂಕ್ಷ್ಮ ಹೊಟ್ಟೆ ಇರುವವರು ಸ್ವಲ್ಪದಿಂದ ಆರಂಭಿಸಬೇಕು.",
-      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಮಣ್ಣಿನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು — ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
+      "ತಿನ್ನುವ ಮೊದಲು ತೊಳೆಯಿರಿ. ಇವು ಕೋಕೋಪೀಟ್‌ನಲ್ಲಿ ಬೆಳೆದು ತಾಜಾ ಕತ್ತರಿಸಿದವು, ತೊಳೆದು ಪ್ಯಾಕ್ ಮಾಡಿದವಲ್ಲ."
     ],
     "faq": [
       {
         "question": "ನಿಜವಾಗಿ ಎಷ್ಟು ಖಾರ?",
-        "answer": "ಬೇರಿಗಿಂತ ಸೌಮ್ಯ, ಆದರೆ ನೀವು ನಿರೀಕ್ಷಿಸಿದಷ್ಟು ಸೌಮ್ಯವಲ್ಲ. ಇದು ಸ್ವಚ್ಛ, ಚುರುಕಾದ ಕಚ್ಚು, ಬೆಳೆಯುವ ಬದಲು ಕೆಲವೇ ಕ್ಷಣಗಳಲ್ಲಿ ಇಳಿಯುತ್ತದೆ — ಮೆಣಸಿಗಿಂತ ಮೂಲಂಗಿ ಹೋಳಿಗೆ ಹತ್ತಿರ."
+        "answer": "ಬೇರಿಗಿಂತ ಸೌಮ್ಯ, ಆದರೆ ನೀವು ನಿರೀಕ್ಷಿಸಿದಷ್ಟು ಸೌಮ್ಯವಲ್ಲ. ಇದು ಸ್ವಚ್ಛ, ಚುರುಕಾದ ಖಾರ. ಹೆಚ್ಚುತ್ತಾ ಹೋಗುವ ಬದಲು ಕೆಲವೇ ಕ್ಷಣಗಳಲ್ಲಿ ಇಳಿಯುತ್ತದೆ, ಮತ್ತು ಮೆಣಸಿನಕಾಯಿಗಿಂತ ಮೂಲಂಗಿ ಹೋಳಿಗೆ ಹತ್ತಿರ."
       },
       {
-        "question": "ಇದು ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಸಿಗುವ ಪೂರ್ತಿ ಮೂಲಂಗಿಯೇ?",
-        "answer": "ಅದೇ ಗಿಡ, ಬೇರು ಬರುವ ಬಹಳ ಮೊದಲೇ ಕತ್ತರಿಸಿದ್ದು. ನೀವು ಎಲೆ ಮತ್ತು ಕಾಂಡ ತಿನ್ನುತ್ತಿದ್ದೀರಿ, ಚಿಕ್ಕ ಬೇರಲ್ಲ — ಆದ್ದರಿಂದ ವಿನ್ಯಾಸ ಮೃದು, ಗರಿಗರಿ ಇಲ್ಲ; ರುಚಿಯೇ ಕುಟುಂಬದ ಗುರುತು."
+        "question": "ಮಾರುಕಟ್ಟೆಯಲ್ಲಿ ಕೊಳ್ಳುವ ಮೂಲಂಗಿಯ ಗಿಡವೇ ಇದು?",
+        "answer": "ಅದೇ ಗಿಡ, ಬೇರು ಬರುವ ಬಹಳ ಮೊದಲೇ ಕತ್ತರಿಸಿದ್ದು. ನೀವು ತಿನ್ನುವುದು ಎಲೆ ಮತ್ತು ಕಾಂಡ, ಚಿಕ್ಕ ಬೇರಲ್ಲ. ಆದ್ದರಿಂದ ಇದು ಗರಿಗರಿಯಲ್ಲ, ಮೃದು. ಕುಟುಂಬದ ಹೋಲಿಕೆ ರುಚಿಯಲ್ಲಿದೆ."
       },
       {
         "question": "ಹೇಗೆ ಇಡಬೇಕು, ಎಷ್ಟು ದಿನ ಉಳಿಯುತ್ತದೆ?",
@@ -165,10 +163,10 @@
       },
       {
         "question": "ಮಕ್ಕಳು ತಿನ್ನಬಹುದೇ?",
-        "answer": "ಹೌದು — ಇದು ಸೌಮ್ಯ ಖಾರದ ಸೊಪ್ಪುಗಳಲ್ಲಿ ಒಂದು, ಮತ್ತು ಬಹುತೇಕ ಮಕ್ಕಳು ಇದನ್ನು ಮಸಾಲೆಗಿಂತ ಗರಿಗರಿ ಅಲಂಕಾರದಂತೆ ತಿನ್ನುತ್ತಾರೆ."
+        "answer": "ಹೌದು. ಖಾರದ ಸೊಪ್ಪುಗಳಲ್ಲಿ ಇದು ಸೌಮ್ಯವಾದವುಗಳಲ್ಲಿ ಒಂದು, ಮತ್ತು ಬಹುತೇಕ ಮಕ್ಕಳು ಇದನ್ನು ಮಸಾಲೆಗಿಂತ ತಾಜಾ ಅಲಂಕಾರದಂತೆ ತಿನ್ನುತ್ತಾರೆ."
       },
       {
-        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಏನಿಗೆ ಬಳಸಬೇಕು?",
+        "question": "ಇದನ್ನು ನಿಜವಾಗಿ ಹೇಗೆ ಬಳಸುವುದು?",
         "answer": "ಮೊಸರನ್ನ, ಚಾಟ್ ಅಥವಾ ಸ್ಯಾಂಡ್‌ವಿಚ್‌ನಲ್ಲಿ ಸಾಮಾನ್ಯ ಲೆಟಿಸ್ ಬದಲು ಉದುರಿಸಿ, ಸಲಾಡ್‌ನಲ್ಲಿ ಸೇರಿಸಿ, ಅಥವಾ ಸ್ವಲ್ಪ ಪ್ರಕಾಶಮಾನ ಬೇಕಾದ ಯಾವುದೇ ಅಡುಗೆಯ ಮೇಲೆ ಬಳಸಿ."
       }
     ],

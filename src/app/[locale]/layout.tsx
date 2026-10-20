@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "common" });
   return {
-    title: `${brand.name} — ${t("brand.tagline")}`,
+    title: `${brand.name} | ${t("brand.tagline")}`,
     description: t("brand.subline"),
     /* hreflang is deliberately NOT set here — a layout cannot know the
        current path, so it would claim every Kannada page lives at /kn. Each
