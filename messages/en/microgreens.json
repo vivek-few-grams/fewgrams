@@ -9,7 +9,6 @@
   "plansPrompt": "Want them every week without ordering?",
   "plansLink": "See the plans",
   "detail": {
-    "back": "All varieties",
     "days": "{days, number} days",
     "daysLabel": "Sowing to harvest",
     "sownLabel": "Sown",
@@ -45,6 +44,12 @@
     "lineBreakdown": "{grams, number} g · ₹{price, number} per 100 g",
     "readyInline": "Ready by {date}",
     "updateCart": "Update cart",
-    "updated": "Cart updated."
+    "updated": "Cart updated.",
+    "crossSeed": "Want to grow it yourself? See our <link>{name} seeds</link>."
+  },
+  "seo": {
+    "title": "Fresh microgreens, grown to order",
+    "itemTitle": "{name} microgreens",
+    "itemDescription": "{blurb} Grown to order and cut the morning it reaches you."
   }
 }

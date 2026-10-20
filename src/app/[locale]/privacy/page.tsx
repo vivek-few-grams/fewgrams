@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { LegalPage } from "@/components/legal/LegalPage";
 
 /**
@@ -16,7 +16,7 @@ import { LegalPage } from "@/components/legal/LegalPage";
 export async function generateMetadata({ params }: PageProps<"/[locale]/privacy">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "legal.privacy" });
-  return { title: t("title"), description: t("description"), alternates: localeAlternates("/privacy") };
+  return pageMetadata({ locale, path: "/privacy", title: t("title"), description: t("description") });
 }
 
 export default async function PrivacyPage({ params }: PageProps<"/[locale]/privacy">) {

@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { LegalPage } from "@/components/legal/LegalPage";
 
 /**
@@ -12,7 +12,7 @@ import { LegalPage } from "@/components/legal/LegalPage";
 export async function generateMetadata({ params }: PageProps<"/[locale]/refund-policy">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "legal.refunds" });
-  return { title: t("title"), description: t("description"), alternates: localeAlternates("/refund-policy") };
+  return pageMetadata({ locale, path: "/refund-policy", title: t("title"), description: t("description") });
 }
 
 export default async function RefundPolicyPage({ params }: PageProps<"/[locale]/refund-policy">) {

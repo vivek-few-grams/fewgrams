@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/cart">) 
   return {
     title: t("title"),
     description: t("description"),
-    alternates: localeAlternates("/cart"),
+    alternates: localeAlternates(locale, "/cart"),
     /* A basket is per-person and has nothing to index. */
     robots: { index: false, follow: true },
   };

@@ -9,7 +9,6 @@
   "plansPrompt": "ಆರ್ಡರ್ ಮಾಡದೆ ಪ್ರತಿ ವಾರ ಬೇಕೆ?",
   "plansLink": "ಯೋಜನೆಗಳನ್ನು ನೋಡಿ",
   "detail": {
-    "back": "ಎಲ್ಲಾ ತಳಿಗಳು",
     "days": "{days, number} ದಿನಗಳು",
     "daysLabel": "ಬಿತ್ತನೆಯಿಂದ ಕಟಾವಿಗೆ",
     "sownLabel": "ಬಿತ್ತನೆ",
@@ -45,6 +44,12 @@
     "lineBreakdown": "{grams, number} ಗ್ರಾಂ · 100 ಗ್ರಾಂಗೆ ₹{price, number}",
     "readyInline": "ಸಿದ್ಧ: {date}",
     "updateCart": "ಕಾರ್ಟ್ ನವೀಕರಿಸಿ",
-    "updated": "ಕಾರ್ಟ್ ನವೀಕರಿಸಲಾಗಿದೆ."
+    "updated": "ಕಾರ್ಟ್ ನವೀಕರಿಸಲಾಗಿದೆ.",
+    "crossSeed": "ನೀವೇ ಬೆಳೆಸಬೇಕೆ? ನಮ್ಮ <link>{name} ಬೀಜಗಳನ್ನು</link> ನೋಡಿ."
+  },
+  "seo": {
+    "title": "ಆರ್ಡರ್‌ಗೆ ಬೆಳೆಸುವ ತಾಜಾ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್",
+    "itemTitle": "{name} ಮೈಕ್ರೋಗ್ರೀನ್ಸ್",
+    "itemDescription": "{blurb} ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ಬೆಳೆಸಿ, ನಿಮಗೆ ತಲುಪುವ ದಿನ ಬೆಳಿಗ್ಗೆಯೇ ಕತ್ತರಿಸುತ್ತೇವೆ."
   }
 }

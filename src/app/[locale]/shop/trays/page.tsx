@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { listTrays } from "@/lib/repo/trays";
 import { attachTrayContent, trayCutout, trayHero } from "@/lib/content/trays";
 import { CATEGORY_PANELS } from "@/lib/shop";
@@ -48,8 +48,8 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop/trays">) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "common.categories" });
-  return { title: t("trays"), alternates: localeAlternates("/shop/trays") };
+  const t = await getTranslations({ locale, namespace: "shop.seo" });
+  return pageMetadata({ locale, path: "/shop/trays", title: t("traysTitle"), description: t("traysDescription") });
 }
 
 export default async function TraysPage({ params }: PageProps<"/[locale]/shop/trays">) {

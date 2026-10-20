@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { CATEGORY_PANELS } from "@/lib/shop";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Marquee } from "@/components/ui/Marquee";
@@ -98,8 +98,8 @@ const PROPS = [1, 2, 3, 4, 5, 6] as const;
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop/racks">) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "common.categories" });
-  return { title: t("racks"), alternates: localeAlternates("/shop/racks") };
+  const t = await getTranslations({ locale, namespace: "shop.seo" });
+  return pageMetadata({ locale, path: "/shop/racks", title: t("racksTitle"), description: t("racksDescription") });
 }
 
 export default async function RacksPage({ params }: PageProps<"/[locale]/shop/racks">) {

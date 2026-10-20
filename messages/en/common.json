@@ -79,5 +79,14 @@
       "overStock": "That is all we have right now."
     },
     "soldOut": "Sold out"
+  },
+  "breadcrumb": {
+    "label": "Breadcrumb",
+    "home": "Home"
+  },
+  "seo": {
+    "homeTitle": "Fresh microgreens, sown for you, cut this morning",
+    "homeDescription": "Microgreens grown to order and cut the morning they reach you. Never frozen, never stored. Order a box, take a weekly plan, or grow your own.",
+    "shareImageAlt": "A speckled ceramic bowl heaped with mixed red and green microgreens on a wooden block."
   }
 }

@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: PageProps<"/[locale]/forbidden">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "auth.forbidden" });
-  return { title: t("title") };
+  /* Nothing here for a search result to send anyone to. */
+  return { title: t("title"), robots: { index: false, follow: false } };
 }
 
 /**

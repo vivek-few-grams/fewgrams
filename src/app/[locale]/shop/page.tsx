@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { Link } from "@/i18n/navigation";
 import { MarqueeCard } from "@/components/ui/MarqueeCard";
 import { CategoryMedia, categoryMediaClass, categoryPhoto } from "@/components/catalogue/CategoryMedia";
@@ -33,8 +33,8 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop">) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "shop.index" });
-  return { title: t("title"), alternates: localeAlternates("/shop") };
+  const t = await getTranslations({ locale, namespace: "shop.seo" });
+  return pageMetadata({ locale, path: "/shop", title: t("indexTitle"), description: t("indexDescription") });
 }
 
 export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">) {
@@ -118,6 +118,7 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
       <div className="mt-12 grid grid-cols-2 gap-5 lg:grid-cols-5">
         {microgreensOn && (
           <MarqueeCard
+            headingLevel={2}
             href="/microgreens"
             label={label("microgreens")}
             note={counted("varieties", { count: varieties.length })}
@@ -152,6 +153,7 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
           };
           return (
             <MarqueeCard
+              headingLevel={2}
               key={c}
               href={CATEGORY_HREF[c]}
               label={label(c)}

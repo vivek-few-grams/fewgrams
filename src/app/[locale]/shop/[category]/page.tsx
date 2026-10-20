@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { notFound } from "next/navigation";
 import { t as localised, CATEGORIES, type Category } from "@/lib/types";
 import { listByCategory } from "@/lib/repo/products";
@@ -35,10 +35,12 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop/[ca
   const { locale, category } = await params;
   const t = await getTranslations({ locale, namespace: "common.categories" });
   const shop = await getTranslations({ locale, namespace: "shop" });
-  return {
+  return pageMetadata({
+    locale,
+    path: `/shop/${category}`,
     title: isCategory(category) ? t(category) : shop("index.title"),
-    alternates: localeAlternates(`/shop/${category}`),
-  };
+    description: shop("category.body"),
+  });
 }
 
 export default async function CategoryPage({ params }: PageProps<"/[locale]/shop/[category]">) {

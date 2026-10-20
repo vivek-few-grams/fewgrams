@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { listGrowMedia } from "@/lib/repo/grow-media";
 import { attachGrowMediumContent, growMediumCutout, growMediumHero } from "@/lib/content/grow-media";
 import { CATEGORY_PANELS } from "@/lib/shop";
@@ -33,8 +33,8 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop/grow-media">) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "common.categories" });
-  return { title: t("media"), alternates: localeAlternates("/shop/grow-media") };
+  const t = await getTranslations({ locale, namespace: "shop.seo" });
+  return pageMetadata({ locale, path: "/shop/grow-media", title: t("growMediaTitle"), description: t("growMediaDescription") });
 }
 
 export default async function GrowMediaPage({ params }: PageProps<"/[locale]/shop/grow-media">) {

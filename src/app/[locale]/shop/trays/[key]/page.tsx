@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { productId, productLd } from "@/lib/seo/structured-data";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getTrayByKey } from "@/lib/repo/trays";
 import { getTrayContent, trayHero, trayImageUrl } from "@/lib/content/trays";
@@ -80,11 +81,13 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop/tra
   if (!found) return {};
 
   const { text } = found.content;
-  return {
+  return pageMetadata({
+    locale,
+    path: `/shop/trays/${key}`,
     title: text.name,
     description: text.shortDescription,
-    alternates: localeAlternates(`/shop/trays/${key}`),
-  };
+    image: trayHero(found.content),
+  });
 }
 
 export default async function TrayPage({ params }: PageProps<"/[locale]/shop/trays/[key]">) {
@@ -99,6 +102,8 @@ export default async function TrayPage({ params }: PageProps<"/[locale]/shop/tra
 
   const t = await getTranslations("shop.trays");
   const d = await getTranslations("shop.trays.detail");
+  const shop = await getTranslations("shop.index");
+  const category = await getTranslations("common.categories");
   const e = await getTranslations("shop.trays.detail.errors");
 
   const hero = trayHero(content);
@@ -123,7 +128,24 @@ export default async function TrayPage({ params }: PageProps<"/[locale]/shop/tra
 
   return (
     <DetailPage
-      back={{ href: "/shop/trays", label: d("back") }}
+      trail={[
+        { href: "/shop", label: shop("title") },
+        { href: "/shop/trays", label: category("trays") },
+      ]}
+      path={`/shop/trays/${key}`}
+      structuredData={productLd({
+        locale,
+        path: `/shop/trays/${key}`,
+        id: productId("trays", key),
+        name: text.name,
+        description: text.shortDescription,
+        images: shots.map((shot) => shot.src),
+        price: { amount: row.price, per100g: false },
+        /* Nothing here sells out: past the packs held, an order waits a day
+           while more is brought in (CLAUDE.md, trays). */
+        inStock: true,
+        ourBrand: false,
+      })}
       name={text.name}
       shortDescription={text.shortDescription}
       gallery={{

@@ -32,6 +32,7 @@ export function MarqueeCard({
   className = "",
   mediaClass = "aspect-square w-[70%]",
   cursorLabel = "Order",
+  headingLevel = 3,
 }: {
   href: string;
   label: string;
@@ -70,6 +71,11 @@ export function MarqueeCard({
    * card.
    */
   photo?: string;
+  /** The label's heading level, one below the section it sits in: `2`
+   *  directly under a page's `<h1>` (`/shop`), `3` under a section's `<h2>`
+   *  (the home page). A skipped level breaks the outline a screen reader
+   *  navigates by, and Lighthouse fails the page for it. */
+  headingLevel?: 2 | 3;
   /** Grid placement on the card's root, e.g. a lead tile spanning two
    *  columns on a phone. */
   className?: string;
@@ -87,6 +93,7 @@ export function MarqueeCard({
   mediaClass?: string;
   cursorLabel?: string;
 }) {
+  const Heading = headingLevel === 2 ? "h2" : "h3";
   const lines = (
     <div className="ta-c px-2">
       {words.map((w, i) => (
@@ -135,7 +142,7 @@ export function MarqueeCard({
       </div>
 
       <div className="mt-4 flex items-baseline justify-between gap-3">
-        <h3 className={`font-display text-lg font-semibold tracking-tight ${labelClass}`}>{label}</h3>
+        <Heading className={`font-display text-lg font-semibold tracking-tight ${labelClass}`}>{label}</Heading>
         {note && <span className="shrink-0 font-body text-xs text-stone tabular-nums">{note}</span>}
       </div>
     </Link>

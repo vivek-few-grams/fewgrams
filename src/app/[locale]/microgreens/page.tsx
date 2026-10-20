@@ -1,5 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { Link } from "@/i18n/navigation";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { Tile } from "@/components/catalogue/Tile";
@@ -27,7 +27,7 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: PageProps<"/[locale]/microgreens">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "microgreens" });
-  return { title: t("title"), description: t("description"), alternates: localeAlternates("/microgreens") };
+  return pageMetadata({ locale, path: "/microgreens", title: t("seo.title"), description: t("description") });
 }
 
 export default async function MicrogreensPage({ params }: PageProps<"/[locale]/microgreens">) {

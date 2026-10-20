@@ -5,7 +5,8 @@ import { Link } from "@/i18n/navigation";
 export async function generateMetadata({ params }: PageProps<"/[locale]/login/verify">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "auth.verify" });
-  return { title: t("title") };
+  /* Nothing here for a search result to send anyone to. */
+  return { title: t("title"), robots: { index: false, follow: false } };
 }
 
 export default async function VerifyPage({ params }: PageProps<"/[locale]/login/verify">) {

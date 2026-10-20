@@ -760,9 +760,9 @@ renders English, never a raw key.
 **Kannada is live as of 15 Sep 2026.** `localePrefix: "as-needed"` — English keeps bare paths
 (`/shop/trays`), Kannada is prefixed (`/kn/shop/trays`). The switch in the header is a toggle
 showing the language you are *not* in, each written in its own script, and it keeps you on the
-page you were reading. `hreflang` is set per page via `src/i18n/alternates.ts`, never in the
-layout — a layout cannot know the path, so a layout-level value would claim every Kannada page
-lives at `/kn`.
+page you were reading. `hreflang` is set per page via `src/i18n/alternates.ts` (through
+`pageMetadata`, §28), never in the layout — a layout cannot know the path, so a layout-level value
+would claim every Kannada page lives at `/kn`.
 
 **`admin.json` is English only, deliberately.** Admin is an internal surface; its strings live in a
 message file so the no-hardcoded-text rule holds everywhere, but translating it would be waste.
@@ -2073,22 +2073,23 @@ keyframe. (Don Molinico loads GSAP and Lenis, but only for smooth scroll and the
 `@media (prefers-reduced-motion: reduce)`. The marquee in particular is continuous motion, which is
 a genuine accessibility problem if it cannot be stopped.
 
-**Rotating tab title** (`TitleTicker`, 16 Sep 2026) — `Fewgrams | Microgreens`, `| Racks`,
-`| Seeds`, `| Trays`, `| Snacks`, one every 2.5s, from `NAV_CATEGORIES` in nav order so the tab
-names the same five things the header does. Borrowed from palmo.co.in's `Flavours | Chilling /
-Pressing / Pouring`.
+**Rotating tab title** (`TitleTicker`, 16 Sep 2026; background only since 20 Oct 2026) —
+`Fewgrams | Microgreens`, `| Racks`, `| Seeds`, `| Trays`, `| Snacks`, one every 2.5s, from
+`NAV_CATEGORIES` in nav order so the tab names the same five things the header does. Borrowed from
+palmo.co.in's `Flavours | Chilling / Pressing / Pouring`.
 
-Three things it has to get right. It **must not write on mount** — Next applies the route's
-metadata title after hydration, so the first word was set and immediately overwritten, and the
-first word a visitor saw was the second one in the list. It **restores the page's own title on
-unmount**, or a client-side navigation inherits whichever word was last showing. And it is
-**disabled under `prefers-reduced-motion`**, because a title changing on a timer is moving content
-in the sense WCAG 2.2.2 means and there is no way to pause it.
+**It rotates only while the tab is hidden**, and puts the page's own title back the moment the tab
+is looked at. Until 20 Oct 2026 it rotated all the time, which replaced the per-page title:
+`/microgreens/mustard` stopped saying "Mustard", a bookmark saved whatever word was showing, and
+Google — which renders pages with JavaScript and can record a title a script set — could index a
+product page as "Fewgrams | Racks". A crawler never hides the tab, so it only sees the real title.
 
-The cost, accepted: it replaces the per-page title while the tab is open, so `/microgreens/mustard`
-stops saying "Mustard" and a bookmark taken mid-rotation saves whatever was showing. Crawlers read
-the server-rendered `<title>`, so this is navigational, not an SEO cost. Rotating only while
-`document.hidden` would avoid it; the reference does not, and neither does this.
+Three things it still has to get right. It **writes nothing on mount** — Next applies the route's
+metadata title after hydration, so a word written then is overwritten and the "original" captured
+may not be the page's yet; a tab opened in the background starts ticking the first time it is seen
+and left. It **captures the page's title each time the tab is hidden**, because a client-side
+navigation changes it. And it is **disabled under `prefers-reduced-motion`**, because a title
+changing on a timer is moving content in the sense WCAG 2.2.2 means and there is no way to pause it.
 
 ### 17.5 Brand curtain — revised 15 Sep 2026, scoped 17 Sep 2026
 
@@ -5794,3 +5795,73 @@ add-to-cart from the box were the other two, not built):
   were offered on 20 Oct 2026 and not chosen. Voice would need `microphone=(self)` in the
   Permissions-Policy, which is `microphone=()` today, and a line in the privacy page: the audio goes
   to the browser maker, not to us.
+
+## 28. Search engines and AI assistants — built 20 Oct 2026
+
+What a crawler is told about each page, so the site can be found in Google, Bing and AI answers
+once it opens. The owner's checklist of the work outside the code (Search Console, Business
+Profile, Merchant Center) is separate; this section is the code.
+
+### 28.1 One address, one way to describe a page
+
+- **`brand.url`** (`https://fewgrams.com`) is the base of every canonical, `hreflang`, sitemap entry,
+  share picture and piece of structured data. It is never read from the request: a page rendered on
+  localhost or a preview address must still name the live site.
+- **Every public page builds its metadata with `pageMetadata`** (`src/lib/seo/metadata.ts`): title,
+  description, canonical, `hreflang` with `x-default` (English), and the Open Graph / X preview.
+  One helper because Next merges metadata shallowly: a page that set only `openGraph.title` would
+  drop the layout's picture and site name. `seo.test.ts` fails on a public page that does not use
+  it, and on a private page (`account`, `cart`, `checkout`, `login`, `search`, `subscribe`,
+  `forbidden`, `admin`) that is not `noindex`.
+- **Titles** go through the layout's `%s | Fewgrams` template and say what the page sells: "Kale
+  microgreens", "Kale microgreen seeds", "Cocopeat for growing microgreens". The words are
+  `seo.*` messages in each area's file, in both languages. The home page's title leads with the
+  brand instead.
+- **Descriptions** are clipped to 160 characters by `clipDescription` — whole sentences where they
+  fit, else whole words and an ellipsis.
+- **Share pictures** are the page's hero when it is a JPEG or PNG (some previews do not read WebP),
+  else the home page's bowl.
+- The language switch still links to `/en/...` and gets a 307 (§17.2 explains why — it sets the
+  locale cookie). Crawlers are steered by the canonical and `hreflang`, not by that link.
+
+### 28.2 Structured data
+
+`src/lib/seo/structured-data.ts`, rendered by `JsonLd` (`<` escaped so a name cannot close the tag).
+
+- **Product** on every microgreen, seed, tray, cocopeat and rack range page, passed by the page from
+  the row it prints the price from — the visible price and the structured one cannot disagree.
+  Weighed kinds carry a per-100 g `UnitPriceSpecification`; a rack range is an `AggregateOffer`
+  from its cheapest to its dearest model. No offer at price 0. A sold-out seed is `OutOfStock`;
+  nothing else here sells out. Our brand only on what we grow or pack (greens, seed).
+- **`productId(kind, key)`** — `seeds-kale` — is the id outside the site, kept for the shopping
+  feed: kind and key together, because a key names a microgreen and a seed.
+- **Organization and WebSite** (with the `/search?q=` action) on the home page only.
+- **BreadcrumbList**, rendered by `Breadcrumbs` from the same list as the visible trail.
+- **No address and no city** while the owner keeps the city out of search.
+
+### 28.3 Breadcrumbs and cross links
+
+Detail pages open with a trail — Home / Microgreens / Kale — in place of the old back link.
+A microgreen's page links to the same key's seed when that seed is listed, and a seed's page to the
+same key's microgreen when it is on sale, in place of the general "see the varieties". Both checks
+read the item the way its own grid does, so a link never lands on a page that turns the reader away.
+
+### 28.4 `robots.txt` and the sitemap
+
+- `src/app/robots.ts`: one `*` group for every crawler, **AI crawlers included** (the owner, 20 Oct
+  2026: allowed while the cost stays small). Private paths and `/api/` are disallowed in both
+  languages; `/_next/` is not, because Google renders with it.
+- `src/app/sitemap.ts`: the fixed pages, each enabled category's listing, and every product from
+  `searchCatalogue` — the grids' own rules (§27). Both languages, each entry naming its pair and
+  `x-default`. Read per request, never at build (the catalogue is in DynamoDB). No `lastModified`:
+  we do not track one.
+
+### 28.5 Also changed for it
+
+- The tab ticker rotates only while the tab is hidden (§17.4).
+- `/shop`'s category labels are `<h2>`, not `<h3>` under the `<h1>` (`MarqueeCard`'s
+  `headingLevel`).
+- Login, verify and forbidden are `noindex`.
+- The detail page's phone grid is a declared `grid-cols-1`: five thumbnails had widened the
+  implicit column and scrolled the page sideways by 6px.
+

@@ -516,6 +516,21 @@ links to a page that turns the visitor away.
   translation; `match.test.ts` fails on a chip that finds fewer than two products.
 - Products only (the owner, 19 Oct 2026), and no Latin-letter Kannada aliases.
 
+## Every public page describes itself through `pageMetadata`
+
+SPEC §28. `pageMetadata` (`src/lib/seo/metadata.ts`) builds the title, description, canonical,
+`hreflang` with `x-default` and the share preview in one go — Next merges metadata shallowly, so a
+page that sets part of `openGraph` itself loses the rest. `seo.test.ts` fails on a public page
+without it and on a private one without `noindex`.
+
+- **Addresses come from `brand.url`**, never from the request.
+- **Structured data is passed the page's own row** (`productLd`), so the price Google reads is the
+  price the page prints. No city or address in it while the owner keeps the city out of search.
+- **A new product kind** needs its listing in `LISTINGS` in `src/app/sitemap.ts` (a `Record`) and
+  its products in `searchCatalogue`, which the sitemap reads.
+- **AI crawlers are allowed** (the owner, 20 Oct 2026). Blocking one is a group of its own in
+  `src/app/robots.ts`.
+
 ## Interactive affordance is a base rule, not a class
 
 **Tailwind v4 removed `cursor: pointer` from buttons in Preflight.** A base

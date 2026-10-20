@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
-import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
+import { guardProductTypeEnabled, isProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getVarietyByKey, onSale } from "@/lib/repo/varieties";
 import { getVarietyContent, varietyHero, varietyImageUrl } from "@/lib/content/varieties";
+import { getSeedByKey } from "@/lib/repo/seeds";
+import { getSeedContent } from "@/lib/content/seeds";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { productId, productLd } from "@/lib/seo/structured-data";
 import { DetailPage } from "@/components/catalogue/DetailPage";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import type { Shot } from "@/components/catalogue/Gallery";
@@ -61,11 +64,29 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/microgre
   if (!found) return {};
 
   const { text } = found.content;
-  return {
-    title: text.name,
-    description: text.shortDescription ?? text.description,
-    alternates: localeAlternates(`/microgreens/${key}`),
-  };
+  const t = await getTranslations({ locale, namespace: "microgreens.seo" });
+  return pageMetadata({
+    locale,
+    path: `/microgreens/${key}`,
+    title: t("itemTitle", { name: text.name }),
+    description: t("itemDescription", { blurb: text.shortDescription ?? text.description ?? "" }),
+    image: varietyHero(found.content),
+  });
+}
+
+/**
+ * The seed this green grows from, when we sell it — linked from the foot of
+ * the page so a reader can go from eating it to growing it. Listed the way
+ * `/seeds` lists it (active, with a content file, seeds switched on), so the
+ * link never lands on a page that turns the reader away.
+ */
+async function seedOf(key: string, locale: string) {
+  const [on, row, content] = await Promise.all([
+    isProductTypeEnabled("seeds"),
+    getSeedByKey(key),
+    getSeedContent(key, locale),
+  ]);
+  return on && row?.active && content ? { name: content.text.name } : null;
 }
 
 export default async function VarietyPage({ params }: PageProps<"/[locale]/microgreens/[key]">) {
@@ -80,6 +101,9 @@ export default async function VarietyPage({ params }: PageProps<"/[locale]/micro
 
   const t = await getTranslations("microgreens");
   const d = await getTranslations("microgreens.detail");
+  const seo = await getTranslations("microgreens.seo");
+  const category = await getTranslations("common.categories");
+  const seed = await seedOf(key, locale);
   const e = await getTranslations("microgreens.detail.errors");
   /* Hero first, then the gallery — the main image is also the first
      thumbnail, so the strip is the complete set of photographs rather than
@@ -106,7 +130,20 @@ export default async function VarietyPage({ params }: PageProps<"/[locale]/micro
 
   return (
     <DetailPage
-      back={{ href: "/microgreens", label: d("back") }}
+      trail={[{ href: "/microgreens", label: category("microgreens") }]}
+      path={`/microgreens/${key}`}
+      structuredData={productLd({
+        locale,
+        path: `/microgreens/${key}`,
+        id: productId("microgreens", key),
+        name: seo("itemTitle", { name: text.name }),
+        description: text.shortDescription,
+        images: shots.map((shot) => shot.src),
+        price: { amount: row.pricePer100g, per100g: true },
+        /* A green on sale is always orderable: it is sown for the order. */
+        inStock: true,
+        ourBrand: true,
+      })}
       name={text.name}
       shortDescription={text.shortDescription}
       gallery={{
@@ -208,13 +245,27 @@ export default async function VarietyPage({ params }: PageProps<"/[locale]/micro
       prose={text.growingTips ? { heading: d("growing"), body: text.growingTips } : null}
       faq={text.faq?.length ? { heading: d("faq"), items: text.faq } : null}
       footer={
-        <>
-          {t("plansPrompt")}{" "}
-          <Link href="/#plans" className="text-forest underline underline-offset-4">
-            {t("plansLink")}
-          </Link>
-          .
-        </>
+        <div className="space-y-2">
+          {seed && (
+            <p>
+              {d.rich("crossSeed", {
+                name: seed.name,
+                link: (chunks) => (
+                  <Link href={`/seeds/${key}`} className="text-forest underline underline-offset-4">
+                    {chunks}
+                  </Link>
+                ),
+              })}
+            </p>
+          )}
+          <p>
+            {t("plansPrompt")}{" "}
+            <Link href="/#plans" className="text-forest underline underline-offset-4">
+              {t("plansLink")}
+            </Link>
+            .
+          </p>
+        </div>
       }
     />
   );

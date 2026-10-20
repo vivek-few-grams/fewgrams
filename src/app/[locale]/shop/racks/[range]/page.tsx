@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { productId, productLd } from "@/lib/seo/structured-data";
 import { Link } from "@/i18n/navigation";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { DetailPage } from "@/components/catalogue/DetailPage";
@@ -63,11 +64,14 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop/rac
   const r = rackRangeOf(range);
   if (!r) return {};
   const t = await getTranslations({ locale, namespace: "shop.racks" });
-  return {
+  /* The range, not the model a query string picked: `?h=6&s=1.25x3` is the
+     same page, and its canonical address says so. */
+  return pageMetadata({
+    locale,
+    path: `/shop/racks/${r}`,
     title: t(`ranges.${r}.name`),
     description: t(`ranges.${r}.line`),
-    alternates: localeAlternates(`/shop/racks/${r}`),
-  };
+  });
 }
 
 /** `1.25x3`, the footprint as it appears in the SKU and in the query string —
@@ -128,6 +132,8 @@ export default async function RackRangePage({
 
   const t = await getTranslations("shop.racks");
   const d = await getTranslations("shop.racks.detail");
+  const shop = await getTranslations("shop.index");
+  const category = await getTranslations("common.categories");
   /* The only strings still shared with the tray page, and deliberately: an
      invalid quantity or a full cart is a fact about the cart, not about what
      is in it. */
@@ -223,7 +229,30 @@ export default async function RackRangePage({
 
   return (
     <DetailPage
-      back={{ href: "/shop/racks", label: d("back") }}
+      trail={[
+        { href: "/shop", label: shop("title") },
+        { href: "/shop/racks", label: category("racks") },
+      ]}
+      path={`/shop/racks/${r}`}
+      crumb={t(`ranges.${r}.name`)}
+      structuredData={productLd({
+        locale,
+        path: `/shop/racks/${r}`,
+        id: productId("racks", r),
+        name: t(`ranges.${r}.name`),
+        description: t(`ranges.${r}.line`),
+        images: shots.map((shot) => shot.src),
+        /* One page, every model in the range: the price runs from the
+           cheapest to the dearest, as the range card's "from" price does. */
+        price: {
+          from: Math.min(...racks.map((x) => x.price)),
+          to: Math.max(...racks.map((x) => x.price)),
+          models: racks.length,
+        },
+        /* Built for each order, never out of stock. */
+        inStock: true,
+        ourBrand: false,
+      })}
       name={rack ? rackLineName(t, rack, colour) : t(`ranges.${r}.name`)}
       shortDescription={t(`ranges.${r}.line`)}
       gallery={{

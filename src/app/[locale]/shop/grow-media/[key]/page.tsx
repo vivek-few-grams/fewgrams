@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { productId, productLd } from "@/lib/seo/structured-data";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getGrowMediumByKey } from "@/lib/repo/grow-media";
 import { getGrowMediumContent, growMediumHero, growMediumImageUrl } from "@/lib/content/grow-media";
@@ -43,11 +44,13 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop/gro
   if (!found) return {};
 
   const { text } = found.content;
-  return {
+  return pageMetadata({
+    locale,
+    path: `/shop/grow-media/${key}`,
     title: text.name,
     description: text.shortDescription,
-    alternates: localeAlternates(`/shop/grow-media/${key}`),
-  };
+    image: growMediumHero(found.content),
+  });
 }
 
 export default async function GrowMediumPage({ params }: PageProps<"/[locale]/shop/grow-media/[key]">) {
@@ -62,6 +65,8 @@ export default async function GrowMediumPage({ params }: PageProps<"/[locale]/sh
 
   const t = await getTranslations("shop.growMedia");
   const d = await getTranslations("shop.growMedia.detail");
+  const shop = await getTranslations("shop.index");
+  const category = await getTranslations("common.categories");
   const e = await getTranslations("shop.growMedia.detail.errors");
 
   const hero = growMediumHero(content);
@@ -86,7 +91,23 @@ export default async function GrowMediumPage({ params }: PageProps<"/[locale]/sh
 
   return (
     <DetailPage
-      back={{ href: "/shop/grow-media", label: d("back") }}
+      trail={[
+        { href: "/shop", label: shop("title") },
+        { href: "/shop/grow-media", label: category("media") },
+      ]}
+      path={`/shop/grow-media/${key}`}
+      structuredData={productLd({
+        locale,
+        path: `/shop/grow-media/${key}`,
+        id: productId("media", key),
+        name: text.name,
+        description: text.shortDescription,
+        images: shots.map((shot) => shot.src),
+        price: { amount: row.price, per100g: false },
+        inStock: true,
+        /* The maker's block — its brand is on the pack, not ours. */
+        ourBrand: false,
+      })}
       eyebrow={<RecommendedBadge label={t("badge")} />}
       name={text.name}
       shortDescription={text.shortDescription}

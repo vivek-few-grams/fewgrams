@@ -9,7 +9,6 @@
   "growPrompt": "Would rather we grew them for you?",
   "growLink": "See the varieties",
   "detail": {
-    "back": "All seed",
     "minLabel": "Minimum order",
     "min": "{grams, number} g",
     "specs": "What you are buying",
@@ -49,5 +48,11 @@
     "soldOutFact": "Sold out right now",
     "soldOutTitle": "Sold out",
     "soldOutBody": "We have none of this seed on the shelf right now. Check back soon, as we restock regularly."
+  },
+  "crossVariety": "Rather have it grown for you? See our <link>{name} microgreens</link>.",
+  "seo": {
+    "title": "Untreated microgreen seeds",
+    "itemTitle": "{name} microgreen seeds",
+    "itemDescription": "{blurb} Untreated seed, cleaned for sowing."
   }
 }

@@ -1,7 +1,8 @@
-import { ArrowLeft, Info, TriangleAlert } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { Info, TriangleAlert } from "lucide-react";
 import { Sprout } from "@/components/ui/Sprout";
 import { placeholderFor } from "@/lib/images/placeholder";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { Breadcrumbs, type Crumb } from "./Breadcrumbs";
 import { Gallery, type Shot } from "./Gallery";
 
 /**
@@ -36,6 +37,10 @@ import { Gallery, type Shot } from "./Gallery";
  * labels keeps the wording where a translator can find it and keeps one
  * catalogue's copy out of the other's file.
  *
+ * The one exception is the breadcrumb trail, which is site chrome rather than
+ * catalogue copy: `Breadcrumbs` reads its "Home" from `common.json` itself,
+ * and each page passes the steps in between.
+ *
  * Every block except the gallery, the title and the facts is **optional**: a
  * seed has no flavour notes, and an item whose photography has not been shot
  * falls back to the Sprout mark rather than an empty frame.
@@ -53,7 +58,10 @@ export type DetailFaq = { question: string; answer: string };
 export type DetailProse = { heading: string; body: string };
 
 export function DetailPage({
-  back,
+  trail,
+  path,
+  crumb,
+  structuredData,
   eyebrow,
   name,
   shortDescription,
@@ -69,7 +77,16 @@ export function DetailPage({
   faq,
   footer,
 }: {
-  back: { href: string; label: string };
+  /** The steps between Home and this page — `[{ href: "/microgreens", … }]`. */
+  trail: Crumb[];
+  /** This page, without the locale: `/microgreens/kale`. */
+  path: string;
+  /** The trail's last step, when the title is not a good one — a rack's
+   *  title names the chosen model, its address only the range. */
+  crumb?: string;
+  /** The product's schema.org description (`productLd`), built by the page
+   *  from the same row it prints the price from. */
+  structuredData?: Record<string, unknown>;
   /** A line above the title — the grow-media "Recommended by Fewgrams"
    *  badge. Optional; no other kind passes one. */
   eyebrow?: React.ReactNode;
@@ -115,16 +132,8 @@ export function DetailPage({
 }) {
   return (
     <article className="mx-auto max-w-[1400px] px-6 pb-12 pt-5 md:px-12 md:pb-16 md:pt-6">
-      {/* Left-aligned with the gallery below it. `items-center` centres the
-          arrow against the cap height of the label — without it the glyph sits
-          on the baseline and reads as dropped. */}
-      <Link
-        href={back.href}
-        className="inline-flex items-center gap-2 font-body text-xs uppercase tracking-widest text-stone transition-colors hover:text-forest"
-      >
-        <ArrowLeft size={14} strokeWidth={1.75} />
-        {back.label}
-      </Link>
+      {structuredData && <JsonLd data={structuredData} />}
+      <Breadcrumbs trail={trail} current={crumb ?? name} currentHref={path} />
 
       {/* Photograph and the headline facts, side by side from `lg` up. Below
           that the image leads, because on a phone the picture is what makes
@@ -137,8 +146,14 @@ export function DetailPage({
 
           DOM order stays gallery -> buy column -> aside, which is the right
           single-column order on a phone; the grid only re-places them at
-          `lg`, so the tasting note never jumps above the price on mobile. */}
-      <div className="mt-8 grid items-start gap-10 lg:grid-cols-2 lg:gap-x-14 lg:gap-y-0">
+          `lg`, so the tasting note never jumps above the price on mobile.
+
+          `grid-cols-1` on a phone, not the implicit column: an implicit track is
+          as wide as its widest content, and five gallery thumbnails in a row
+          are 372px — the page scrolled sideways by the difference. A declared
+          `minmax(0, 1fr)` column holds the screen width and the thumbnail
+          strip scrolls inside it, as it was built to. */}
+      <div className="mt-8 grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-x-14 lg:gap-y-0">
         <div className="lg:col-start-1 lg:row-start-1">
           {gallery.shots.length > 0 ? (
             <Gallery

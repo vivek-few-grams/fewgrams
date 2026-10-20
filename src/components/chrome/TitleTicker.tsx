@@ -4,22 +4,21 @@ import { useEffect } from "react";
 
 /**
  * The rotating tab title — `Fewgrams | Microgreens`, `Fewgrams | Seeds`, and
- * so on, cycling while the tab is open. Borrowed from palmo.co.in, which
- * rotates `Flavours | Chilling / Pressing / Pouring`.
+ * so on, cycling **while the tab is in the background**. Borrowed from
+ * palmo.co.in, which rotates `Flavours | Chilling / Pressing / Pouring`.
  *
  * A browser tab is the one piece of brand surface that stays visible after the
  * visitor leaves the page, and a catalogue that names itself there is a
  * cheaper reminder than any of the alternatives.
  *
- * **It replaces the per-page title, which is the cost.** On
- * `/microgreens/mustard` the server renders `Mustard` and this overwrites it,
- * so the tab stops naming the page the visitor is actually on, and a bookmark
- * taken mid-rotation is saved as whatever was showing. Search engines are
- * unaffected — crawlers read the server-rendered `<title>`, not a title a
- * `useEffect` set afterwards — so the trade is a navigational one, not an SEO
- * one. Restoring the real title and rotating only while `document.hidden` is
- * the variant that avoids it; the reference does not do that, and neither does
- * this.
+ * **Only while hidden** (20 Oct 2026). It used to rotate all the time, which
+ * replaced the page's own title: on `/microgreens/mustard` the tab stopped
+ * naming the page the visitor was on, a bookmark took whatever word was
+ * showing, and — the reason it changed — Google renders pages with
+ * JavaScript and can record the title a script set, so a product page could
+ * be indexed as "Fewgrams | Racks". The page's real title is back the moment
+ * the tab is looked at, and a crawler, which never hides the tab, only ever
+ * sees the real one.
  *
  * The words arrive pre-resolved. A `t()` function is not serialisable across
  * the server boundary, and the labels already exist translated in
@@ -34,34 +33,44 @@ export function TitleTicker({ brand, words }: { brand: string; words: string[] }
        keeps the title the page shipped with. */
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    /* Captured before the first write so the page's own title can be put back.
-       Without this, a client-side navigation away from a rotating page would
-       inherit whichever word was last showing — Next only sets the title on
-       the new route, and the interval from the old one would already have
-       clobbered it. */
-    const original = document.title;
+    /* The page's own title, captured each time the tab is hidden rather than
+       once: a client-side navigation changes it, and Next sets the new
+       route's title without knowing this component exists. */
+    let original = document.title;
+    let id: number | undefined;
     let i = 0;
 
     const show = () => {
       document.title = `${brand} | ${words[i % words.length]}`;
       i += 1;
     };
-
-    /* No immediate call. Writing the first word here loses it: Next applies
-       the route's metadata title *after* hydration, so `Microgreens` was set,
-       overwritten back to `Mustard`, and the first word a visitor saw was
-       whatever the interval reached next — `Racks`. Letting the first tick be
-       `words[0]` also leaves the page's real title up for the first 2.5s,
-       which is the moment it is most worth reading. */
-    const id = window.setInterval(show, HOLD_MS);
-
-    return () => {
+    const stop = () => {
+      if (id === undefined) return;
       window.clearInterval(id);
+      id = undefined;
       document.title = original;
+    };
+    const onVisibility = () => {
+      if (!document.hidden) return stop();
+      if (id !== undefined) return;
+      original = document.title;
+      show();
+      id = window.setInterval(show, HOLD_MS);
+    };
+
+    /* Nothing on mount, even for a tab opened in the background: Next
+       applies the route's metadata title after hydration, so a word written
+       now is overwritten, and the title captured as "original" might not be
+       the page's yet. Such a tab starts ticking the first time it is looked
+       at and left. */
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      stop();
     };
     /* `words` is an array literal from the server component, so a new
        reference every render — joined into a string to compare by value and
-       stop the interval restarting on every parent re-render. */
+       stop the listener being re-attached on every parent re-render. */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brand, words.join("|")]);
 

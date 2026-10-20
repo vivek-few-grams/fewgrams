@@ -5,6 +5,14 @@
 export const brand = {
   name: "Fewgrams",
   /**
+   * The live site, with no trailing slash — what every canonical link,
+   * `hreflang`, sitemap entry, share preview and piece of structured data is
+   * built on (`src/lib/seo/`). Deliberately not read from the request: a page
+   * rendered on localhost or behind a preview URL must still name the real
+   * address, or a crawler that reaches it is told the copy is the original.
+   */
+  url: "https://fewgrams.com",
+  /**
    * The logo lockup — `public/img/brand/fewgrams-logo.svg`.
    *
    * Intrinsic size comes from the file's own viewBox (2112 x 1788, aspect

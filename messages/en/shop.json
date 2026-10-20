@@ -75,7 +75,6 @@
     "dispatch": "Built for you, with you by {date}",
     "leadNote": "Racks are built for your order in three days, then sent by courier anywhere in India. The delivery price for your address is worked out at checkout.",
     "detail": {
-      "back": "All racks",
       "height": "Height",
       "heightOption": "{height, number} ft · {shelves, plural, one {# shelf} other {# shelves}}",
       "size": "Shelf size",
@@ -108,7 +107,6 @@
     "note": "Trays and mats travel with the rest of your order.",
     "cardLink": "See the detail",
     "detail": {
-      "back": "All trays & drainage",
       "galleryAlt": "{name}",
       "thumb": "Show photo {n} of {total}",
       "prevPhotos": "Previous photos",
@@ -148,7 +146,6 @@
     "note": "Grow media travel with the rest of your order.",
     "cardLink": "See the detail",
     "detail": {
-      "back": "All grow media",
       "galleryAlt": "{name}",
       "thumb": "Show photo {n} of {total}",
       "prevPhotos": "Previous photos",
@@ -176,5 +173,15 @@
     },
     "dispatchShelf": "From our shelf, ready to ship {date}",
     "dispatchRestock": "We bring it in for you, ready to ship {date}"
+  },
+  "seo": {
+    "indexTitle": "Grow your own microgreens",
+    "indexDescription": "Everything you need to grow microgreens at home, sent by courier anywhere in India.",
+    "traysTitle": "Microgreen trays and drainage mats",
+    "traysDescription": "Trays and drainage mats for growing microgreens at home, kept in stock and sent by courier anywhere in India.",
+    "growMediaTitle": "Cocopeat for growing microgreens",
+    "growMediaDescription": "The cocopeat we grow our own microgreens in, kept in stock and sent by courier anywhere in India.",
+    "racksTitle": "Racks for growing microgreens at home",
+    "racksDescription": "Racks for growing microgreens, built to order in the height, width and number of levels you pick, and sent by courier anywhere in India."
   }
 }

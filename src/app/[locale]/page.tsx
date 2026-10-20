@@ -1,5 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { localeAlternates } from "@/i18n/alternates";
+import { brand } from "@/lib/brand";
+import { pageMetadata } from "@/lib/seo/metadata";
+import { organizationLd, websiteLd } from "@/lib/seo/structured-data";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { Hero } from "@/components/home/Hero";
 import { FreeDeliveryBanner } from "@/components/home/FreeDeliveryBanner";
 import { Process } from "@/components/home/Process";
@@ -52,8 +55,16 @@ import { currentActor } from "@/lib/auth/guard";
  */
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata() {
-  return { alternates: localeAlternates("/") };
+export async function generateMetadata({ params }: PageProps<"/[locale]">) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "common.seo" });
+  return pageMetadata({
+    locale,
+    path: "/",
+    title: `${brand.name} | ${t("homeTitle")}`,
+    description: t("homeDescription"),
+    absoluteTitle: true,
+  });
 }
 
 export default async function Home({ params }: PageProps<"/[locale]">) {
@@ -160,6 +171,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
 
   return (
     <>
+      {/* Who we are and how to reach us, for search engines and assistants —
+          once, here, rather than on every page. */}
+      <JsonLd data={[organizationLd(), websiteLd(locale)]} />
       <FreeDeliveryBanner />
       <Hero />
       <Process />

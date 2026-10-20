@@ -4,6 +4,7 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import type { Metadata } from "next";
 import { Montserrat, Noto_Sans_Kannada, Quicksand } from "next/font/google";
 import { brand } from "@/lib/brand";
+import { clipDescription } from "@/lib/seo/metadata";
 import { Header } from "@/components/chrome/Header";
 import { Footer } from "@/components/chrome/Footer";
 import { LeafBackdrop } from "@/components/chrome/LeafBackdrop";
@@ -53,12 +54,21 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "common" });
   return {
-    title: `${brand.name} | ${t("brand.tagline")}`,
-    description: t("brand.subline"),
-    /* hreflang is deliberately NOT set here — a layout cannot know the
-       current path, so it would claim every Kannada page lives at /kn. Each
-       page sets its own via localeAlternates() (src/i18n/alternates.ts). */
-    other: { "og:locale": locale },
+    /* Turns every relative URL in a page's metadata — share pictures above all
+       — into an address on the live site. */
+    metadataBase: new URL(brand.url),
+    title: {
+      default: `${brand.name} | ${t("seo.homeTitle")}`,
+      /* Pages name themselves ("Kale microgreens") and the brand follows.
+         Applies to child segments only, so the home page — this segment —
+         takes the default, which already leads with the brand. */
+      template: `%s | ${brand.name}`,
+    },
+    description: clipDescription(t("seo.homeDescription")),
+    /* Canonical, hreflang and the share preview are deliberately NOT set
+       here — a layout cannot know the current path, so it would claim every
+       Kannada page lives at /kn. Each page sets them through pageMetadata()
+       (src/lib/seo/metadata.ts). */
     applicationName: t("footer.brand"),
   };
 }

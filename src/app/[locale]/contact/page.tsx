@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight, Mail, MessageCircle } from "lucide-react";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { Link } from "@/i18n/navigation";
 import { contact, mailtoHref, whatsappHref } from "@/lib/content/contact";
 
@@ -19,11 +19,7 @@ import { contact, mailtoHref, whatsappHref } from "@/lib/content/contact";
 export async function generateMetadata({ params }: PageProps<"/[locale]/contact">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "help.contact" });
-  return {
-    title: t("title"),
-    description: t("description"),
-    alternates: localeAlternates("/contact"),
-  };
+  return pageMetadata({ locale, path: "/contact", title: t("title"), description: t("description") });
 }
 
 export default async function ContactPage({ params, searchParams }: PageProps<"/[locale]/contact">) {

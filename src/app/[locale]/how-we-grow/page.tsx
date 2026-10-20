@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { Link } from "@/i18n/navigation";
 import { getStoryBook } from "@/lib/content/story";
 import { StoryBook } from "@/components/story/StoryBook";
@@ -33,11 +33,7 @@ import { StoryBook } from "@/components/story/StoryBook";
 export async function generateMetadata({ params }: PageProps<"/[locale]/how-we-grow">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "story" });
-  return {
-    title: t("title"),
-    description: t("description"),
-    alternates: localeAlternates("/how-we-grow"),
-  };
+  return pageMetadata({ locale, path: "/how-we-grow", title: t("title"), description: t("description") });
 }
 
 export default async function HowWeGrowPage({ params }: PageProps<"/[locale]/how-we-grow">) {

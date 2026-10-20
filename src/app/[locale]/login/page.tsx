@@ -39,7 +39,8 @@ const PERKS: { key: "track" | "addresses" | "noPassword"; icon: LucideIcon }[] =
 export async function generateMetadata({ params }: PageProps<"/[locale]/login">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "auth.login" });
-  return { title: t("title") };
+  /* Nothing here for a search result to send anyone to. */
+  return { title: t("title"), robots: { index: false, follow: false } };
 }
 
 export default async function LoginPage({ params: routeParams, searchParams }: PageProps<"/[locale]/login">) {

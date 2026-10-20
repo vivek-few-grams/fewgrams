@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowRight } from "lucide-react";
-import { localeAlternates } from "@/i18n/alternates";
+import { pageMetadata } from "@/lib/seo/metadata";
 import { Link } from "@/i18n/navigation";
 import { getFaq } from "@/lib/content/faq";
 
@@ -22,11 +22,7 @@ import { getFaq } from "@/lib/content/faq";
 export async function generateMetadata({ params }: PageProps<"/[locale]/faq">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "help.faq" });
-  return {
-    title: t("title"),
-    description: t("description"),
-    alternates: localeAlternates("/faq"),
-  };
+  return pageMetadata({ locale, path: "/faq", title: t("title"), description: t("description") });
 }
 
 export default async function FaqPage({ params }: PageProps<"/[locale]/faq">) {
