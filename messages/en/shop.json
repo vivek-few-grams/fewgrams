@@ -99,7 +99,8 @@
       "galleryAlt": "{name}",
       "thumb": "Photo {n, number} of {total, number}",
       "prevPhotos": "Previous photos",
-      "nextPhotos": "More photos"
+      "nextPhotos": "More photos",
+      "traysForRack": "Trays for your rack"
     },
     "cardLink": "See sizes and prices"
   },
@@ -128,7 +129,8 @@
         "notSellable": "That item is not on sale at the moment.",
         "cartFull": "Your cart is full at 12 items. Remove one to add another.",
         "generic": "That did not save. Please try again."
-      }
+      },
+      "seedsToSow": "Seeds to sow"
     },
     "dispatchShelf": "From our shelf, ready to ship {date}",
     "dispatchRestock": "We bring it in for you, ready to ship {date}"
@@ -170,7 +172,8 @@
         "notSellable": "That item is not on sale at the moment.",
         "cartFull": "Your cart is full at 12 items. Remove one to add another.",
         "generic": "That did not save. Please try again."
-      }
+      },
+      "seedsToSow": "Seeds to sow"
     },
     "dispatchShelf": "From our shelf, ready to ship {date}",
     "dispatchRestock": "We bring it in for you, ready to ship {date}"

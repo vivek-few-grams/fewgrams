@@ -9,6 +9,9 @@ import { getVarietyContent } from "@/lib/content/varieties";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { productId, productLd } from "@/lib/seo/structured-data";
 import { DetailPage } from "@/components/catalogue/DetailPage";
+import { Related } from "@/components/catalogue/Related";
+import { after } from "@/lib/catalogue/related";
+import { searchCatalogue } from "@/lib/search/catalogue";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import type { Shot } from "@/components/catalogue/Gallery";
 import { MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
@@ -104,6 +107,22 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
   const seo = await getTranslations("seeds.seo");
   const category = await getTranslations("common.categories");
   const variety = await varietyOf(key, locale);
+  /* What it is sown into and on — the cocopeat first, then the trays, each
+     cheapest first so the starter sizes lead — and the next few seeds on the
+     /seeds grid (SPEC §28.8). Search's list, so a switched-off category
+     suggests nothing. */
+  const catalogue = await searchCatalogue(locale);
+  const growWith = catalogue
+    .filter((entry) => entry.kind === "media" || entry.kind === "tray")
+    .sort(
+      (a, b) => Number(b.kind === "media") - Number(a.kind === "media") || (a.price ?? 0) - (b.price ?? 0),
+    )
+    .slice(0, 4);
+  const moreSeeds = after(
+    catalogue.filter((entry) => entry.kind === "seed"),
+    key,
+    4,
+  );
   const e = await getTranslations("seeds.detail.errors");
 
   const hero = seedHero(content);
@@ -243,6 +262,12 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
       cautions={text.cautions?.length ? { heading: d("cautions"), items: text.cautions } : null}
       prose={text.sowing ? { heading: d("sowing"), body: text.sowing } : null}
       faq={text.faq?.length ? { heading: d("faq"), items: text.faq } : null}
+      related={
+        <>
+          <Related heading={d("growWith")} entries={growWith} />
+          <Related heading={d("moreSeeds")} entries={moreSeeds} />
+        </>
+      }
       footer={
         variety ? (
           t.rich("crossVariety", {

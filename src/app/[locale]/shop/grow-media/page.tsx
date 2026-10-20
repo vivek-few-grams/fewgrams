@@ -34,7 +34,12 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop/grow-media">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "shop.seo" });
-  return pageMetadata({ locale, path: "/shop/grow-media", title: t("growMediaTitle"), description: t("growMediaDescription") });
+  return pageMetadata({
+    locale,
+    path: "/shop/grow-media",
+    title: t("growMediaTitle"),
+    description: t("growMediaDescription"),
+  });
 }
 
 export default async function GrowMediaPage({ params }: PageProps<"/[locale]/shop/grow-media">) {

@@ -74,9 +74,14 @@ export function rackLineName(t: RackTranslator, rack: SellableRack, colour: Rack
  */
 export function rackFacts(t: RackTranslator, rack: SellableRack): Array<{ label: string; value: string }> {
   return [
-    { label: t("detail.height"), value: t("detail.heightOption", { height: rack.heightFt, shelves: rack.shelves }) },
+    {
+      label: t("detail.height"),
+      value: t("detail.heightOption", { height: rack.heightFt, shelves: rack.shelves }),
+    },
     { label: t("detail.size"), value: rackSizeLabel(t, rack) },
-    ...(rack.gaugeMm !== null ? [{ label: t("detail.steel"), value: t("detail.steelValue", { mm: rack.gaugeMm }) }] : []),
+    ...(rack.gaugeMm !== null
+      ? [{ label: t("detail.steel"), value: t("detail.steelValue", { mm: rack.gaugeMm }) }]
+      : []),
     ...(rack.capacityKg !== null
       ? [
           {
@@ -100,7 +105,10 @@ export function rackSizeParam(rack: Pick<SellableRack, "depthFt" | "lengthFt">):
  * each rack it lists to the page that prints that rack's price. Colour is left
  * out for pipe, which has none.
  */
-export function rackPagePath(range: RackRange, choice: { h: number; s: string; c: RackColour | null }): string {
+export function rackPagePath(
+  range: RackRange,
+  choice: { h: number; s: string; c: RackColour | null },
+): string {
   const p = new URLSearchParams({ h: String(choice.h), s: choice.s });
   if (choice.c) p.set("c", choice.c);
   return `/shop/racks/${range}?${p.toString()}`;

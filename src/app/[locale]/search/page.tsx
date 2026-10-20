@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Search } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getPathname, Link } from "@/i18n/navigation";
-import { SearchThumb } from "@/components/search/SearchThumb";
-import { LinkPending } from "@/components/ui/LinkPending";
+import { ResultCard } from "@/components/search/ResultCard";
 import { isProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { searchCatalogue, type CatalogueEntry } from "@/lib/search/catalogue";
 import { entryId } from "@/lib/search/entry";
@@ -128,36 +127,14 @@ export default async function SearchPage({ params, searchParams }: PageProps<"/[
               <ul className="mt-4 grid gap-3 md:grid-cols-2">
                 {group.entries.map((entry) => (
                   <li key={entryId(entry)}>
-                    {/* A grid, so the price can sit under the name on a phone
-                        and in its own column from `sm`. Beside the name at
-                        375px it took a third of the row and wrapped a Kannada
-                        tray name onto four lines. */}
-                    <Link
-                      href={entry.href}
-                      className="group relative grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 gap-y-1 rounded-2xl border border-forest/10 bg-white p-3 transition-colors hover:border-forest/30 sm:grid-cols-[auto_minmax(0,1fr)_auto]"
-                    >
-                      <span className="row-span-2 sm:row-span-1">
-                        <SearchThumb kind={entry.kind} image={entry.image} size={72} />
-                      </span>
-                      <span className="col-start-2 row-start-1 self-end sm:self-center">
-                        <span className="block font-display text-sm font-semibold text-forest underline-offset-4 group-hover:underline">
-                          {entry.name}
-                        </span>
-                        {entry.blurb && (
-                          <span className="mt-1 line-clamp-2 font-body text-xs leading-relaxed text-stone">
-                            {entry.blurb}
-                          </span>
-                        )}
-                      </span>
-                      {/* Pick Your Own has no monthly price, and an item the
-                          costing has not reached holds 0 — print neither. */}
-                      {entry.price !== null && entry.price > 0 && (
-                        <span className="col-start-2 self-start font-display text-sm font-bold tabular-nums text-forest sm:col-start-3 sm:row-start-1 sm:self-center">
-                          {t(`price.${entry.kind}`, { price: entry.price })}
-                        </span>
-                      )}
-                      <LinkPending spinner={28} />
-                    </Link>
+                    <ResultCard
+                      entry={entry}
+                      price={
+                        entry.price !== null && entry.price > 0
+                          ? t(`price.${entry.kind}`, { price: entry.price })
+                          : null
+                      }
+                    />
                   </li>
                 ))}
               </ul>

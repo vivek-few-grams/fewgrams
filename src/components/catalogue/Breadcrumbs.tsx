@@ -17,7 +17,15 @@ export type Crumb = { href: string; label: string };
  * The last item is the page itself — printed, not linked, and marked
  * `aria-current`. Separators are drawn, not read out.
  */
-export async function Breadcrumbs({ trail, current, currentHref }: { trail: Crumb[]; current: string; currentHref: string }) {
+export async function Breadcrumbs({
+  trail,
+  current,
+  currentHref,
+}: {
+  trail: Crumb[];
+  current: string;
+  currentHref: string;
+}) {
   const locale = await getLocale();
   const t = await getTranslations("common.breadcrumb");
   const all: Crumb[] = [{ href: "/", label: t("home") }, ...trail];

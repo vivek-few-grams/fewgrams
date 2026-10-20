@@ -62,12 +62,15 @@ export async function llmsTxt(): Promise<string> {
   /* A microgreen and a seed share a name ("Broccoli"), so each is called what
      its page title calls it. */
   const title = (kind: SearchKind, name: string) =>
-    kind === "variety" ? greens("itemTitle", { name }) : kind === "seed" ? seeds("itemTitle", { name }) : name;
+    kind === "variety"
+      ? greens("itemTitle", { name })
+      : kind === "seed"
+        ? seeds("itemTitle", { name })
+        : name;
 
-  /* A plan is a card on the home page; its own address is the checkout step,
-     which robots.txt keeps crawlers out of. */
-  const link = (kind: SearchKind, href: string) =>
-    kind === "plan" ? `${brand.url}/#plans` : absoluteUrl(locale, href);
+  /* A plan's own address is the checkout step, which robots.txt keeps
+     crawlers out of; the plans page describes all three. */
+  const link = (kind: SearchKind, href: string) => absoluteUrl(locale, kind === "plan" ? "/plans" : href);
 
   const products = await Promise.all(
     SECTIONS.map(async ({ kind, heading }) => {

@@ -75,6 +75,7 @@ export function DetailPage({
   cautions,
   prose,
   faq,
+  related,
   footer,
 }: {
   /** The steps between Home and this page — `[{ href: "/microgreens", … }]`. */
@@ -128,6 +129,8 @@ export function DetailPage({
   cautions?: { heading: string; items: string[] } | null;
   prose?: DetailProse | null;
   faq?: { heading: string; items: DetailFaq[] } | null;
+  /** Products to go on to (`Related` sections), above the footer. */
+  related?: React.ReactNode;
   footer?: React.ReactNode;
 }) {
   return (
@@ -354,6 +357,8 @@ export function DetailPage({
           </div>
         </section>
       )}
+
+      {related && <div className="mt-16 space-y-12">{related}</div>}
 
       {footer && (
         <div className="mt-16 border-t border-forest/15 pt-8 font-body text-sm text-stone">{footer}</div>

@@ -17,8 +17,8 @@ import type { ProductType } from "@/lib/types";
  * page the site then turns away would teach Google the site is broken.
  *
  * Left out on purpose: the cart, checkout, account, login, subscribe and
- * search pages (each is `noindex`, and `robots.ts` keeps crawlers out), and
- * plans, which are cards on the home page rather than pages of their own.
+ * search pages (each is `noindex`, and `robots.ts` keeps crawlers out). The
+ * plans are one page, `/plans`, not a page each.
  *
  * No `lastModified`, `changeFrequency` or `priority`: Google ignores the last
  * two, and a date we do not actually track would be worse than none.
@@ -31,6 +31,7 @@ export const dynamic = "force-dynamic";
 /** Pages that are always there. */
 const PAGES = [
   "/",
+  "/plans",
   "/shop",
   "/how-we-grow",
   "/faq",

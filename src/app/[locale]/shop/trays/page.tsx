@@ -49,7 +49,12 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop/trays">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "shop.seo" });
-  return pageMetadata({ locale, path: "/shop/trays", title: t("traysTitle"), description: t("traysDescription") });
+  return pageMetadata({
+    locale,
+    path: "/shop/trays",
+    title: t("traysTitle"),
+    description: t("traysDescription"),
+  });
 }
 
 export default async function TraysPage({ params }: PageProps<"/[locale]/shop/trays">) {

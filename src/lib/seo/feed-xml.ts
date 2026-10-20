@@ -81,7 +81,8 @@ const absolute = (src: string) => `${brand.url}${src}`;
 
 /** Merchant Center's limits: a 150-character title, 5,000 of description and
  *  ten extra photographs. */
-const clip = (value: string, max: number) => (value.length <= max ? value : `${value.slice(0, max - 1).trimEnd()}…`);
+const clip = (value: string, max: number) =>
+  value.length <= max ? value : `${value.slice(0, max - 1).trimEnd()}…`;
 
 /** The RSS 2.0 document, with Google's `g:` namespace for the product fields. */
 export function feedXml(channel: { title: string; description: string }, items: FeedItem[]): string {
@@ -104,7 +105,10 @@ export function feedXml(channel: { title: string; description: string }, items: 
       tag("product_type", item.productType),
       tag("shipping_label", kind.shippingLabel),
       ...(item.weighed
-        ? [tag("unit_pricing_measure", `${GRAMS_PER_UNIT}g`), tag("unit_pricing_base_measure", `${GRAMS_PER_UNIT}g`)]
+        ? [
+            tag("unit_pricing_measure", `${GRAMS_PER_UNIT}g`),
+            tag("unit_pricing_base_measure", `${GRAMS_PER_UNIT}g`),
+          ]
         : []),
       ...(item.handlingDays !== undefined
         ? [tag("min_handling_time", item.handlingDays), tag("max_handling_time", item.handlingDays)]

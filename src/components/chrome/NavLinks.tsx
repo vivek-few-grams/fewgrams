@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import { onSectionClick } from "@/lib/section-scroll";
 import { CURTAIN_ATTR } from "./curtain-anchor";
 
 /**
@@ -23,16 +22,12 @@ const ITEMS = [
     match: "/microgreens",
     hover: "microgreensHover",
   },
-  /* The only in-page link in the nav: PLANS is a section of the home page,
-     not a route (SPEC §18.3). `hash` is what makes it re-scrollable — see
-     `onSectionClick`. */
-  {
-    href: "/#plans",
-    key: "plans",
-    match: "/plans",
-    hash: "plans",
-    hover: "plansHover",
-  },
+  /* `/plans`, the page of its own (the owner, 20 Oct 2026; SPEC §28.8), so
+     the link on every page points search engines at it. The home page keeps
+     its plans section for anyone scrolling, and the hero's button still
+     scrolls to it. Until then this was `/#plans` and re-scrolled the home
+     page through `onSectionClick`. */
+  { href: "/plans", key: "plans", match: "/plans", hover: "plansHover" },
   /* `hover` is the word the link grows into under the pointer
      (`.nav-sprout` in globals.css) — the owner's, 24 Sep 2026.
 
@@ -93,12 +88,8 @@ export function NavLinks({
             href={item.href}
             /* Opts this link into the full-screen brand curtain. These four
                and the language switch are the only links on the site that
-               carry it — see `curtain-anchor.ts` for why it is per-link.
-               `/#plans` is included and still stays quiet while you are on
-               the home page, because the rule also skips a same-pathname
-               link. */
+               carry it — see `curtain-anchor.ts` for why it is per-link. */
             {...{ [CURTAIN_ATTR]: "" }}
-            onClick={"hash" in item ? (event) => onSectionClick(event, item.hash) : undefined}
             aria-current={active ? "page" : undefined}
             className={`ui-label nav-sprout whitespace-nowrap border-b-2 pb-0.5 pt-1 font-body font-medium transition-colors [--label-size:12px] md:[--label-size:13px] ${
               active ? "border-forest text-forest" : "border-transparent text-forest/70 hover:text-forest"

@@ -9,6 +9,9 @@ import { getSeedContent } from "@/lib/content/seeds";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { productId, productLd } from "@/lib/seo/structured-data";
 import { DetailPage } from "@/components/catalogue/DetailPage";
+import { Related } from "@/components/catalogue/Related";
+import { after } from "@/lib/catalogue/related";
+import { searchCatalogue } from "@/lib/search/catalogue";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import type { Shot } from "@/components/catalogue/Gallery";
 import { adhocReadyDate, formatDeliveryDate } from "@/lib/delivery-date";
@@ -104,6 +107,13 @@ export default async function VarietyPage({ params }: PageProps<"/[locale]/micro
   const seo = await getTranslations("microgreens.seo");
   const category = await getTranslations("common.categories");
   const seed = await seedOf(key, locale);
+  /* The next few on the /microgreens grid, so every green is linked from
+     another green's page (SPEC §28.8). */
+  const others = after(
+    (await searchCatalogue(locale)).filter((entry) => entry.kind === "variety"),
+    key,
+    4,
+  );
   const e = await getTranslations("microgreens.detail.errors");
   /* Hero first, then the gallery — the main image is also the first
      thumbnail, so the strip is the complete set of photographs rather than
@@ -244,6 +254,7 @@ export default async function VarietyPage({ params }: PageProps<"/[locale]/micro
       cautions={text.cautions?.length ? { heading: d("cautions"), items: text.cautions } : null}
       prose={text.growingTips ? { heading: d("growing"), body: text.growingTips } : null}
       faq={text.faq?.length ? { heading: d("faq"), items: text.faq } : null}
+      related={<Related heading={d("moreMicrogreens")} entries={others} />}
       footer={
         <div className="space-y-2">
           {seed && (
@@ -260,7 +271,7 @@ export default async function VarietyPage({ params }: PageProps<"/[locale]/micro
           )}
           <p>
             {t("plansPrompt")}{" "}
-            <Link href="/#plans" className="text-forest underline underline-offset-4">
+            <Link href="/plans" className="text-forest underline underline-offset-4">
               {t("plansLink")}
             </Link>
             .

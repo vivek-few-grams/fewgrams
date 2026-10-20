@@ -65,5 +65,9 @@
       "notCompleted": "The payment was not completed. Nothing has been charged, so you can try again."
     },
     "lockedHint": "Confirm where we deliver first, then choose your boxes."
+  },
+  "seo": {
+    "title": "Weekly microgreen plans",
+    "description": "Fresh microgreens every Saturday, a different mix each week of the month, sown for you and cut the morning they arrive. Choose a plan, or pick your own greens."
   }
 }

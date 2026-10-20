@@ -172,7 +172,7 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
 
       <p className="mt-14 font-body text-sm text-stone">
         {t("plansPrompt")}{" "}
-        <Link href="/#plans" className="text-forest underline underline-offset-4">
+        <Link href="/plans" className="text-forest underline underline-offset-4">
           {t("plansLink")}
         </Link>
         .

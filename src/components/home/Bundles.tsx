@@ -199,6 +199,7 @@ export function Bundles({
   varieties,
   varietyNames,
   adminEmpty,
+  headingLevel = 2,
 }: {
   plans: PlanWithWeeks[];
   varieties: Variety[];
@@ -213,8 +214,12 @@ export function Bundles({
    * catalogue (see CLAUDE.md) and this is a client component.
    */
   adminEmpty: { title: string; body: string; cta: string } | null;
+  /** 2 as a section of the home page; 1 on `/plans`, where the cards are the
+   *  page. The card names sit one level below. */
+  headingLevel?: 1 | 2;
 }) {
   const tp = useTranslations("plans");
+  const Heading = headingLevel === 1 ? "h1" : "h2";
   const [openRotation, setOpenRotation] = useState<string | null>(null);
   /* One ground per card. Computed here, not in the card, because the answer
      for any card depends on the ones before it — and because the modal has to
@@ -248,9 +253,9 @@ export function Bundles({
             unreadable. */}
         <div className="max-w-3xl">
           <p className="font-body text-[11px] uppercase tracking-widest text-stone">{tp("eyebrow")}</p>
-          <h2 className="mt-3 font-display text-[clamp(1.6rem,3.4vw,2.6rem)] font-bold leading-tight tracking-tight text-forest">
+          <Heading className="mt-3 font-display text-[clamp(1.6rem,3.4vw,2.6rem)] font-bold leading-tight tracking-tight text-forest">
             {tp("heading")}
-          </h2>
+          </Heading>
           <p className="mt-4 font-body text-sm leading-relaxed text-stone">
             {tp("firstDelivery")} <strong className="font-semibold text-forest">{firstDelivery}</strong>.
             {plansAreCheaper && <> {tp("cheaperNote")}</>}
@@ -288,6 +293,7 @@ export function Bundles({
                 stems={markStems(index)}
                 weekCount={weeks.length}
                 firstDelivery={firstDelivery}
+                nameLevel={headingLevel === 1 ? "h2" : "h3"}
                 onShowRotation={() => setOpenRotation(plan.id)}
                 isRotationOpen={openRotation === plan.id}
               />
@@ -319,6 +325,7 @@ function BundleCard({
   stems,
   weekCount,
   firstDelivery,
+  nameLevel,
   onShowRotation,
   isRotationOpen,
 }: {
@@ -331,6 +338,7 @@ function BundleCard({
   stems: number;
   weekCount: number;
   firstDelivery: string;
+  nameLevel: "h2" | "h3";
   onShowRotation: () => void;
   isRotationOpen: boolean;
 }) {
@@ -338,6 +346,7 @@ function BundleCard({
   const per100 = pricePer100g(plan);
   const isByo = plan.monthlyPrice === null;
   const p = panels[panel];
+  const Name = nameLevel;
 
   return (
     /* `isolate` is load-bearing, and pairs with the watermark's `-z-10`. It
@@ -390,7 +399,7 @@ function BundleCard({
         {text.badge}
       </span>
 
-      <h3 className={`font-display text-2xl font-bold tracking-tight ${p.heading}`}>{text.name}</h3>
+      <Name className={`font-display text-2xl font-bold tracking-tight ${p.heading}`}>{text.name}</Name>
       <p className={`mt-1.5 font-body text-sm ${p.body}`}>{text.tagline}</p>
 
       {/* Boxes and box weight on **one line**, not stacked.

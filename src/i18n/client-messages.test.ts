@@ -4,7 +4,11 @@ import { describe, expect, it } from "vitest";
 import { CLIENT_MESSAGES, pickMessages } from "./client-messages";
 
 describe("pickMessages", () => {
-  const all = { common: { nav: { shop: "Shop" } }, home: { hero: { a: 1 }, trayPlay: { b: 2 } }, plans: { c: 3 } };
+  const all = {
+    common: { nav: { shop: "Shop" } },
+    home: { hero: { a: 1 }, trayPlay: { b: 2 } },
+    plans: { c: 3 },
+  };
 
   it("keeps whole namespaces and single branches, nothing else", () => {
     expect(pickMessages(all, ["common", "home.trayPlay"])).toEqual({

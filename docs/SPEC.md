@@ -2163,8 +2163,9 @@ holding a second copy of the nav's route list, and the two would part company th
 section was added. The check is `closest("[data-curtain]")` rather than an attribute test on the
 anchor, so a whole group can be opted in by marking its container if that is ever useful.
 
-PLANS is `/#plans` and is opted in, yet stays quiet while you are already on the home page — the
-same-pathname rule catches it, which is what stops a curtain hiding the section it just scrolled to.
+PLANS was `/#plans` until 20 Oct 2026 and stayed quiet on the home page — the same-pathname rule
+caught it, which stopped a curtain hiding the section it had just scrolled to. It is `/plans` now
+(§28.8), an ordinary page link; the hero's plans button is still `/#plans` and still re-scrolls.
 
 **When it runs — three cases, one attribute (`html[data-loader]`):**
 
@@ -2310,7 +2311,7 @@ The logo owns the left edge. Everything else is grouped on the right.
 |---|---|
 | Logo | Brand mark, left. Links to `/` |
 | `MICROGREENS` | `/microgreens` — the variety grid (§18.6) |
-| `PLANS` | Anchors to the bundles section (`/#plans`) |
+| `PLANS` | `/plans` — the plans page (§28.8, since 20 Oct 2026; it anchored to `/#plans` before) |
 | `SHOP` | `/shop` — racks, seeds, trays, snacks. A plain link, not a dropdown |
 | `HOW WE GROW` | The animated process page (§18.5) |
 | Search | **From 1152px a field-shaped pill at the head of the utilities**, before the language switch, typing out real product names; `/` opens it. **Below that, the magnifier in a dark green circle** among the utilities, 32px so the phone bar stays 65px. Either opens a band under the bar with suggestions as you type; a plain link to `/search` without JavaScript (§27.2) |
@@ -2682,11 +2683,13 @@ real dates. Cards stay equal height and scannable.
 differentiator no local competitor offers. Styled lighter (outline button, not filled) so most
 visitors land on a curated pack, which is also easier to operate.
 
-**Subscribe buttons live in the cards**, not in the header. `PLANS` in the header anchors here.
+**Subscribe buttons live in the cards**, not in the header. `PLANS` in the header goes to `/plans`
+(§28.8), which shows the same cards; the hero's button anchors here.
 
-**`PLANS` re-scrolls, every time.** It is a `Link` to `/#plans`, so the first click changed the URL
+**The hero's plans button re-scrolls, every time** (the header's `PLANS` did too until it moved to
+`/plans` on 20 Oct 2026). It is a `Link` to `/#plans`, so the first click changed the URL
 and the browser scrolled — but on the second click the URL was *already* `/#plans`, no navigation
-happened, and nothing moved: the visitor scrolled up, clicked PLANS and was ignored. `NavLinks`
+happened, and nothing moved: the visitor scrolled up, clicked it and was ignored. `onSectionClick`
 intercepts the click **only when the hash is already current**, leaving the ordinary first click to
 the router, and calls `scrollIntoView` (which honours the section's `scroll-mt-24`, and drops the
 smooth behaviour under `prefers-reduced-motion` per §17.4).
@@ -5937,8 +5940,8 @@ answers are built from.
 **`/llms.txt`** (`src/lib/seo/llms.ts`) — the llmstxt.org shape: name, summary, a section per
 category from `searchCatalogue` (the grids' own rules, §27) with each product's price as search
 prints it, then the about and policy pages by their own titles and descriptions, and an
-`Optional` section for the Kannada site, the sitemap and the feed. Plans link to the home page's
-`#plans`, since `/subscribe` is kept out of crawlers' reach.
+`Optional` section for the Kannada site, the sitemap and the feed. Plans link to `/plans` (§28.8),
+since `/subscribe` is kept out of crawlers' reach.
 
 Both are read per request and cached for a minute, as long as any price may lag.
 
@@ -5947,3 +5950,26 @@ and `-512.png`, rendered from `src/app/icon.svg`) and colours. `display: minimal
 `standalone`: an iPhone gives a standalone home-screen app its own cookies, so a sign-in link
 opened from email would sign in Safari and leave the app signed out. iOS treats `minimal-ui` as a
 browser tab.
+
+### 28.8 Related products and the plans page — 20 Oct 2026
+
+**Every product page suggests where to go next** (`Related`, `src/lib/catalogue/related.ts`), drawn
+with `/search`'s result card (`ResultCard`) and read from `searchCatalogue`, so nothing a grid
+hides is suggested and the price is search's wording:
+
+| Page | Suggests |
+|---|---|
+| A microgreen | the next four on the `/microgreens` grid (`after`, wrapping round) |
+| A seed | cocopeat then trays, each cheapest first, up to four; then the next four seeds |
+| A tray, a cocopeat block | four seeds, most grams sold first (`bestSelling`) |
+| A rack range | up to four trays |
+
+`after` takes each page's own neighbours rather than the same first few, so every product is
+linked from another product's page — how a crawler reaches it.
+
+**`/plans`** — the plans as a page Google can index for a weekly box. The home page's cards
+(`Bundles` with `headingLevel={1}`, read through `planCards`, which the home page also uses),
+then each plan's rotation written out week by week with every green linked to its page — what the
+cards keep behind a button. In the sitemap and `llms.txt`; the top menu, the footer and the in-page
+"weekly plan" links go to it. **Both ways stay** (the owner, 20 Oct 2026): the home page keeps its
+plans section for anyone scrolling, and the hero's button still scrolls to it.

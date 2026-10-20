@@ -12,7 +12,7 @@ import { Bundles } from "@/components/home/Bundles";
 import { OtherProducts } from "@/components/home/OtherProducts";
 import { TrustTags } from "@/components/home/TrustTags";
 import { TopSeeds } from "@/components/home/TopSeeds";
-import { listPlansWithWeeks } from "@/lib/repo/plans";
+import { planCards } from "@/lib/subscriptions/plan-cards";
 import { categoryCounts } from "@/lib/catalogue/counts";
 import { enabledCategories, isProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { listVarieties } from "@/lib/repo/varieties";
@@ -27,9 +27,6 @@ import { listGrowMedia } from "@/lib/repo/grow-media";
 import { growMediumNameMap } from "@/lib/content/grow-media";
 import { GROW_MEDIA_TILE_WORDS } from "@/lib/shop";
 import { RACK_RANGES } from "@/lib/racks/cart-key";
-import { attachPlanContent } from "@/lib/content/plans";
-import { placeholderFor } from "@/lib/images/placeholder";
-import { currentActor } from "@/lib/auth/guard";
 import { ClientMessages } from "@/i18n/client-messages";
 
 /**
@@ -72,9 +69,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [rows, counts, varieties, categories, microgreensOn, seeds, trays, media, seedsOn, gramsSold] =
+  const [{ plans, adminEmpty }, counts, varieties, categories, microgreensOn, seeds, trays, media, seedsOn, gramsSold] =
     await Promise.all([
-      listPlansWithWeeks({ activeOnly: true }),
+      planCards(locale),
       categoryCounts(),
       listVarieties({ activeOnly: true }),
       enabledCategories(),
@@ -139,36 +136,6 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
     : [];
   const topSeeds = rankBySales(shelf, gramsSold, 5);
   const seedsRanked = topSeeds.some((s) => (gramsSold[s.contentKey] ?? 0) > 0);
-
-  /* Plan copy comes from content/plans/<key>.json for the same reason. A plan
-     whose file does not exist yet is **skipped**, not rendered nameless — the
-     admin screen is where that gets reported, in red, with the path. */
-  const withContent = await attachPlanContent(
-    rows.map(({ plan, weeks }) => ({ ...plan, weeks })),
-    locale,
-  );
-  const plans = withContent
-    .filter((p) => p.content !== null)
-    .map(({ weeks, content, ...plan }) => {
-      const src = `/img/plans/${plan.contentKey}.webp`;
-      return { plan, weeks, text: content!.text, photo: { src, placeholder: placeholderFor(src) } };
-    });
-
-  /* The empty plans panel used to tell every visitor to "create Essential,
-     Exotic or Build Your Own" and offered a button into /admin/plans. The
-     operator copy is resolved here and only when the viewer is an admin, so a
-     customer's HTML never carries it — the `admin` namespace is kept out of
-     the client catalogue on purpose (CLAUDE.md). */
-  const actor = await currentActor();
-  const ta = await getTranslations("admin.publicEmpty");
-  const adminEmpty =
-    plans.length === 0 && actor?.role === "admin"
-      ? {
-          title: ta("plansTitle"),
-          body: ta("plansBody"),
-          cta: ta("plansCta"),
-        }
-      : null;
 
   return (
     <>

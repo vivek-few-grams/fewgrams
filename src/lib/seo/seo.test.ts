@@ -99,13 +99,18 @@ describe("productLd", () => {
       group: productId("racks", "pipe"),
     });
     expect(rack).toMatchObject({ sku: "racks-pr-6f-5s-1.5x3", inProductGroupWithID: "racks-pipe" });
-    expect(rack.offers).toMatchObject({ price: 2599, url: "https://fewgrams.com/shop/racks/pipe?h=6&s=1.5x3" });
+    expect(rack.offers).toMatchObject({
+      price: 2599,
+      url: "https://fewgrams.com/shop/racks/pipe?h=6&s=1.5x3",
+    });
   });
 });
 
 describe("rackPagePath", () => {
   it("puts the choice in the address the range page reads", () => {
-    expect(rackPagePath("angle", { h: 6, s: "1.25x3", c: "orange" })).toBe("/shop/racks/angle?h=6&s=1.25x3&c=orange");
+    expect(rackPagePath("angle", { h: 6, s: "1.25x3", c: "orange" })).toBe(
+      "/shop/racks/angle?h=6&s=1.25x3&c=orange",
+    );
     expect(rackPagePath("pipe", { h: 4, s: "1x2", c: null })).toBe("/shop/racks/pipe?h=4&s=1x2");
   });
 });
@@ -141,7 +146,9 @@ describe("shopping feed", () => {
   const item = (i: number) => doc.split("<item>")[i + 1].split("</item>")[0];
 
   it("is an RSS document in Google's namespace, escaped", () => {
-    expect(doc).toMatch(/^<\?xml version="1.0" encoding="UTF-8"\?>\n<rss version="2.0" xmlns:g="http:\/\/base.google.com\/ns\/1.0">/);
+    expect(doc).toMatch(
+      /^<\?xml version="1.0" encoding="UTF-8"\?>\n<rss version="2.0" xmlns:g="http:\/\/base.google.com\/ns\/1.0">/,
+    );
     expect(doc).toContain("<description>Fresh &amp; local</description>");
     expect(item(0)).toContain("<g:description>Mild &amp; sweet &lt;b&gt;leaves&lt;/b&gt;.</g:description>");
     expect(doc.match(/<item>/g)).toHaveLength(2);
@@ -149,10 +156,16 @@ describe("shopping feed", () => {
 
   it("links the English page and the photographs on the live site, priced in rupees", () => {
     expect(item(0)).toContain("<g:link>https://fewgrams.com/microgreens/broccoli</g:link>");
-    expect(item(0)).toContain("<g:image_link>https://fewgrams.com/img/varieties/broccoli/hero.jpg</g:image_link>");
-    expect(item(0)).toContain("<g:additional_image_link>https://fewgrams.com/img/varieties/broccoli/tray.jpg</g:additional_image_link>");
+    expect(item(0)).toContain(
+      "<g:image_link>https://fewgrams.com/img/varieties/broccoli/hero.jpg</g:image_link>",
+    );
+    expect(item(0)).toContain(
+      "<g:additional_image_link>https://fewgrams.com/img/varieties/broccoli/tray.jpg</g:additional_image_link>",
+    );
     expect(item(0)).toContain("<g:price>180.00 INR</g:price>");
-    expect(item(1)).toContain("<g:link>https://fewgrams.com/shop/racks/shelf?h=6&amp;s=1.25x3&amp;c=orange</g:link>");
+    expect(item(1)).toContain(
+      "<g:link>https://fewgrams.com/shop/racks/shelf?h=6&amp;s=1.25x3&amp;c=orange</g:link>",
+    );
   });
 
   it("prices a weighed product per 100 g and gives a green its own growing time", () => {
@@ -220,7 +233,11 @@ describe("page metadata coverage", () => {
     const entries = await readdir(dir, { withFileTypes: true });
     const nested = await Promise.all(
       entries.map((e) =>
-        e.isDirectory() ? pages(path.join(dir, e.name)) : e.name === "page.tsx" ? [path.join(dir, e.name)] : [],
+        e.isDirectory()
+          ? pages(path.join(dir, e.name))
+          : e.name === "page.tsx"
+            ? [path.join(dir, e.name)]
+            : [],
       ),
     );
     return nested.flat();

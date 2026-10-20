@@ -47,7 +47,9 @@
     "dispatchNote": "Order today and it is with you {date}.",
     "soldOutFact": "Sold out right now",
     "soldOutTitle": "Sold out",
-    "soldOutBody": "We have none of this seed on the shelf right now. Check back soon, as we restock regularly."
+    "soldOutBody": "We have none of this seed on the shelf right now. Check back soon, as we restock regularly.",
+    "growWith": "Grow it with",
+    "moreSeeds": "More seeds"
   },
   "crossVariety": "Rather have it grown for you? See our <link>{name} microgreens</link>.",
   "seo": {

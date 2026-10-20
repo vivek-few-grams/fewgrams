@@ -554,6 +554,10 @@ without it and on a private one without `noindex`.
   checks one against the other and pulls an item that disagrees. Change what a product page
   prints and change the feed with it. A rack page's structured data is the rack on screen, and its
   feed items are one per model and colour, linked with `rackPagePath`.
+- **Product pages suggest related products from `searchCatalogue`** (`Related`, SPEC §28.8) — never
+  from a list of their own, so a suggestion follows the grids' rules. `/plans` is the indexable plans
+  page and the top menu's target; the home page keeps its plans section and the hero's button
+  still scrolls to it (the owner, 20 Oct 2026).
 - **AI crawlers are allowed** (the owner, 20 Oct 2026). Blocking one is a group of its own in
   `src/app/robots.ts`.
 

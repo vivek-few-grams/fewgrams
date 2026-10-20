@@ -45,7 +45,8 @@
     "readyInline": "Ready by {date}",
     "updateCart": "Update cart",
     "updated": "Cart updated.",
-    "crossSeed": "Want to grow it yourself? See our <link>{name} seeds</link>."
+    "crossSeed": "Want to grow it yourself? See our <link>{name} seeds</link>.",
+    "moreMicrogreens": "More microgreens"
   },
   "seo": {
     "title": "Fresh microgreens, grown to order",

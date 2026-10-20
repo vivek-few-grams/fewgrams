@@ -111,7 +111,7 @@ export default async function MicrogreensPage({ params }: PageProps<"/[locale]/m
 
       <p className="mt-16 font-body text-sm text-stone">
         {t("plansPrompt")}{" "}
-        <Link href="/#plans" className="text-forest underline underline-offset-4">
+        <Link href="/plans" className="text-forest underline underline-offset-4">
           {t("plansLink")}
         </Link>
         .

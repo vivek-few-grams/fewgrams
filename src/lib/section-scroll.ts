@@ -15,8 +15,8 @@
  * does not cover the heading, and reduced motion drops the smooth scroll —
  * a long animated jump is exactly what §17.4 says to respect.
  *
- * Shared by `NavLinks` and the hero CTAs. It lives here rather than in either
- * of them because the second copy is where the two drift apart.
+ * Used by the hero CTAs. `NavLinks` used it too while PLANS was `/#plans`;
+ * the menu goes to `/plans` since 20 Oct 2026 (SPEC §28.8).
  */
 export function onSectionClick(event: React.MouseEvent, hash: string) {
   if (window.location.hash !== `#${hash}`) return;

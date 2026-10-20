@@ -9,7 +9,14 @@ import { getTrayContent, trayHero, trayImageUrl } from "@/lib/content/trays";
 import { getVarietyContent, varietyHero, varietyImageUrl } from "@/lib/content/varieties";
 import { rackCartKey } from "@/lib/racks/cart-key";
 import { listSellableRacks } from "@/lib/racks/catalogue";
-import { rackFacts, rackLineName, rackPagePath, rackPhotos, rackSizeLabel, rackSizeParam } from "@/lib/racks/describe";
+import {
+  rackFacts,
+  rackLineName,
+  rackPagePath,
+  rackPhotos,
+  rackSizeLabel,
+  rackSizeParam,
+} from "@/lib/racks/describe";
 import { listGrowMedia } from "@/lib/repo/grow-media";
 import { listSeeds } from "@/lib/repo/seeds";
 import { listTrays } from "@/lib/repo/trays";
@@ -181,26 +188,24 @@ export async function shoppingFeedItems(now: Date = new Date()): Promise<FeedIte
           rows.flatMap((rack) =>
             /* A pipe rack has no colour to choose; a steel rack is one item per
                colour its grade comes in, each its own cart line. */
-            (rack.colours.length > 0 ? rack.colours : [null]).map(
-              (colour): FeedItem => ({
-                kind: "racks",
-                id: productId("racks", rackCartKey(rack.sku, colour)),
-                title: rackLineName(racksT, rack, colour),
-                description: withSpecs(racksT(`ranges.${rack.range}.line`), rackFacts(racksT, rack)),
-                path: rackPagePath(rack.range, { h: rack.heightFt, s: rackSizeParam(rack), c: colour }),
-                images: rackPhotos(rack.range).map((photo) => photo.src),
-                price: rack.price,
-                /* Built for each order, never out of stock. */
-                inStock: true,
-                weighed: false,
-                productType: category("racks"),
-                variant: {
-                  group: productId("racks", rack.range),
-                  size: racksT("feedSize", { height: rack.heightFt, size: rackSizeLabel(racksT, rack) }),
-                  ...(colour && { colour: racksT(`colours.${colour}`) }),
-                },
-              }),
-            ),
+            (rack.colours.length > 0 ? rack.colours : [null]).map((colour): FeedItem => ({
+              kind: "racks",
+              id: productId("racks", rackCartKey(rack.sku, colour)),
+              title: rackLineName(racksT, rack, colour),
+              description: withSpecs(racksT(`ranges.${rack.range}.line`), rackFacts(racksT, rack)),
+              path: rackPagePath(rack.range, { h: rack.heightFt, s: rackSizeParam(rack), c: colour }),
+              images: rackPhotos(rack.range).map((photo) => photo.src),
+              price: rack.price,
+              /* Built for each order, never out of stock. */
+              inStock: true,
+              weighed: false,
+              productType: category("racks"),
+              variant: {
+                group: productId("racks", rack.range),
+                size: racksT("feedSize", { height: rack.heightFt, size: rackSizeLabel(racksT, rack) }),
+                ...(colour && { colour: racksT(`colours.${colour}`) }),
+              },
+            })),
           ),
         )
       : [],
@@ -210,4 +215,3 @@ export async function shoppingFeedItems(now: Date = new Date()): Promise<FeedIte
     (item): item is FeedItem => item !== null && item.price > 0 && item.images.length > 0,
   );
 }
-

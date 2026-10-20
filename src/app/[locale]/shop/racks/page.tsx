@@ -99,7 +99,12 @@ const PROPS = [1, 2, 3, 4, 5, 6] as const;
 export async function generateMetadata({ params }: PageProps<"/[locale]/shop/racks">) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "shop.seo" });
-  return pageMetadata({ locale, path: "/shop/racks", title: t("racksTitle"), description: t("racksDescription") });
+  return pageMetadata({
+    locale,
+    path: "/shop/racks",
+    title: t("racksTitle"),
+    description: t("racksDescription"),
+  });
 }
 
 export default async function RacksPage({ params }: PageProps<"/[locale]/shop/racks">) {

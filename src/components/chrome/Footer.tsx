@@ -39,7 +39,7 @@ export async function Footer() {
                 {c(cat.slug)}
               </FooterLink>
             ))}
-            <FooterLink href="/#plans">{t("plans")}</FooterLink>
+            <FooterLink href="/plans">{t("plans")}</FooterLink>
           </FooterCol>
 
           <FooterCol title={t("brand")}>

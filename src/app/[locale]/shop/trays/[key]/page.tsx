@@ -6,6 +6,10 @@ import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getTrayByKey } from "@/lib/repo/trays";
 import { getTrayContent, trayHero, trayImageUrl } from "@/lib/content/trays";
 import { DetailPage } from "@/components/catalogue/DetailPage";
+import { Related } from "@/components/catalogue/Related";
+import { bestSelling } from "@/lib/catalogue/related";
+import { seedGramsSold } from "@/lib/repo/orders";
+import { searchCatalogue } from "@/lib/search/catalogue";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import type { Shot } from "@/components/catalogue/Gallery";
 import { MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
@@ -105,6 +109,13 @@ export default async function TrayPage({ params }: PageProps<"/[locale]/shop/tra
   const shop = await getTranslations("shop.index");
   const category = await getTranslations("common.categories");
   const e = await getTranslations("shop.trays.detail.errors");
+  /* Seeds to fill it with, best sellers first (SPEC §28.8). */
+  const [catalogue, sold] = await Promise.all([searchCatalogue(locale), seedGramsSold()]);
+  const seeds = bestSelling(
+    catalogue.filter((entry) => entry.kind === "seed"),
+    sold,
+    4,
+  );
 
   const hero = trayHero(content);
   const inCart = await readCartUnitsFor("tray", row.contentKey);
@@ -200,6 +211,7 @@ export default async function TrayPage({ params }: PageProps<"/[locale]/shop/tra
           }}
         />
       }
+      related={<Related heading={d("seedsToSow")} entries={seeds} />}
       /* Everything else `DetailPage` offers is deliberately omitted — the
          owner asked for minimal, and a tray has nothing to put in a tasting
          note, a nutrition table, a cautions list or five FAQs. */

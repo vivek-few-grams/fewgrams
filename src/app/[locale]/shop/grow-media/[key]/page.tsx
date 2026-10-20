@@ -6,6 +6,10 @@ import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { getGrowMediumByKey } from "@/lib/repo/grow-media";
 import { getGrowMediumContent, growMediumHero, growMediumImageUrl } from "@/lib/content/grow-media";
 import { DetailPage } from "@/components/catalogue/DetailPage";
+import { Related } from "@/components/catalogue/Related";
+import { bestSelling } from "@/lib/catalogue/related";
+import { seedGramsSold } from "@/lib/repo/orders";
+import { searchCatalogue } from "@/lib/search/catalogue";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import { RecommendedBadge } from "@/components/catalogue/RecommendedBadge";
 import type { Shot } from "@/components/catalogue/Gallery";
@@ -68,6 +72,13 @@ export default async function GrowMediumPage({ params }: PageProps<"/[locale]/sh
   const shop = await getTranslations("shop.index");
   const category = await getTranslations("common.categories");
   const e = await getTranslations("shop.growMedia.detail.errors");
+  /* Seeds to sow in it, best sellers first (SPEC §28.8). */
+  const [catalogue, sold] = await Promise.all([searchCatalogue(locale), seedGramsSold()]);
+  const seeds = bestSelling(
+    catalogue.filter((entry) => entry.kind === "seed"),
+    sold,
+    4,
+  );
 
   const hero = growMediumHero(content);
   const inCart = await readCartUnitsFor("media", row.contentKey);
@@ -162,6 +173,7 @@ export default async function GrowMediumPage({ params }: PageProps<"/[locale]/sh
       /* What the grade does for a plant — for Horti-Coir, why low EC
          matters. Below the steps, full measure, as prose (SPEC §24.11). */
       prose={{ heading: text.whyTitle, body: text.why }}
+      related={<Related heading={d("seedsToSow")} entries={seeds} />}
     />
   );
 }

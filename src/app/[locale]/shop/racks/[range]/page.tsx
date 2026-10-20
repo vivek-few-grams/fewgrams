@@ -5,6 +5,8 @@ import { productId, productLd } from "@/lib/seo/structured-data";
 import { Link } from "@/i18n/navigation";
 import { guardProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { DetailPage } from "@/components/catalogue/DetailPage";
+import { Related } from "@/components/catalogue/Related";
+import { searchCatalogue } from "@/lib/search/catalogue";
 import { AddToCart } from "@/components/catalogue/AddToCart";
 import type { Shot } from "@/components/catalogue/Gallery";
 import { MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
@@ -12,7 +14,14 @@ import { readCartUnitsFor } from "@/lib/cart/server";
 import { formatDeliveryDate } from "@/lib/delivery-date";
 import { listRacksInRange } from "@/lib/racks/catalogue";
 import { rackCartKey, rackRangeOf } from "@/lib/racks/cart-key";
-import { rackFacts, rackLineName, rackPagePath, rackPhotos, rackSizeLabel, rackSizeParam } from "@/lib/racks/describe";
+import {
+  rackFacts,
+  rackLineName,
+  rackPagePath,
+  rackPhotos,
+  rackSizeLabel,
+  rackSizeParam,
+} from "@/lib/racks/describe";
 import { rackReadyDate } from "@/lib/racks/lead-time";
 import { isRackColour, type RackColour } from "@/lib/racks/colours";
 
@@ -74,7 +83,6 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop/rac
   });
 }
 
-
 /** An option row. Links rather than a `<select>` — see the note at the top of
  *  the page component. At module scope because a component declared inside a
  *  render is a new type on every render, which resets any state it holds. */
@@ -133,6 +141,8 @@ export default async function RackRangePage({
      invalid quantity or a full cart is a fact about the cart, not about what
      is in it. */
   const e = await getTranslations("shop.trays.detail.errors");
+  /* The trays a rack holds (SPEC §28.8). */
+  const trays = (await searchCatalogue(locale)).filter((entry) => entry.kind === "tray").slice(0, 4);
 
   const q = await searchParams;
   const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
@@ -223,6 +233,7 @@ export default async function RackRangePage({
         nextLabel: d("nextPhotos"),
       }}
       facts={facts}
+      related={<Related heading={d("traysForRack")} entries={trays} />}
       buy={
         /* A rule and top padding, because this slot sits directly under the
            facts grid: without them "CODE / RK-2F-1S-1x2-1.4" ran straight into

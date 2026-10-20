@@ -142,7 +142,9 @@ export function MarqueeCard({
       </div>
 
       <div className="mt-4 flex items-baseline justify-between gap-3">
-        <Heading className={`font-display text-lg font-semibold tracking-tight ${labelClass}`}>{label}</Heading>
+        <Heading className={`font-display text-lg font-semibold tracking-tight ${labelClass}`}>
+          {label}
+        </Heading>
         {note && <span className="shrink-0 font-body text-xs text-stone tabular-nums">{note}</span>}
       </div>
     </Link>
