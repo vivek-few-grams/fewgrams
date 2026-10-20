@@ -401,13 +401,16 @@ function BundleCard({
           message file and must not be translated. `flex-wrap` lets it fall
           back to two lines rather than overflow, which matters in Kannada
           where both halves are longer. */}
-      <dl className={`mt-5 flex flex-wrap items-baseline gap-x-2 font-body text-sm ${p.strong}`}>
+      {/* A line of two facts, not a `<dl>`: there is no term for each value,
+          and a definition list of bare `<dd>`s is invalid markup that a
+          screen reader announces as an empty list. */}
+      <p className={`mt-5 flex flex-wrap items-baseline gap-x-2 font-body text-sm ${p.strong}`}>
         {/* Pick Your Own is not subscribable, so it has no weekly boxes. */}
-        {!isByo && <dd>{tp("card.weeklyBoxes", { count: weekCount > 0 ? weekCount : 4 })}</dd>}
-        <dd className={isByo ? p.body : `before:mr-2 before:content-['·'] ${p.body}`}>
+        {!isByo && <span>{tp("card.weeklyBoxes", { count: weekCount > 0 ? weekCount : 4 })}</span>}
+        <span className={isByo ? p.body : `before:mr-2 before:content-['·'] ${p.body}`}>
           {plan.gramsPerBox > 0 ? tp("card.perBox", { grams: plan.gramsPerBox }) : tp("card.gramsYouChoose")}
-        </dd>
-      </dl>
+        </span>
+      </p>
 
       {text.highlights.length > 0 && (
         <ul className="mt-5 space-y-2">

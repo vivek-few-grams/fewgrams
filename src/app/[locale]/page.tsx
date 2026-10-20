@@ -30,6 +30,7 @@ import { RACK_RANGES } from "@/lib/racks/cart-key";
 import { attachPlanContent } from "@/lib/content/plans";
 import { placeholderFor } from "@/lib/images/placeholder";
 import { currentActor } from "@/lib/auth/guard";
+import { ClientMessages } from "@/i18n/client-messages";
 
 /**
  * Home page — SPEC §18.3.
@@ -178,7 +179,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <Hero />
       <Process />
       <WhyMicrogreens growDays={growDays} />
-      <Bundles plans={plans} varieties={varieties} varietyNames={varietyNames} adminEmpty={adminEmpty} />
+      <ClientMessages entry="home">
+        <Bundles plans={plans} varieties={varieties} varietyNames={varietyNames} adminEmpty={adminEmpty} />
+      </ClientMessages>
       <OtherProducts
         counts={counts}
         categories={categories}

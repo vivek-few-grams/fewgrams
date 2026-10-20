@@ -48,7 +48,8 @@ export function Gallery({
   nextLabel: string;
 }) {
   const [active, setActive] = useState(0);
-  /* Index 0 is mounted from the start — it is the one `priority` preloads. */
+  /* Index 0 is mounted from the start — it is the page's LCP image, fetched
+     at high priority. */
   const [mounted, setMounted] = useState<number[]>([0]);
   const strip = useRef<HTMLDivElement>(null);
   const [overflow, setOverflow] = useState(false);
@@ -118,7 +119,11 @@ export function Gallery({
               src={shot.src}
               alt={shot.alt}
               fill
-              priority={i === 0}
+              /* `fetchPriority`, not the deprecated `priority`: in Next 16 that
+                 only preloads, at the browser's default priority, which left
+                 the page's main photograph queued behind scripts and fonts. */
+              loading={i === 0 ? "eager" : undefined}
+              fetchPriority={i === 0 ? "high" : undefined}
               sizes="(min-width: 1024px) 50vw, 100vw"
               className={`object-contain transition-opacity duration-300 ${
                 i === active ? "opacity-100" : "opacity-0"

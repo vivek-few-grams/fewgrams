@@ -4,6 +4,7 @@ import { pageMetadata } from "@/lib/seo/metadata";
 import { Link } from "@/i18n/navigation";
 import { getStoryBook } from "@/lib/content/story";
 import { StoryBook } from "@/components/story/StoryBook";
+import { ClientMessages } from "@/i18n/client-messages";
 
 /**
  * /how-we-grow — SPEC §18.5. The process page, as a picture book.
@@ -48,7 +49,9 @@ export default async function HowWeGrowPage({ params }: PageProps<"/[locale]/how
       {/* No page header above the book. The first page IS the title page —
           it carries the `h1` — and a heading stacked above it would say the
           same thing twice before the reader had turned anything. */}
-      <StoryBook pages={pages} />
+      <ClientMessages entry="story">
+        <StoryBook pages={pages} />
+      </ClientMessages>
 
       {/* The one thing the book deliberately does not do: sell. It ends on
           "small steps, big impact" and the offer waits until the cover is

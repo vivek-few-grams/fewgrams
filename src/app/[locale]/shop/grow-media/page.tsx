@@ -113,7 +113,8 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
                                 src={cutout.src}
                                 alt={cutout.alt}
                                 fill
-                                priority={i < 3}
+                                loading={i < 3 ? "eager" : undefined}
+                                fetchPriority={i === 0 ? "high" : undefined}
                                 sizes="(min-width: 768px) 30vw, 92vw"
                                 className="object-contain"
                                 {...placeholderProps(placeholderFor(cutout.src), "contain")}
@@ -128,7 +129,8 @@ export default async function GrowMediaPage({ params }: PageProps<"/[locale]/sho
                             src={photo.src}
                             alt={photo.alt}
                             fill
-                            priority={i < 3}
+                            loading={i < 3 ? "eager" : undefined}
+                            fetchPriority={i === 0 ? "high" : undefined}
                             sizes="(min-width: 768px) 30vw, 92vw"
                             className="object-cover"
                             {...placeholderProps(placeholderFor(photo.src), "cover")}

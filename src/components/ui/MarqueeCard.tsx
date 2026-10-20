@@ -67,8 +67,8 @@ export function MarqueeCard({
    *
    * A touch device has no hover, so it only ever sees the photograph — which
    * is the intended default, not a degraded state. `alt=""` for the same
-   * reason the cut-out has none: the link's `aria-label` already names the
-   * card.
+   * reason the cut-out has none: the card's label and count already name the
+   * link.
    */
   photo?: string;
   /** The label's heading level, one below the section it sits in: `2`
@@ -105,11 +105,11 @@ export function MarqueeCard({
   );
 
   return (
-    <Link
-      href={href}
-      className={`group block ${className}`}
-      aria-label={`${label}${note ? `, ${note}` : ""}`}
-    >
+    /* No `aria-label`: the link is named by what it shows — the label and
+       the count — and the word cloud and pictures are hidden or have empty
+       alt. An `aria-label` that differed from the visible words failed
+       WCAG 2.5.3 (a voice-control user says what they see). */
+    <Link href={href} className={`group block ${className}`}>
       <div
         className={`mcard flex aspect-[580/660] items-center justify-center ${panelClass}`}
         data-cursor={cursorLabel}

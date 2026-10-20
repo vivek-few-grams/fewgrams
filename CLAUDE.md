@@ -438,7 +438,7 @@ into `/admin/*` (fixed 15 Sep 2026, SPEC §8.2).
 - The customer wording says what is true and offers something they can act on.
   "Check back shortly" plus a link to what *is* buyable, not an instruction for
   a screen they cannot open.
-- A client component cannot read `admin` messages (the root layout strips that
+- A client component cannot read `admin` messages (the root layout does not send that
   namespace). Pass the resolved strings down as a prop that is `null` for
   non-admins — see `Bundles.tsx`.
 
@@ -499,6 +499,25 @@ keyed by path; **run it after adding or replacing anything under
   the Lambda optimiser was costed on 19 Oct 2026 — about ₹17/month against
   ₹0–3 until ~400k page views — and the owner chose the stand-ins alone.
 
+## The page's main picture is fetched first, and alone
+
+SPEC §28.6 (20 Oct 2026). On a throttled phone the main photograph was queued
+behind images nobody could see yet.
+
+- **The one LCP image takes `loading="eager" fetchPriority="high"`** — the hero's
+  first frame, a detail page's first photo, a grid's top-left tile. Not
+  `priority`: deprecated in Next 16, it only preloads at default priority.
+- **React 19 preloads every image that is not lazy.** Anything below the fold
+  stays lazy — `Tile`'s `atTop` is off for the home page's seed strip.
+- **Stacked images are in the viewport, so lazy loading does not hold them
+  back.** The hero mounts frames 2–4 only after frame 1 has loaded; the gallery
+  mounts a photo when it is first selected.
+- **`ScatterMarquee` is built in the browser, on a fine pointer only** — it is
+  seen only on hover, and on `/seeds` it was 2,376 words a phone laid out for
+  nothing.
+- **The curtain stays** (the owner, 20 Oct 2026). Its logo is preloaded at
+  default priority; high priority was measured and cost the home page's hero.
+
 ## Search finds what the grids show, and nothing they hide
 
 SPEC §27. `searchCatalogue` (`src/lib/search/catalogue.ts`) reads every kind the way its category
@@ -556,13 +575,25 @@ would silently turn a guarded delete into an unguarded one. Render it inside
 the `<form>` whose action it should submit, and pass every string already
 translated.
 
-## Keep `admin` messages out of the public bundle
+## Only the messages a client component reads reach the browser
 
-`NextIntlClientProvider` with no `messages` prop serialises the whole
-catalogue into every page. The root layout therefore passes every namespace
-**except `admin`**, and `admin/layout.tsx` re-provides the full set for its
-own subtree. Add a namespace only operators should see and it belongs behind
-that second provider, not the root one.
+`NextIntlClientProvider` serialises every message it is given into the page's
+HTML. The root layout therefore hands over **only `CLIENT_MESSAGES.chrome`**
+(header and footer: `common`, `search`, `garden.badge`) — the whole customer
+catalogue was 54 KB of every English page until 20 Oct 2026.
+`src/i18n/client-messages.tsx` is the one list:
+
+- **A page whose client components read messages wraps them in
+  `<ClientMessages entry="…">`** with its own entry (home's plan cards, the
+  garden, the storybook; checkout, subscribe and account through their
+  layouts). A server component reads any namespace with `getTranslations` and
+  needs none of this.
+- **A nested provider replaces the messages above it, it does not add to
+  them**, so an entry lists everything the components inside it read.
+- `client-messages.test.ts` fails on a `useTranslations("…")` in a client
+  component that no entry covers. It cannot see whether the page wraps it —
+  open the page and look for a raw `namespace.key`.
+- `admin/layout.tsx` re-provides the full set for its own subtree, as before.
 
 ### Things that count as user-visible text
 

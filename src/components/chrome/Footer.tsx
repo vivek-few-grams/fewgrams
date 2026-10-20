@@ -59,7 +59,7 @@ export async function Footer() {
           </FooterCol>
         </div>
 
-        <div className="mt-14 flex flex-col gap-3 border-t border-cream/15 pt-7 font-body text-xs text-mint/60 md:flex-row md:items-center md:justify-between">
+        <div className="mt-14 flex flex-col gap-3 border-t border-cream/15 pt-7 font-body text-xs text-mint/70 md:flex-row md:items-center md:justify-between">
           <p>
             {t("copyright", { year: new Date().getFullYear(), brand: brand.name })} ·{" "}
             <a href={`mailto:${contact.email}`} className="transition-colors hover:text-cream">
@@ -75,7 +75,7 @@ export async function Footer() {
               consumer store. */}
           <Link
             href="/contact?about=website"
-            className="group text-mint/60 transition-colors hover:text-cream"
+            className="group text-mint/70 transition-colors hover:text-cream"
           >
             <span className="group-hover:hidden">{t("b2bPrompt")}</span>
             <span className="hidden group-hover:inline">{t("b2bHover")}</span>

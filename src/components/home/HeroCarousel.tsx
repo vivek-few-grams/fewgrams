@@ -49,10 +49,13 @@ const HOLD_MS = 4000;
  * room to spare instead of needing a heavy scrim that flattens the photo.
  *
  * Every frame is in the DOM from the first paint and only opacity moves, so a
- * transition never waits on a fetch and never flashes an empty band. Only frame
- * 0 is `priority`: it is the LCP candidate and must be decoded before the §17.5
- * curtain retracts, while the rest are wanted *eventually* and would otherwise
- * compete with it for bandwidth at the worst possible moment.
+ * transition never flashes an empty band. Frame 0 is fetched first, at high
+ * priority: it is the LCP candidate and must be decoded before the §17.5
+ * curtain retracts. **The other photographs are not rendered until it has
+ * arrived** (20 Oct 2026). Lazy loading never held them back — they sit in the
+ * viewport under frame 0 at opacity 0 — so on a phone all four downloaded at
+ * once and the one on screen waited for the other three. The rotation waits
+ * for them too, so a frame never fades in empty.
  *
  * Copy arrives pre-resolved from the server component. A `t()` function is not
  * serialisable across the boundary, and resolving it here would mean shipping
@@ -70,6 +73,15 @@ export function HeroCarousel({
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [still, setStill] = useState(false);
+  /** Frame 0's photograph has arrived, so the others may start. */
+  const [rest, setRest] = useState(false);
+
+  /* A ceiling, in case frame 0's load is never reported: by the first turn
+     of the rotation the others are let through regardless. */
+  useEffect(() => {
+    const id = window.setTimeout(() => setRest(true), HOLD_MS);
+    return () => window.clearTimeout(id);
+  }, []);
 
   /* Read the preference at runtime, not through a media query in CSS: the
      rotation is a timer, and a `@media` block cannot stop one. Someone who
@@ -85,10 +97,10 @@ export function HeroCarousel({
   /* `active` is a dependency on purpose: choosing a frame restarts the hold, so
      one the visitor picked is never snatched away half a second later. */
   useEffect(() => {
-    if (still || paused || slides.length < 2) return;
+    if (!rest || still || paused || slides.length < 2) return;
     const id = window.setInterval(() => setActive((i) => (i + 1) % slides.length), HOLD_MS);
     return () => window.clearInterval(id);
-  }, [active, still, paused, slides.length]);
+  }, [active, rest, still, paused, slides.length]);
 
   /* Pointer in, or focus anywhere inside, stops the clock — without this a 2s
      rotation would move the CTA out from under the cursor on the way to it.
@@ -127,15 +139,22 @@ export function HeroCarousel({
               index === active ? "opacity-100" : "opacity-0"
             } ${still ? "transition-none" : ""}`}
           >
-            <Image
-              src={slide.src}
-              alt={slide.alt}
-              fill
-              priority={index === 0}
-              sizes="100vw"
-              className={`object-cover ${slide.position}`}
-              {...placeholderProps(slide.placeholder, "cover")}
-            />
+            {(index === 0 || rest) && (
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                fill
+                /* `fetchPriority`, not the deprecated `priority`: in Next 16
+                   that only preloads, at the browser's default priority. */
+                loading={index === 0 ? "eager" : undefined}
+                fetchPriority={index === 0 ? "high" : undefined}
+                onLoad={index === 0 ? () => setRest(true) : undefined}
+                onError={index === 0 ? () => setRest(true) : undefined}
+                sizes="100vw"
+                className={`object-cover ${slide.position}`}
+                {...placeholderProps(slide.placeholder, "cover")}
+              />
+            )}
           </div>
         ))}
       </div>
@@ -213,7 +232,11 @@ export function HeroCarousel({
       </div>
 
       {slides.length > 1 && (
-        <div className="flex gap-2.5 px-6 pb-8 md:absolute md:bottom-5 md:left-12 md:px-0 md:pb-0">
+        /* Each dot sits in a 24px button with no gap between them: the 8px dot
+           alone failed WCAG 2.5.8's minimum target, and the 24px boxes are
+           what keep a thumb from landing on the neighbour. The `-ml-2`
+           keeps the first dot where it was, on the copy's left edge. */
+        <div className="-ml-2 flex px-6 pb-8 md:absolute md:bottom-5 md:left-12 md:px-0 md:pb-0">
           {slides.map((slide, index) => (
             <button
               key={slide.src}
@@ -221,10 +244,14 @@ export function HeroCarousel({
               onClick={() => setActive(index)}
               aria-label={dotLabels[index]}
               aria-current={index === active}
-              className={`h-2 rounded-full transition-all duration-300 ${
-                index === active ? "w-7 bg-forest" : "w-2 bg-forest/30 hover:bg-forest/60"
-              }`}
-            />
+              className="group flex h-6 min-w-6 items-center justify-center px-2"
+            >
+              <span
+                className={`block h-2 rounded-full transition-all duration-300 ${
+                  index === active ? "w-7 bg-forest" : "w-2 bg-forest/30 group-hover:bg-forest/60"
+                }`}
+              />
+            </button>
           ))}
         </div>
       )}

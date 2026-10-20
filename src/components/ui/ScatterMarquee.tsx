@@ -1,4 +1,7 @@
+"use client";
+
 import type { CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { shorten } from "./Marquee";
 
 /**
@@ -17,6 +20,14 @@ import { shorten } from "./Marquee";
  * That is deliberately generous rather than exact, because there is no
  * closed form for "how tall is a wrapped paragraph of random-sized words" —
  * see `SCATTER_MIN_TOKENS`.
+ *
+ * **Built in the browser, and only where a mouse can reveal it** (20 Oct
+ * 2026). The cloud appears on hover under `@media (pointer: fine)` and
+ * nowhere else, so a phone never saw one — yet every phone downloaded and
+ * laid out all of them: 2,376 words on `/seeds`, which held the page's first
+ * images back while the browser worked through them. The server now sends
+ * the short word list; a mouse device builds the cloud after the page has
+ * loaded, before anyone can hover. Same cloud, same hover.
  *
  * Only wired into `Tile.tsx` (`/microgreens`, `/seeds`) for now. `MarqueeCard`
  * and the tray/rack cards keep the exact, tested `Marquee` — they were not
@@ -139,7 +150,18 @@ export function ScatterMarquee({
    */
   animated?: boolean;
 }) {
-  const tokens = scatterTokens(words, minTokens);
+  /* Null on the server and on the first client render, so the two agree;
+     a fine pointer turns it on after hydration. */
+  const [hoverable, setHoverable] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(pointer: fine)");
+    const sync = () => setHoverable(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
+
+  const tokens = hoverable ? scatterTokens(words, minTokens) : [];
   if (tokens.length === 0) return null;
 
   const cloud = (copy: number) => (

@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Montserrat, Noto_Sans_Kannada, Quicksand } from "next/font/google";
 import { brand } from "@/lib/brand";
 import { clipDescription } from "@/lib/seo/metadata";
+import { CLIENT_MESSAGES, pickMessages } from "@/i18n/client-messages";
 import { Header } from "@/components/chrome/Header";
 import { Footer } from "@/components/chrome/Footer";
 import { LeafBackdrop } from "@/components/chrome/LeafBackdrop";
@@ -83,11 +84,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
 
   const actor = await currentActor();
 
-  /* `NextIntlClientProvider` with no `messages` serialises the *whole*
-     catalogue into every page, which put all ~40 admin strings — "Save row",
-     "Yield per tray must be at least 1 g" — into the HTML a customer
-     downloads. Internal wording on a public page, and bytes nobody needs.
-     The admin subtree re-provides them for itself in admin/layout.tsx. */
   /* The tab ticker's words, resolved here because it is a client component.
      Taken from `NAV_CATEGORIES` in nav order rather than from a list of its
      own, so the tab always names the same five things the header does — and
@@ -95,10 +91,14 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const cat = await getTranslations("common.categories");
   const tickerWords = NAV_CATEGORIES.map((c) => cat(c.slug));
 
-  const allMessages = await getMessages();
-  const publicMessages = Object.fromEntries(
-    Object.entries(allMessages).filter(([namespace]) => namespace !== "admin"),
-  );
+  /* Only what the header and footer read. `NextIntlClientProvider` with no
+     `messages` serialises the *whole* catalogue into every page — admin
+     strings included, until 15 Sep 2026 — and even the customer namespaces
+     alone were 54 KB of every English page (20 Oct 2026). A page whose own
+     client components read messages hands them over itself with
+     `ClientMessages` (src/i18n/client-messages.tsx); the admin subtree
+     re-provides the full set in admin/layout.tsx. */
+  const chromeMessages = pickMessages(await getMessages(), CLIENT_MESSAGES.chrome);
 
   return (
     <html
@@ -114,7 +114,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         <script dangerouslySetInnerHTML={{ __html: loaderInitScript }} />
       </head>
       <body className="flex min-h-full flex-col">
-        <NextIntlClientProvider messages={publicMessages}>
+        <NextIntlClientProvider messages={chromeMessages}>
           <PageLoader />
           <TitleTicker brand={brand.name} words={tickerWords} />
           <Header actor={actor && { email: actor.email, role: actor.role }} />

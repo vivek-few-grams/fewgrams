@@ -117,7 +117,7 @@ export async function Header({
             width={brand.logo.width}
             height={brand.logo.height}
             unoptimized
-            priority
+            preload
             className="h-16 w-auto md:h-20"
           />
         </Link>

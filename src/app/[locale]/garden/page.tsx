@@ -22,6 +22,7 @@ import { listSellableRacks } from "@/lib/racks/catalogue";
 import { isProductTypeEnabled } from "@/lib/catalogue/visibility";
 import { seedMaxUnits } from "@/lib/seeds/stock";
 import { quickAddFor } from "@/lib/cart/quick-add";
+import { ClientMessages } from "@/i18n/client-messages";
 
 /**
  * `/garden` — the play garden, SPEC §25. A visitor grows a virtual tray from
@@ -189,5 +190,9 @@ export default async function GardenPage({ params, searchParams }: PageProps<"/[
     freshHref: greensOn ? "/microgreens" : null,
   };
 
-  return <GardenJourney shelf={shelf} initial={initial} />;
+  return (
+    <ClientMessages entry="garden">
+      <GardenJourney shelf={shelf} initial={initial} />
+    </ClientMessages>
+  );
 }

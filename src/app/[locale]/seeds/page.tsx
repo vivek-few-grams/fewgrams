@@ -118,6 +118,7 @@ export default async function SeedsPage({ params }: PageProps<"/[locale]/seeds">
                    the grams we hold are not on the card. */
                 meta={t("meta", { price: s.pricePer100g })}
                 index={i}
+                atTop
                 cutout={seedCutout(s.content)}
                 hero={seedHero(s.content)}
                 /* Spec labels — germination, sow rate — in the resolved

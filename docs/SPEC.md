@@ -1892,8 +1892,8 @@ identical identity in the same city and category would read as derivative.
 | `cream` | `#FBF9F3` | Default page background |
 | `sand` | `#F2EBE3` | Alternating section band, the third bundle card's ground |
 | `ink` | `#1A1A1A` | Body text on light |
-| `stone` | `#6B7268` | Muted / secondary text |
-| `terracotta` | `#C7452F` | Errors only — including "we don't deliver to your PIN yet" |
+| `stone` | `#60675E` | Muted / secondary text (`#6B7268` until 20 Oct 2026; darkened to pass 4.5:1 on sand) |
+| `terracotta` | `#B9402C` | Errors only — including "we don't deliver to your PIN yet" (`#C7452F` until 20 Oct 2026; darkened to pass 4.5:1 on cream) |
 | `bark` | `#5A3E22` | The logo's brown. The Pick Your Own badge, and warm accents on light grounds |
 | `tan` | `#D9B48A` | The logo's brown, lightened. Currently unused on screen — see below |
 
@@ -5865,3 +5865,42 @@ read the item the way its own grid does, so a link never lands on a page that tu
 - The detail page's phone grid is a declared `grid-cols-1`: five thumbnails had widened the
   implicit column and scrolled the page sideways by 6px.
 
+
+### 28.6 Speed — 20 Oct 2026
+
+Measured on a local production build, phone-sized, 4× CPU and 1.6 Mbps throttling, first visit
+(curtain shown), median of three runs — the main picture's paint (LCP):
+
+| Page | Before | After |
+|---|---|---|
+| Home | 2.4–2.9 s | 1.8 s |
+| `/kn` | 2.9–3.1 s | 2.1 s |
+| `/seeds` | 2.5–2.7 s | 1.5 s |
+| A microgreen | 2.6–2.9 s | 1.8 s |
+
+Lighthouse's simulated mobile score: home 74 → 91, a microgreen 85 → 88; accessibility 89–96 → 100
+and best practices 96 → 100 on every page tested.
+
+- **Only the messages client components read are sent** (`CLIENT_MESSAGES`, CLAUDE.md). The whole
+  customer catalogue rode in every page: 54 KB in English, more in Kannada.
+- **`ScatterMarquee` is built in the browser on a fine pointer only.** The word clouds show only
+  on hover; on a phone they were thousands of invisible words — 2,376 on `/seeds` — that held the
+  first images back. `/seeds` went from 784 KB of HTML to 163 KB; the home page from 640 KB to
+  260 KB; Kannada home from about 1 MB to 296 KB.
+- **The main picture is fetched first, at high priority**, and nothing below the fold is eager.
+  The hero mounts its other three frames after the first has loaded; they had been downloading
+  alongside it.
+- **The curtain stays.** It costs nothing measurable where a photograph is the main picture. On a
+  grid page the logo itself is the largest image, so the page's LCP is the logo's paint; that
+  came forward once the page was lighter. Fetching the logo at high priority was tried and
+  measured worse for the home page's hero, and reverted.
+- **Accessibility fixes**: `stone` and `terracotta` darkened ~10% to pass 4.5:1 on sand and cream;
+  footer small print `mint/70`; plan card facts are a `<p>`, not a `<dl>` of bare `<dd>`s; the
+  category tiles are named by their visible words rather than an `aria-label`; hero dots have
+  24px targets.
+- **Not done: cacheable pages.** Every page is still rendered per request with `no-store`, because
+  the layout and the product pages read the sign-in and cart cookies. CloudFront would honour an
+  `s-maxage` and keys on every cookie, but Next marks a page that reads cookies dynamic. Making
+  pages cacheable means moving those reads into the browser — header, cart badge, quick add, the
+  product stepper — and is worth doing once production response times can be measured on the
+  open site.

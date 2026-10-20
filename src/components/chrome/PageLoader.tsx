@@ -266,7 +266,10 @@ export function PageLoader() {
           already announced by Next's route announcer, and a screen reader
           meeting the brand name on every navigation learns nothing.
 
-          `priority` because on a first visit this is the only thing on screen.
+          `preload` because on a first visit this is the only thing on screen.
+          Not `fetchPriority="high"`: measured 20 Oct 2026, it cost the home
+          page's hero ~0.4s on a throttled phone and did not bring the logo's
+          paint forward on /seeds — that waits on layout, not on the network.
           `unoptimized` because it is an SVG — the optimiser would need
           `dangerouslyAllowSVG` and has nothing to gain on vector art. */}
       <Image
@@ -275,7 +278,7 @@ export function PageLoader() {
         width={brand.logoLight.width}
         height={brand.logoLight.height}
         unoptimized
-        priority
+        preload
         className="loader__mark h-auto w-[clamp(190px,44vw,330px)]"
       />
     </div>

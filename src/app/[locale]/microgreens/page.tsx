@@ -95,6 +95,7 @@ export default async function MicrogreensPage({ params }: PageProps<"/[locale]/m
                    detail page, where the delivery date is. */
                 meta={t("meta", { price: v.pricePer100g })}
                 index={i}
+                atTop
                 cutout={varietyCutout(v.content)}
                 hero={varietyHero(v.content)}
                 /* Labels only, and from the resolved locale, so the Kannada

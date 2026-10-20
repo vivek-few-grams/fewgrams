@@ -120,7 +120,7 @@ export function StoryFace({
            combination that fits a replaced element inside a box while
            preserving its aspect, whatever shape the master happens to be. */
         className="h-auto max-h-[62%] w-auto max-w-full"
-        priority={priority}
+        preload={priority}
         {...placeholderProps(page.placeholder, "contain")}
       />
       <p className="max-w-[30ch] px-10 text-center font-display text-[clamp(0.95rem,2.3cqw,1.35rem)] font-semibold leading-snug text-forest/70">
@@ -160,7 +160,7 @@ export function StoryFace({
         height={page.height}
         sizes="100vw"
         className="h-auto w-full shrink-0"
-        priority={priority}
+        preload={priority}
         {...placeholderProps(page.placeholder, "contain")}
       />
       <div className="story-page relative flex-1 px-6 pb-12 pt-5">

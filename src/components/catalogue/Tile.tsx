@@ -65,6 +65,7 @@ export function Tile({
   name,
   meta,
   index,
+  atTop = false,
   cutout,
   hero,
   words,
@@ -73,8 +74,13 @@ export function Tile({
   href: string;
   name: string;
   meta: string;
-  /** Position in the grid — picks the ground, and stands in for `priority`. */
+  /** Position in the grid — picks the ground, and decides which images load first. */
   index: number;
+  /** The grid opens the page, so its first row is what a visitor sees first.
+   *  A strip lower down — the home page's seeds — leaves every image lazy:
+   *  React preloads any image that is not, and four of them at the foot of
+   *  the page were competing with the hero for the connection. */
+  atTop?: boolean;
   cutout: { src: string; alt: string } | null;
   hero: { src: string; alt: string } | null;
   /** Scrolls behind the cut-out — see `Marquee`. */
@@ -127,7 +133,8 @@ export function Tile({
                   src={cutout.src}
                   alt={cutout.alt}
                   fill
-                  priority={index < 4}
+                  loading={atTop && index < 4 ? "eager" : "lazy"}
+                  fetchPriority={atTop && index === 0 ? "high" : undefined}
                   sizes="(min-width: 768px) 18vw, 35vw"
                   className="object-contain"
                   {...placeholderProps(placeholderFor(cutout.src), "contain")}
@@ -136,15 +143,18 @@ export function Tile({
             </>
           ) : hero ? (
             /* `sizes` matches the 2-up / 4-up grid so no phone downloads a
-               desktop image. `priority` on the first row only: the top-left tile
-               is this page's Largest Contentful Paint element, and lazy-loading
-               it delays the metric by a round trip — but marking everything
-               priority defeats the point and floods the connection. */
+               desktop image. Eager on the first row only, and high priority for
+               the top-left tile, which is this page's Largest Contentful Paint
+               element: lazy-loading it delays the metric by a round trip, but
+               marking everything urgent defeats the point and floods the
+               connection. (`fetchPriority`, not Next 16's deprecated
+               `priority`, which only preloads at the default priority.) */
             <Image
               src={hero.src}
               alt={hero.alt}
               fill
-              priority={index < 4}
+              loading={atTop && index < 4 ? "eager" : "lazy"}
+              fetchPriority={atTop && index === 0 ? "high" : undefined}
               sizes="(min-width: 768px) 25vw, 50vw"
               className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               {...placeholderProps(placeholderFor(hero.src), "cover")}

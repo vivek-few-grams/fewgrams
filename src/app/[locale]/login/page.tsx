@@ -91,7 +91,7 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
             src="/img/brand/login-girl.webp"
             alt={t("panelAlt")}
             fill
-            priority
+            preload
             sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-cover object-[center_22%] lg:object-[center_30%]"
             {...placeholderProps(placeholderFor("/img/brand/login-girl.webp"), "cover")}

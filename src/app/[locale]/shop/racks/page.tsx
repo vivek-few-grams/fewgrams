@@ -204,7 +204,8 @@ export default async function RacksPage({ params }: PageProps<"/[locale]/shop/ra
                       src={`/img/racks/${range}/cutout.webp`}
                       alt={t(`ranges.${range}.imageAlt`)}
                       fill
-                      priority={i === 0}
+                      loading={i === 0 ? "eager" : undefined}
+                      fetchPriority={i === 0 ? "high" : undefined}
                       sizes="(min-width: 768px) 30vw, 92vw"
                       className="object-contain"
                       {...placeholderProps(placeholderFor(`/img/racks/${range}/cutout.webp`), "contain")}

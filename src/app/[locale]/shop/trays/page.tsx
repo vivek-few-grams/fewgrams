@@ -177,7 +177,8 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                               src={cutout.src}
                               alt={cutout.alt}
                               fill
-                              priority={i < 3}
+                              loading={i < 3 ? "eager" : undefined}
+                              fetchPriority={i === 0 ? "high" : undefined}
                               sizes="(min-width: 768px) 30vw, 92vw"
                               className="object-contain"
                               {...placeholderProps(placeholderFor(cutout.src), "contain")}
@@ -185,7 +186,7 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                           </div>
                         </>
                       ) : photo ? (
-                        /* `priority` on the first row, which here is every card:
+                        /* Eager on the first row, which here is every card:
                          three items, one row on desktop. The top-left is this
                          page's Largest Contentful Paint element and
                          lazy-loading it costs a round trip. */
@@ -193,7 +194,8 @@ export default async function TraysPage({ params }: PageProps<"/[locale]/shop/tr
                           src={photo.src}
                           alt={photo.alt}
                           fill
-                          priority={i < 3}
+                          loading={i < 3 ? "eager" : undefined}
+                          fetchPriority={i === 0 ? "high" : undefined}
                           sizes="(min-width: 768px) 30vw, 92vw"
                           className="object-cover"
                           {...placeholderProps(placeholderFor(photo.src), "cover")}
