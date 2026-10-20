@@ -5830,11 +5830,15 @@ Profile, Merchant Center) is separate; this section is the code.
 
 - **Product** on every microgreen, seed, tray, cocopeat and rack range page, passed by the page from
   the row it prints the price from — the visible price and the structured one cannot disagree.
-  Weighed kinds carry a per-100 g `UnitPriceSpecification`; a rack range is an `AggregateOffer`
-  from its cheapest to its dearest model. No offer at price 0. A sold-out seed is `OutOfStock`;
-  nothing else here sells out. Our brand only on what we grow or pack (greens, seed).
-- **`productId(kind, key)`** — `seeds-kale` — is the id outside the site, kept for the shopping
-  feed: kind and key together, because a key names a microgreen and a seed.
+  Weighed kinds carry a per-100 g `UnitPriceSpecification`. A rack range page describes **the rack
+  on screen** — the height, size and colour its address chose, at the price its buy box prints —
+  with the range as `inProductGroupWithID` (until 20 Oct 2026 it was an `AggregateOffer` across the
+  range, which no single feed item could match). No offer at price 0. A sold-out seed is
+  `OutOfStock`; nothing else here sells out. Our brand only on what we grow or pack (greens, seed).
+- **`productId(kind, key)`** — `seeds-kale` — is the id outside the site: the structured data's
+  `sku` and the shopping feed's `id` (§28.7), which Merchant Center matches up. Kind and key
+  together, because a key names a microgreen and a seed; a rack's key is its cart key, so each
+  colour is its own id.
 - **Organization and WebSite** (with the `/search?q=` action) on the home page only.
 - **BreadcrumbList**, rendered by `Breadcrumbs` from the same list as the visible trail.
 - **No address and no city** while the owner keeps the city out of search.
@@ -5904,3 +5908,42 @@ and best practices 96 → 100 on every page tested.
   pages cacheable means moving those reads into the browser — header, cart badge, quick add, the
   product stepper — and is worth doing once production response times can be measured on the
   open site.
+
+### 28.7 Shopping feed, `llms.txt` and the app manifest — 20 Oct 2026
+
+**`/feeds/products.xml`** (`src/lib/seo/shopping-feed.ts` reads, `feed-xml.ts` writes) — every
+product on sale as an RSS 2.0 item in Google's `g:` namespace, which Google Merchant Center and
+Microsoft Merchant Center both read. It is what free Shopping listings and AI Mode's shopping
+answers are built from.
+
+- **Each item says what its page says.** Merchant Center opens the `link` and checks price and
+  stock against the page's `Product`, so the feed reads each kind as its page does: the same list,
+  price field, stock rule (`seedMaxUnits` for seed), name message and `productId`. Checked on
+  20 Oct 2026 against all 238 local items: no mismatch.
+- **One item per thing that goes in the cart.** A rack is an item per model and colour, linked to
+  its range page with the choice in the address (`rackPagePath`), grouped by range
+  (`item_group_id`), with `size` and `color`.
+- **Weighed kinds** say "100 g" in the title (`common.seo.feedWeighed`, from `GRAMS_PER_UNIT`) and
+  carry `unit_pricing_measure`. A green also carries its own handling time — the days to the date
+  its page prints — because each variety grows for a different number of days.
+- **`shipping_label`** groups items for Merchant Center's shipping services: `greens` (our own run,
+  delivery area only), `parcel` (seed, trays, cocopeat by courier), `rack` (built to order).
+- **Brand** only on greens and seed; trays and racks leave it empty, as Merchant Center asks of
+  unbranded goods, and say no barcode exists. Cocopeat is the maker's branded pack, so it claims
+  neither.
+- English only (one language per feed). Left out: plans, snacks, and an item with no photograph or
+  no price.
+
+**`/llms.txt`** (`src/lib/seo/llms.ts`) — the llmstxt.org shape: name, summary, a section per
+category from `searchCatalogue` (the grids' own rules, §27) with each product's price as search
+prints it, then the about and policy pages by their own titles and descriptions, and an
+`Optional` section for the Kannada site, the sitemap and the feed. Plans link to the home page's
+`#plans`, since `/subscribe` is kept out of crawlers' reach.
+
+Both are read per request and cached for a minute, as long as any price may lag.
+
+**`/manifest.webmanifest`** (`src/app/manifest.ts`) — name, icons (`public/img/brand/icon-192.png`
+and `-512.png`, rendered from `src/app/icon.svg`) and colours. `display: minimal-ui`, not
+`standalone`: an iPhone gives a standalone home-screen app its own cookies, so a sign-in link
+opened from email would sign in Safari and leave the app signed out. iOS treats `minimal-ui` as a
+browser tab.

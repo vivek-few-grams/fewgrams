@@ -412,6 +412,7 @@ of them fails loudly if you miss it:
 | `KIND_ICON` in `components/cart/KindIcon.tsx` | the line's icon — a `Record`, so a missed kind is a type error |
 | `searchCatalogue` in `search/catalogue.ts`, `SEARCH_ICON` in `components/search/SearchThumb.tsx` | whether search finds it, read the way its grid reads it (SPEC §27.3) |
 | `ParcelLine` / `parcelGrams` in `shipping/parcel.ts`, `toParcelLines` in `shipping/charge.ts` | how it is boxed and weighed for the courier — exhaustive switches |
+| `KIND` in `seo/feed-xml.ts`, `shoppingFeedItems` in `seo/shopping-feed.ts` | how it is listed for Merchant Center — shipping label, brand, barcode (SPEC §28.7) |
 
 **`item.grams === null` means "not sold by weight", not "a pack".** It was the
 pack test while trays were the only unweighed kind, and a rack priced "per pack"
@@ -545,8 +546,14 @@ without it and on a private one without `noindex`.
 - **Addresses come from `brand.url`**, never from the request.
 - **Structured data is passed the page's own row** (`productLd`), so the price Google reads is the
   price the page prints. No city or address in it while the owner keeps the city out of search.
-- **A new product kind** needs its listing in `LISTINGS` in `src/app/sitemap.ts` (a `Record`) and
-  its products in `searchCatalogue`, which the sitemap reads.
+- **A new product kind** needs its listing in `LISTINGS` in `src/app/sitemap.ts` (a `Record`), its
+  products in `searchCatalogue` (which the sitemap and `/llms.txt` read), and its items in
+  `shoppingFeedItems` with a row in `KIND` (`src/lib/seo/feed-xml.ts`, a `Record`).
+- **The shopping feed says what each page says** (`/feeds/products.xml`, SPEC §28.7): same list,
+  price field, stock rule and `productId` as the page's `productLd`, because Merchant Center
+  checks one against the other and pulls an item that disagrees. Change what a product page
+  prints and change the feed with it. A rack page's structured data is the rack on screen, and its
+  feed items are one per model and colour, linked with `rackPagePath`.
 - **AI crawlers are allowed** (the owner, 20 Oct 2026). Blocking one is a group of its own in
   `src/app/robots.ts`.
 

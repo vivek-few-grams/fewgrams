@@ -10,9 +10,9 @@ import type { Shot } from "@/components/catalogue/Gallery";
 import { MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
 import { readCartUnitsFor } from "@/lib/cart/server";
 import { formatDeliveryDate } from "@/lib/delivery-date";
-import { listRacksInRange, type SellableRack } from "@/lib/racks/catalogue";
+import { listRacksInRange } from "@/lib/racks/catalogue";
 import { rackCartKey, rackRangeOf } from "@/lib/racks/cart-key";
-import { rackLineName, rackSizeLabel } from "@/lib/racks/describe";
+import { rackFacts, rackLineName, rackPagePath, rackPhotos, rackSizeLabel, rackSizeParam } from "@/lib/racks/describe";
 import { rackReadyDate } from "@/lib/racks/lead-time";
 import { isRackColour, type RackColour } from "@/lib/racks/colours";
 
@@ -74,11 +74,6 @@ export async function generateMetadata({ params }: PageProps<"/[locale]/shop/rac
   });
 }
 
-/** `1.25x3`, the footprint as it appears in the SKU and in the query string —
- *  one spelling for both, so a URL can be read against a packing slip. */
-function sizeParam(rack: SellableRack): string {
-  return `${rack.depthFt}x${rack.lengthFt}`;
-}
 
 /** An option row. Links rather than a `<select>` — see the note at the top of
  *  the page component. At module scope because a component declared inside a
@@ -146,7 +141,7 @@ export default async function RackRangePage({
      rather than from `RackSettings.heightsFt` — a height whose models were all
      deactivated must not be offered. */
   const heights = [...new Set(racks.map((x) => x.heightFt))].sort((a, b) => a - b);
-  const sizes = [...new Map(racks.map((x) => [sizeParam(x), x])).values()].sort(
+  const sizes = [...new Map(racks.map((x) => [rackSizeParam(x), x])).values()].sort(
     (a, b) => a.lengthFt - b.lengthFt || a.depthFt - b.depthFt,
   );
 
@@ -154,10 +149,10 @@ export default async function RackRangePage({
   const height = heights.includes(wantHeight) ? wantHeight : heights[0];
 
   const wantSize = one(q.s);
-  const size = sizes.some((x) => sizeParam(x) === wantSize) ? wantSize! : sizeParam(sizes[0]);
+  const size = sizes.some((x) => rackSizeParam(x) === wantSize) ? wantSize! : rackSizeParam(sizes[0]);
 
   /* Both axes are valid on their own; the pair may still not be built. */
-  const rack = racks.find((x) => x.heightFt === height && sizeParam(x) === size) ?? null;
+  const rack = racks.find((x) => x.heightFt === height && rackSizeParam(x) === size) ?? null;
 
   const wantColour = one(q.c);
   const colour: RackColour | null =
@@ -177,55 +172,17 @@ export default async function RackRangePage({
     date: formatDeliveryDate(rackReadyDate(), dateLocale),
   });
 
-  const url = (next: { h?: number; s?: string; c?: string }) => {
-    const p = new URLSearchParams({
-      h: String(next.h ?? height),
-      s: next.s ?? size,
-    });
-    /* Colour is omitted for pipe, and dropped when the size changes to one
-       whose grade offers a different palette — the page will pick again. */
-    const nc = next.c ?? colour;
-    if (nc) p.set("c", nc);
-    return `/shop/racks/${r}?${p.toString()}`;
-  };
+  /* Colour is omitted for pipe, and kept when the size changes to one whose
+     grade offers a different palette — the page then picks again. */
+  const url = (next: { h?: number; s?: string; c?: RackColour }) =>
+    rackPagePath(r, { h: next.h ?? height, s: next.s ?? size, c: next.c ?? colour });
 
-  const shots: Shot[] = [
-    {
-      src: `/img/racks/${r}/cutout.webp`,
-      alt: t(`ranges.${r}.imageAlt`),
-    },
-    /* All three ranges now have a joint-detail close-up and a what's-included
-       flat lay, alongside the cut-out rather than replacing it. */
-    { src: `/img/racks/${r}/joint-detail-2.webp`, alt: t(`ranges.${r}.jointAlt`) },
-    { src: `/img/racks/${r}/whats-included-2.webp`, alt: t(`ranges.${r}.includedAlt`) },
-    /* Pipe is the only range shown loaded with drainage cell mats so far —
-       the same shot also appears on the mat's own gallery. */
-    ...(r === "pipe" ? [{ src: `/img/racks/${r}/with-mats-2.webp`, alt: t(`ranges.${r}.withMatsAlt`) }] : []),
-  ];
+  const shots: Shot[] = rackPhotos(r).map((photo) => ({
+    src: photo.src,
+    alt: t(`ranges.${r}.${photo.altKey}`),
+  }));
 
-  const facts = rack
-    ? [
-        {
-          label: d("height"),
-          value: d("heightOption", { height: rack.heightFt, shelves: rack.shelves }),
-        },
-        { label: d("size"), value: rackSizeLabel(t, rack) },
-        ...(rack.gaugeMm !== null
-          ? [{ label: d("steel"), value: d("steelValue", { mm: rack.gaugeMm }) }]
-          : []),
-        ...(rack.capacityKg !== null
-          ? [
-              {
-                label: d("capacity"),
-                value: d("capacityValue", {
-                  kg: rack.capacityKg,
-                  shelves: rack.shelves,
-                }),
-              },
-            ]
-          : []),
-      ]
-    : [];
+  const facts = rack ? rackFacts(t, rack) : [];
 
   return (
     <DetailPage
@@ -235,24 +192,28 @@ export default async function RackRangePage({
       ]}
       path={`/shop/racks/${r}`}
       crumb={t(`ranges.${r}.name`)}
-      structuredData={productLd({
-        locale,
-        path: `/shop/racks/${r}`,
-        id: productId("racks", r),
-        name: t(`ranges.${r}.name`),
-        description: t(`ranges.${r}.line`),
-        images: shots.map((shot) => shot.src),
-        /* One page, every model in the range: the price runs from the
-           cheapest to the dearest, as the range card's "from" price does. */
-        price: {
-          from: Math.min(...racks.map((x) => x.price)),
-          to: Math.max(...racks.map((x) => x.price)),
-          models: racks.length,
-        },
-        /* Built for each order, never out of stock. */
-        inStock: true,
-        ourBrand: false,
-      })}
+      /* The rack on screen, as the buy box prices it — each height, size and
+         colour is its own listing in the shopping feed, linked to this page
+         with its options in the address (`rackPagePath`), and Merchant Center
+         checks the feed's price against the one read here. The range is the
+         group they share. Nothing when this pair is not built: no price. */
+      structuredData={
+        rack && cartKey
+          ? productLd({
+              locale,
+              path: url({}),
+              id: productId("racks", cartKey),
+              name: rackLineName(t, rack, colour),
+              description: t(`ranges.${r}.line`),
+              images: shots.map((shot) => shot.src),
+              price: { amount: rack.price, per100g: false },
+              /* Built for each order, never out of stock. */
+              inStock: true,
+              ourBrand: false,
+              group: productId("racks", r),
+            })
+          : undefined
+      }
       name={rack ? rackLineName(t, rack, colour) : t(`ranges.${r}.name`)}
       shortDescription={t(`ranges.${r}.line`)}
       gallery={{
@@ -279,7 +240,7 @@ export default async function RackRangePage({
 
           <Options label={d("size")}>
             {sizes.map((x) => (
-              <Chip key={sizeParam(x)} href={url({ s: sizeParam(x) })} on={sizeParam(x) === size}>
+              <Chip key={rackSizeParam(x)} href={url({ s: rackSizeParam(x) })} on={rackSizeParam(x) === size}>
                 {rackSizeLabel(t, x)}
               </Chip>
             ))}

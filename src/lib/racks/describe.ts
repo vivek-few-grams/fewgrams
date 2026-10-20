@@ -1,5 +1,6 @@
 import type { RackColour } from "./colours";
 import type { SellableRack } from "./catalogue";
+import type { RackRange } from "./cart-key";
 
 /**
  * How a rack is written out for a customer — SPEC §19.9.
@@ -64,4 +65,55 @@ export function rackLineName(t: RackTranslator, rack: SellableRack, colour: Rack
   return colour === null
     ? t("lineNamePipe", common)
     : t("lineName", { ...common, colour: t(`colours.${colour}`) });
+}
+
+/**
+ * The rows under a rack's name on its page — height, footprint, and the steel
+ * and load where the range has them. The shopping feed writes the same rows
+ * into its description, so the two cannot describe one rack differently.
+ */
+export function rackFacts(t: RackTranslator, rack: SellableRack): Array<{ label: string; value: string }> {
+  return [
+    { label: t("detail.height"), value: t("detail.heightOption", { height: rack.heightFt, shelves: rack.shelves }) },
+    { label: t("detail.size"), value: rackSizeLabel(t, rack) },
+    ...(rack.gaugeMm !== null ? [{ label: t("detail.steel"), value: t("detail.steelValue", { mm: rack.gaugeMm }) }] : []),
+    ...(rack.capacityKg !== null
+      ? [
+          {
+            label: t("detail.capacity"),
+            value: t("detail.capacityValue", { kg: rack.capacityKg, shelves: rack.shelves }),
+          },
+        ]
+      : []),
+  ];
+}
+
+/** `1.25x3`, the footprint as it appears in the SKU and in the query string —
+ *  one spelling for both, so a URL can be read against a packing slip. */
+export function rackSizeParam(rack: Pick<SellableRack, "depthFt" | "lengthFt">): string {
+  return `${rack.depthFt}x${rack.lengthFt}`;
+}
+
+/**
+ * The address that shows one rack: `/shop/racks/angle?h=6&s=1.25x3&c=orange`.
+ * The range page builds its option links with it, and the shopping feed links
+ * each rack it lists to the page that prints that rack's price. Colour is left
+ * out for pipe, which has none.
+ */
+export function rackPagePath(range: RackRange, choice: { h: number; s: string; c: RackColour | null }): string {
+  const p = new URLSearchParams({ h: String(choice.h), s: choice.s });
+  if (choice.c) p.set("c", choice.c);
+  return `/shop/racks/${range}?${p.toString()}`;
+}
+
+/** A range's photographs, best first, each with its `shop.racks.ranges.<range>`
+ *  alt key. All three ranges have a joint close-up and a what's-included flat
+ *  lay beside the cut-out; pipe alone is also shown loaded with drainage mats. */
+export function rackPhotos(range: RackRange): Array<{ src: string; altKey: string }> {
+  return [
+    { src: `/img/racks/${range}/cutout.webp`, altKey: "imageAlt" },
+    { src: `/img/racks/${range}/joint-detail-2.webp`, altKey: "jointAlt" },
+    { src: `/img/racks/${range}/whats-included-2.webp`, altKey: "includedAlt" },
+    ...(range === "pipe" ? [{ src: `/img/racks/${range}/with-mats-2.webp`, altKey: "withMatsAlt" }] : []),
+  ];
 }

@@ -18,7 +18,9 @@ import { Reveal } from "@/components/ui/Reveal";
  * microgreens site uses, and a nutrient content claim needs analysis behind
  * it under the FSS (Advertising and Claims) Regulations 2018. The nutrition
  * row is a published study's finding, credited to it in the copy (no link
- * shown): Xiao et al., J. Agric. Food Chem. 2012, doi:10.1021/jf300459b. Do
+ * shown): Xiao et al., J. Agric. Food Chem. 2012, doi:10.1021/jf300459b — USDA
+ * Agricultural Research Service scientists, whose findings USDA published, so
+ * the copy says "as per USDA reports" (the owner, 20 Oct 2026). Do
  * not reword it into a claim about our own greens ("more vitamins than…").
  * "Healthy" is kept out for the same reason — it is a health claim.
  */

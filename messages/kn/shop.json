@@ -60,6 +60,7 @@
     "size": "{depth, number} × {length, number} ಅಡಿ",
     "lineName": "{range} · {height, number} ಅಡಿ · {shelves, plural, one {# ಅಟ್ಟಣಿಗೆ} other {# ಅಟ್ಟಣಿಗೆ}} · {size} · {colour}",
     "lineNamePipe": "{range} · {height, number} ಅಡಿ · {shelves, plural, one {# ಅಟ್ಟಣಿಗೆ} other {# ಅಟ್ಟಣಿಗೆ}} · {size}",
+    "feedSize": "{height, number} ಅಡಿ ಎತ್ತರ, {size}",
     "colours": {
       "red": "ಕೆಂಪು",
       "orange": "ಕಿತ್ತಳೆ",

@@ -60,6 +60,7 @@
     "size": "{depth, number} × {length, number} ft",
     "lineName": "{range} · {height, number} ft · {shelves, plural, one {# shelf} other {# shelves}} · {size} · {colour}",
     "lineNamePipe": "{range} · {height, number} ft · {shelves, plural, one {# shelf} other {# shelves}} · {size}",
+    "feedSize": "{height, number} ft high, {size}",
     "colours": {
       "red": "Red",
       "orange": "Orange",

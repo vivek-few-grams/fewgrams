@@ -87,6 +87,18 @@
   "seo": {
     "homeTitle": "Fresh microgreens, sown for you, cut this morning",
     "homeDescription": "Microgreens grown to order and cut the morning they reach you. Never frozen, never stored. Order a box, take a weekly plan, or grow your own.",
-    "shareImageAlt": "A speckled ceramic bowl heaped with mixed red and green microgreens on a wooden block."
+    "shareImageAlt": "A speckled ceramic bowl heaped with mixed red and green microgreens on a wooden block.",
+    "feedWeighed": "{name}, {grams, number} g",
+    "feedSpec": "{label}: {value}",
+    "llms": {
+      "about": "About Fewgrams",
+      "policies": "Policies",
+      "kannada": "Kannada",
+      "kannadaNote": "The whole site in Kannada, at the same addresses under /kn.",
+      "sitemap": "Sitemap",
+      "sitemapNote": "Every page, in English and Kannada.",
+      "feed": "Product feed",
+      "feedNote": "Every product with its price and whether it is in stock, read from the shop when it is fetched."
+    }
   }
 }

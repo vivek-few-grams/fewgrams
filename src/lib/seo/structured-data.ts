@@ -69,16 +69,14 @@ export function websiteLd(locale: string): Json {
   };
 }
 
-/** The price: one figure, or a range of models (a rack range). */
-export type ProductPrice =
-  | { amount: number; per100g: boolean }
-  | { from: number; to: number; models: number };
+/** The price the page prints, and whether it is per 100 g. */
+export type ProductPrice = { amount: number; per100g: boolean };
 
 export function productLd(p: {
   locale: string;
   /** Without the locale: `/seeds/kale`. */
   path: string;
-  /** `productId(kind, key)` — the same id the shopping feed will carry. */
+  /** `productId(kind, key)` — the same id the shopping feed carries. */
   id: string;
   name: string;
   description?: string;
@@ -89,43 +87,32 @@ export function productLd(p: {
   /** Only when it is ours to claim — we grow the greens and pack the seed; a
    *  tray or a block of cocopeat carries its maker's name, not ours. */
   ourBrand: boolean;
+  /** The `productId` of the group this is one choice in — a rack's range. */
+  group?: string;
 }): Json {
   const url = absoluteUrl(p.locale, p.path);
   const availability = `https://schema.org/${p.inStock ? "InStock" : "OutOfStock"}`;
   const price = p.price;
 
-  const offers =
-    "amount" in price
-      ? price.amount > 0 && {
-          "@type": "Offer",
-          url,
-          price: price.amount,
-          priceCurrency: "INR",
-          availability,
-          itemCondition: "https://schema.org/NewCondition",
-          seller,
-          /* Sold by weight: the price is per 100 g, said in a form a machine
-             reads rather than left to the words around it. */
-          ...(price.per100g && {
-            priceSpecification: {
-              "@type": "UnitPriceSpecification",
-              price: price.amount,
-              priceCurrency: "INR",
-              referenceQuantity: { "@type": "QuantitativeValue", value: GRAMS_PER_UNIT, unitCode: "GRM" },
-            },
-          }),
-        }
-      : price.from > 0 && {
-          "@type": "AggregateOffer",
-          url,
-          lowPrice: price.from,
-          highPrice: price.to,
-          offerCount: price.models,
-          priceCurrency: "INR",
-          availability,
-          itemCondition: "https://schema.org/NewCondition",
-          seller,
-        };
+  const offers = price.amount > 0 && {
+    "@type": "Offer",
+    url,
+    price: price.amount,
+    priceCurrency: "INR",
+    availability,
+    itemCondition: "https://schema.org/NewCondition",
+    seller,
+    /* Sold by weight: the price is per 100 g, said in a form a machine reads
+       rather than left to the words around it. */
+    ...(price.per100g && {
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: price.amount,
+        priceCurrency: "INR",
+        referenceQuantity: { "@type": "QuantitativeValue", value: GRAMS_PER_UNIT, unitCode: "GRM" },
+      },
+    }),
+  };
 
   return {
     "@context": "https://schema.org",
@@ -133,6 +120,7 @@ export function productLd(p: {
     "@id": `${url}#product`,
     url,
     sku: p.id,
+    ...(p.group && { inProductGroupWithID: p.group }),
     name: p.name,
     ...(p.description && { description: p.description }),
     ...(p.images.length > 0 && { image: p.images.map(absolute) }),
@@ -141,9 +129,10 @@ export function productLd(p: {
   };
 }
 
-/** A product's id outside the site — structured data now, the Merchant
- *  Center feed later. Kind and key together, because "radish" is a microgreen
- *  and a seed (see the cart's keying rule). */
+/** A product's id outside the site — the structured data's `sku` and the
+ *  shopping feed's `id`, which Merchant Center matches up. Kind and key
+ *  together, because "radish" is a microgreen and a seed (see the cart's
+ *  keying rule); a rack's key is its cart key, so each colour is its own. */
 export function productId(kind: "microgreens" | "seeds" | "trays" | "media" | "racks", key: string): string {
   return `${kind}-${key}`;
 }

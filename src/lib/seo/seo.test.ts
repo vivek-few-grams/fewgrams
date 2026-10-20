@@ -4,7 +4,9 @@ import { describe, expect, it } from "vitest";
 import { localeAlternates } from "@/i18n/alternates";
 import robots from "@/app/robots";
 import { clipDescription } from "./metadata";
-import { productLd } from "./structured-data";
+import { rackPagePath } from "@/lib/racks/describe";
+import { feedXml, greensHandlingDays, type FeedItem } from "./feed-xml";
+import { productId, productLd } from "./structured-data";
 
 describe("localeAlternates", () => {
   it("names every language absolutely, with English as x-default", () => {
@@ -84,6 +86,105 @@ describe("productLd", () => {
     const tray = productLd({ ...base, ourBrand: false, price: { amount: 160, per100g: false } });
     expect(tray).not.toHaveProperty("brand");
     expect(tray.offers).not.toHaveProperty("priceSpecification");
+  });
+
+  /* A rack page describes the rack on screen, one of its range's choices. */
+  it("names the group a choice belongs to", () => {
+    const rack = productLd({
+      ...base,
+      path: rackPagePath("pipe", { h: 6, s: "1.5x3", c: null }),
+      id: productId("racks", "pr-6f-5s-1.5x3"),
+      ourBrand: false,
+      price: { amount: 2599, per100g: false },
+      group: productId("racks", "pipe"),
+    });
+    expect(rack).toMatchObject({ sku: "racks-pr-6f-5s-1.5x3", inProductGroupWithID: "racks-pipe" });
+    expect(rack.offers).toMatchObject({ price: 2599, url: "https://fewgrams.com/shop/racks/pipe?h=6&s=1.5x3" });
+  });
+});
+
+describe("rackPagePath", () => {
+  it("puts the choice in the address the range page reads", () => {
+    expect(rackPagePath("angle", { h: 6, s: "1.25x3", c: "orange" })).toBe("/shop/racks/angle?h=6&s=1.25x3&c=orange");
+    expect(rackPagePath("pipe", { h: 4, s: "1x2", c: null })).toBe("/shop/racks/pipe?h=4&s=1x2");
+  });
+});
+
+describe("shopping feed", () => {
+  const green: FeedItem = {
+    kind: "microgreens",
+    id: "microgreens-broccoli",
+    title: "Broccoli microgreens, 100 g",
+    description: "Mild & sweet <b>leaves</b>.",
+    path: "/microgreens/broccoli",
+    images: ["/img/varieties/broccoli/hero.jpg", "/img/varieties/broccoli/tray.jpg"],
+    price: 180,
+    inStock: true,
+    weighed: true,
+    handlingDays: 9,
+    productType: "Microgreens",
+  };
+  const rack: FeedItem = {
+    kind: "racks",
+    id: "racks-rk-6f-5s-1.25x3-1.4-orange",
+    title: "Shelf racks · 6 ft · 5 shelves · 1.25 × 3 ft · Orange",
+    description: "Steel shelves.\nHeight: 6 ft",
+    path: "/shop/racks/shelf?h=6&s=1.25x3&c=orange",
+    images: ["/img/racks/shelf/cutout.webp"],
+    price: 4199,
+    inStock: true,
+    weighed: false,
+    productType: "Racks",
+    variant: { group: "racks-shelf", size: "6 ft high, 1.25 × 3 ft", colour: "Orange" },
+  };
+  const doc = feedXml({ title: "Fewgrams", description: "Fresh & local" }, [green, rack]);
+  const item = (i: number) => doc.split("<item>")[i + 1].split("</item>")[0];
+
+  it("is an RSS document in Google's namespace, escaped", () => {
+    expect(doc).toMatch(/^<\?xml version="1.0" encoding="UTF-8"\?>\n<rss version="2.0" xmlns:g="http:\/\/base.google.com\/ns\/1.0">/);
+    expect(doc).toContain("<description>Fresh &amp; local</description>");
+    expect(item(0)).toContain("<g:description>Mild &amp; sweet &lt;b&gt;leaves&lt;/b&gt;.</g:description>");
+    expect(doc.match(/<item>/g)).toHaveLength(2);
+  });
+
+  it("links the English page and the photographs on the live site, priced in rupees", () => {
+    expect(item(0)).toContain("<g:link>https://fewgrams.com/microgreens/broccoli</g:link>");
+    expect(item(0)).toContain("<g:image_link>https://fewgrams.com/img/varieties/broccoli/hero.jpg</g:image_link>");
+    expect(item(0)).toContain("<g:additional_image_link>https://fewgrams.com/img/varieties/broccoli/tray.jpg</g:additional_image_link>");
+    expect(item(0)).toContain("<g:price>180.00 INR</g:price>");
+    expect(item(1)).toContain("<g:link>https://fewgrams.com/shop/racks/shelf?h=6&amp;s=1.25x3&amp;c=orange</g:link>");
+  });
+
+  it("prices a weighed product per 100 g and gives a green its own growing time", () => {
+    expect(item(0)).toContain("<g:unit_pricing_measure>100g</g:unit_pricing_measure>");
+    expect(item(0)).toContain("<g:max_handling_time>9</g:max_handling_time>");
+    expect(item(0)).toContain("<g:shipping_label>greens</g:shipping_label>");
+    expect(item(1)).not.toContain("unit_pricing");
+    expect(item(1)).not.toContain("handling_time");
+  });
+
+  it("claims our brand only for our own produce and seed", () => {
+    expect(item(0)).toContain("<g:brand>Fewgrams</g:brand>");
+    expect(item(0)).toContain("<g:identifier_exists>no</g:identifier_exists>");
+    expect(item(1)).not.toContain("<g:brand>");
+  });
+
+  it("sends a rack as one choice in its range's group", () => {
+    expect(item(1)).toContain("<g:item_group_id>racks-shelf</g:item_group_id>");
+    expect(item(1)).toContain("<g:color>Orange</g:color>");
+    expect(item(1)).toContain("<g:size>6 ft high, 1.25 × 3 ft</g:size>");
+    expect(item(1)).toContain("<g:shipping_label>rack</g:shipping_label>");
+  });
+
+  it("says out of stock when it is", () => {
+    const soldOut = feedXml({ title: "F", description: "D" }, [{ ...green, kind: "seeds", inStock: false }]);
+    expect(soldOut).toContain("<g:availability>out_of_stock</g:availability>");
+  });
+
+  /* Ordered at 10:00 IST on a Monday: sown Tuesday, cut eight days later. */
+  it("counts a green's days to the date its page prints", () => {
+    expect(greensHandlingDays(8, new Date("2026-10-19T10:00:00+05:30"))).toBe(9);
+    expect(greensHandlingDays(8, new Date("2026-10-19T23:59:00+05:30"))).toBe(9);
   });
 });
 
