@@ -20,6 +20,7 @@ import {
   sprigGeometry,
   type Look,
   type Stems,
+  type Variety,
 } from "@/components/tray-play/plants";
 import { LOOK_KEYS, TRAY_FINISH_KEYS } from "@/components/tray-play/kinds";
 import {
@@ -72,6 +73,7 @@ import {
   trayPrint,
 } from "./props";
 import type { BenchStep } from "./steps";
+import { Silhouette } from "./silhouette";
 import { GHOST_IDLE_SECONDS, hideGhost, placeGhost } from "@/components/tray-play/ghost";
 import {
   DARK_DAYS,
@@ -193,8 +195,21 @@ const RIM_Y = TRAY_RAISE + TRAY_H + 0.004;
  *  stands on the bench, `TRAY_RAISE` lower) and upturned onto its rim. */
 const LID_ON = TRAY_H + TRAY_H / 2 + 0.012;
 const LID_OFF = TRAY_H / 2;
-/** How far the shoots have pushed the cover up by the end of the dark. */
-const LID_LIFT = 0.3;
+/** How tall a variety's shoots stand at `grow` (the shader's `uGrow`),
+ *  folded leaves and all, from the peat: the canopy of the first stems
+ *  up — the shader's `grown` with a short lag, and stems a little over the
+ *  variety's middle height — not its one tallest stem. */
+function shootTop(v: Variety, grow: number) {
+  const g = THREE.MathUtils.clamp((grow - 0.03) / 0.97, 0, 1);
+  return (v.height + v.heightJitter * 0.5) * g + v.leafLength * 0.4 * Math.min(1, g / DARK_GROW);
+}
+/** How far the shoots have pushed the cover up: its rim rests on them
+ *  once they stand higher than the tray it sits on, and not before (the
+ *  owner, 21 Oct 2026: a fixed lift, tuned before the dark shoots were
+ *  made shorter, left it hanging in the air above them). */
+function lidLift(v: Variety, grow: number) {
+  return Math.max(0, MEDIUM_Y - TRAY_RAISE + shootTop(v, grow) - (LID_ON - TRAY_H / 2));
+}
 
 type XZ = [number, number];
 type Layout = {
@@ -859,6 +874,29 @@ export function mountGardenScene(
   const water = new THREE.Mesh(bin.add(new THREE.CircleGeometry(1, 40)), waterMat);
   water.rotation.x = -Math.PI / 2;
   tub.add(water);
+  /* What the can pours into the water tray at the light step, rising
+     while it pours (the owner, 21 Oct 2026: the stream landed and nothing
+     filled). A child of whichever pair's water tray is in play, like the
+     grime on the grow tray, so it hides with that tray while it is the
+     cover. Drawn at the floor's outline and widened with the wall's lean
+     to its level. */
+  const POND = { hw: floorHalf().hw + WATER_MARGIN, hd: floorHalf().hd + WATER_MARGIN };
+  const pond = new THREE.Mesh(bin.add(roundedRect(POND.hw, POND.hd, CORNER)), waterMat);
+  /** How deep the water stands once poured: enough that the grow tray,
+   *  set back down, stands in it to drink. */
+  const POND_DEPTH = 0.06;
+  /** The water tray's floor, inside, which the level is measured from. */
+  const POND_FLOOR = 0.014;
+  let pondLevel = 0;
+  function placePond() {
+    pond.visible = pondLevel > 0.002;
+    const y = POND_FLOOR + pondLevel;
+    const wall = innerWallAt(y, TRAY_H);
+    pond.position.y = y;
+    pond.scale.set((POND.hw + wall) / POND.hw, 1, (POND.hd + wall) / POND.hd);
+    /* The stream lies on the water as it rises, not under it. */
+    pourDrops.setFloor(Math.max(DROPS_FLOOR, y));
+  }
   const blockTex = bin.add(mediumTexture(mulberry32(3), "#9a9a9a"));
   blockTex.repeat.set(0.7, 0.7);
   const block = peatBlock(bin, blockTex);
@@ -1036,12 +1074,14 @@ export function mountGardenScene(
     opacity: 0.8,
   });
   /* Watering from below: a stream from the spout that lands on the
-     green tray's floor and lies there, rather than falling through it. */
+     green tray's floor and lies there, rather than falling through it —
+     and on the water, once there is some (`placePond`). */
+  const DROPS_FLOOR = 0.04;
   const pourDrops = new Particles(bin, 500, "#cfe3ea", {
     gravity: 9,
     drag: 0.4,
     soft: 0.5,
-    floor: 0.04,
+    floor: DROPS_FLOOR,
     opacity: 0.85,
   });
   scene.add(mist.points, drops.points, crumbs.points, seedsFall.points, bubbles.points, pourDrops.points);
@@ -1141,6 +1181,7 @@ export function mountGardenScene(
     room.daylight(null);
     shiftToRack(false);
     activePair().grow.add(grimeGroup);
+    activePair().group.getObjectByName("water")!.add(pond);
     lidTray.material = activePair().mats.water;
     lidFloorMat.color.copy((activePair().mats.water as THREE.MeshStandardMaterial).color);
   }
@@ -1166,6 +1207,8 @@ export function mountGardenScene(
     held = null;
     canAnim.pouring = false;
     canAnim.t = 10;
+    pondLevel = 0;
+    placePond();
     auto = null;
     ptr.auto = null;
     ptr.down = false;
@@ -1274,7 +1317,7 @@ export function mountGardenScene(
         for (const w of activePair().water) w.visible = false;
         bedAt(-TRAY_RAISE);
         lid.visible = true;
-        val.lidLift = LID_LIFT;
+        val.lidLift = lidLift(LOOKS[look], DARK_GROW);
         lid.rotation.set(Math.PI, 0, 0);
         /* At the rack: its second shelf where the bench was. */
         shiftToRack(true);
@@ -2628,7 +2671,7 @@ export function mountGardenScene(
       val.days = Math.min(DARK_DAYS, val.days + ((dt * DARK_DAYS) / DARK_SECONDS) * pace);
       val.growTarget = DARK_GROW * (val.days / DARK_DAYS);
     }
-    val.lidLift = LID_LIFT * smooth(shared.grow.value, 0.15, DARK_GROW);
+    val.lidLift = lidLift(LOOKS[look], shared.grow.value);
     if (phase === "hold" || phase === "done") {
       lid.position.y = LID_ON + val.lidLift;
     }
@@ -2657,6 +2700,9 @@ export function mountGardenScene(
          gap under the lifted white tray — so the stream visibly leaves
          the spout and lands in the tray. */
       bedAt(0.75 * smooth(ct, 0, 0.35) * (1 - smooth(ct, 2.3, 2.7)));
+      /* From the first drops landing to the last. */
+      pondLevel = POND_DEPTH * smooth(ct, 0.85, 2.05);
+      placePond();
       const k = ease(clamp01((ct - 0.25) / 0.45)) * (1 - ease(clamp01((ct - 1.95) / 0.4)));
       can.rotation.set(0, THREE.MathUtils.lerp(2.9, Math.PI, k), THREE.MathUtils.lerp(0, -0.55, k));
       can.updateMatrixWorld();
@@ -3355,76 +3401,104 @@ export function mountGardenScene(
     return anchorPoint;
   }
   const cutPoint = new THREE.Vector3();
-  const cutHull: [number, number][] = [];
+  const cutMatrix = new THREE.Matrix4();
+  const cutBox = new THREE.Box3();
+  let cutXY = new Float32Array(0);
+  const silhouette = new Silhouette();
+  /** Pixels between the scan lines the outline is traced on. */
+  const CUT_STEP = 2;
+  /** How far round the frame is traced: up over its cord and nail, out
+   *  over its shadow. */
+  const CUT_ABOVE = 120;
+  const CUT_ROUND = 56;
+  /** A box's twelve triangles, by corner (bit 0 x, bit 1 y, bit 2 z). */
+  const BOX_FACES = [
+    0, 1, 3, 0, 3, 2, 4, 5, 7, 4, 7, 6, 0, 1, 5, 0, 5, 4, 2, 3, 7, 2, 7, 6, 0, 2, 6, 0, 6, 4, 1, 3, 7, 1, 7,
+    5,
+  ];
   /** Clip the wall frame (`el`'s box, whose top left is at `left, top` on
-   *  the stage) around every tray and tool standing in front of it: each
-   *  one's outline — the hull of its parts' boxes, as the camera sees
-   *  them — is a hole in the frame, so it is seen in front. */
+   *  the stage) around every tray and tool standing in front of it: the
+   *  outline of each, as the camera sees it, is a hole in the frame, so it
+   *  is seen in front (`Silhouette`). */
   function cutFrame(el: HTMLElement, left: number, top: number, box: DOMRect) {
     const frame = el.firstElementChild as HTMLElement | null;
     if (!frame) return;
     const w = frame.offsetWidth;
     const h = frame.offsetHeight;
-    const holes: string[] = [];
+    silhouette.reset(-CUT_ABOVE, h + CUT_ROUND, CUT_STEP);
+    const sx = box.width / 2;
+    const sy = box.height / 2;
+    /* Corner `i` of the projected points into pixels on the frame. */
+    const px = (i: number) => (cutXY[2 * i] + 1) * sx - left;
+    const py = (i: number) => (1 - cutXY[2 * i + 1]) * sy - top;
     const seen = new Set<THREE.Object3D>();
     for (const t of TARGETS) {
       const o = targetObject(t);
       if (!o || !o.visible || seen.has(o)) continue;
       seen.add(o);
-      const pts: [number, number][] = [];
       o.traverseVisible((m) => {
-        const geo = (m as THREE.Mesh).geometry as THREE.BufferGeometry | undefined;
-        if (!geo) return;
-        if (!geo.boundingBox) geo.computeBoundingBox();
-        const b = geo.boundingBox!;
-        for (let i = 0; i < 8; i++) {
-          cutPoint
-            .set(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z)
-            .applyMatrix4(m.matrixWorld)
-            .project(camera);
-          pts.push([((cutPoint.x + 1) / 2) * box.width - left, ((1 - cutPoint.y) / 2) * box.height - top]);
+        const mesh = m as THREE.Mesh;
+        if (!mesh.isMesh) return;
+        const mat = mesh.material;
+        /* A part faded out is not there to be seen in front. */
+        if (!Array.isArray(mat) && (!mat.visible || (mat.transparent && mat.opacity < 0.05))) return;
+        cutMatrix
+          .multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse)
+          .multiply(mesh.matrixWorld);
+        /* Every instance of an instanced part is one box round them all;
+           anything else is its own triangles. */
+        const instanced = (mesh as THREE.InstancedMesh).isInstancedMesh;
+        const pos = mesh.geometry.getAttribute("position");
+        const count = instanced ? 8 : pos.count;
+        if (cutXY.length < count * 2) cutXY = new Float32Array(count * 2);
+        if (instanced) {
+          const im = mesh as THREE.InstancedMesh;
+          if (!im.boundingBox) im.computeBoundingBox();
+          cutBox.copy(im.boundingBox!);
         }
+        let x0 = Infinity;
+        let x1 = -Infinity;
+        let y0 = Infinity;
+        let y1 = -Infinity;
+        for (let i = 0; i < count; i++) {
+          if (instanced)
+            cutPoint.set(
+              i & 1 ? cutBox.max.x : cutBox.min.x,
+              i & 2 ? cutBox.max.y : cutBox.min.y,
+              i & 4 ? cutBox.max.z : cutBox.min.z,
+            );
+          else cutPoint.fromBufferAttribute(pos, i);
+          cutPoint.applyMatrix4(cutMatrix);
+          cutXY[2 * i] = cutPoint.x;
+          cutXY[2 * i + 1] = cutPoint.y;
+          const x = px(i);
+          const y = py(i);
+          if (x < x0) x0 = x;
+          if (x > x1) x1 = x;
+          if (y < y0) y0 = y;
+          if (y > y1) y1 = y;
+        }
+        /* Nothing of it over the frame, its cord or its shadow. */
+        if (x1 < -CUT_ROUND || x0 > w + CUT_ROUND || y1 < -CUT_ABOVE || y0 > h + CUT_ROUND) return;
+        const tri = (a: number, b: number, c: number) =>
+          silhouette.triangle(px(a), py(a), px(b), py(b), px(c), py(c));
+        if (instanced) {
+          for (let i = 0; i < BOX_FACES.length; i += 3) tri(BOX_FACES[i], BOX_FACES[i + 1], BOX_FACES[i + 2]);
+          return;
+        }
+        const index = mesh.geometry.index;
+        if (index)
+          for (let i = 0; i + 2 < index.count; i += 3)
+            tri(index.getX(i), index.getX(i + 1), index.getX(i + 2));
+        else for (let i = 0; i + 2 < count; i += 3) tri(i, i + 1, i + 2);
       });
-      if (pts.length < 3) continue;
-      /* Nothing of it over the frame (and its cord, above): no hole. */
-      if (
-        pts.every(([x]) => x < 0) ||
-        pts.every(([x]) => x > w) ||
-        pts.every(([, y]) => y > h) ||
-        pts.every(([, y]) => y < -80)
-      )
-        continue;
-      hull(pts);
-      holes.push("M" + cutHull.map(([x, y]) => `${x.toFixed(1)} ${y.toFixed(1)}`).join("L") + "Z");
     }
-    frame.style.clipPath = holes.length
+    const holes = silhouette.path();
+    frame.style.clipPath = holes
       ? /* Everything round the frame — its cord, nail and shadow — and
            then the holes, cut by the even-odd rule. */
-        `path(evenodd, "M-400 -400H${w + 400}V${h + 400}H-400Z${holes.join("")}")`
+        `path(evenodd, "M-400 -400H${w + 400}V${h + 400}H-400Z${holes}")`
       : "";
-  }
-  /** The convex hull of `pts`, into `cutHull` (monotone chain). */
-  function hull(pts: [number, number][]) {
-    pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-    const cross = (o: [number, number], a: [number, number], b: [number, number]) =>
-      (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
-    cutHull.length = 0;
-    for (const p of pts) {
-      while (cutHull.length >= 2 && cross(cutHull[cutHull.length - 2], cutHull[cutHull.length - 1], p) <= 0)
-        cutHull.pop();
-      cutHull.push(p);
-    }
-    const lower = cutHull.length + 1;
-    for (let i = pts.length - 2; i >= 0; i--) {
-      const p = pts[i];
-      while (
-        cutHull.length >= lower &&
-        cross(cutHull[cutHull.length - 2], cutHull[cutHull.length - 1], p) <= 0
-      )
-        cutHull.pop();
-      cutHull.push(p);
-    }
-    cutHull.pop();
   }
   const rackPoint = new THREE.Vector3();
   /** The light step's arrow: a dotted curve from the front edge of our

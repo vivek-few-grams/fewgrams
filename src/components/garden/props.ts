@@ -1383,6 +1383,11 @@ export class Particles {
     this.size[i] = size;
   }
 
+  /** Move the floor the particles come to rest on. */
+  setFloor(y: number) {
+    this.opts.floor = y;
+  }
+
   /** True while anything is still alive. */
   update(dt: number) {
     const { gravity, drag, floor, opacity } = this.opts;
