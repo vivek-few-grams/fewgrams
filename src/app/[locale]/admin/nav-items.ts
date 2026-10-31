@@ -75,6 +75,10 @@ export const ADMIN_NAV_GROUPS: {
       { label: "racks", href: "/admin/racks" },
       { label: "angleRacks", href: "/admin/angle-racks" },
       { label: "pipeRacks", href: "/admin/pipe-racks" },
+      /* Starter packs (SPEC §29, 30 Oct 2026): a rack, trays, seeds and
+         cocopeat from the screens above, priced as one. Last, because a pack
+         is made of what they sell. */
+      { label: "packs", href: "/admin/packs" },
     ],
   },
   /* The GST books (SPEC §26, 18 Oct 2026): who we buy from, what we paid

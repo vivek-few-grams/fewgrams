@@ -1,4 +1,5 @@
 import { istDateISO } from "@/lib/delivery-date";
+import { packKeyOf } from "@/lib/packs/key";
 import { bookingState, canBook, type Order, type OrderShipment } from "@/lib/orders/order";
 import { getOrder, replaceShipment } from "@/lib/repo/orders";
 import { allOrigins, getShippingSettings } from "@/lib/repo/shipping";
@@ -83,7 +84,9 @@ export function bookingInput(
     },
     items: lines.map((l) => ({
       name: l.name,
-      sku: `${l.kind}:${l.key}`,
+      /* A starter pack's key carries its seed list, far longer than a courier
+         SKU field; the pack's own key names it well enough on a label. */
+      sku: l.kind === "pack" ? `pack:${packKeyOf(l.key) ?? "starter"}` : `${l.kind}:${l.key}`,
       units: l.units,
       unitPrice: l.unitPrice,
     })),

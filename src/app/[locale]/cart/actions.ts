@@ -11,6 +11,7 @@ import { seedMaxUnits } from "@/lib/seeds/stock";
 import { getTrayContent } from "@/lib/content/trays";
 import { getGrowMediumContent } from "@/lib/content/grow-media";
 import { findSellableRack } from "@/lib/racks/catalogue";
+import { resolvePackLine } from "@/lib/packs/catalogue";
 import {
   MAX_UNITS_PER_LINE,
   asCartKind,
@@ -42,6 +43,7 @@ import { err, type FormState } from "@/lib/forms";
  * | tray | active, and have a content file |
  * | media | active, and have a content file |
  * | rack | resolve to a published, active model in a colour its grade offers |
+ * | pack | on sale with every part, a colour its rack offers, seeds from its menu and on the shelf |
  *
  * **A seed's stock is back to being a limit** (the owner, 25 Sep 2026). From
  * 17 Sep any quantity could be ordered and the shelf only set the date; now
@@ -94,6 +96,18 @@ async function sellable(
     /* One call is the entire test. Nothing else to check: the price is on the
        model, and a rack has no stock and no content file. */
     return (await findSellableRack(key)) ? { ok: true } : { ok: false, code: "notSellable" };
+  }
+
+  if (kind === "pack") {
+    /* The pack and every part on sale, the colour one its rack comes in, and
+       each seed on the pack's menu **now** (`fresh`) — an add or an increase
+       is a new choice. Each pack holds 100 g of every seed chosen, so the
+       scarcest of them caps the line, as a seed's shelf caps a seed line. */
+    const found = await resolvePackLine(key, "en", { fresh: true });
+    if (!found) return { ok: false, code: "notSellable" };
+    if (found.maxUnits === 0) return { ok: false, code: "soldOut" };
+    if (units > found.maxUnits) return { ok: false, code: "overStock" };
+    return { ok: true };
   }
 
   if (kind === "variety") {

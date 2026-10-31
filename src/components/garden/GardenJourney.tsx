@@ -1659,6 +1659,20 @@ function Kit({
           {result === "failed" && (
             <p className="mt-2 font-body text-xs text-terracotta">{t("product.failed")}</p>
           )}
+          {/* The whole setup in one box, for someone the garden has convinced
+              (the owner, 30 Oct 2026; SPEC §29). Same tab: unlike the item
+              links above, this is a next step rather than a look. */}
+          {shelf.packsHref && (
+            <p className="mt-3 text-center font-body text-xs text-forest">
+              {t("kit.packsPrompt")}{" "}
+              <Link
+                href={shelf.packsHref}
+                className="font-semibold underline underline-offset-4 transition-colors hover:text-stone"
+              >
+                {t("kit.packsLink")}
+              </Link>
+            </p>
+          )}
         </>
       )}
     </div>

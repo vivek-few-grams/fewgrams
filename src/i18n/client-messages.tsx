@@ -33,6 +33,8 @@ export const CLIENT_MESSAGES = {
   checkout: ["cart", "checkout", "account.addresses", "home.pinCheck"],
   subscribe: ["checkout", "plans.subscribe"],
   account: ["account"],
+  /** A starter pack's seed and colour picker (`PackBuilder`, SPEC §29.4). */
+  packs: ["shop.packs"],
 } as const satisfies Record<string, readonly string[]>;
 
 type Messages = Record<string, unknown>;

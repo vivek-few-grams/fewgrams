@@ -5,6 +5,7 @@ import { takeFromStock as takeTraysFromStock } from "@/lib/repo/trays";
 import { takeFromStock as takeMediaFromStock } from "@/lib/repo/grow-media";
 import { financialYear, formatInvoiceNo, invoiceCounter } from "@/lib/tax/order-tax";
 import { settlementFor, shiftForPaymentDay, type Order } from "./order";
+import { stockMoves } from "./stock-moves";
 
 /**
  * Bring one order up to date with the gateway — SPEC §9.
@@ -53,29 +54,30 @@ export async function settleOrder(
   /* After the payment is recorded, and never able to undo it. Seeds are
      capped at the shelf at checkout, so a shortfall means two orders for the
      last of it were paid at once; trays and grow media may be ordered past
-     what is held, and the rest is brought in overnight (SPEC §22.2, §23.1). */
-  for (const line of order.lines) {
+     what is held, and the rest is brought in overnight (SPEC §22.2, §23.1).
+     A starter pack's parts move the same way (`stockMoves`, SPEC §29.5). */
+  for (const move of stockMoves(order.lines)) {
     try {
-      if (line.kind === "seed" && line.grams !== null) {
-        const taken = await takeFromShelf(line.key, line.grams);
-        if (taken < line.grams) {
+      if (move.kind === "seed") {
+        const taken = await takeFromShelf(move.key, move.grams);
+        if (taken < move.grams) {
           console.warn(
-            `[stock] ${orderId}: ${line.key} shelf held ${taken} g of ${line.grams} g — short, sort it out by hand`,
+            `[stock] ${orderId}: ${move.key} shelf held ${taken} g of ${move.grams} g — short, sort it out by hand`,
           );
         }
-      } else if (line.kind === "tray" || line.kind === "media") {
-        const taken = await (line.kind === "tray" ? takeTraysFromStock : takeMediaFromStock)(
-          line.key,
-          line.units,
+      } else {
+        const taken = await (move.kind === "tray" ? takeTraysFromStock : takeMediaFromStock)(
+          move.key,
+          move.units,
         );
-        if (taken < line.units) {
+        if (taken < move.units) {
           console.info(
-            `[stock] ${orderId}: ${line.key} held ${taken} of ${line.units}; order ${line.units - taken} from the vendor`,
+            `[stock] ${orderId}: ${move.key} held ${taken} of ${move.units}; order ${move.units - taken} from the vendor`,
           );
         }
       }
     } catch (e) {
-      console.error(`[stock] ${orderId}: could not draw down ${line.key}`, e);
+      console.error(`[stock] ${orderId}: could not draw down ${move.key}`, e);
     }
   }
 

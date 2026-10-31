@@ -375,6 +375,63 @@ export type Plan = {
 };
 
 /**
+ * A starter pack — SPEC §29. Everything a new grower needs, sold as one cart
+ * line at one price.
+ *
+ * Plans' split exactly: every word in `content/packs/<contentKey>.json`, and
+ * here only what the owner tunes on admin → packs. **The price is typed**, as
+ * a plan's is (the owner, 30 Oct 2026) — a pack is a bundle the owner prices
+ * as a whole, consultation included, not a sum worked out from parts.
+ *
+ * What goes in it is named by key, never copied: the rack's SKU, the tray's
+ * and the cocopeat's content keys. So a pack always ships the rack, tray and
+ * block those rows describe today, and an order freezes the actual parts on
+ * its line (`OrderLine.parts`).
+ */
+export type Pack = {
+  id: string;
+  contentKey: string;
+  /** ₹, GST included, consultation included. */
+  price: number;
+  /** An open-frame angle rack's SKU — `AR-5F-4S-1.25x3-1.4` — or null for a
+   *  pack with no rack. The colour is the customer's choice, from the colours
+   *  that rack's grade comes in. */
+  rackSku: string | null;
+  /** Racks of that SKU, all in the one colour chosen. 0 with no rack. */
+  rackCount: number;
+  /** A tray row's content key — `tray-pair-food-grade`. */
+  trayKey: string;
+  /** Tray packs (pairs). */
+  trayCount: number;
+  /** Seed varieties the customer picks, 100 g of each. */
+  seedCount: number;
+  /** How many of the cheapest seeds they pick from (`packSeedMenu`). */
+  menuSize: number;
+  /** A grow medium's content key — `horti-coir` — or null for none. */
+  mediumKey: string | null;
+  mediumCount: number;
+  /** In-person consultation inside the delivery area; video everywhere else.
+   *  False means video only, wherever the customer is. */
+  onSite: boolean;
+  recommended: boolean;
+  sortOrder: number;
+  active: boolean;
+};
+
+/**
+ * One thing inside one pack, as the cart line and the order line carry it.
+ *
+ * The kinds that hold stock or need packing measured — a rack (keyed by its
+ * cart key, so the colour travels), a tray pack, 100 g of one seed, one block
+ * of a grow medium. `units` is **per pack**: a line of two packs takes twice.
+ */
+export type PackPart = {
+  kind: "rack" | "tray" | "seed" | "media";
+  key: string;
+  units: number;
+};
+
+/**
  * Card ground colours — SPEC §17.1 / §18.4.
  *
  * **Not a stored field.** `panel` was a select on the admin form until 15 Sep

@@ -1,5 +1,6 @@
 import { isValidContentKey } from "@/lib/content/content-key";
 import { isValidRackCartKey } from "@/lib/racks/cart-key";
+import { isValidPackCartKey } from "@/lib/packs/key";
 
 /**
  * The ad-hoc cart — SPEC §18.6. Pure logic only; no cookies, no database.
@@ -59,7 +60,7 @@ import { isValidRackCartKey } from "@/lib/racks/cart-key";
  * by `isValidKeyFor`.
  *
  * **Neither separator can appear in a key.** A content key is letters and
- * hyphens; a rack key adds digits and dots. No kind's key may contain `:` or
+ * hyphens; a rack key adds digits and dots; a pack key adds `~` and dots. No kind's key may contain `:` or
  * `|`, which is what keeps the format unambiguous without escaping.
  *
  * **A two-part chunk is read as a variety**, which is the format every cookie
@@ -80,8 +81,13 @@ import { isValidRackCartKey } from "@/lib/racks/cart-key";
  *  `media` — a grow medium, cocopeat first (SPEC §24) — joined on 24 Sep 2026
  *  as a fourth content kind. It is sold like a tray (one pack, a supplier
  *  lead time) but is its own kind, so `horti-coir` in `content/grow-media/`
- *  can never merge with a tray or a seed of that name. */
-export const CART_KINDS = ["variety", "seed", "tray", "rack", "media"] as const;
+ *  can never merge with a tray or a seed of that name.
+ *
+ *  `pack` — a starter pack (SPEC §29), 30 Oct 2026 — is the one kind that
+ *  holds other kinds: one line, one price, and a rack, trays, seeds and a
+ *  block inside it. Its key carries the customer's choices (`packCartKey`),
+ *  and the hydrated line and the order line carry the parts. */
+export const CART_KINDS = ["variety", "seed", "tray", "rack", "media", "pack"] as const;
 export type CartKind = (typeof CART_KINDS)[number];
 
 /** A quantity of one item. **What one unit means depends on the kind** — see
@@ -96,6 +102,7 @@ const KIND_CODE: Record<CartKind, string> = {
   tray: "t",
   rack: "r",
   media: "m",
+  pack: "p",
 };
 const KIND_BY_CODE: Record<string, CartKind> = {
   v: "variety",
@@ -103,6 +110,7 @@ const KIND_BY_CODE: Record<string, CartKind> = {
   t: "tray",
   r: "rack",
   m: "media",
+  p: "pack",
 };
 
 /**
@@ -123,6 +131,10 @@ const KIND_BY_CODE: Record<string, CartKind> = {
  * `cart-key.test.ts` — which is what stops one string addressing two products.
  */
 export function isValidKeyFor(kind: CartKind, key: string): boolean {
+  /* A pack's key is its content key plus the customer's choices, joined by
+     `~` and `.` (`packCartKey`) — characters neither other rule admits, so
+     the three sets stay disjoint. */
+  if (kind === "pack") return isValidPackCartKey(key);
   return kind === "rack" ? isValidRackCartKey(key) : isValidContentKey(key);
 }
 

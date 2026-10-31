@@ -33,6 +33,7 @@ const PAGES = [
   "/",
   "/plans",
   "/shop",
+  "/shop/packs",
   "/how-we-grow",
   "/faq",
   "/contact",

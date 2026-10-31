@@ -18,6 +18,7 @@ import { GROW_MEDIA_TILE_WORDS } from "@/lib/shop";
 import { RACK_RANGES } from "@/lib/racks/cart-key";
 import { CATEGORY_COUNT, CATEGORY_HREF, CATEGORY_PANELS } from "@/lib/shop";
 import { CategoryStrip } from "@/components/chrome/CategoryStrip";
+import { hasSellablePacks } from "@/lib/packs/catalogue";
 import { placeholderFor } from "@/lib/images/placeholder";
 import { placeholderProps } from "@/lib/images/placeholder-props";
 
@@ -57,6 +58,7 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
     mediumNameById,
     categories,
     microgreensOn,
+    packsOn,
   ] = await Promise.all([
     categoryCounts(),
     listVarieties({ activeOnly: true }),
@@ -69,7 +71,9 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
     growMediumNameMap(locale),
     enabledCategories(),
     isProductTypeEnabled("microgreens"),
+    hasSellablePacks(locale),
   ]);
+  const tPacks = await getTranslations("shop.packs");
   /* Every variety on the shelf, for the microgreens tile's marquee — see
      `MarqueeCard`'s `scatter` prop. Named through the content file, same as
      the card the count above already reads: a row without one is skipped
@@ -110,6 +114,36 @@ export default async function ShopIndex({ params }: PageProps<"/[locale]/shop">)
         {t("heading")}
       </h1>
       <p className="mt-4 max-w-xl font-body text-sm text-stone">{t("body")}</p>
+
+      {/* The starter packs, at the top (the owner, 30 Oct 2026; SPEC §29):
+          the shop's way in for someone who does not yet know which tray or
+          rack they need. Only while one is on sale. */}
+      {packsOn && (
+        <Link
+          href="/shop/packs"
+          className="group mt-8 flex flex-col gap-5 rounded-3xl bg-forest p-6 transition-colors hover:bg-forest-deep md:flex-row md:items-center md:justify-between md:px-8"
+        >
+          <span className="flex items-center gap-5">
+            <span className="relative hidden size-20 shrink-0 sm:block" aria-hidden>
+              <Image
+                src="/img/racks/angle/cutout.webp"
+                alt=""
+                fill
+                sizes="80px"
+                className="object-contain"
+                {...placeholderProps(placeholderFor("/img/racks/angle/cutout.webp"), "contain")}
+              />
+            </span>
+            <span>
+              <span className="block font-display text-xl font-bold text-cream">{tPacks("bannerTitle")}</span>
+              <span className="mt-1 block max-w-xl font-body text-sm text-mint">{tPacks("bannerBody")}</span>
+            </span>
+          </span>
+          <span className="inline-flex shrink-0 items-center justify-center rounded-full bg-cream px-5 py-2.5 font-body text-sm font-semibold text-forest transition-colors group-hover:bg-sage">
+            {tPacks("bannerCta")}
+          </span>
+        </Link>
+      )}
 
       {/* All five categories in one row from `lg` (1 Oct 2026): five in a
           four-column grid left a row of one. On a phone, microgreens — the

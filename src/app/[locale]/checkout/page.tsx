@@ -129,6 +129,9 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
         <span className="min-w-0">
           <span className="block font-body text-sm font-semibold text-cream">{item.name}</span>
           <span className="mt-0.5 block font-body text-xs text-cream/65">{lineUnits(item, tc)}</span>
+          {item.pack && (
+            <span className="mt-0.5 block font-body text-xs text-cream/80">{item.pack.detail}</span>
+          )}
         </span>
       </span>
       <span className="line-price shrink-0 font-body text-sm font-semibold tabular-nums text-cream">

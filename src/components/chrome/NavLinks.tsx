@@ -5,7 +5,8 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { CURTAIN_ATTR } from "./curtain-anchor";
 
 /**
- * The four persistent nav items — SPEC §18.1.
+ * The persistent nav items — SPEC §18.1. Four, and a fifth for the starter
+ * packs while one is on sale (SPEC §29).
  *
  * Client-side only so the current section can be marked. That is the one
  * thing persistent navigation gives you that a menu cannot: the visitor can
@@ -38,6 +39,10 @@ const ITEMS = [
      beside "ಮೈಕ್ರೋಗ್ರೀನ್ಸ್" (24 Sep 2026). Measure in the browser, not by
      letter count; no test can see it. */
   { href: "/shop", key: "shop", match: "/shop", hover: "shopHover" },
+  /* Starter packs (the owner, 30 Oct 2026, SPEC §29) — a way in for someone
+     starting out, beside the shop it is part of. Shown only while a pack is
+     set up to sell. */
+  { href: "/shop/packs", key: "packs", match: "/shop/packs", hover: "packsHover" },
   {
     href: "/how-we-grow",
     key: "howWeGrow",
@@ -48,14 +53,24 @@ const ITEMS = [
 
 export function NavLinks({
   showMicrogreens,
+  showPacks,
 }: {
   /** Passed down from `Header`, which is a server component and can read the
    *  switch (`@/lib/catalogue/visibility`) — this one cannot, being client. */
   showMicrogreens: boolean;
+  showPacks: boolean;
 }) {
   const t = useTranslations("common.nav");
   const pathname = usePathname();
-  const items = showMicrogreens ? ITEMS : ITEMS.filter((item) => item.key !== "microgreens");
+  const items = ITEMS.filter(
+    (item) => (showMicrogreens || item.key !== "microgreens") && (showPacks || item.key !== "packs"),
+  );
+  /* The longest prefix wins: `/shop/packs` is under `/shop` too, and only the
+     starter packs item should be marked there. */
+  const matches = (match: string) => pathname === match || pathname.startsWith(`${match}/`);
+  const current = items
+    .filter((item) => matches(item.match))
+    .sort((a, b) => b.match.length - a.match.length)[0]?.match;
 
   /* Two pieces of vertical bookkeeping, both load-bearing:
        - `pt-1` on each link matches its `pb-0.5 + border-b-2`, so the active
@@ -81,7 +96,7 @@ export function NavLinks({
       className="col-start-2 row-start-2 flex min-w-0 items-center gap-5 overflow-x-auto lg:order-2 lg:ml-auto lg:w-auto lg:overflow-visible"
     >
       {items.map((item) => {
-        const active = pathname === item.match || pathname.startsWith(`${item.match}/`);
+        const active = item.match === current;
         return (
           <Link
             key={item.href}

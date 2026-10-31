@@ -29,6 +29,7 @@ const SECTIONS: Array<{ kind: SearchKind; heading: { ns: string; key: string } }
   { kind: "tray", heading: { ns: "common.categories", key: "trays" } },
   { kind: "media", heading: { ns: "common.categories", key: "media" } },
   { kind: "rack", heading: { ns: "common.categories", key: "racks" } },
+  { kind: "pack", heading: { ns: "common.nav", key: "packs" } },
 ];
 
 /** Pages that are always there, each described by its own metadata. */

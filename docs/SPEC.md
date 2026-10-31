@@ -2314,7 +2314,7 @@ The logo owns the left edge. Everything else is grouped on the right.
 | `PLANS` | `/plans` — the plans page (§28.8, since 20 Oct 2026; it anchored to `/#plans` before) |
 | `SHOP` | `/shop` — racks, seeds, trays, snacks. A plain link, not a dropdown |
 | `HOW WE GROW` | The animated process page (§18.5) |
-| Search | **From 1152px a field-shaped pill at the head of the utilities**, before the language switch, typing out real product names; `/` opens it. **Below that, the magnifier in a dark green circle** among the utilities, 32px so the phone bar stays 65px. Either opens a band under the bar with suggestions as you type; a plain link to `/search` without JavaScript (§27.2) |
+| Search | **From 1200px a field-shaped pill at the head of the utilities**, before the language switch, typing out real product names; `/` opens it. **Below that, the magnifier in a dark green circle** among the utilities, 32px so the phone bar stays 65px. Either opens a band under the bar with suggestions as you type; a plain link to `/search` without JavaScript (§27.2) |
 | `⊕ EN` | Locale switch — globe glyph plus the **active** locale only. Two locales do not warrant a dropdown; it toggles once next-intl lands (§4.4). Utility chrome, grouped with the icons |
 | Cart | Persistent count badge |
 | Account | Sign in, or the signed-in user's destination — see below |
@@ -5658,7 +5658,7 @@ and wrapped a Kannada tray name onto four lines.
 ### 27.2 The header box
 
 - **Two triggers, one at a time, both opening a full-width band under the bar** (the owner,
-  20 Oct 2026: "other websites keep it very visible"). From 1152px, a **pill at the head of the
+  20 Oct 2026: "other websites keep it very visible"). From 1200px, a **pill at the head of the
   utilities**, before the language switch, where people look for a shop's tools. It sat beside
   the logo for an hour, which the owner turned down, because there it read as part of the brand.
   The pill is shaped like a field: 176px, 208px from `xl` and 224px from `2xl`, narrowed on the
@@ -5666,8 +5666,10 @@ and wrapped a Kannada tray name onto four lines.
   (`PILL_NAME_MAX`), because a longer one was typed into an ellipsis. Its own shorter phrasing,
   `box.pillTry`, is needed because the band's Kannada "“…” ಹುಡುಕಿ ನೋಡಿ" overflowed 176px around
   any name. There is no key hint: a `/` drawn in the pill read as a mystery icon to the owner, so
-  it would to a shopper. The shortcut itself stays, announced by `aria-keyshortcuts`. 1152px is the first width with room for it: the gap the
-  nav's `ml-auto` gives up measures 123px at 1024, 251px at 1152 and 379px at 1280. Below
+  it would to a shopper. The shortcut itself stays, announced by `aria-keyshortcuts`. 1152px was the first width with room for it: the gap the
+  nav's `ml-auto` gives up measures 123px at 1024, 251px at 1152 and 379px at 1280. **From 1200px
+  since 30 Oct 2026**: the starter packs' fifth nav item (§29.8) took about 25px of that gap, and
+  from 1152 to about 1180 the bar wrapped to two rows in both languages. Below
   that, the **magnifier sits in a dark green circle** among the utilities, so it stands out from
   the outline cart and account icons. The circle is 32px: at 36 the icon row and nav row together
   outgrew the 64px logo and the phone bar went from 65px to 67px. Neither is a real field in the
@@ -5973,3 +5975,143 @@ then each plan's rotation written out week by week with every green linked to it
 cards keep behind a button. In the sitemap and `llms.txt`; the top menu, the footer and the in-page
 "weekly plan" links go to it. **Both ways stay** (the owner, 20 Oct 2026): the home page keeps its
 plans section for anyone scrolling, and the hero's button still scrolls to it.
+
+
+## 29. Starter packs — built 30 Oct 2026
+
+**Everything a new grower needs, as one cart line at one price** — the owner's idea for people
+coming out of a microgreens training who struggle to set up a first rack. Three packs, compared
+side by side on `/shop/packs`; choosing one opens its page, where the customer picks the seeds and,
+for a rack pack, the rack colour.
+
+### 29.1 What is in each
+
+| Pack (`content/packs/`) | Price | Rack | Trays | Seeds | Cocopeat | Consultation |
+|---|---|---|---|---|---|---|
+| Tray Pack (`tray-pack`) | ₹3,999 | — | 4 food-grade pairs | 4 × 100 g | 1 × 5 kg | video only |
+| Single Rack Pack (`single-rack-pack`) | ₹9,999 | 1 | 4 food-grade pairs | 4 × 100 g | 1 × 5 kg | on-site in Bengaluru, video elsewhere |
+| Double Rack Pack (`double-rack-pack`) | ₹14,499 | 2, one colour | 8 food-grade pairs | 8 × 100 g | 1 × 5 kg | on-site in Bengaluru, video elsewhere |
+
+These are the figures set on 30 Oct 2026; all of them live on admin → packs, not in code.
+
+- **The rack is the open-frame angle rack, 5 ft tall, 4 shelves, 3 × 1¼ ft** (`AR-5F-4S-1.25x3-1.4`).
+  Not 2 ft long: a 60 × 30 cm tray does not fit past the corner legs. Not two trays end to end on
+  a 4 ft shelf, for the same reason. Hence two 3 ft racks for eight trays rather than one longer
+  rack. 1¼ ft deep rather than 1 ft, so a tray is not flush with both rails. Angle racks only:
+  they ship from our pickup with everything else (§7), where a shelf rack ships from its maker.
+- **The solid tray of each pair is the blackout cover** for the first two days.
+- **No lights, fan, timer, spray bottle or printed guide.** All were costed and removed by the
+  owner to keep the price down; customers bring their own lights (the rack's middle rail takes a
+  standard tube).
+- **₹1,000 of each price is the owner's consultation**, about ₹824 after GST and the payment
+  fee. On-site inside the delivery area (the greens' district rule, `inDeliveryArea`), by video
+  everywhere else — and the Tray Pack is video only, because a visit would take most of its
+  margin. The pack's `onSite` flag decides it.
+
+### 29.2 Words in files, numbers in DynamoDB
+
+Plans' split exactly (§5.1.1). `content/packs/<key>.json` carries `name`, `badge`, `tagline`,
+`description` and at least three `highlights` in English and Kannada; `pack-contract.ts` refuses a
+price, a weight or the city in the copy. `PackEntity` (`PACK#<id>`, GSI1 `PACK` /
+`<sortOrder>#<contentKey>`) holds the price and the parts **by key** — `rackSku`, `trayKey`,
+`mediumKey` and their counts — plus `seedCount`, `menuSize`, `onSite`, `recommended`, `active`.
+
+**The price is typed** (the owner, 30 Oct 2026), as a plan's is. It is the one sell price outside
+plans that is typed: a pack is priced as a whole, consultation included, not summed from parts.
+
+### 29.3 Pages
+
+- **`/shop/packs`** — a comparison table, `PackCompare` (the owner, 31 Oct 2026: "item list left
+  side and tick under each column", then "a lot of gaps … easy to view and understand"; it was a
+  card per pack until then). A column per pack, headed by its badge, name, tagline, price and
+  "Choose this pack"; a row per thing inside, each with its cut-out (or an icon for a
+  consultation), a one-line note and, behind a disclosure, the rest:
+  - the rack — size from the numbers; steel and colours behind "Full specs";
+  - the tray and the block — their content file's specs, the first ("In the pack": "2 trays: one
+    with drain holes in white, one solid in green") as the note;
+  - the seeds — "100 g of each variety, from 15 on offer", with the menu itself behind "See the
+    varieties";
+  - video consultation, and on-site consultation only while some pack has `onSite`.
+
+  One row per rack model, tray and block, so two packs holding different trays would show two
+  rows rather than one hiding the difference. A cell is the count, a consultation a tick, a
+  missing item a dash (marks drawn beside the count were tried and taken out, 31 Oct 2026). The featured pack's head is forest and its column outlined to the last row. The top-left
+  corner holds the three steps (choose a pack, pick your seeds, grow with us — `PackSteps`), so
+  it is not a blank the height of the heads; below `lg` the item names run across the full width
+  above their cells, the steps follow the table, and three columns fit a phone without sideways
+  scrolling. The heads are a subgrid so a name wrapping to three lines in Kannada does not
+  stagger the prices. The highlights are on the pack's own page only.
+- **`/shop/packs/[key]`** — the parts' cut-outs (rack, trays, the seed packets — `/shop`'s seeds
+  tile, not one variety's — and the block; `packPictures`) and the same facts on the left; on the
+  right `PackBuilder`: colour chips (from the rack grade's colours) and a grid of seed tiles,
+  exactly `seedCount` to pick, each picked tile numbered in the order it was picked (the owner,
+  31 Oct 2026; unticking one moves the later picks up). "Buy now"
+  adds the pack through the cart's `setCartQuantity`, so the server checks the choice like any
+  add, and on success goes straight to `/checkout` with the whole cart (the owner, 31 Oct 2026);
+  a refusal stays on the page with its reason.
+- A pack is shown only when **every part is on sale** (`listSellablePacks`): the rack published
+  in a colour, the tray and cocopeat active with content files, and at least `seedCount` seeds on
+  the menu. The pages, the cart, checkout and search all ask that one function.
+
+### 29.4 The seed menu
+
+**The cheapest seeds by our cost per 100 g, worked out on every read** (`packSeedMenu`): on sale
+(price above ₹0), at least 100 g held, a known cost; ties by key. `menuSize` of them (15). A seed's
+cost is set by its latest bill (§26.6.1), so the menu follows the bills, and a seed that drops
+under 100 g leaves it and the next cheapest takes its place. Different varieties only, 100 g each.
+
+### 29.5 The cart and the order
+
+A new cart kind, **`pack`**, cookie code `p`. Its key is the choice:
+`single-rack-pack~orange~beetroot.dill.kale.radish` — pack key, colour (empty for no rack), and
+the seeds sorted, so one choice is one line (`packCartKey`). `resolvePackLine` turns it into the
+pack, its `parts` per pack (the rack's cart key with the colour, the tray, each seed's 100 g, the
+cocopeat) and a `detail` line ("Orange · Beetroot, Dill, Kale, Radish") the cart prints under the
+name.
+
+- **Adding is strict, holding is lenient.** An add must use seeds on the menu now; a line already
+  in a cart only needs its seeds still on sale, so a bill moving the menu does not refuse a basket.
+- **Stock:** a pack line is capped by the scarcest of its seeds, and `overStockLines` also adds a
+  pack's seeds to any seed line for the same seed.
+- **The date** is the slowest part: the rack's build time, the tray and cocopeat stock rule, a
+  seed's next day. `hydrateCart`'s date and sourcing are now a `switch` on `Timing`, exhaustive —
+  they were ternaries whose last branch was the rack's.
+- **The order line freezes `parts`** (`OrderLine.parts`). Payment draws them off the shelf and a
+  cancellation puts them back, both through `stockMoves`. Shipping unpacks them into the existing
+  parcel lines (`toParcelLines`), so a pack is measured and boxed as its rack, trays, seeds and
+  block.
+- **The order line's name** is frozen at checkout with the choices and the consultation decided
+  against the address: "Single Rack Pack (Green · Dill, Kale, Mustard, Radish (pink)) · video
+  consultation". A courier is sent `pack:<key>` as the SKU, not the long key.
+
+### 29.6 Tax
+
+**18% on the whole price** — a mixed supply, taxed at the highest rate in it (CGST Act s. 8(b)),
+which is what the owner's costing assumed. One tax row per line as for every kind; the HSN is the
+rack's, 9403, for a pack with racks and the trays', 3926, for the Tray Pack (`taxClassFor`). A
+GST summary column, "Starter packs". Whether listing the seeds and cocopeat separately on the
+invoice would legitimately tax them at 0% and 5% is a question for the CA, not built.
+
+### 29.7 Admin → packs
+
+A card per content file (the plans screen's pattern): price, sort order, the rack (angle racks
+only, by SKU), rack count, tray and count, grow medium and count, seeds to pick, menu size, and
+the on-site, active and featured flags. Each card says whether the pack is on sale and, if not,
+which part is holding it back. Nothing creates or deletes a pack except a content file.
+
+### 29.8 Where it is linked
+
+- **The top menu**, a fifth item "Starter packs" (hover "Start here"), while any pack is active,
+  priced and written (`hasActivePacks` — one Query, because the header is on every page). The
+  longest matching prefix is marked, so `/shop/packs` lights up the packs item and not Shop.
+- **The top of `/shop`**, a forest banner, while a pack is on sale.
+- **The play garden's closing kit**, a line under its add button.
+- **Search**, one entry per pack, kind `pack`; the sitemap and `llms.txt` through it. Not in the
+  Merchant Center feed: a bundle with a service is not a product listing Google takes as one item.
+
+### 29.9 The city, named
+
+The owner's call (30 Oct 2026): the pack's consultation line says **"on-site in Bengaluru"** —
+naming the area would only bring the question "is that me?". It is the second exception to the
+no-city rule, after the legal pages, and it is chrome (`shop.packs.consultOnSite`), shown only for
+a pack whose `onSite` is set. The content files may not name the city.

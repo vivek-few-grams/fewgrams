@@ -114,7 +114,9 @@
     "add": "Add everything you used",
     "adding": "Adding to your basket…",
     "added": "All in your basket",
-    "viewCart": "Go to your basket"
+    "viewCart": "Go to your basket",
+    "packsPrompt": "Want the whole setup in one box?",
+    "packsLink": "See the starter packs"
   },
   "still": {
     "pick": "Two microgreen tray pairs on a wooden bench: one black, and one white grow tray in a green water tray.",

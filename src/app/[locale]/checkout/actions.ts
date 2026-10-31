@@ -12,6 +12,7 @@ import {
   newOrderId,
   orderTotal,
   type Order,
+  type OrderLine,
   type OrderShipment,
 } from "@/lib/orders/order";
 import { paymentProvider } from "@/lib/payments";
@@ -77,6 +78,7 @@ export async function startCheckout(_prev: CheckoutState, fd: FormData): Promise
     lines = splitByArea(lines, false).kept;
     if (lines.length === 0) return fail("pincodeNotServed", { pincode: address.pincode });
   }
+  lines = await namePacks(lines, cart, address.pincode, locale);
   /* Quoted again here, for the address chosen, rather than taken from the
      page: the page's figure is only what the customer was shown, and a
      mismatch below refuses the order just as a moved price does. The choice
@@ -190,6 +192,32 @@ export async function startCheckout(_prev: CheckoutState, fd: FormData): Promise
     console.error(`[payments] could not open a gateway order for ${order.id}`, e);
     return fail("gatewayError");
   }
+}
+
+/**
+ * A starter pack's order line names what was chosen and how its consultation
+ * will be given — "Single Rack Pack (Orange · Beetroot, Dill) · on-site
+ * consultation" — so the invoice, the admin's order page and the customer's
+ * all say it (SPEC §29.6). In person only when the pack offers it **and** this
+ * address is inside the delivery area, the greens' district rule; video
+ * otherwise. Settled here because the address is only known here.
+ */
+async function namePacks(
+  lines: OrderLine[],
+  cart: HydratedCart,
+  pincode: string,
+  locale: string,
+): Promise<OrderLine[]> {
+  const packs = new Map(cart.items.filter((i) => i.pack).map((i) => [lineId(i), i.pack!]));
+  if (packs.size === 0) return lines;
+  const inArea = [...packs.values()].some((p) => p.onSite) && (await checkDeliveryArea(pincode)).served;
+  const t = await getTranslations({ locale, namespace: "cart" });
+  return lines.map((l) => {
+    const pack = packs.get(lineId(l));
+    if (!pack) return l;
+    const consult = t(pack.onSite && inArea ? "packConsultOnSite" : "packConsultVideo");
+    return { ...l, name: t("packOrderName", { name: l.name, detail: pack.detail, consult }) };
+  });
 }
 
 /**

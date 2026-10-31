@@ -53,7 +53,8 @@
     "finance": "Finance",
     "gst": "GST returns",
     "purchases": "Purchases",
-    "vendors": "Vendors"
+    "vendors": "Vendors",
+    "packs": "Starter packs"
   },
   "varieties": {
     "title": "Varieties",
@@ -720,7 +721,8 @@
       "seed": "Seed",
       "tray": "Trays & drainage",
       "media": "Grow media",
-      "rack": "Rack"
+      "rack": "Rack",
+      "pack": "Starter pack"
     },
     "sourcing": {
       "shelf": "from the shelf",
@@ -1424,7 +1426,8 @@
         "tray": "Trays & drainage",
         "media": "Cocopeat",
         "rack": "Racks",
-        "delivery": "Delivery charges"
+        "delivery": "Delivery charges",
+        "pack": "Starter packs"
       },
       "taxable": "Taxable value",
       "exempt": "Exempt value",
@@ -1671,6 +1674,60 @@
     "errors": {
       "badKey": "That product can't take a vendor. Reload the page.",
       "unknownVendor": "A vendor in the list no longer exists. Reload the page."
+    }
+  },
+  "packs": {
+    "title": "Starter packs",
+    "intro": "A pack is one cart line at one price: a rack, trays, seeds the customer picks and cocopeat, with your consultation. Which packs exist is decided by the files in content/packs/, so this screen does not create or delete them; it sets the price and what goes in.",
+    "introMenu": "Customers pick their seeds from the cheapest seeds by your cost per 100 g, worked out live: only seeds on sale with at least 100 g held count, so the menu follows your bills and your shelf.",
+    "configuredCount": "{configured, number} of {total, number} set up",
+    "notConfigured": "Not set up yet. Choose the parts and a price, then save. The pack appears on the site once every part is on sale.",
+    "price": "Price (₹, GST included)",
+    "priceHint": "Includes the consultation",
+    "rack": "Rack",
+    "rackNone": "No rack",
+    "rackHint": "Open-frame angle racks only; the customer picks the colour",
+    "rackOption": "{height, number} ft · {shelves, number} shelves · {depth, number} × {length, number} ft · ₹{price, number} ({sku})",
+    "rackCount": "Racks",
+    "tray": "Tray",
+    "trayCount": "Tray packs",
+    "seedCount": "Seeds to pick",
+    "seedCountHint": "100 g of each",
+    "menuSize": "Seeds on the menu",
+    "menuSizeHint": "The cheapest, by your cost",
+    "medium": "Grow medium",
+    "mediumNone": "None",
+    "mediumCount": "Blocks",
+    "sortOrder": "Sort order",
+    "sortOrderHint": "Lower shows first",
+    "onSiteLabel": "On-site consultation inside the delivery area (video elsewhere)",
+    "activeLabel": "Active — visible on the site",
+    "recommendedLabel": "Feature this pack — dark column",
+    "save": "Save",
+    "savedRow": "Saved",
+    "recommendedBadge": "Featured",
+    "hidden": "Hidden",
+    "notOnSale": "Not on sale: {reason}",
+    "reasons": {
+      "price": "no price",
+      "rack": "the rack is not published, or has no colour",
+      "tray": "the tray is not active or has no content file",
+      "medium": "the grow medium is not active or has no content file",
+      "menu": "fewer seeds on the menu than the pack asks for"
+    },
+    "summary": "₹{price, number} · {menu, number} seeds on the menu now",
+    "orphanTitle": "Content file gone",
+    "orphanHint": "This pack has numbers saved but no content/packs/{key}.json, so nothing about it can be shown to a customer. Restore the file, or delete the row.",
+    "deleteTitle": "Delete this pack row?",
+    "deleteConfirm": "The numbers saved for this pack are removed. Orders already placed keep what they bought.",
+    "errors": {
+      "keyUnknown": "There is no content file for this pack.",
+      "priceInvalid": "Enter a price above zero.",
+      "countInvalid": "Enter a whole number, at least one.",
+      "rackUnknown": "That rack is not a published angle rack.",
+      "trayUnknown": "Choose a tray.",
+      "mediumUnknown": "That grow medium does not exist.",
+      "menuTooSmall": "The menu must offer at least as many seeds as the pack asks for."
     }
   }
 }

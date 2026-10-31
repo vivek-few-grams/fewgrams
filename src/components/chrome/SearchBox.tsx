@@ -25,7 +25,7 @@ import { TASTES } from "@/lib/search/tastes";
  *
  * **Two triggers, one at a time** (the owner, 20 Oct 2026: the bare
  * magnifier was too easy to miss). The header renders this twice:
- * `variant="pill"` beside the logo from 1152px, a field-shaped button that
+ * `variant="pill"` beside the logo from 1200px, a field-shaped button that
  * types out real product names; and
  * `variant="icon"` with the utilities below that, the magnifier in a dark
  * green circle so it stands out from the outline cart and account icons.
@@ -112,7 +112,7 @@ export function SearchBox({
   className,
 }: {
   variant: "pill" | "icon";
-  /** The trigger's `display` — `hidden min-[1152px]:flex` and so on. The
+  /** The trigger's `display` — `hidden min-[1200px]:flex` and so on. The
    *  trigger sets none of its own, or the two would fight. */
   className: string;
 }) {

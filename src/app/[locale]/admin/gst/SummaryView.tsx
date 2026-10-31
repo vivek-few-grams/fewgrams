@@ -4,7 +4,7 @@ import type { MonthSummary, QuarterView } from "@/lib/gst/quarter";
 import { Figures, Section, formatters, headCells } from "./ui";
 
 /** The categories a sale is split into, in the order they are listed. */
-const CATEGORIES = ["variety", "plan", "seed", "tray", "media", "rack", "delivery"] as const;
+const CATEGORIES = ["variety", "plan", "seed", "tray", "media", "rack", "pack", "delivery"] as const;
 
 /**
  * The quarter at a glance, a column per month and one for the quarter — the

@@ -1,10 +1,10 @@
-import type { CartKind } from "@/lib/cart/cart";
+import { GRAMS_PER_UNIT, type CartKind } from "@/lib/cart/cart";
 import type { ShippingQuote } from "@/lib/orders/order";
 import { findSellableRack, type SellableRack } from "@/lib/racks/catalogue";
 import { allOrigins, getShippingSettings, type Origin, type ShippingSettings } from "@/lib/repo/shipping";
 import { listTrays } from "@/lib/repo/trays";
 import { listGrowMedia } from "@/lib/repo/grow-media";
-import type { GrowMedium, Tray } from "@/lib/types";
+import type { GrowMedium, PackPart, Tray } from "@/lib/types";
 import { shippingProviders, type CourierName, type CourierOption } from "./index";
 import { HOME_ORIGIN, lineOrigin, splitShipments } from "./origin";
 import { parcelGrams, type ParcelLine, type RackPacking, type TrayPacking } from "./parcel";
@@ -101,6 +101,9 @@ export type ChargeLine = {
   units: number;
   grams: number | null;
   lineTotal: number;
+  /** A starter pack's contents, per pack (SPEC §29.5) — it is boxed and
+   *  weighed as these. Null or absent for every other kind. */
+  parts?: PackPart[] | null;
 };
 
 /** A tray's or a grow medium's six packing figures, or null until all six
@@ -154,7 +157,22 @@ function rackPacking(r: SellableRack): RackPacking | null {
 
 /** Joins each line to where its measurements live: a tray to its row, a
  *  rack to its model and shelf size. */
-async function toParcelLines(lines: readonly ChargeLine[]): Promise<ParcelLine[]> {
+async function toParcelLines(given: readonly ChargeLine[]): Promise<ParcelLine[]> {
+  /* A starter pack goes in the box as its parts — a rack bundle, a stack of
+     trays, seed packets, a block — so it is unpacked into those lines first
+     and measured by the rules that already exist for each. Its `lineTotal`
+     is not carried: nothing below reads it. */
+  const lines = given.flatMap((l): ChargeLine[] =>
+    l.kind === "pack"
+      ? (l.parts ?? []).map((p) => ({
+          kind: p.kind,
+          key: p.key,
+          units: p.units * l.units,
+          grams: p.kind === "seed" ? p.units * l.units * GRAMS_PER_UNIT : null,
+          lineTotal: 0,
+        }))
+      : [l],
+  );
   const trays = lines.some((l) => l.kind === "tray")
     ? new Map((await listTrays()).map((t) => [t.contentKey, t]))
     : new Map<string, Tray>();
@@ -177,6 +195,10 @@ async function toParcelLines(lines: readonly ChargeLine[]): Promise<ParcelLine[]
           const found = await findSellableRack(l.key);
           return { kind: "rack", units: l.units, packing: found ? rackPacking(found.rack) : null };
         }
+        case "pack":
+          /* Unpacked above. One with no parts cannot be measured, so it is
+             reported the way an unmeasured tray is — no quote. */
+          return { kind: "tray", units: l.units, packing: null };
         default: {
           const never: never = l.kind;
           throw new Error(`No parcel rule for kind ${String(never)}`);

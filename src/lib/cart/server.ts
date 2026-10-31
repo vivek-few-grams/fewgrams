@@ -13,6 +13,8 @@ import { rackLineName } from "@/lib/racks/describe";
 import { rackReadyDate } from "@/lib/racks/lead-time";
 import { seedMaxUnits, seedReadyDate, type SeedSourcing } from "@/lib/seeds/stock";
 import { fromShelf, heldReadyDate } from "@/lib/trays/lead-time";
+import { resolvePackLine } from "@/lib/packs/catalogue";
+import type { PackPart } from "@/lib/types";
 import { adhocReadyDate, latestDate } from "@/lib/delivery-date";
 import {
   CART_COOKIE,
@@ -100,6 +102,20 @@ export type CartItem = {
    *  than we hold and is brought in overnight (the owner, 25 Sep 2026). A
    *  seed is always `"shelf"`. Null for greens and racks. */
   sourcing: SeedSourcing | null;
+  /** A starter pack's choices and contents (SPEC §29); absent on every other
+   *  kind. `parts` is per pack and is what the order line freezes. */
+  pack?: PackInfo;
+};
+
+export type PackInfo = {
+  /** The pack's content key, without the choices. */
+  packKey: string;
+  /** "Orange · Beetroot, Dill, Kale, Radish". */
+  detail: string;
+  parts: PackPart[];
+  /** In person inside the delivery area, video elsewhere; false is video
+   *  everywhere. Settled against the address at checkout. */
+  onSite: boolean;
 };
 
 export type HydratedCart = {
@@ -210,7 +226,9 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
   const wants = (kind: CartKind) => lines.some((l) => l.kind === kind);
   const [varieties, seeds, trays, media] = await Promise.all([
     wants("variety") ? listVarieties({ activeOnly: true }) : [],
-    wants("seed") ? listSeeds({ activeOnly: true }) : [],
+    /* A pack's seeds draw on the same shelf, so a cart holding one needs the
+       seed rows too (`overStockLines`). */
+    wants("seed") || wants("pack") ? listSeeds({ activeOnly: true }) : [],
     wants("tray") ? listTrays({ activeOnly: true }) : [],
     wants("media") ? listGrowMedia({ activeOnly: true }) : [],
   ]);
@@ -239,7 +257,15 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
     | { by: "held"; stockPacks: number }
     /* A rack's is our own build time, one constant for every range
        (`RACK_LEAD_DAYS`). */
-    | { by: "build" };
+    | { by: "build" }
+    /* A starter pack's is its slowest part: the rack's build time when it
+       has one, the tray and cocopeat rule for what it holds, a seed's next
+       day. Per pack, so a line of two takes twice the trays. */
+    | {
+        by: "pack";
+        rack: boolean;
+        held: { perPack: number; stockPacks: number }[];
+      };
 
   /**
    * A catalogue row, minus everything that depends on how much was ordered.
@@ -354,6 +380,47 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
     }
   }
 
+  /* A starter pack is resolved per line, like a rack: its key carries the
+     customer's colour and seeds, so there is no catalogue of lines to match
+     against. `resolvePackLine` is the whole sellable test — the pack, every
+     part, the colour and each seed still on sale. */
+  if (wants("pack")) {
+    for (const line of lines) {
+      if (line.kind !== "pack") continue;
+      const found = await resolvePackLine(line.key, locale, { fresh: false });
+      if (!found) continue;
+      const { sellable } = found;
+      const image = sellable.rack
+        ? { src: `/img/racks/${sellable.rack.range}/cutout.webp`, alt: sellable.text.name }
+        : sellable.tray.image && { src: sellable.tray.image.src, alt: sellable.text.name };
+      byId.set(lineId(line), {
+        kind: "pack",
+        key: line.key,
+        name: sellable.text.name,
+        unitPrice: sellable.pack.price,
+        image,
+        maxUnits: found.maxUnits,
+        growDays: null,
+        pack: {
+          packKey: sellable.pack.contentKey,
+          detail: found.detail,
+          parts: found.parts,
+          onSite: sellable.pack.onSite,
+        },
+        timing: {
+          by: "pack",
+          rack: sellable.rack !== null,
+          held: [
+            { perPack: sellable.pack.trayCount, stockPacks: sellable.tray.stockPacks },
+            ...(sellable.medium
+              ? [{ perPack: sellable.pack.mediumCount, stockPacks: sellable.medium.stockPacks }]
+              : []),
+          ],
+        },
+      });
+    }
+  }
+
   const items: CartItem[] = [];
   const unavailable: string[] = [];
 
@@ -376,23 +443,43 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
        tray's from its supplier's lead time, a rack's from our own build
        time. */
     const { timing, ...rest } = base;
-    const sourcing: SeedSourcing | null =
-      timing.by === "shelf"
-        ? "shelf"
-        : timing.by === "held"
-          ? fromShelf(line.units, timing.stockPacks)
-            ? "shelf"
-            : "vendor"
-          : null;
-
-    const readyDate =
-      timing.by === "grow"
-        ? adhocReadyDate(timing.growDays, now)
-        : timing.by === "shelf"
-          ? seedReadyDate(now)
-          : timing.by === "held"
-            ? heldReadyDate(line.units, timing.stockPacks, now)
-            : rackReadyDate(now);
+    /* A switch, so a new `Timing` arm is a compile error here. These were
+       ternary chains whose last branch was the rack's, and a new kind would
+       have compiled straight into a rack's sourcing and build date. */
+    let sourcing: SeedSourcing | null;
+    let readyDate: Date;
+    switch (timing.by) {
+      case "grow":
+        sourcing = null;
+        readyDate = adhocReadyDate(timing.growDays, now);
+        break;
+      case "shelf":
+        sourcing = "shelf";
+        readyDate = seedReadyDate(now);
+        break;
+      case "held":
+        sourcing = fromShelf(line.units, timing.stockPacks) ? "shelf" : "vendor";
+        readyDate = heldReadyDate(line.units, timing.stockPacks, now);
+        break;
+      case "build":
+        sourcing = null;
+        readyDate = rackReadyDate(now);
+        break;
+      case "pack":
+        /* Not "shelf" or "vendor": a pack is several things from several
+           places, and the date already says when the slowest is ready. */
+        sourcing = null;
+        readyDate = latestDate([
+          seedReadyDate(now),
+          ...(timing.rack ? [rackReadyDate(now)] : []),
+          ...timing.held.map((h) => heldReadyDate(line.units * h.perPack, h.stockPacks, now)),
+        ])!;
+        break;
+      default: {
+        const never: never = timing;
+        throw new Error(`No delivery rule for ${JSON.stringify(never)}`);
+      }
+    }
 
     items.push({
       ...rest,
@@ -423,8 +510,44 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
     hasMedia: items.some((i) => i.kind === "media"),
     hasRacks: items.some((i) => i.kind === "rack"),
     unavailable,
-    overStock: items.filter((i) => i.units > i.maxUnits).map(lineId),
+    overStock: overStockLines(items, withSeedContent),
   };
+}
+
+/**
+ * Lines asking for more than the shelf holds.
+ *
+ * Per line as before — a seed line past its 100 g units, a pack past the
+ * scarcest of its seeds — and then **across lines for one seed**: a pack holds
+ * 100 g of each seed it was filled with, so a separate radish line and a pack
+ * with radish in it draw on the same shelf. When the two together want more
+ * than is held, the pack line is the one flagged, because reducing the seed
+ * line is the smaller change and the cart page says which line to adjust.
+ */
+function overStockLines(
+  items: readonly CartItem[],
+  seeds: readonly { contentKey: string; stockGrams: number }[],
+): string[] {
+  const over = new Set(items.filter((i) => i.units > i.maxUnits).map(lineId));
+  const packs = items.filter((i) => i.pack);
+  if (packs.length === 0) return [...over];
+
+  const held = new Map(seeds.map((s) => [s.contentKey, s.stockGrams]));
+  const wanted = new Map<string, number>();
+  const want = (key: string, grams: number) => wanted.set(key, (wanted.get(key) ?? 0) + grams);
+  for (const i of items) {
+    if (i.kind === "seed" && i.grams !== null) want(i.key, i.grams);
+    for (const part of i.pack?.parts ?? []) {
+      if (part.kind === "seed") want(part.key, part.units * i.units * GRAMS_PER_UNIT);
+    }
+  }
+  for (const i of packs) {
+    const short = i.pack!.parts.some(
+      (part) => part.kind === "seed" && (wanted.get(part.key) ?? 0) > (held.get(part.key) ?? Infinity),
+    );
+    if (short) over.add(lineId(i));
+  }
+  return [...over];
 }
 
 /** Cookie options, in one place so a mutation cannot set them differently

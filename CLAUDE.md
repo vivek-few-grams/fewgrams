@@ -27,7 +27,7 @@ checkout and a translator can be handed a single file:
 | `common.json` | Header, nav, footer, categories, shared counts |
 | `home.json` | Hero, PIN check, process strip, trust band |
 | `plans.json` | Bundle cards, the rotation panel and `/subscribe` (`plans.subscribe`) |
-| `shop.json` | `/shop`, `/shop/[category]`, `/shop/trays`, `/shop/grow-media` and their detail pages (SPEC §23, §24) |
+| `shop.json` | `/shop`, `/shop/[category]`, `/shop/trays`, `/shop/grow-media`, `/shop/packs` and their detail pages (SPEC §23, §24, §29) — pack *copy* is `content/packs/` |
 | `microgreens.json` | `/microgreens` and variety pages |
 | `seeds.json` | `/seeds` and seed pages (SPEC §22) |
 | `story.json` | `/how-we-grow` — **chrome only**; the book's thirteen pages are editorial copy and live in `content/story/book.json` (SPEC §18.5) |
@@ -159,7 +159,8 @@ DynamoDB holds **two numbers**: the price of the pack and the packs held
 - **A sell price is never typed — anywhere** (the owner, 3 Oct 2026: "sell
   price is based on cost + margin"). Trays, grow media and all three rack
   ranges show it read-only; to move it, change the cost or the margin. Do not
-  add a price input back to a row.
+  add a price input back to a row. **Two exceptions, both bundles priced as a
+  whole:** plans, and starter packs (the owner, 30 Oct 2026; SPEC §29.2).
 - **A rounded price over ₹300 ends in 9** (the owner, 4 Oct 2026). `retailPrice` rounds up to
   the step as before; if that is over ₹300 (`CHARM_PRICE_ABOVE`) it lands one rupee under
   instead — ₹339, ₹2,599 — never below the marked-up price, so ₹1,100 exactly becomes ₹1,199.
@@ -334,9 +335,14 @@ reads** — say "our delivery area" or "selected areas". The area itself is a
 district rule in `src/lib/pincode/area.ts`, not a place the copy should
 promise; `brand.city` was removed so nothing can interpolate it back in.
 
-**One exception: the legal pages** (the owner, 27 Sep 2026). A registered
+**Two exceptions.** The legal pages (the owner, 27 Sep 2026): a registered
 address and a jurisdiction clause ("the courts at Bengaluru") need a place, so
-`content/legal/` may name it. Nowhere else.
+`content/legal/` may name it. And a starter pack's consultation line, "on-site
+in Bengaluru, by video call elsewhere" (the owner, 30 Oct 2026: naming the area
+only brings the question "is that me?") — chrome in `shop.packs.consultOnSite`,
+shown only for a pack whose `onSite` is set, and `shop.packs.onSiteRow`, the
+comparison table's row, there only while some pack has it; `pack-contract.ts`
+keeps it out of the pack copy. Nowhere else.
 
 ## Contact details live in `content/contact.json`
 
@@ -349,15 +355,17 @@ the other.
 
 ## A cart unit is not always 100 g
 
-`src/lib/cart/cart.ts` holds three kinds — `variety`, `seed`, `tray` — and a
-line is **kind + content key + units**. What a unit *means* is the kind's
-business:
+`src/lib/cart/cart.ts` holds six kinds, and a line is **kind + key + units**.
+What a unit *means* is the kind's business:
 
 | Kind | One unit | Priced |
 |---|---|---|
 | `variety` | 100 g (a tray from 19 Sep to 19 Oct 2026) | per 100 g |
 | `seed` | 100 g | per 100 g |
 | `tray` | one pack (2 trays, or 5 mats) | per pack |
+| `media` | one block | per block |
+| `rack` | one rack | per rack |
+| `pack` | one starter pack — racks, trays, seeds and a block inside (SPEC §29) | per pack, typed |
 
 - **`isWeighed(kind)` is the only place that distinction lives.** Never write
   `kind !== "tray"`; the set is declared so a fourth kind has to decide rather
@@ -374,15 +382,18 @@ business:
   days, the seed shelf, or a supplier lead time. `hydrateCart`'s internal
   `Timing` union is exhaustive on purpose; one order is still one trip on the
   slowest line's date (`latestDate`).
-- **Nothing in the cart has a stock test.** `sellable()` asks two questions for
-  all three kinds: is the row active, and does it have a content file.
+- **Seeds are capped by the shelf; nothing else is.** A seed line and a pack
+  holding that seed both draw on it (`overStockLines`). Trays and cocopeat only
+  move the date.
 
 ## A cart line's key is not always a content key
 
-`CART_KINDS` is `variety | seed | tray | rack | media`. All but `rack` are keyed by a
-**content key** — the filename of a content file, lowercase letters and hyphens,
-**no digits**. A rack has no content file and is keyed by its **SKU** plus its
-colour: `rk-6f-5s-1.25x3-1.4-orange`.
+`CART_KINDS` is `variety | seed | tray | rack | media | pack`. All but `rack` and
+`pack` are keyed by a **content key** — the filename of a content file, lowercase
+letters and hyphens, **no digits**. A rack has no content file and is keyed by its
+**SKU** plus its colour: `rk-6f-5s-1.25x3-1.4-orange`. A starter pack is keyed by
+**its choice** — `single-rack-pack~orange~beetroot.dill.kale.radish`, seeds
+sorted (`packCartKey`) — and its hydrated and order lines carry the `parts`.
 
 - **Validate with `isValidKeyFor(kind, key)`, never `isValidContentKey` alone.**
   The latter rejects every rack. The two key sets are provably disjoint and
@@ -406,13 +417,36 @@ of them fails loudly if you miss it:
 |---|---|
 | `isWeighed` | whether the line has a weight at all — declared as a set so a new kind must choose |
 | `isValidKeyFor` | which key rule applies |
-| `Timing` in `cart/server.ts` | how the delivery date is worked out — a union, so a missed arm is a type error |
-| `lineUnits` / `stepKey` / `lineTiming` / `lineHref` in `cart/page.tsx` | the unit, the stepper's aria-label, the reason for the date, and where the line links |
-| `sellable()` in `cart/actions.ts` | what makes it orderable |
+| `Timing` in `cart/server.ts` | how the delivery date and sourcing are worked out — a union and a `switch`, so a missed arm is a type error (the derivations were ternaries ending in the rack's until 30 Oct 2026) |
+| `lineUnits` / `stepKey` / `lineQuantity` / `lineHref` in `cart/line-display.ts` | the unit, the stepper's aria-label, the quantity on a tax document, and where the line links — each falls through to a seed's or a green's wording if missed |
+| `sellable()` in `cart/actions.ts` | what makes it orderable — falls through to the seed test if missed |
+| `stockMoves` in `orders/stock-moves.ts` | what payment takes off the shelf and a cancellation puts back — exhaustive `switch` |
+| `BY_KIND` / `taxClassFor` in `tax/classes.ts` | HSN and rate — a `Record` |
+| `CATEGORIES` in `admin/gst/SummaryView.tsx`, `admin.orders.kind.<kind>` | the GST summary column and the admin order label — a plain list and a message, so a miss shows nothing or a raw key |
+| `SEARCH_KINDS` in `search/match.ts`, `SECTIONS` in `seo/llms.ts`, `pickPopular` in `search/popular.ts` | search's kinds and order, `llms.txt`, and how an order line maps to a search entry |
 | `KIND_ICON` in `components/cart/KindIcon.tsx` | the line's icon — a `Record`, so a missed kind is a type error |
 | `searchCatalogue` in `search/catalogue.ts`, `SEARCH_ICON` in `components/search/SearchThumb.tsx` | whether search finds it, read the way its grid reads it (SPEC §27.3) |
 | `ParcelLine` / `parcelGrams` in `shipping/parcel.ts`, `toParcelLines` in `shipping/charge.ts` | how it is boxed and weighed for the courier — exhaustive switches |
 | `KIND` in `seo/feed-xml.ts`, `shoppingFeedItems` in `seo/shopping-feed.ts` | how it is listed for Merchant Center — shipping label, brand, barcode (SPEC §28.7) |
+
+## Starter packs are one line, and remember what is in them
+
+SPEC §29 (30 Oct 2026). A pack is one cart line at one typed price, with a
+rack, trays, 100 g of each chosen seed and a block inside.
+
+- **`listSellablePacks` is the one gate**, as `findSellableRack` is for a rack:
+  a pack shows only when every part is on sale. The pages, the cart, checkout
+  and search all ask it; do not re-derive the test.
+- **The seed menu is computed, never kept** — the `menuSize` cheapest seeds by
+  `costPer100g`, on sale with 100 g held (`packSeedMenu`). An add must use the
+  menu now; a line already in a cart only needs its seeds still on sale.
+- **Every per-part question reads `parts`**, frozen on the order line: stock
+  (`stockMoves`), the parcel (`toParcelLines` unpacks a pack before measuring)
+  and a cancellation. Never re-read the pack's row for an order already placed.
+- **Angle racks only.** They ship from our pickup; a shelf rack ships from its
+  maker and would split the pack into two parcels.
+- **Taxed 18% on the whole price**, one row, HSN of the rack (or the trays):
+  a mixed supply. Do not split it into per-part rows without the CA's word.
 
 **`item.grams === null` means "not sold by weight", not "a pack".** It was the
 pack test while trays were the only unweighed kind, and a rack priced "per pack"

@@ -1,4 +1,5 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { hasSellablePacks } from "@/lib/packs/catalogue";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { GardenJourney } from "@/components/garden/GardenJourney";
 import type { GardenProduct, GardenShelf } from "@/components/garden/types";
@@ -188,6 +189,7 @@ export default async function GardenPage({ params, searchParams }: PageProps<"/[
     greens,
     rack,
     freshHref: greensOn ? "/microgreens" : null,
+    packsHref: (await hasSellablePacks(locale)) ? "/shop/packs" : null,
   };
 
   return (

@@ -1,4 +1,5 @@
 import type { CartKind } from "@/lib/cart/cart";
+import { parsePackCartKey } from "@/lib/packs/key";
 
 /**
  * What each thing we sell is, for GST — SPEC §26.1. Checked against
@@ -31,6 +32,12 @@ const BY_KIND: Record<CartKind, TaxClass> = {
   /* "Other furniture" — Schedule II entry 612; 9403 over 7308 is the
      owner's call, 17 Oct 2026. */
   rack: { hsn: "9403", rate: 18 },
+  /* A starter pack is one price for a rack, trays, seeds, cocopeat and a
+     consultation — a mixed supply, taxed as the item with the highest rate
+     in it (CGST Act s. 8(b)): 18%, as the owner's costing assumed (30 Oct
+     2026). The HSN is that item's — the rack's, or the trays' for a pack
+     with no rack (`taxClassFor`). This entry is the rack-less one. */
+  pack: { hsn: "3926", rate: 18 },
 };
 
 /**
@@ -44,6 +51,9 @@ const SEED_HSN: Record<string, string> = {
 
 export function taxClassFor(kind: CartKind, key: string): TaxClass {
   if (kind === "seed" && SEED_HSN[key]) return { hsn: SEED_HSN[key], rate: 0 };
+  /* A pack with a rack is reported under the rack's heading. The key says
+     whether it has one: only a pack with a rack carries a colour. */
+  if (kind === "pack" && parsePackCartKey(key)?.colour) return BY_KIND.rack;
   return BY_KIND[kind];
 }
 

@@ -42,4 +42,7 @@ export type GardenShelf = {
   rack: GardenLink | null;
   /** `/microgreens`, when microgreens are on sale: the touch step's tags. */
   freshHref: string | null;
+  /** `/shop/packs`, while a starter pack is on sale: the closing kit's way to
+   *  the whole setup in one box (SPEC §29). */
+  packsHref: string | null;
 };

@@ -7,7 +7,7 @@ import type { PaymentAttempt } from "@/lib/payments";
 import type { GatewayName, ProviderOrderStatus } from "@/lib/payments/provider";
 import type { Buyer, TaxRow } from "@/lib/tax/order-tax";
 import type { GstState } from "@/lib/tax/states";
-import type { Address, OrderStatus } from "@/lib/types";
+import type { Address, OrderStatus, PackPart } from "@/lib/types";
 
 /**
  * A one-off order — SPEC §4, §9, §13. Pure logic only; storage is
@@ -34,6 +34,13 @@ export type OrderLine = {
   /** Seeds only: the promise made at checkout. Stock is re-checked when the
    *  shelf is actually drawn down, at payment. */
   sourcing: SeedSourcing | null;
+  /**
+   * A starter pack's contents, **per pack**, as they were when it was bought
+   * (SPEC §29.5); null on every other kind. What payment draws off the shelf,
+   * what a cancellation puts back and what the courier is quoted for — read
+   * from here rather than the pack's row today, which admin may have changed.
+   */
+  parts: PackPart[] | null;
 };
 
 /** Where it goes, copied off the address book so that editing an address can
@@ -237,6 +244,7 @@ export function linesFromCart(cart: HydratedCart): OrderLine[] {
     grams: i.grams,
     readyDate: istDateISO(i.readyDate),
     sourcing: i.sourcing,
+    parts: i.pack?.parts ?? null,
   }));
 }
 

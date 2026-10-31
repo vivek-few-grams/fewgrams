@@ -5,6 +5,8 @@ import { enabledProductTypes } from "@/lib/catalogue/visibility";
 import type { ResolvedContent } from "@/lib/content/source";
 import { getGrowMediumContent, growMediumCutout, growMediumHero } from "@/lib/content/grow-media";
 import { getPlanContent } from "@/lib/content/plans";
+import { getPackContent } from "@/lib/content/packs";
+import { listSellablePacks } from "@/lib/packs/catalogue";
 import { getSeedContent, seedCutout, seedHero } from "@/lib/content/seeds";
 import { getTrayContent, trayCutout, trayHero } from "@/lib/content/trays";
 import { getVarietyContent, varietyCutout, varietyHero } from "@/lib/content/varieties";
@@ -154,9 +156,42 @@ export const searchCatalogue = cache(async (locale: string): Promise<CatalogueEn
     enabled.has("racks") ? rackRanges(locale, kindTerms("rack")) : [],
     planEntries(locale, kindTerms("plan")),
   ]);
+  /* Not behind a product-type switch: a pack is on sale exactly when it and
+     every part are (`listSellablePacks`), which is the test its page applies. */
+  const packs = await packEntries(locale, kindTerms("pack"));
 
-  return [...varieties, ...plans, ...seeds, ...trays, ...media, ...racks];
+  return [...varieties, ...plans, ...seeds, ...trays, ...media, ...racks, ...packs];
 });
+
+/**
+ * One entry per starter pack on sale (SPEC §29), linking to its page, where
+ * the seeds and colour are chosen. Named and described from its content file
+ * in every locale; pictured by its rack, or its trays when it has none.
+ */
+async function packEntries(locale: string, kind: string[]): Promise<CatalogueEntry[]> {
+  const packs = await listSellablePacks(locale);
+  return Promise.all(
+    packs.map(async (p) => {
+      const key = p.pack.contentKey;
+      const all = await Promise.all(routing.locales.map((l) => getPackContent(key, l)));
+      const src = p.rack ? `/img/racks/${p.rack.range}/cutout.webp` : (p.tray.image?.src ?? null);
+      return {
+        kind: "pack",
+        key,
+        href: `/shop/packs/${key}`,
+        name: p.text.name,
+        image: src ? { src, fit: "contain", placeholder: placeholderFor(src) } : null,
+        terms: {
+          names: distinct(all.map((c) => c?.text.name)),
+          kind,
+          blurbs: distinct(all.map((c) => c?.text.tagline)),
+        },
+        blurb: p.text.tagline,
+        price: p.pack.price,
+      } satisfies CatalogueEntry;
+    }),
+  );
+}
 
 /**
  * One entry per rack **range** with a published model, as `/shop/racks`

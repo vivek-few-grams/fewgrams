@@ -5,7 +5,8 @@
     "seed": "Seeds",
     "tray": "Trays & drainage",
     "media": "Grow media",
-    "rack": "Racks"
+    "rack": "Racks",
+    "pack": "Starter packs"
   },
   "price": {
     "variety": "₹{price, number}/100 g",
@@ -13,7 +14,8 @@
     "seed": "₹{price, number}/100 g",
     "tray": "₹{price, number} a pack",
     "media": "₹{price, number} a block",
-    "rack": "From ₹{price, number}"
+    "rack": "From ₹{price, number}",
+    "pack": "₹{price, number}"
   },
   "tastes": {
     "peppery": "Peppery",

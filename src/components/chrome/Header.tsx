@@ -10,6 +10,7 @@ import { SearchBox } from "./SearchBox";
 import type { Role } from "@/lib/auth/roles";
 import { readCartCount } from "@/lib/cart/server";
 import { isProductTypeEnabled } from "@/lib/catalogue/visibility";
+import { hasActivePacks } from "@/lib/packs/catalogue";
 
 /**
  * Global header — SPEC §18.1.
@@ -66,6 +67,8 @@ export async function Header({
      names or prices. The badge was a hardcoded "0" until 15 Sep 2026. */
   const cartCount = await readCartCount();
   const showMicrogreens = await isProductTypeEnabled("microgreens");
+  /* Only while a pack is set up to sell (SPEC §29). */
+  const showPacks = await hasActivePacks();
 
   return (
     <header className="sticky top-0 z-[70] border-b border-forest/10 bg-white">
@@ -122,26 +125,27 @@ export async function Header({
           />
         </Link>
 
-        <NavLinks showMicrogreens={showMicrogreens} />
+        <NavLinks showMicrogreens={showMicrogreens} showPacks={showPacks} />
 
         {/* `md:ml-12` is the separation between the two groups: navigation on the
             left of it, utilities on the right. Without it the container's own
             gap runs them together and HOW WE GROW reads as a sibling of the
             cart. */}
         <div className="col-start-2 row-start-1 flex items-center justify-self-end gap-4 lg:order-3 lg:ml-12 lg:gap-5">
-          {/* The search pill, from 1152px: first among the shop's tools, where
+          {/* The search pill, from 1200px: first among the shop's tools, where
               people look for search (the owner, 20 Oct 2026 — beside the logo
-              it read as part of the brand). 1152px is the first width with
-              room for it — the logo-to-nav gap it comes out of is 251px there
-              and 123px at 1024. Opens a band under the bar rather than being a
-              field in it (SPEC §27.2). */}
-          <SearchBox variant="pill" className="hidden min-[1152px]:flex" />
+              it read as part of the brand). 1152px was the first width with
+              room for it until the starter packs gave the nav a fifth item
+              (30 Oct 2026): from 1152 to about 1180 the bar then wrapped to two
+              rows, in both languages. Opens a band under the bar rather than
+              being a field in it (SPEC §27.2). */}
+          <SearchBox variant="pill" className="hidden min-[1200px]:flex" />
 
           <LocaleSwitch />
 
-          {/* The magnifier in a dark green circle, below 1152px; above it
+          {/* The magnifier in a dark green circle, below 1200px; above it
               the pill beside the logo takes over (SPEC §27.2). */}
-          <SearchBox variant="icon" className="flex min-[1152px]:hidden" />
+          <SearchBox variant="icon" className="flex min-[1200px]:hidden" />
 
           <Link
             href="/cart"

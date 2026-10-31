@@ -1,4 +1,5 @@
 import { parseRackCartKey } from "@/lib/racks/cart-key";
+import { packKeyOf } from "@/lib/packs/key";
 import { rankBySales } from "@/lib/seeds/best-sellers";
 import { entryId, type SearchEntry } from "./entry";
 import { SEARCH_KINDS, type SearchKind } from "./match";
@@ -59,8 +60,10 @@ export function pickPopular(
     const split = line.indexOf(":");
     const kind = line.slice(0, split) as SearchKind;
     const lineKey = line.slice(split + 1);
-    /* A rack line is keyed by its SKU and colour; search knows it by range. */
-    const key = kind === "rack" ? parseRackCartKey(lineKey)?.range : lineKey;
+    /* A rack line is keyed by its SKU and colour; search knows it by range.
+       A pack line carries its choices; search knows it by the pack. */
+    const key =
+      kind === "rack" ? parseRackCartKey(lineKey)?.range : kind === "pack" ? packKeyOf(lineKey) : lineKey;
     if (!key) continue;
     const id = entryId({ kind, key });
     counts.set(id, (counts.get(id) ?? 0) + n);

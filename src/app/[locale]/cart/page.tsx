@@ -139,11 +139,19 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                           tray-product per pack, a rack per rack
                           (`lineUnits`). */}
                       <span className="mt-1 block font-body text-xs text-stone">{lineUnits(item, t)}</span>
+                      {/* A starter pack's choices — the rack colour and
+                          the seeds — under its price (SPEC §29.5). */}
+                      {item.pack && (
+                        <span className="mt-1 block font-body text-xs text-forest">{item.pack.detail}</span>
+                      )}
                       {/* The shelf fell below this line after it was added
                           (the owner, 25 Sep 2026: stock is the limit).
                           Checkout waits until it is reduced; how much is
                           left is never said. */}
-                      {item.units > item.maxUnits && (
+                      {/* `overStock` rather than `units > maxUnits`: a
+                          pack is also flagged when it and a seed line want
+                          more of one seed between them than is held. */}
+                      {cart.overStock.includes(lineId(item)) && (
                         <span
                           role="status"
                           className="mt-1 block font-body text-xs font-semibold text-terracotta"

@@ -494,6 +494,65 @@ export const PlanEntity = new Entity(
 );
 
 /**
+ * Starter pack — SPEC §29.
+ *   PK = PACK#<id>   SK = META   GSI1PK = PACK   GSI1SK = <sortOrder>#<contentKey>
+ *
+ * The plan layout exactly, for the same reasons: every pack is listed on one
+ * page, so listing is a Query on `GSI1PK = "PACK"`, and `sortOrder` first in
+ * the sort key orders the columns for free. Padded to three for the same
+ * string-sort reason.
+ *
+ * **Carries no text**: `content/packs/<contentKey>.json` has every word. The
+ * parts are named by key — a rack SKU, a tray and a grow medium's content
+ * keys — never copied, so a pack follows those rows (src/lib/types.ts `Pack`).
+ */
+export const PackEntity = new Entity(
+  {
+    model: { ...model, entity: "pack" },
+    attributes: {
+      id: { type: "string", required: true },
+      contentKey: { type: "string", required: true },
+      price: { type: "number", required: true },
+      /** Absent for a pack with no rack; the repo reads it back as null. */
+      rackSku: { type: "string" },
+      rackCount: { type: "number", required: true },
+      trayKey: { type: "string", required: true },
+      trayCount: { type: "number", required: true },
+      seedCount: { type: "number", required: true },
+      menuSize: { type: "number", required: true },
+      /** Absent for a pack with no grow medium. */
+      mediumKey: { type: "string" },
+      mediumCount: { type: "number", required: true },
+      onSite: { type: "boolean", required: true },
+      recommended: { type: "boolean", required: true },
+      sortOrder: {
+        type: "number",
+        required: true,
+        padding: { length: 3, char: "0" },
+      },
+      active: { type: "boolean", required: true },
+    },
+    indexes: {
+      byId: {
+        pk: { field: "PK", composite: ["id"], template: "PACK#${id}", casing: "none" },
+        sk: { field: "SK", composite: [], template: "META", casing: "none" },
+      },
+      byCatalogue: {
+        index: "GSI1",
+        pk: { field: "GSI1PK", composite: [], template: "PACK", casing: "none" },
+        sk: {
+          field: "GSI1SK",
+          composite: ["sortOrder", "contentKey"],
+          template: "${sortOrder}#${contentKey}",
+          casing: "none",
+        },
+      },
+    },
+  },
+  catalogueConfig,
+);
+
+/**
  * Plan rotation week — SPEC §4 / §5.2.
  *   PK = PLAN#<planId>  SK = WEEK#<1..4>
  *
@@ -1295,6 +1354,19 @@ export const OrderEntity = new Entity(
             grams: { type: "number" },
             readyDate: { type: "string", required: true },
             sourcing: { type: ["shelf", "vendor"] as const },
+            /** A starter pack's contents, frozen at checkout (SPEC §29.5),
+             *  per pack. Absent on every other kind. */
+            parts: {
+              type: "list",
+              items: {
+                type: "map",
+                properties: {
+                  kind: { type: ["rack", "tray", "seed", "media"] as const, required: true },
+                  key: { type: "string", required: true },
+                  units: { type: "number", required: true },
+                },
+              },
+            },
           },
         },
       },

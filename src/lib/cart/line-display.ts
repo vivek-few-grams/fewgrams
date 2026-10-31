@@ -1,5 +1,6 @@
 import { rackLineHref } from "@/lib/racks/cart-key";
 import { GRAMS_PER_UNIT } from "@/lib/cart/cart";
+import { packKeyOf } from "@/lib/packs/key";
 
 /**
  * How a line reads and where it links — shared by the cart, checkout and
@@ -23,6 +24,12 @@ export function lineHref(item: { kind: string; key: string }): string {
   if (item.kind === "tray") return `/shop/trays/${item.key}`;
   if (item.kind === "media") return `/shop/grow-media/${item.key}`;
   if (item.kind === "rack") return rackLineHref(item.key) ?? "/shop/racks";
+  /* Back to the pack's own page, where the seeds and colour were chosen; the
+     choices themselves are not carried back into it. */
+  if (item.kind === "pack") {
+    const pack = packKeyOf(item.key);
+    return pack ? `/shop/packs/${pack}` : "/shop/packs";
+  }
   return `/microgreens/${item.key}`;
 }
 
@@ -40,6 +47,11 @@ export function lineUnits(
 ): string {
   if (item.kind === "rack") {
     return `${t("linePriceRack", { price: item.unitPrice })} · ${t("lineRacks", { count: item.units })}`;
+  }
+  /* A starter pack — not "per pack" (`linePricePack`), which already means
+     a pack of trays. Its choices are a second line, `CartItem.pack.detail`. */
+  if (item.kind === "pack") {
+    return `${t("linePriceStarter", { price: item.unitPrice })} · ${t("lineStarters", { count: item.units })}`;
   }
   /* A green ordered between 19 Sep and 19 Oct 2026 was a tray, and its order
      line says so by carrying no grams. Its own wording rather than the pack
@@ -70,6 +82,7 @@ export function stepKey(kind: string, dir: "decrease" | "increase"): string {
   if (kind === "rack") return dir === "decrease" ? "decreaseRack" : "increaseRack";
   if (kind === "tray") return dir === "decrease" ? "decreasePack" : "increasePack";
   if (kind === "media") return dir === "decrease" ? "decreaseBlock" : "increaseBlock";
+  if (kind === "pack") return dir === "decrease" ? "decreaseStarter" : "increaseStarter";
   return dir;
 }
 
@@ -88,6 +101,7 @@ export function lineQuantity(
   grams?: number | null,
 ): string {
   if (kind === "rack") return t("lineRacks", { count: units });
+  if (kind === "pack") return t("lineStarters", { count: units });
   if (grams !== undefined && isTrayGreen(kind, grams)) return t("lineTrays", { count: units });
   if (kind === "media") return t("lineBlocks", { count: units });
   if (kind === "tray") return t("linePacks", { count: units });

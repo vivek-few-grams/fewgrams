@@ -23,11 +23,12 @@
 /**
  * Everything search can return, in the order a tie is broken.
  *
- * The cart's five kinds plus `plan`. A `rack` here is a **range** — "Shelf
+ * The cart's six kinds plus `plan`. A `pack` here is a starter pack itself
+ * (SPEC §29), not a line with its choices — the choosing is on its page. A `rack` here is a **range** — "Shelf
  * racks" — not one SKU: a model has no name to match (SPEC §19.5), and the
  * range page is where the size is chosen.
  */
-export const SEARCH_KINDS = ["variety", "plan", "seed", "tray", "media", "rack"] as const;
+export const SEARCH_KINDS = ["variety", "plan", "seed", "tray", "media", "rack", "pack"] as const;
 export type SearchKind = (typeof SEARCH_KINDS)[number];
 
 /** What an entry is matched on, each in every language. */

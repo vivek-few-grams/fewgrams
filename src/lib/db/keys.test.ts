@@ -8,6 +8,7 @@ import {
   CatalogueVisibilityEntity,
   CounterEntity,
   OrderEntity,
+  PackEntity,
   PaymentEntity,
   PlanEntity,
   PlanWeekEntity,
@@ -333,6 +334,48 @@ describe("product keys", () => {
     expect(Item.GSI1PK).toBe("CAT#trays");
     expect(Item.GSI1SK).toBe("tray-1020");
     expect(Item.variants[0].attributes).toEqual({ material: "PP", size: "10x20" });
+  });
+});
+
+describe("pack keys", () => {
+  const pack = {
+    id: "1f0c",
+    contentKey: "single-rack-pack",
+    price: 9999,
+    rackSku: "AR-5F-4S-1.25x3-1.4",
+    rackCount: 1,
+    trayKey: "tray-pair-food-grade",
+    trayCount: 4,
+    seedCount: 4,
+    menuSize: 15,
+    mediumKey: "horti-coir",
+    mediumCount: 1,
+    onSite: true,
+    recommended: false,
+    sortOrder: 2,
+    active: true,
+  };
+
+  /* The plan layout: a partition per pack, all of them on one GSI1 partition
+     ordered by a padded sortOrder. */
+  it("writes PK=PACK#<id> and GSI1SK=<padded sortOrder>#<contentKey>", () => {
+    const { Item } = PackEntity.put(pack).params();
+    expect(Item.PK).toBe("PACK#1f0c");
+    expect(Item.SK).toBe("META");
+    expect(Item.GSI1PK).toBe("PACK");
+    expect(Item.GSI1SK).toBe("002#single-rack-pack");
+  });
+
+  it("pads sortOrder so pack 10 sorts after pack 2", () => {
+    const two = PackEntity.put({ ...pack, sortOrder: 2 }).params().Item.GSI1SK;
+    const ten = PackEntity.put({ ...pack, sortOrder: 10 }).params().Item.GSI1SK;
+    expect(two < ten).toBe(true);
+  });
+
+  it("stores no rack or medium for a pack without them", () => {
+    const { Item } = PackEntity.put({ ...pack, rackSku: undefined, mediumKey: undefined }).params();
+    expect("rackSku" in Item).toBe(false);
+    expect("mediumKey" in Item).toBe(false);
   });
 });
 

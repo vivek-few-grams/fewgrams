@@ -49,6 +49,13 @@
   "secureNote": "Nothing is charged until you pay.",
   "lineSoldOut": "Sold out. Remove it to continue.",
   "lineOverStock": "We have less than this now. Reduce it to continue.",
-  "overStockBlock": "Adjust the highlighted seed to continue.",
-  "inclusive": "Inclusive of all taxes"
+  "overStockBlock": "Adjust the highlighted line to continue.",
+  "inclusive": "Inclusive of all taxes",
+  "linePriceStarter": "₹{price, number} each",
+  "lineStarters": "{count, plural, one {# pack} other {# packs}}",
+  "decreaseStarter": "One less {name}",
+  "increaseStarter": "One more {name}",
+  "packOrderName": "{name} ({detail}) · {consult}",
+  "packConsultOnSite": "on-site consultation",
+  "packConsultVideo": "video consultation"
 }

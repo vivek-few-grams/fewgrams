@@ -5,7 +5,8 @@
     "seed": "ಬೀಜಗಳು",
     "tray": "ಟ್ರೇ ಮತ್ತು ನೀರು ಹರಿಸುವ ಹಾಸು",
     "media": "ಬೆಳೆಸುವ ಮಾಧ್ಯಮ",
-    "rack": "ರ್ಯಾಕ್‌ಗಳು"
+    "rack": "ರ್ಯಾಕ್‌ಗಳು",
+    "pack": "ಆರಂಭಿಕ ಪ್ಯಾಕ್‌ಗಳು"
   },
   "price": {
     "variety": "₹{price, number}/100 ಗ್ರಾಂ",
@@ -13,7 +14,8 @@
     "seed": "₹{price, number}/100 ಗ್ರಾಂ",
     "tray": "ಪ್ಯಾಕ್‌ಗೆ ₹{price, number}",
     "media": "ಬ್ಲಾಕ್‌ಗೆ ₹{price, number}",
-    "rack": "₹{price, number} ರಿಂದ"
+    "rack": "₹{price, number} ರಿಂದ",
+    "pack": "₹{price, number}"
   },
   "tastes": {
     "peppery": "ಖಾರ",
