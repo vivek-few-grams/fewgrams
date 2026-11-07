@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { brand } from "@/lib/brand";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { Origin, ShippingSettings } from "@/lib/repo/shipping";
 import { NumberField, TextField } from "../fields";
@@ -52,6 +53,10 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
     ]);
   const removeOrigin = (id: string) => setRemoved((ids) => [...ids, id]);
   const k = settings?.packing;
+  /* The pickup name is the key each courier looks the address up by, not
+     the seller name on the parcel — said under both name fields, since the
+     old "Business name" label read as what gets printed (7 Nov 2026). */
+  const nameHint = t("pickupNameHint", { brand: brand.name });
 
   const text = (name: string, value: string | undefined, extra?: Record<string, string>) => (
     <TextField
@@ -82,7 +87,7 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
         </legend>
         <p className="font-body text-xs text-stone">{t("pickupHint")}</p>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          {text("pickupName", p?.name)}
+          {text("pickupName", p?.name, { hint: nameHint })}
           {text("pickupPhone", p?.phone, { inputMode: "tel" })}
           <div className="sm:col-span-2">{text("pickupAddress", p?.address)}</div>
           {text("pickupCity", p?.city)}
@@ -111,6 +116,7 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
                   label={t("field.originName")}
                   name={`origin.${i}.name`}
                   defaultValue={o.name}
+                  hint={nameHint}
                   error={errorFor(`origin.${i}.name`)}
                   required
                 />

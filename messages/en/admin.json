@@ -885,19 +885,20 @@
     },
     "pickupHeading": "Our pickup",
     "pickupHint": "Where the courier collects parcels from. Never shown to customers.",
+    "pickupNameHint": "Couriers find this address by its name alone, so type it exactly as registered with each of them. It is not the seller name on the parcel: Delhivery and Ekart are sent {brand}, and Shiprocket and Velocity print the contact name on your pickup registration with them.",
     "greensHeading": "Microgreens delivery",
     "greensHint": "A fixed fee for any order with microgreens in it, whatever else rides along — they go on your own same-day run, not by courier. Set it from your average cost per drop and review it monthly.",
     "packingHeading": "Packing",
     "packingHint": "Order-wide figures for courier orders. Each tray's size and weight is set on its row in Trays & drainage. Racks pack two ways: a shelf rack is a stack of plates, each adding its plate's packed thickness (Shelf racks → plates); an angle or pipe rack is a bundle of legs and rails, measured by the angle's width and stacking (Shelf racks → angle rates) or the pipe's diameter (Pipe racks → rates). Grams per shelf is on each plate, frame and pipe size. Seeds are weighed by what's ordered, in 5 × 5 × 5 cm packets per 50 g.",
     "field": {
       "greenRunFee": "Fee per order (₹)",
-      "pickupName": "Business name",
+      "pickupName": "Pickup name (as registered with each courier)",
       "pickupPhone": "Pickup phone",
       "pickupAddress": "Street address",
       "pickupCity": "City",
       "pickupPincode": "PIN code",
       "seedPackingGrams": "Seed box and padding, per order (g)",
-      "originName": "Vendor name"
+      "originName": "Pickup name (as registered with each courier)"
     },
     "save": "Save",
     "saving": "Saving…",
