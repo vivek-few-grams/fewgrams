@@ -85,8 +85,9 @@ export const PARAMETER_PATH = "/fewgrams/prod";
  * Only list what is actually configured; uncomment a line once its parameter
  * exists (`scripts/ssm-from-env.mjs` copies one from .env.local). The four
  * couriers went live on 7 Nov 2026, for quotes — booking is still off below.
- * `VELOCITY_WAREHOUSES` waits for the warehouse ids from the Velocity
- * dashboard: only booking reads it, so Velocity quotes without it.
+ * `VELOCITY_WAREHOUSES` maps each pickup name on admin → delivery to its
+ * Velocity warehouse id, copied from the Velocity dashboard (7 Nov 2026).
+ * Only booking reads it; rename a pickup and this has to follow.
  */
 export const RUNTIME_PARAMETERS = [
   "AUTH_SECRET",
@@ -106,7 +107,7 @@ export const RUNTIME_PARAMETERS = [
   "EKART_USERNAME",
   "EKART_PASSWORD",
   "VELOCITY_API_KEY",
-  // "VELOCITY_WAREHOUSES",
+  "VELOCITY_WAREHOUSES",
 ] as const;
 
 /**
