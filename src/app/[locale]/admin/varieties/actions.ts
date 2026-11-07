@@ -234,6 +234,16 @@ export async function saveVarietyCosting(_prev: FormState, fd: FormData): Promis
   if (traysPerBlock === null) return err("countInvalid", "traysPerBlock");
   const overheadPerTray = zeroOrMore(fd, "overheadPerTray");
   if (overheadPerTray === null) return err("zeroOrMore", "overheadPerTray");
+  const cleaningPerTray = zeroOrMore(fd, "cleaningPerTray");
+  if (cleaningPerTray === null) return err("zeroOrMore", "cleaningPerTray");
+  const packingPer100g = zeroOrMore(fd, "packingPer100g");
+  if (packingPer100g === null) return err("zeroOrMore", "packingPer100g");
+  const packingPerBox = zeroOrMore(fd, "packingPerBox");
+  if (packingPerBox === null) return err("zeroOrMore", "packingPerBox");
+  const minProfitPerBox = zeroOrMore(fd, "minProfitPerBox");
+  if (minProfitPerBox === null) return err("zeroOrMore", "minProfitPerBox");
+  const minYieldPerTray = zeroOrMore(fd, "minYieldPerTray");
+  if (minYieldPerTray === null) return err("zeroOrMore", "minYieldPerTray");
   const markupPercent = zeroOrMore(fd, "markupPercent");
   if (markupPercent === null) return err("zeroOrMore", "markupPercent");
   const roundUpToNearest = count(fd, "roundUpToNearest");
@@ -243,6 +253,11 @@ export async function saveVarietyCosting(_prev: FormState, fd: FormData): Promis
     cocopeatBlockCost,
     traysPerBlock,
     overheadPerTray,
+    cleaningPerTray,
+    packingPer100g,
+    packingPerBox,
+    minProfitPerBox,
+    minYieldPerTray,
     margin: { markupPercent, roundUpToNearest },
   };
   await putVarietyCosting(costing);

@@ -7,6 +7,8 @@ import { varietyNameMap } from "@/lib/content/varieties";
 import { listPlansWithWeeks } from "@/lib/repo/plans";
 import { listSubscriptionsByStatus } from "@/lib/repo/subscriptions";
 import { listVarieties } from "@/lib/repo/varieties";
+import { listSowings } from "@/lib/repo/sowings";
+import { loggedGrowth } from "@/lib/sowing/sowing";
 import { demandFor, type DeliveryDemand } from "@/lib/subscriptions/demand";
 import { rotationWeek, upcomingSaturdays } from "@/lib/subscriptions/rotation";
 import { subscriptionOpening } from "@/lib/subscriptions/opening";
@@ -59,7 +61,7 @@ export default async function SubscriptionsAdmin({
   const now = new Date();
   const today = istDateISO(now);
 
-  const [paid, pending, paused, cancelled, planRows, varieties, names] = await Promise.all([
+  const [paid, pending, paused, cancelled, planRows, varieties, names, sowings] = await Promise.all([
     listSubscriptionsByStatus("active"),
     view === "pending" ? listSubscriptionsByStatus("pending_payment") : Promise.resolve([]),
     listSubscriptionsByStatus("paused"),
@@ -67,6 +69,7 @@ export default async function SubscriptionsAdmin({
     listPlansWithWeeks(),
     listVarieties(),
     varietyNameMap("en"),
+    listSowings(),
   ]);
   const planNames = new Map(
     await Promise.all(
@@ -83,7 +86,9 @@ export default async function SubscriptionsAdmin({
   const current = paid.filter((s) => subscriptionState(s, now) !== "expired");
   const expired = paid.filter((s) => subscriptionState(s, now) === "expired");
   const saturdays = upcomingSaturdays(now, HORIZON);
-  const demand = saturdays.map((d) => demandFor(d, paid, rotations, byKey));
+  /* Trays from the sowing log's counted harvests, as prices are (7 Nov 2026). */
+  const logged = loggedGrowth(sowings);
+  const demand = saturdays.map((d) => demandFor(d, paid, rotations, byKey, logged));
   /* The first Saturday a new subscriber can still be sown for, and the last
      day to join for it — the Friday before, or earlier when that week has a
      slow crop (`subscriptionOpening`). */

@@ -1,4 +1,5 @@
 import { fromIstDateISO, istDateISO } from "@/lib/delivery-date";
+import type { LoggedGrowth } from "@/lib/sowing/sowing";
 import type { PlanWeek, Variety } from "@/lib/types";
 import type { Subscription } from "./subscription";
 
@@ -20,9 +21,11 @@ import type { Subscription } from "./subscription";
  *
  * ## Trays
  *
- * `ceil(grams ÷ yieldGramsPerTrayMin)` — the owner's **low** yield, so a
- * light tray still fills every box. The high-yield figure is returned too,
- * for the best case.
+ * `ceil(grams ÷ grams per tray)`, where grams per tray is the sowing log's
+ * average of counted harvests (7 Nov 2026 — the same figure that prices the
+ * variety), or the owner's typed **low** yield for a variety with no counted
+ * harvest yet. Seed per tray follows the same rule. The typed high yield is
+ * returned too, for the best case.
  */
 
 export type DemandLine = {
@@ -63,6 +66,8 @@ export function demandFor(
   subs: readonly Subscription[],
   rotations: ReadonlyMap<string, readonly PlanWeek[]>,
   varieties: ReadonlyMap<string, Variety>,
+  /** `loggedGrowth(sowings)` — omitted, every variety plans at its typed yield. */
+  logged: ReadonlyMap<string, LoggedGrowth> = new Map(),
 ): DeliveryDemand {
   const plans = new Map<string, PlanBoxes>();
   const grams = new Map<string, { grams: number; boxes: number }>();
@@ -100,7 +105,12 @@ export function demandFor(
   const lines = [...grams.entries()].map(([key, g]): DemandLine => {
     const v = varieties.get(key);
     const total = Math.round(g.grams);
-    const trays = v && v.yieldGramsPerTrayMin > 0 ? Math.ceil(total / v.yieldGramsPerTrayMin) : null;
+    const grown = logged.get(key);
+    /* A logged average of 0 (only failed trays counted) cannot divide; it
+       falls back like no harvest at all. */
+    const perTray = grown && grown.gramsPerTray > 0 ? grown.gramsPerTray : v?.yieldGramsPerTrayMin;
+    const seedPerTray = grown && grown.gramsPerTray > 0 ? grown.seedGramsPerTray : v?.seedGramsPerTray;
+    const trays = v && perTray && perTray > 0 ? Math.ceil(total / perTray) : null;
     const traysAtBest = v && v.yieldGramsPerTrayMax > 0 ? Math.ceil(total / v.yieldGramsPerTrayMax) : null;
     return {
       varietyKey: key,
@@ -108,7 +118,7 @@ export function demandFor(
       boxes: g.boxes,
       trays,
       traysAtBest,
-      seedGrams: trays !== null && v?.seedGramsPerTray ? Math.ceil(trays * v.seedGramsPerTray) : null,
+      seedGrams: trays !== null && seedPerTray ? Math.ceil(trays * seedPerTray) : null,
       sowBy: v ? istDateISO(new Date(saturday - v.growDays * DAY_MS)) : null,
       growDays: v?.growDays ?? null,
     };

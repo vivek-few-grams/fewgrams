@@ -5,27 +5,12 @@ import { listSowings } from "@/lib/repo/sowings";
 import { attachContent, listVarietyContent } from "@/lib/content/varieties";
 import { routing } from "@/i18n/routing";
 import { cocopeatPerTray, varietyCost } from "@/lib/varieties/pricing";
-import type { Sowing } from "@/lib/types";
+import { loggedGrowth } from "@/lib/sowing/sowing";
 import { AddVarietyForm } from "./AddVarietyForm";
 import { CostingForm } from "./CostingForm";
 import { VarietyTable } from "./VarietyTable";
 import type { VarietyWorking } from "./VarietyRow";
 import { requireRole } from "@/lib/auth/guard";
-
-/** Seed sown per tray in the sowing log, per variety — across every line that
- *  counted its trays — so a missing seed rate can be copied from what was
- *  actually done. One decimal, as a person would type it. */
-function loggedSeedPerTray(sowings: Sowing[]): Map<string, number> {
-  const sums = new Map<string, { grams: number; trays: number }>();
-  for (const line of sowings.flatMap((s) => s.lines)) {
-    if (!line.trays) continue;
-    const sum = sums.get(line.varietyKey) ?? { grams: 0, trays: 0 };
-    sum.grams += line.seedGrams;
-    sum.trays += line.trays;
-    sums.set(line.varietyKey, sum);
-  }
-  return new Map([...sums].map(([key, s]) => [key, Math.round((s.grams / s.trays) * 10) / 10]));
-}
 
 export const dynamic = "force-dynamic";
 
@@ -59,12 +44,14 @@ export default async function VarietiesAdmin() {
     listSowings(),
   ]);
   const seedCost = new Map(seeds.map((s) => [s.contentKey, s.costPer100g]));
-  const logged = loggedSeedPerTray(sowings);
+  /* The same averages repriceVarieties prices from, so the working line is
+     the arithmetic behind the stored price. */
+  const growth = loggedGrowth(sowings);
   const workingOf = (v: (typeof rows)[number]): VarietyWorking => {
-    const r = varietyCost(v, seedCost.get(v.contentKey), costing);
-    if (r.ok) return { ok: true, yieldMin: v.yieldGramsPerTrayMin, ...r.cost };
-    const logSeed = logged.get(v.contentKey);
-    return { ok: false, reason: r.reason, ...(logSeed !== undefined ? { logSeed } : {}) };
+    const g = growth.get(v.contentKey);
+    const r = varietyCost(g, seedCost.get(v.contentKey), costing);
+    if (r.ok) return { ok: true, ...r.cost };
+    return { ok: false, reason: r.reason, cutoff: costing.minYieldPerTray, ...(g ? { gramsPerTray: g.gramsPerTray } : {}) };
   };
 
   const withContent = await attachContent(rows, routing.defaultLocale);

@@ -5,7 +5,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { ChevronDown } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { fromIstDateISO } from "@/lib/delivery-date";
-import { daysBetween, gramsPerTray, isHarvested, yieldRatio } from "@/lib/sowing/sowing";
+import { countsForYield, daysBetween, gramsPerTray, isHarvested, yieldRatio } from "@/lib/sowing/sowing";
 import type { Sowing } from "@/lib/types";
 import { removeSowing } from "./actions";
 import { SowingEditor } from "./SowingEditor";
@@ -130,6 +130,9 @@ export function SowingCard({
                       <tr key={i} className="border-t border-forest/10">
                         <td className="py-2 pr-3 font-semibold">
                           {names[line.varietyKey] ?? line.varietyKey}
+                          {isHarvested(line) && !countsForYield(line) && (
+                            <span className="block text-[11px] font-normal text-terracotta">{t("notCounted")}</span>
+                          )}
                         </td>
                         <td className="py-2 pr-3 text-right">{t("grams", { grams: line.seedGrams })}</td>
                         <td className="py-2 pr-3 text-right">{line.trays ?? t("none")}</td>

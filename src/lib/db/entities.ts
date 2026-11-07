@@ -122,6 +122,13 @@ export const VarietySettingsEntity = new Entity(
       cocopeatBlockCost: { type: "number", required: true },
       traysPerBlock: { type: "number", required: true },
       overheadPerTray: { type: "number", required: true },
+      /** Added 7 Nov 2026, so a row saved before has none and reads the
+       *  owner's figures (`DEFAULT_COSTING`) until it is saved again. */
+      cleaningPerTray: { type: "number" },
+      packingPer100g: { type: "number" },
+      packingPerBox: { type: "number" },
+      minProfitPerBox: { type: "number" },
+      minYieldPerTray: { type: "number" },
       markupPercent: { type: "number", required: true },
       roundUpToNearest: { type: "number", required: true },
     },
@@ -1804,6 +1811,9 @@ export const SowingEntity = new Entity(
             trays: { type: "number" },
             harvestGrams: { type: "number" },
             harvestedOn: { type: "string" },
+            /** Stored only as `false` — a tray left out of the yield average
+             *  (a mistake, a fungus). Absent is counted (7 Nov 2026). */
+            countsForYield: { type: "boolean" },
           },
         },
       },

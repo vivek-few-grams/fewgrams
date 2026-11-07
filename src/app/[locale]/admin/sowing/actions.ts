@@ -10,6 +10,11 @@ import { deleteSowing, getSowing, putSowing } from "@/lib/repo/sowings";
 import { listVarieties } from "@/lib/repo/varieties";
 import { readSowing, seedChange } from "@/lib/sowing/sowing";
 import type { SowingLine } from "@/lib/types";
+import { repriceVarieties } from "@/lib/varieties/reprice";
+
+/** The varieties a sowing's lines name — the only prices a change to it can
+ *  move, since a variety is priced from its own harvests (7 Nov 2026). */
+const keysOf = (...lineSets: readonly SowingLine[][]) => lineSets.flat().map((l) => l.varietyKey);
 
 /**
  * Sowing log mutations — `/admin/sowing` (10 Oct 2026). Each asserts the
@@ -38,7 +43,8 @@ import type { SowingLine } from "@/lib/types";
 
 function refresh() {
   revalidatePath("/[locale]/admin/sowing", "page");
-  /* The shelf moved: the seeds screen and every page that sells seed. */
+  /* The shelf moved, and a harvest can move a microgreen's price: the seeds
+     and varieties screens and every page that sells either. */
   revalidatePath("/[locale]", "layout");
 }
 
@@ -109,6 +115,7 @@ export async function addSowing(_prev: FormState, fd: FormData): Promise<FormSta
     updatedAt: now,
   };
   await written(putSowing(sowing, null), drawn, `[sowing] new sowing ${sowing.id} was refused`);
+  await repriceVarieties(keysOf(sowing.lines), { sowings: [sowing] });
   refresh();
   return savedWith(drawn.short);
 }
@@ -144,20 +151,18 @@ export async function updateSowing(_prev: FormState, fd: FormData): Promise<Form
 
   /* A sowing from before 18 Oct 2026 took nothing, so it moves nothing. */
   const drawn = current.seedsTaken ? await drawSeeds(current.seedsTaken, current.lines, read.lines) : null;
-  const saved = await written(
-    putSowing(
-      {
-        ...current,
-        sowDate: read.sowDate,
-        lines: read.lines,
-        ...(drawn ? { seedsTaken: drawn.taken } : {}),
-        updatedAt: new Date().toISOString(),
-      },
-      current.updatedAt,
-    ),
-    drawn,
-  );
+  const next = {
+    ...current,
+    sowDate: read.sowDate,
+    lines: read.lines,
+    ...(drawn ? { seedsTaken: drawn.taken } : {}),
+    updatedAt: new Date().toISOString(),
+  };
+  const saved = await written(putSowing(next, current.updatedAt), drawn);
   if (!saved) return err("conflict");
+  /* Both before and after: a line moved to another variety, or removed,
+     changes the average of the one it left. */
+  await repriceVarieties(keysOf(current.lines, next.lines), { sowings: [next] });
   refresh();
   return savedWith(drawn?.short ?? []);
 }
@@ -181,5 +186,6 @@ export async function removeSowing(fd: FormData): Promise<void> {
       throw e;
     }
   }
+  await repriceVarieties(keysOf(sowing.lines), { removedSowingIds: [sowing.id] });
   refresh();
 }

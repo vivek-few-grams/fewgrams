@@ -21,6 +21,7 @@ function fromRow(r: Row): Sowing {
       ...(l.trays !== undefined ? { trays: l.trays } : {}),
       ...(l.harvestGrams !== undefined ? { harvestGrams: l.harvestGrams } : {}),
       ...(l.harvestedOn !== undefined ? { harvestedOn: l.harvestedOn } : {}),
+      ...(l.countsForYield === false ? { countsForYield: false } : {}),
     })),
     ...(r.seedsTaken ? { seedsTaken: Object.fromEntries(r.seedsTaken.map((t) => [t.key, t.grams])) } : {}),
     createdAt: r.createdAt,

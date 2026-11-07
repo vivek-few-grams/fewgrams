@@ -86,6 +86,18 @@ describe("demandFor — the tray plan (SPEC §6)", () => {
     expect(broccoli.sowBy).toBe("2026-09-30");
   });
 
+  it("counts trays and seed from the sowing log's average where it has one, typed figures where not", () => {
+    /* Broccoli logged at 110 g and 32 g of seed a tray (the owner's 19 Oct
+       harvest); mustard has nothing logged, so it keeps its typed 300 g. */
+    const logged = new Map([["broccoli", { harvests: 1, trays: 1, seedGramsPerTray: 32, gramsPerTray: 110 }]]);
+    const exo = demandFor("2026-10-10", [sub("b", [["exo", 3, 300]])], rotations, varieties, logged);
+    const broccoli = exo.lines.find((l) => l.varietyKey === "broccoli")!;
+    expect(broccoli.trays).toBe(9); // 900 / 110 = 8.2
+    expect(broccoli.seedGrams).toBe(288); // 9 × 32
+    const ess = demandFor("2026-10-10", [sub("a", [["ess", 3, 200]])], rotations, varieties, logged);
+    expect(ess.lines.find((l) => l.varietyKey === "mustard")!.trays).toBe(1); // 300 / 300
+  });
+
   it("puts what must be sown first at the top", () => {
     const d = demandFor(
       "2026-10-10",

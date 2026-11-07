@@ -89,6 +89,11 @@ export default async function SowingAdmin() {
                       <td className="px-4 py-2.5 font-semibold">{names[v.varietyKey] ?? v.varietyKey}</td>
                       <td className="px-4 py-2.5 text-right">
                         {t("sownCount", { harvested: v.harvested, sown: v.sown })}
+                        {v.excluded > 0 && (
+                          <span className="block text-[11px] text-terracotta">
+                            {t("excludedCount", { count: v.excluded })}
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-2.5 text-right">{t("grams", { grams: v.seedGrams })}</td>
                       <td className="px-4 py-2.5 text-right">

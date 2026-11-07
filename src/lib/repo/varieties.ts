@@ -100,6 +100,11 @@ export async function getVarietyCosting(): Promise<VarietyCosting> {
     cocopeatBlockCost: data.cocopeatBlockCost,
     traysPerBlock: data.traysPerBlock,
     overheadPerTray: data.overheadPerTray,
+    cleaningPerTray: data.cleaningPerTray ?? DEFAULT_COSTING.cleaningPerTray,
+    packingPer100g: data.packingPer100g ?? DEFAULT_COSTING.packingPer100g,
+    packingPerBox: data.packingPerBox ?? DEFAULT_COSTING.packingPerBox,
+    minProfitPerBox: data.minProfitPerBox ?? DEFAULT_COSTING.minProfitPerBox,
+    minYieldPerTray: data.minYieldPerTray ?? DEFAULT_COSTING.minYieldPerTray,
     margin: { markupPercent: data.markupPercent, roundUpToNearest: data.roundUpToNearest },
   };
 }
@@ -109,6 +114,11 @@ export async function putVarietyCosting(c: VarietyCosting): Promise<void> {
     cocopeatBlockCost: c.cocopeatBlockCost,
     traysPerBlock: c.traysPerBlock,
     overheadPerTray: c.overheadPerTray,
+    cleaningPerTray: c.cleaningPerTray,
+    packingPer100g: c.packingPer100g,
+    packingPerBox: c.packingPerBox,
+    minProfitPerBox: c.minProfitPerBox,
+    minYieldPerTray: c.minYieldPerTray,
     markupPercent: c.margin.markupPercent,
     roundUpToNearest: c.margin.roundUpToNearest,
   }).go();

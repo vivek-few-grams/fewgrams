@@ -83,6 +83,18 @@ export type VarietyCosting = {
   traysPerBlock: number;
   /** ₹ of electricity and water per tray. */
   overheadPerTray: number;
+  /** ₹ to clean a tray for its next sowing. */
+  cleaningPerTray: number;
+  /** ₹ of packing for each 100 g sold — box, liner and label by weight. */
+  packingPer100g: number;
+  /** ₹ of packaging every box carries whatever it weighs. */
+  packingPerBox: number;
+  /** The least a 100 g box may earn: its price is never under cost plus
+   *  this, whatever the markup gives (the owner, 7 Nov 2026). */
+  minProfitPerBox: number;
+  /** Grams a tray must average **above** to be sold — at or under it the
+   *  variety is off sale (the owner, 7 Nov 2026: 60 g). */
+  minYieldPerTray: number;
   margin: Margin;
 };
 
@@ -117,6 +129,9 @@ export type SowingLine = {
   harvestGrams?: number;
   /** `YYYY-MM-DD`, IST. Present exactly when `harvestGrams` is. */
   harvestedOn?: string;
+  /** `false` leaves this harvest out of the yield average that prices the
+   *  variety — a tray lost to a mistake or a fungus. Absent means counted. */
+  countsForYield?: boolean;
 };
 
 /** SPEC §3.0.1 — the product model carries variants from the start rather than

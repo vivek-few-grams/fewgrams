@@ -32,6 +32,48 @@ export function isHarvested(
   return line.harvestGrams !== undefined && line.harvestedOn !== undefined;
 }
 
+/** Whether a line counts towards its variety's yield average — every line
+ *  unless its tick was taken off (a tray lost to a mistake or a fungus). */
+export function countsForYield(line: SowingLine): boolean {
+  return line.countsForYield !== false;
+}
+
+/** What the sowing log says a variety grows, from the harvests that count. */
+export type LoggedGrowth = {
+  /** Harvests averaged: cut, counted, and with their trays recorded. */
+  harvests: number;
+  trays: number;
+  /** Tray-weighted, so a two-tray line weighs twice a one-tray line. */
+  seedGramsPerTray: number;
+  gramsPerTray: number;
+};
+
+/**
+ * Each variety's average seed and harvest per tray, across every harvest
+ * that counts and recorded its trays (the owner, 7 Nov 2026: "so that I will
+ * be able to know the production"). This is what prices a variety and what
+ * the subscription tray plan counts trays with — a variety missing here has
+ * no proven yield.
+ */
+export function loggedGrowth(sowings: readonly Sowing[]): Map<string, LoggedGrowth> {
+  const sums = new Map<string, { harvests: number; trays: number; seed: number; grams: number }>();
+  for (const line of sowings.flatMap((s) => s.lines)) {
+    if (!isHarvested(line) || !countsForYield(line) || !line.trays) continue;
+    const sum = sums.get(line.varietyKey) ?? { harvests: 0, trays: 0, seed: 0, grams: 0 };
+    sum.harvests += 1;
+    sum.trays += line.trays;
+    sum.seed += line.seedGrams;
+    sum.grams += line.harvestGrams;
+    sums.set(line.varietyKey, sum);
+  }
+  return new Map(
+    [...sums].map(([key, s]) => [
+      key,
+      { harvests: s.harvests, trays: s.trays, seedGramsPerTray: s.seed / s.trays, gramsPerTray: s.grams / s.trays },
+    ]),
+  );
+}
+
 /** Harvest grams per seed gram, or null before the harvest. */
 export function yieldRatio(line: SowingLine): number | null {
   return isHarvested(line) ? line.harvestGrams / line.seedGrams : null;
@@ -46,7 +88,10 @@ export type VarietyYield = {
   varietyKey: string;
   /** Lines sown, harvested or not. */
   sown: number;
+  /** Harvested lines that count — the ones every figure below adds up. */
   harvested: number;
+  /** Harvested lines left out of the average (`countsForYield` false). */
+  excluded: number;
   /** Seed grams across every line, harvested or not. */
   seedGrams: number;
   /** Seed and harvest grams across harvested lines only, so the ratio never
@@ -71,6 +116,7 @@ export function yieldByVariety(sowings: Sowing[]): VarietyYield[] {
         varietyKey: line.varietyKey,
         sown: 0,
         harvested: 0,
+        excluded: 0,
         seedGrams: 0,
         harvestedSeedGrams: 0,
         harvestGrams: 0,
@@ -83,7 +129,8 @@ export function yieldByVariety(sowings: Sowing[]): VarietyYield[] {
       };
       v.sown += 1;
       v.seedGrams += line.seedGrams;
-      if (isHarvested(line)) {
+      if (isHarvested(line) && !countsForYield(line)) v.excluded += 1;
+      else if (isHarvested(line)) {
         v.harvested += 1;
         v.harvestedSeedGrams += line.seedGrams;
         v.harvestGrams += line.harvestGrams;
@@ -155,9 +202,9 @@ export function seedChange(
 
 /**
  * The form posts one value per line for each of `varietyKey`, `seedGrams`,
- * `trays`, `harvestGrams` and `harvestedOn`, in row order. The new-sowing
- * form has no harvest columns, so those arrays come back empty and read as
- * blank. A row left wholly blank — an extra "add another" nobody filled — is
+ * `trays`, `harvestGrams`, `harvestedOn` and `countsForYield`, in row order.
+ * The new-sowing form has no harvest columns, so those arrays come back empty
+ * and read as blank — and a harvest is counted unless its row posts "0". A row left wholly blank — an extra "add another" nobody filled — is
  * dropped rather than refused.
  *
  * Errors name the field as `<name>.<row>` so the editor can mark the input,
@@ -182,6 +229,9 @@ export function readSowing(
   const trays = col("trays");
   const harvests = col("harvestGrams");
   const cutOn = col("harvestedOn");
+  /* One hidden "1" or "0" per row beside the visible tick, so the column
+     lines up with the others — an unticked checkbox posts nothing. */
+  const counted = col("countsForYield");
 
   const lines: SowingLine[] = [];
   for (let i = 0; i < keys.length; i++) {
@@ -222,6 +272,7 @@ export function readSowing(
       if (date > opts.today) return fail("dateFuture", "harvestedOn");
       line.harvestGrams = n;
       line.harvestedOn = date;
+      if (counted[i] === "0") line.countsForYield = false;
     } else if (on) {
       return fail("harvestDateWithoutGrams", "harvestGrams");
     }

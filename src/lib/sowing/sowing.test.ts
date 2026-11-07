@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Sowing } from "@/lib/types";
-import { gramsPerTray, isIsoDate, readSowing, seedChange, yieldByVariety, yieldRatio } from "./sowing";
+import { gramsPerTray, isIsoDate, loggedGrowth, readSowing, seedChange, yieldByVariety, yieldRatio } from "./sowing";
 
 const keys = new Set(["radish", "sunflower"]);
 const today = "2026-10-10";
@@ -91,6 +91,34 @@ describe("readSowing", () => {
     ]);
   });
 
+  it("reads the In average tick: a 0 leaves a harvest out, a 1 or nothing counts it", () => {
+    const r = readSowing(
+      form({
+        sowDate: "2026-10-01",
+        varietyKey: ["radish", "sunflower", "radish"],
+        seedGrams: ["40", "120", "30"],
+        trays: ["1", "2", "1"],
+        harvestGrams: ["300", "20", ""],
+        harvestedOn: ["2026-10-08", "2026-10-08", ""],
+        countsForYield: ["1", "0", "0"],
+      }),
+      { varietyKeys: keys, today },
+    );
+    expect(r.ok && r.lines).toEqual([
+      { varietyKey: "radish", seedGrams: 40, trays: 1, harvestGrams: 300, harvestedOn: "2026-10-08" },
+      {
+        varietyKey: "sunflower",
+        seedGrams: 120,
+        trays: 2,
+        harvestGrams: 20,
+        harvestedOn: "2026-10-08",
+        countsForYield: false,
+      },
+      /* Nothing cut yet: the tick has nothing to leave out. */
+      { varietyKey: "radish", seedGrams: 30, trays: 1 },
+    ]);
+  });
+
   it("refuses a harvest before the sowing, and a date without grams", () => {
     const base = { sowDate: "2026-10-05", varietyKey: ["radish"], seedGrams: ["40"] };
     expect(
@@ -150,6 +178,7 @@ describe("yield", () => {
         varietyKey: "radish",
         sown: 2,
         harvested: 2,
+        excluded: 0,
         seedGrams: 100,
         harvestedSeedGrams: 100,
         harvestGrams: 1200,
@@ -162,6 +191,7 @@ describe("yield", () => {
         varietyKey: "sunflower",
         sown: 1,
         harvested: 0,
+        excluded: 0,
         seedGrams: 100,
         harvestedSeedGrams: 0,
         harvestGrams: 0,
@@ -170,6 +200,70 @@ describe("yield", () => {
         perTray: null,
       },
     ]);
+  });
+
+  it("leaves a harvest with its tick off out of every yield figure", () => {
+    const lost: Sowing = {
+      id: "c",
+      sowDate: "2026-10-04",
+      createdAt: "",
+      updatedAt: "",
+      lines: [
+        { varietyKey: "radish", seedGrams: 40, trays: 1, harvestGrams: 20, harvestedOn: "2026-10-10", countsForYield: false },
+      ],
+    };
+    const [radish] = yieldByVariety([...sowings, lost]);
+    expect(radish).toMatchObject({ sown: 3, harvested: 2, excluded: 1, harvestGrams: 1200, perTray: 300 });
+  });
+});
+
+describe("loggedGrowth", () => {
+  const line = (key: string, seedGrams: number, trays: number | undefined, harvestGrams?: number, counts?: false) => ({
+    varietyKey: key,
+    seedGrams,
+    ...(trays !== undefined ? { trays } : {}),
+    ...(harvestGrams !== undefined ? { harvestGrams, harvestedOn: "2026-10-31" } : {}),
+    ...(counts === false ? { countsForYield: false } : {}),
+  });
+  const sowing = (id: string, lines: Sowing["lines"]): Sowing => ({
+    id,
+    sowDate: "2026-10-20",
+    createdAt: "",
+    updatedAt: "",
+    lines,
+  });
+
+  it("averages seed and grams per tray, weighted by trays", () => {
+    const growth = loggedGrowth([
+      /* The owner's sunflower: 150 g over two trays, 600 g cut. */
+      sowing("a", [line("sunflower", 150, 2, 600)]),
+      sowing("b", [line("sunflower", 70, 1, 240)]),
+    ]);
+    /* 220 g seed and 840 g over 3 trays. */
+    expect(growth.get("sunflower")).toEqual({
+      harvests: 2,
+      trays: 3,
+      seedGramsPerTray: 220 / 3,
+      gramsPerTray: 280,
+    });
+  });
+
+  it("counts only harvests that are cut, ticked and have their trays", () => {
+    const growth = loggedGrowth([
+      sowing("a", [
+        line("radish", 33, 1, 330),
+        line("radish", 33, 1, 30, false), // a tray lost to fungus
+        line("radish", 33, undefined, 300), // trays not recorded
+        line("radish", 33, 1), // still growing
+      ]),
+    ]);
+    expect(growth.get("radish")).toEqual({ harvests: 1, trays: 1, seedGramsPerTray: 33, gramsPerTray: 330 });
+  });
+
+  it("has no entry for a variety with nothing that counts", () => {
+    const growth = loggedGrowth([sowing("a", [line("beetroot", 42, 1, 10, false), line("dill", 25, 1)])]);
+    expect(growth.has("beetroot")).toBe(false);
+    expect(growth.has("dill")).toBe(false);
   });
 });
 

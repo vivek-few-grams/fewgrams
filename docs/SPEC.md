@@ -549,23 +549,38 @@ what they buy: **100 g only** (no 50 g), the cart's weighed unit (`isWeighed` co
 
 The price is never typed. `src/lib/varieties/pricing.ts`:
 
-    a tray  = seedGramsPerTray × the seed's costPer100g ÷ 100   (its latest bill, §26.6.1)
+    a tray  = seed per tray × the seed's costPer100g ÷ 100      (its latest bill, §26.6.1)
             + cocopeat block ÷ trays per block                   (₹300 ÷ 16 at launch)
             + electricity and water                              (₹30 flat)
-    100 g   = a tray × 100 ÷ yieldGramsPerTrayMin
-    price   = retailPrice(100 g, microgreens margin)
+            + tray cleaning                                      (₹10, 7 Nov 2026)
+    a box   = a tray × trays per box                             (whole trays under 100 g a tray)
+            + packing per 100 g + flat packaging per box         (₹20 + ₹10, 7 Nov 2026)
+    price   = max(retailPrice(box, markup), retailPrice(box + minimum profit))   (₹70, 7 Nov 2026)
 
-- **Spread over the low yield**, so a poor tray is never sold at a loss — the subscription tray plan
-  already counts at it. The sowing log's yield table is the evidence for retuning it.
-- **One costing for every variety** — block cost, trays per block, power and water, markup and
-  rounding — a singleton (`VARIETYSETTINGS`) edited on `/admin/varieties`. Saving it reprices every
-  variety; until one is saved the owner's launch figures apply with no margin (`DEFAULT_COSTING`).
+- **Seed and grams per tray come from the sowing log** (the owner, 7 Nov 2026), not from typed
+  figures: `loggedGrowth` averages, tray-weighted, every harvest that is cut, records its trays and
+  has its **"In average"** tick on. A tray lost to a mistake or a fungus is unticked and stays in
+  the log; it moves neither the price nor the tray plan. The typed low/high yield and seed per tray
+  on `/admin/varieties` only plan subscription trays (`demandFor`) for a variety with nothing
+  logged — the tray plan otherwise counts from the same average as the price.
+- **Whole trays under 100 g a tray.** A box of a 60 g green takes two trays, both paid in full
+  (seed, cocopeat, power, water, cleaning), and is packed once. At 100 g or more a tray is shared
+  out, since its spare grams go into the next box.
+- **A minimum profit per box.** A single markup left cheap, high-yield crops earning ₹20–25 a box
+  for the same cutting and packing as any other; the owner set a ₹70 floor over a per-variety
+  markup, because a rupee floor follows costs as the log moves them.
+- **One costing for every variety** — block cost, trays per block, power and water, cleaning,
+  packing, markup and rounding, minimum profit and the yield cutoff — a singleton
+  (`VARIETYSETTINGS`) edited on `/admin/varieties`. Saving it reprices every variety; until one is
+  saved the owner's cost figures apply with no margin and no minimum (`DEFAULT_COSTING`).
 - **Stored, and rewritten whenever an input moves** (`repriceVarieties`): a variety's own save, the
-  costing, a purchase bill that recosts its seed (`costFromBills`), and a deleted seed.
-- **Unpriceable means off sale.** No seed rate, no costed seed of the same key (wheatgrass has none)
-  or no yield leaves `pricePer100g` at 0, and `onSale` — active **and** priced — gates every page
-  and the cart. A row from the tray month reads as 0 until repriced. The admin row says what is
-  missing, with the sowing log's seed per tray to copy in.
+  costing, a purchase bill that recosts its seed (`costFromBills`), a deleted seed, and every
+  sowing add, edit and delete.
+- **Unpriceable means off sale.** No counted harvest, a logged average **at or under the yield
+  cutoff** (`minYieldPerTray`, 60 g — the owner, 7 Nov 2026: such a crop needs two trays a box and
+  is not worth growing for sale), or no costed seed of the same key (wheatgrass has none) leaves
+  `pricePer100g` at 0, and `onSale` — active **and** priced — gates every page and the cart. The
+  admin row says which.
 - **An order line keeps its unit.** A green bought as a tray has no grams on its line, and the order
   page and the invoice still print trays (`isTrayGreen` in `line-display.ts`).
 

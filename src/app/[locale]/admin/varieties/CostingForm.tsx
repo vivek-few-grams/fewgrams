@@ -9,10 +9,11 @@ import { saveVarietyCosting } from "./actions";
 import { NumberField } from "../fields";
 
 /**
- * What a tray of microgreens costs besides its seed, and the margin on top —
- * one set for every variety (the owner, 19 Oct 2026). The margin half is the
- * rack screens' `MarginForm` again, in a form of its own because one save
- * reprices from all five figures.
+ * What a tray of microgreens costs besides its seed, what a box costs to
+ * pack, and the margin on top — one set for every variety (the owner, 19 Oct
+ * 2026; cleaning and packing 7 Nov 2026). The margin half is the rack
+ * screens' `MarginForm` again, in a form of its own because one save
+ * reprices from every figure.
  */
 export function CostingForm({
   costing,
@@ -55,6 +56,27 @@ export function CostingForm({
           error={errorFor("overheadPerTray")}
         />
         <NumberField
+          label={t("cleaningPerTray")}
+          hint={t("cleaningPerTrayHint")}
+          name="cleaningPerTray"
+          defaultValue={costing.cleaningPerTray}
+          error={errorFor("cleaningPerTray")}
+        />
+        <NumberField
+          label={t("packingPer100g")}
+          hint={t("packingPer100gHint")}
+          name="packingPer100g"
+          defaultValue={costing.packingPer100g}
+          error={errorFor("packingPer100g")}
+        />
+        <NumberField
+          label={t("packingPerBox")}
+          hint={t("packingPerBoxHint")}
+          name="packingPerBox"
+          defaultValue={costing.packingPerBox}
+          error={errorFor("packingPerBox")}
+        />
+        <NumberField
           label={t("markupPercent")}
           hint={t("markupPercentHint")}
           name="markupPercent"
@@ -68,6 +90,20 @@ export function CostingForm({
           inputMode="numeric"
           defaultValue={costing.margin.roundUpToNearest}
           error={errorFor("roundUpToNearest")}
+        />
+        <NumberField
+          label={t("minProfitPerBox")}
+          hint={t("minProfitPerBoxHint")}
+          name="minProfitPerBox"
+          defaultValue={costing.minProfitPerBox}
+          error={errorFor("minProfitPerBox")}
+        />
+        <NumberField
+          label={t("minYieldPerTray")}
+          hint={t("minYieldPerTrayHint")}
+          name="minYieldPerTray"
+          defaultValue={costing.minYieldPerTray}
+          error={errorFor("minYieldPerTray")}
         />
       </div>
 

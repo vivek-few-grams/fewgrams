@@ -16,6 +16,9 @@ type Row = {
   trays: string;
   harvestGrams: string;
   harvestedOn: string;
+  /** "Count in average" — on unless the tray was lost to a mistake or a
+   *  fungus (7 Nov 2026). */
+  counts: boolean;
 };
 
 let nextUid = 0;
@@ -26,6 +29,7 @@ const blankRow = (): Row => ({
   trays: "",
   harvestGrams: "",
   harvestedOn: "",
+  counts: true,
 });
 
 function rowsOf(sowing?: Sowing): Row[] {
@@ -37,6 +41,7 @@ function rowsOf(sowing?: Sowing): Row[] {
     trays: l.trays !== undefined ? String(l.trays) : "",
     harvestGrams: l.harvestGrams !== undefined ? String(l.harvestGrams) : "",
     harvestedOn: l.harvestedOn ?? "",
+    counts: l.countsForYield !== false,
   }));
 }
 
@@ -98,7 +103,7 @@ export function SowingEditor({
   const options = [{ value: "", label: t("varietyPick") }, ...varieties];
   /* `sm:` grid for the row; below it each row stacks. */
   const columns = editing
-    ? "sm:grid-cols-[minmax(10rem,2fr)_repeat(3,minmax(5rem,1fr))_minmax(8.5rem,1.2fr)_2rem]"
+    ? "sm:grid-cols-[minmax(10rem,2fr)_repeat(3,minmax(5rem,1fr))_minmax(8.5rem,1.2fr)_minmax(4.5rem,auto)_2rem]"
     : "sm:grid-cols-[minmax(10rem,2fr)_repeat(2,minmax(5rem,1fr))_2rem]";
 
   const rowError = rows.map((_, i) =>
@@ -141,6 +146,7 @@ export function SowingEditor({
           <span>{t("trays")}</span>
           {editing && <span>{t("harvestGrams")}</span>}
           {editing && <span>{t("harvestedOn")}</span>}
+          {editing && <span>{t("countsForYield")}</span>}
           <span />
         </div>
 
@@ -202,6 +208,21 @@ export function SowingEditor({
                     errorFor(`harvestedOn.${i}`) ? "border-terracotta" : "border-forest/25"
                   }`}
                 />
+              )}
+              {editing && (
+                <label className="flex items-center gap-2 font-body text-xs text-forest sm:justify-center">
+                  {/* The tick has no name: the hidden field posts "1" or "0"
+                      for every row, so this column lines up with the others. */}
+                  <input type="hidden" name="countsForYield" value={row.counts ? "1" : "0"} />
+                  <input
+                    type="checkbox"
+                    checked={row.counts}
+                    onChange={(e) => set(row.uid, { counts: e.target.checked })}
+                    aria-label={t("countsForYieldRow", { row: i + 1 })}
+                    className="size-4 accent-forest"
+                  />
+                  <span className="sm:hidden">{t("countsForYield")}</span>
+                </label>
               )}
               <button
                 type="button"

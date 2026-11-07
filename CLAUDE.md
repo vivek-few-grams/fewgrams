@@ -83,14 +83,28 @@ The owner, 19 Oct 2026, after trays cut 100–150 g against a published
 250–350 g: sell **100 g boxes only**, priced from cost (SPEC §4.3).
 `src/lib/varieties/pricing.ts` is the whole formula — a tray's seed (seed per
 tray × the same-key seed's `costPer100g`, set by its bill) + cocopeat (block ÷
-trays per block) + electricity and water, spread over the **low** yield, with
-the microgreens margin on top. The costing is one singleton on
-`/admin/varieties`.
+trays per block) + electricity and water + tray cleaning, times the trays a
+box takes, then packing per 100 g and a flat packaging figure per box (bought
+per box sold, so never multiplied by trays), priced at the **higher** of the
+microgreens markup and cost + the minimum profit per box (the owner, 7 Nov
+2026: ₹70). The costing is one singleton on `/admin/varieties`.
 
+- **Seed and yield per tray come from the sowing log, never from typed
+  figures** (the owner, 7 Nov 2026). `loggedGrowth` averages every harvest
+  that is cut, records its trays and has its "In average" tick on —
+  tray-weighted. Untick a tray lost to a mistake or a fungus; it stays in the
+  log. The typed yields and seed per tray on admin → varieties only plan
+  subscription trays (`demandFor`) for a variety with nothing logged.
+- **Under 100 g a tray, a box takes whole trays** (`traysPerBox`): 60 g needs
+  two, each paid in full, packing once. At 100 g or more the tray is shared
+  out, because the spare grams go into the next box.
 - **`repriceVarieties` writes `pricePer100g`**, and every input calls it: a
-  variety's save, the costing's save, `costFromBills`, a deleted seed. A new
-  input to the price means a new caller here — nothing else will notice.
-- **Unpriceable is off sale.** No seed rate, no costed seed, no yield → price
+  variety's save, the costing's save, `costFromBills`, a deleted seed, and
+  every sowing add, edit and delete (with the sowing as an override, because
+  the GSI can lag the write). A new input to the price means a new caller
+  here — nothing else will notice.
+- **Unpriceable is off sale.** No counted harvest, a logged average at or
+  under the yield cutoff (`minYieldPerTray`, 60 g), or no costed seed → price
   0, and `onSale` (active **and** priced) gates every page and the cart. Use
   `listVarieties({ activeOnly: true })` or `onSale`, never `v.active` alone.
 - **An old order line stays in trays.** A green bought by the tray has

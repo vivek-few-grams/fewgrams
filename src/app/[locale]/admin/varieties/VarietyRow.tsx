@@ -14,8 +14,15 @@ import { NumberField } from "../fields";
  *  page with `varietyCost`, which is pure, so the row shows the very figures
  *  the price was set from. */
 export type VarietyWorking =
-  | ({ ok: true; yieldMin: number } & TrayCost)
-  | { ok: false; reason: Unpriced; /** Seed per tray in the sowing log, to copy in. */ logSeed?: number };
+  | ({ ok: true } & TrayCost)
+  | {
+      ok: false;
+      reason: Unpriced;
+      /** The yield cutoff in force, for the low-yield message. */
+      cutoff: number;
+      /** The logged average, when there is one. */
+      gramsPerTray?: number;
+    };
 
 /** Rupees to the paisa, for the working line. */
 const round2 = (n: number) => Math.round(n * 100) / 100;
@@ -175,20 +182,28 @@ export function VarietyRow({
       {working.ok ? (
         <p className="col-span-full font-body text-[11px] tabular-nums text-stone">
           {t("working", {
+            seedGrams: round2(working.seedGramsPerTray),
             seed: round2(working.seed),
             cocopeat: round2(working.cocopeat),
             overhead: round2(working.overhead),
+            cleaning: round2(working.cleaning),
             tray: round2(working.tray),
-            yield: working.yieldMin,
+            yield: round2(working.gramsPerTray),
+            harvests: working.harvests,
+            trays: round2(working.traysPerBox),
+            grown: round2(working.grown),
+            packing: round2(working.packing),
             cost: round2(working.per100g),
           })}
         </p>
       ) : (
         <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">
           <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
-          {working.reason === "noSeedRate" && working.logSeed !== undefined
-            ? t("unpriced.noSeedRateLog", { grams: working.logSeed })
-            : t(`unpriced.${working.reason}`, { key: variety.contentKey })}
+          {t(`unpriced.${working.reason}`, {
+            key: variety.contentKey,
+            grams: round2(working.gramsPerTray ?? 0),
+            cutoff: working.cutoff,
+          })}
         </p>
       )}
 
