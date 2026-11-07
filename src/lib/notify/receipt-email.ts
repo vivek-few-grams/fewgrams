@@ -87,7 +87,11 @@ export type ReceiptContent = {
   schedule: { heading: string; rows: { label: string; value: string }[] } | null;
   note: string | null;
   address: { heading: string; lines: string[] };
-  link: { url: string; button: string; fallback: string };
+  /** The button. No raw URL printed under it (the owner, 7 Nov 2026): a bare
+   *  link is what an inbox preview or a phone notification shows when it runs
+   *  out of other text, and it reads as clutter. The plain-text part keeps
+   *  the URL, having no button. */
+  link: { url: string; button: string };
   help: string;
   footer: EmailFooter;
 };
@@ -229,8 +233,6 @@ ${c.note ? `<p style="margin:22px 0 0;font-size:13px;line-height:1.55;color:${IN
 <p style="margin:0;font-size:14px;line-height:1.65;color:${INK}">${c.address.lines.map(escapeHtml).join("<br>")}</p>
 </td></tr></table>
 ${emailButton(c.link.url, c.link.button)}
-<p style="margin:0 0 4px;font-size:12px;color:${MUTED}">${escapeHtml(c.link.fallback)}</p>
-<p style="margin:0 0 24px;font-size:12px;word-break:break-all"><a href="${escapeHtml(c.link.url)}" style="color:${FOREST}">${escapeHtml(c.link.url)}</a></p>
 <p style="margin:0;padding:18px 0 0;border-top:1px solid ${RULE};font-size:13px;line-height:1.55;color:${MUTED}">${escapeHtml(c.help)}</p>
 </div>`;
 

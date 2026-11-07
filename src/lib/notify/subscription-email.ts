@@ -64,7 +64,7 @@ export function subscriptionEmail(
     },
     note: t("termNote"),
     address: { heading: t("addressHeading"), lines: addressLines(sub.address) },
-    link: { url: pageUrl(locale, "/account/subscriptions"), button: t("button"), fallback: t("fallback") },
+    link: { url: pageUrl(locale, "/account/subscriptions"), button: t("button") },
     help: t("help", { email: contact.email, phone: contactPhoneDisplay }),
     footer: { tagline: t("tagline"), why: t("why", { site: siteName }) },
   });

@@ -15,7 +15,6 @@
     "inclusive": "Inclusive of all taxes",
     "addressHeading": "Delivering to",
     "button": "View your order",
-    "fallback": "Or open this link in your browser:",
     "help": "Questions about your order? Write to {email} or call {phone}.",
     "preheader": "Arrives by {date} · Total ₹{amount, number}",
     "steps": {
@@ -54,7 +53,6 @@
     "termNote": "This is a one-time payment for the Saturdays above. It does not renew by itself.",
     "addressHeading": "Delivering to",
     "button": "View your subscription",
-    "fallback": "Or open this link in your browser:",
     "help": "Questions about your subscription? Write to {email} or call {phone}.",
     "preheader": "First box {date} · Total paid ₹{amount, number}",
     "tagline": "Goodness in every gram",

@@ -97,7 +97,6 @@ export function orderEmail(
     link: {
       url: pageUrl(locale, `/account/orders/${order.id}`),
       button: t("button"),
-      fallback: t("fallback"),
     },
     help: t("help", { email: contact.email, phone: contactPhoneDisplay }),
     footer: { tagline: t("tagline"), why: t("why", { site: siteName }) },

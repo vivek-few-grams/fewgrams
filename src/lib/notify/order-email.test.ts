@@ -216,6 +216,12 @@ describe("the look (7 Nov 2026)", () => {
     expect(msg.html).toContain("Goodness in every gram");
   });
 
+  it("prints no bare link — the button carries it, the plain text keeps it", () => {
+    expect(msg.html).toContain('href="https://fewgrams.com/account/orders/FG0123456789"');
+    expect(msg.html).not.toContain(">https://fewgrams.com/account/orders/FG0123456789<");
+    expect(msg.text).toContain("https://fewgrams.com/account/orders/FG0123456789");
+  });
+
   it("goes without a thumbnail for a product with no photo yet", () => {
     const bare = orderEmail("a@b.in", { ...order, lines: [line({ key: "no-such-green" })] }, copy("en"));
     expect(bare.html).not.toContain("/thumbs/");
