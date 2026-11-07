@@ -29,7 +29,9 @@ type Translate = import("./order-email").Translate;
  *  missing in Kannada fails here instead of quietly rendering English. */
 function catalogue(locale: "en" | "kn", namespace: string): Translate {
   const ns = namespace.split(".")[0];
-  const messages = { [ns]: JSON.parse(readFileSync(path.join(process.cwd(), "messages", locale, `${ns}.json`), "utf8")) };
+  const messages = {
+    [ns]: JSON.parse(readFileSync(path.join(process.cwd(), "messages", locale, `${ns}.json`), "utf8")),
+  };
   return createTranslator({
     locale,
     messages,
@@ -67,8 +69,24 @@ const order = {
   invoiceNo: "FG/2627/00042",
   lines: [
     line({}),
-    line({ kind: "tray", key: "shallow", name: "Shallow trays", units: 1, unitPrice: 160, lineTotal: 160, grams: null }),
-    line({ kind: "media", key: "horti-coir", name: "Horti-Coir 5 kg", units: 1, unitPrice: 1199, lineTotal: 1199, grams: null }),
+    line({
+      kind: "tray",
+      key: "shallow",
+      name: "Shallow trays",
+      units: 1,
+      unitPrice: 160,
+      lineTotal: 160,
+      grams: null,
+    }),
+    line({
+      kind: "media",
+      key: "horti-coir",
+      name: "Horti-Coir 5 kg",
+      units: 1,
+      unitPrice: 1199,
+      lineTotal: 1199,
+      grams: null,
+    }),
   ],
   deliveryCharge: 79,
   deliveryMethod: "own_run" as const,
@@ -101,7 +119,9 @@ describe("orderEmail", () => {
     expect(msg.text).toContain("Total · ₹1,758");
     expect(msg.text).toContain("Inclusive of all taxes");
     expect(msg.text).toContain(`Arrives by ${formatDeliveryDate(fromIstDateISO("2026-11-07"), "en-IN")}`);
-    expect(msg.text).toContain("Asha Rao\n12, 3rd Cross\nNear the temple\nMysuru, Karnataka 570001\n98765 43210");
+    expect(msg.text).toContain(
+      "Asha Rao\n12, 3rd Cross\nNear the temple\nMysuru, Karnataka 570001\n98765 43210",
+    );
     expect(msg.text).toContain("https://fewgrams.com/account/orders/FG0123456789");
     expect(msg.text).toContain(contact.email);
     expect(msg.html).toContain('<html lang="en">');
@@ -113,7 +133,9 @@ describe("orderEmail", () => {
     const msg = orderEmail("asha@example.in", { ...order, locale: "kn" }, copy("kn"));
     expect(msg.subject).toBe("ನಿಮ್ಮ Fewgrams ಆರ್ಡರ್ FG/2627/00042 ದೃಢಪಟ್ಟಿದೆ");
     expect(msg.text).toContain("200 ಗ್ರಾಂ");
-    expect(msg.text).toContain(`${formatDeliveryDate(fromIstDateISO("2026-11-07"), "kn-IN")} ರೊಳಗೆ ತಲುಪುತ್ತದೆ`);
+    expect(msg.text).toContain(
+      `${formatDeliveryDate(fromIstDateISO("2026-11-07"), "kn-IN")} ರೊಳಗೆ ತಲುಪುತ್ತದೆ`,
+    );
     expect(msg.text).toContain("https://fewgrams.com/kn/account/orders/FG0123456789");
     expect(msg.html).toContain('<html lang="kn">');
     expect(msg.text).not.toMatch(/Delivery|Total|Invoice/);
@@ -130,7 +152,11 @@ describe("orderEmail", () => {
   });
 
   it("keeps a green bought by the tray in trays", () => {
-    const msg = orderEmail("a@b.in", { ...order, lines: [line({ grams: null, units: 2, unitPrice: 75 })] }, copy("en"));
+    const msg = orderEmail(
+      "a@b.in",
+      { ...order, lines: [line({ grams: null, units: 2, unitPrice: 75 })] },
+      copy("en"),
+    );
     expect(msg.text).toContain("₹75 per tray · 2 trays");
   });
 
@@ -144,7 +170,10 @@ describe("orderEmail", () => {
       },
       copy("en"),
     );
-    expect(msg.html).not.toContain("<img");
+    /* The email has real <img> tags now (logo, banner, thumbnails); the one
+       smuggled in through the name must not be among them. */
+    expect(msg.html).not.toContain("<img src=x");
+    expect(msg.html).not.toContain('onerror="');
     expect(msg.html).not.toContain("<b>");
     expect(msg.html).toContain("Radish &lt;img src=x onerror=&quot;alert(1)&quot;&gt; &amp; co");
     expect(msg.html).toContain("O&#39;Brien &lt;b&gt;");
@@ -152,10 +181,53 @@ describe("orderEmail", () => {
   });
 });
 
+describe("the look (7 Nov 2026)", () => {
+  const msg = orderEmail("asha@example.in", order, copy("en"));
+
+  it("carries the logo, the banner and each product's thumbnail, from the live site", () => {
+    expect(msg.html).toMatch(/<img src="https:\/\/fewgrams\.com\/img\/email\/logo\.png\?v=[0-9a-f]+"/);
+    expect(msg.html).toMatch(/<img src="https:\/\/fewgrams\.com\/img\/email\/banner\.jpg\?v=[0-9a-f]+"/);
+    expect(msg.html).toContain("https://fewgrams.com/img/email/thumbs/varieties/radish.jpg?v=");
+    expect(msg.html).toContain("https://fewgrams.com/img/email/thumbs/grow-media/horti-coir.jpg?v=");
+  });
+
+  it("says what kind of thing each line is, over its name", () => {
+    expect(msg.html).toContain(">Microgreens</p>");
+    expect(msg.html).toContain(">Grow media</p>");
+  });
+
+  it("shows the order page's tracker — growing for greens, packing without", () => {
+    expect(msg.html).toContain(">Growing</p>");
+    const seedsOnly = orderEmail(
+      "a@b.in",
+      { ...order, lines: [line({ kind: "seed", key: "alfalfa", name: "Alfalfa" })] },
+      copy("en"),
+    );
+    expect(seedsOnly.html).toContain(">Packing</p>");
+    expect(seedsOnly.html).not.toContain(">Growing</p>");
+    expect(seedsOnly.html).toContain("https://fewgrams.com/img/email/thumbs/seeds/alfalfa.jpg?v=");
+  });
+
+  it("previews the date and total in the inbox, and says why it was sent", () => {
+    expect(msg.html).toContain(
+      `Arrives by ${formatDeliveryDate(fromIstDateISO("2026-11-07"), "en-IN")} · Total ₹1,758`,
+    );
+    expect(msg.html).toContain("You&#39;re getting this email because you placed an order at fewgrams.com.");
+    expect(msg.html).toContain("Goodness in every gram");
+  });
+
+  it("goes without a thumbnail for a product with no photo yet", () => {
+    const bare = orderEmail("a@b.in", { ...order, lines: [line({ key: "no-such-green" })] }, copy("en"));
+    expect(bare.html).not.toContain("/thumbs/");
+  });
+});
+
 describe("the copy itself", () => {
   it("names no city, in either language", () => {
     for (const locale of ["en", "kn"]) {
-      const file = JSON.parse(readFileSync(path.join(process.cwd(), "messages", locale, "email.json"), "utf8"));
+      const file = JSON.parse(
+        readFileSync(path.join(process.cwd(), "messages", locale, "email.json"), "utf8"),
+      );
       expect(JSON.stringify(file.order)).not.toMatch(/Bengaluru|Bangalore|ಬೆಂಗಳೂರು/);
     }
   });

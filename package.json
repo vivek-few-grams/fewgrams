@@ -15,7 +15,8 @@
     "images:placeholders": "node scripts/placeholders.mjs",
     "db:gui": "DYNAMO_ENDPOINT=http://localhost:8000 AWS_REGION=ap-south-1 AWS_ACCESS_KEY_ID=local AWS_SECRET_ACCESS_KEY=local npx --yes dynamodb-admin@5 --port 8001",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "images:email": "node scripts/email-images.mjs"
   },
   "dependencies": {
     "@auth/dynamodb-adapter": "^2.11.3",

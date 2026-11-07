@@ -16,7 +16,25 @@
     "addressHeading": "Delivering to",
     "button": "View your order",
     "fallback": "Or open this link in your browser:",
-    "help": "Questions about your order? Write to {email} or call {phone}."
+    "help": "Questions about your order? Write to {email} or call {phone}.",
+    "preheader": "Arrives by {date} · Total ₹{amount, number}",
+    "steps": {
+      "placed": "Placed",
+      "packing": "Packing",
+      "growing": "Growing",
+      "onTheWay": "On its way",
+      "delivered": "Delivered"
+    },
+    "kind": {
+      "variety": "Microgreens",
+      "seed": "Seeds",
+      "tray": "Trays & drainage",
+      "media": "Grow media",
+      "rack": "Rack",
+      "pack": "Starter pack"
+    },
+    "tagline": "Goodness in every gram",
+    "why": "You're getting this email because you placed an order at {site}."
   },
   "subscription": {
     "subject": "Your {brand} subscription {number} is confirmed",
@@ -37,6 +55,9 @@
     "addressHeading": "Delivering to",
     "button": "View your subscription",
     "fallback": "Or open this link in your browser:",
-    "help": "Questions about your subscription? Write to {email} or call {phone}."
+    "help": "Questions about your subscription? Write to {email} or call {phone}.",
+    "preheader": "First box {date} · Total paid ₹{amount, number}",
+    "tagline": "Goodness in every gram",
+    "why": "You're getting this email because you subscribed at {site}."
   }
 }

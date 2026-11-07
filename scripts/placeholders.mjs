@@ -50,10 +50,14 @@ const SIZE = 24;
 const SIGMA = 0.8;
 const QUALITY = 40;
 
+/** `img/email` holds the emails' own copies (scripts/email-images.mjs). No
+ *  page shows them, so they need no stand-in. */
+const NOT_ON_A_PAGE = join(PUBLIC, "img", "email");
+
 function photos(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = join(dir, entry.name);
-    if (entry.isDirectory()) return photos(full);
+    if (entry.isDirectory()) return full === NOT_ON_A_PAGE ? [] : photos(full);
     return RASTER.test(entry.name) ? [full] : [];
   });
 }

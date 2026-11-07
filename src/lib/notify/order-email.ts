@@ -7,7 +7,8 @@ import { contact, contactPhoneDisplay } from "@/lib/content/contact";
 import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
 import type { Order } from "@/lib/orders/order";
 import type { EmailMessage } from "./provider";
-import { dateLocaleFor, emailLocale, pageUrl, receiptEmail, sendOrPrint } from "./receipt-email";
+import { lineThumb } from "./email-images";
+import { dateLocaleFor, emailLocale, pageUrl, receiptEmail, sendOrPrint, siteName } from "./receipt-email";
 
 /** A translator: next-intl's `t`, or a stand-in in a test. */
 export type Translate = (key: string, values?: Record<string, string | number>) => string;
@@ -44,27 +45,48 @@ export function orderEmail(
   { locale, t, cart }: { locale: Locale; t: Translate; cart: Translate },
 ): EmailMessage {
   const money = (amount: number) => t("amount", { amount });
+  const arrives = formatDeliveryDate(fromIstDateISO(order.deliveryDate), dateLocaleFor(locale));
+  /* The order page's tracker: an order with greens is growing, the rest is
+     being packed (`heroStage`). Just paid, so it is on that second step. */
+  const greens = order.lines.some((l) => l.kind === "variety");
   return receiptEmail(to, {
     lang: locale,
     subject: t("subject", { brand: brand.name, number: order.invoiceNo ?? order.id }),
-    reference: order.invoiceNo ? t("invoiceRef", { number: order.invoiceNo }) : t("orderRef", { id: order.id }),
+    preheader: t("preheader", { date: arrives, amount: order.total }),
+    reference: order.invoiceNo
+      ? t("invoiceRef", { number: order.invoiceNo })
+      : t("orderRef", { id: order.id }),
     heading: t("heading"),
     greeting: t("greeting"),
     body: t("body"),
-    highlight: t("arrives", {
-      date: formatDeliveryDate(fromIstDateISO(order.deliveryDate), dateLocaleFor(locale)),
-    }),
+    highlight: t("arrives", { date: arrives }),
+    steps: {
+      labels: [
+        t("steps.placed"),
+        greens ? t("steps.growing") : t("steps.packing"),
+        t("steps.onTheWay"),
+        t("steps.delivered"),
+      ],
+      current: 1,
+    },
     itemsHeading: t("itemsHeading"),
     items: order.lines.map((line) => ({
+      kind: t(`kind.${line.kind}`),
       label: line.name,
       detail: lineUnits(line, cart),
       amount: money(line.lineTotal),
+      image: lineThumb(line),
     })),
     totals: [
       /* An order from while delivery was free has no method and no charge
          — the order page leaves the row out for those, and so does this. */
       ...(order.deliveryMethod
-        ? [{ label: t("delivery"), amount: order.deliveryCharge > 0 ? money(order.deliveryCharge) : t("deliveryFree") }]
+        ? [
+            {
+              label: t("delivery"),
+              amount: order.deliveryCharge > 0 ? money(order.deliveryCharge) : t("deliveryFree"),
+            },
+          ]
         : []),
       { label: t("total"), amount: money(order.total) },
     ],
@@ -78,6 +100,7 @@ export function orderEmail(
       fallback: t("fallback"),
     },
     help: t("help", { email: contact.email, phone: contactPhoneDisplay }),
+    footer: { tagline: t("tagline"), why: t("why", { site: siteName }) },
   });
 }
 

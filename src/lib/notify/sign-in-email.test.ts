@@ -20,12 +20,14 @@ describe("signInEmailLocale", () => {
 
 describe("signInEmail", () => {
   const copy = {
+    lang: "en" as const,
     subject: "Your link",
     heading: "Sign in",
     body: "Tap it",
     button: "Sign in",
     fallback: "Or paste:",
     ignore: "Ignore <this>",
+    tagline: "Goodness in every gram",
   };
 
   it("puts the link in both bodies, escaped in the HTML", () => {

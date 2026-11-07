@@ -577,6 +577,24 @@ keyed by path; **run it after adding or replacing anything under
   the Lambda optimiser was costed on 19 Oct 2026 — about ₹17/month against
   ₹0–3 until ~400k page views — and the owner chose the stand-ins alone.
 
+## Emails carry their own copies of the pictures — run the script for those too
+
+The order, subscription and sign-in emails share one frame (the owner, 7 Nov
+2026): logo, a banner, product thumbnails (`src/lib/notify/email-layout.ts`,
+`receipt-email.ts`). Inboxes read no SVG and, in Outlook, no WebP, and the
+image optimiser sits behind the site password, so `npm run images:email`
+writes PNG/JPEG copies to `public/img/email/`. CloudFront serves those from
+S3 without the password. The script lists them in
+`src/lib/notify/email-images.json`, each with `?v=<hash>`.
+
+- **Run it after adding a product or replacing its photo.**
+  `email-images.test.ts` fails until you do, naming the product.
+- **`img/email` is skipped by the placeholder script and test**, since no
+  page shows those files.
+- **The From address stays `brand.email` (hello@)**, and replies go to the
+  care inbox through `replyTo`. The owner asked on 7 Nov 2026 whether to send
+  from support@; the answer was no.
+
 ## The page's main picture is fetched first, and alone
 
 SPEC §28.6 (20 Oct 2026). On a throttled phone the main photograph was queued

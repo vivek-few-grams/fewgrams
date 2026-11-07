@@ -6,7 +6,7 @@ import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
 import type { Subscription } from "@/lib/subscriptions/subscription";
 import { addressLines, type Translate } from "./order-email";
 import type { EmailMessage } from "./provider";
-import { dateLocaleFor, emailLocale, pageUrl, receiptEmail, sendOrPrint } from "./receipt-email";
+import { dateLocaleFor, emailLocale, pageUrl, receiptEmail, sendOrPrint, siteName } from "./receipt-email";
 
 /** Everything the subscription confirmation reads off a subscription — the
  *  row as it stands after `markSubscriptionPaid`, so `invoiceNo` is set and
@@ -31,14 +31,22 @@ export function subscriptionEmail(
 ): EmailMessage {
   const money = (amount: number) => t("amount", { amount });
   const dateLocale = dateLocaleFor(locale);
+  const saturdays = [...sub.deliveries].sort((a, b) => a.date.localeCompare(b.date));
   return receiptEmail(to, {
     lang: locale,
     subject: t("subject", { brand: brand.name, number: sub.invoiceNo ?? sub.id }),
-    reference: sub.invoiceNo ? t("invoiceRef", { number: sub.invoiceNo }) : t("subscriptionRef", { id: sub.id }),
+    preheader: t("preheader", {
+      date: saturdays[0] ? formatDeliveryDate(fromIstDateISO(saturdays[0].date), dateLocale) : "",
+      amount: sub.total,
+    }),
+    reference: sub.invoiceNo
+      ? t("invoiceRef", { number: sub.invoiceNo })
+      : t("subscriptionRef", { id: sub.id }),
     heading: t("heading"),
     greeting: t("greeting"),
     body: t("body"),
     highlight: null,
+    steps: null,
     itemsHeading: t("plansHeading"),
     items: sub.lines.map((line) => ({
       label: t("planLine", { plan: line.name, count: line.boxes }),
@@ -49,17 +57,16 @@ export function subscriptionEmail(
     totalNote: t("deliveryIncluded"),
     schedule: {
       heading: t("saturdaysHeading"),
-      rows: [...sub.deliveries]
-        .sort((a, b) => a.date.localeCompare(b.date))
-        .map((d, i) => ({
-          label: t("boxN", { n: i + 1 }),
-          value: formatDeliveryDate(fromIstDateISO(d.date), dateLocale),
-        })),
+      rows: saturdays.map((d, i) => ({
+        label: t("boxN", { n: i + 1 }),
+        value: formatDeliveryDate(fromIstDateISO(d.date), dateLocale),
+      })),
     },
     note: t("termNote"),
     address: { heading: t("addressHeading"), lines: addressLines(sub.address) },
     link: { url: pageUrl(locale, "/account/subscriptions"), button: t("button"), fallback: t("fallback") },
     help: t("help", { email: contact.email, phone: contactPhoneDisplay }),
+    footer: { tagline: t("tagline"), why: t("why", { site: siteName }) },
   });
 }
 
@@ -78,7 +85,10 @@ export async function sendSubscriptionConfirmation(sub: SubscriptionEmailFields)
     }
     const locale = emailLocale(sub.locale);
     const t = await getTranslations({ locale, namespace: "email.subscription" });
-    await sendOrPrint(subscriptionEmail(sub.email, sub, { locale, t }), `Subscription confirmation ${sub.id}`);
+    await sendOrPrint(
+      subscriptionEmail(sub.email, sub, { locale, t }),
+      `Subscription confirmation ${sub.id}`,
+    );
   } catch (err) {
     console.error(`[email] subscription confirmation for ${sub.id} failed`, err);
   }

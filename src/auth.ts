@@ -116,15 +116,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           );
           return;
         }
-        const t = await getTranslations({ locale: signInEmailLocale(url), namespace: "auth.email" });
+        const locale = signInEmailLocale(url);
+        const t = await getTranslations({ locale, namespace: "auth.email" });
         await provider.sendEmail(
           signInEmail(identifier, url, {
+            lang: locale,
             subject: t("subject", { brand: brand.name }),
             heading: t("heading", { brand: brand.name }),
             body: t("body", { minutes: SIGN_IN_LINK_MINUTES }),
             button: t("button"),
             fallback: t("fallback"),
             ignore: t("ignore"),
+            tagline: t("tagline"),
           }),
         );
       },

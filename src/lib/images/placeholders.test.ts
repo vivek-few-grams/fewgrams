@@ -22,10 +22,13 @@ function hashOf(bytes: Buffer): string {
   return createHash("sha256").update(bytes).digest("hex").slice(0, 16);
 }
 
+/** The emails' own copies (scripts/email-images.mjs) — no page shows them. */
+const NOT_ON_A_PAGE = path.join(PUBLIC, "img", "email");
+
 function files(dir: string, test: RegExp): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) return files(full, test);
+    if (entry.isDirectory()) return full === NOT_ON_A_PAGE ? [] : files(full, test);
     return test.test(entry.name) ? [full] : [];
   });
 }
