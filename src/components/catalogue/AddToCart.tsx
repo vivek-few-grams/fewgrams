@@ -1,11 +1,11 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { Check, Minus, Plus, ShoppingBag } from "lucide-react";
 import { IDLE, type FormState } from "@/lib/forms";
 import { Link } from "@/i18n/navigation";
 import type { CartKind } from "@/lib/cart/cart";
-import { setCartQuantity } from "@/app/[locale]/cart/actions";
+import { removeCartLine, setCartQuantity } from "@/app/[locale]/cart/actions";
 
 /**
  * The buy box — price, quantity, and add to cart (SPEC §18.6, §22.2).
@@ -42,10 +42,20 @@ import { setCartQuantity } from "@/app/[locale]/cart/actions";
  * **sets** rather than adds (`setCartQuantity`), because "add 3" when the
  * control already shows 3 would silently make it 6.
  *
- * The seed is an initial value, not a synced one: after a commit the server
- * state and the local state already agree, and re-keying the component on
- * `inCart` would wipe the "Added to your cart" confirmation the instant it
- * appeared.
+ * ## Once it is in the cart, every press saves (the owner, 7 Nov 2026)
+ *
+ * It had an "Update cart" button under a stepper that already showed the
+ * cart, so changing 2 to 3 took a second press nobody expected. Now, with
+ * the item in the cart, the stepper **is** the cart line, as on a grid card
+ * (`QuickAdd`): each press sends the absolute quantity (`setCartQuantity`;
+ * `removeCartLine` at zero), its caption reads "In your cart", and the
+ * button becomes "View cart". Before the item is in the cart nothing has
+ * changed: the stepper picks an amount locally, the panel prices it, and
+ * "Add to cart" agrees to it.
+ *
+ * The cart figure is optimistic (`useOptimistic` over `inCart`), so the
+ * number moves on the press; the action's re-render brings the real figure,
+ * and a refused press falls back to it on its own.
  *
  * ## `max` is the cap, and 0 is sold out
  *
@@ -81,7 +91,9 @@ export function AddToCart({
     decrease: string;
     increase: string;
     add: string;
-    update: string;
+    /** The stepper's caption while the item is in the cart — it then edits
+     *  the cart line itself. */
+    inCartCaption: string;
     added: string;
     updated: string;
     viewCart: string;
@@ -109,21 +121,53 @@ export function AddToCart({
     soldOut?: { title: string; body: string };
   };
 }) {
-  /* Seeded from the cart so this control and the header badge agree on load.
-     Falls back to 1 for an item not in the cart — a stepper offering 0 has
-     nothing to commit. Clamped to `max` so a cookie written when the per-line
-     cap was higher cannot mount above today's. */
-  const [units, setUnits] = useState(() => Math.min(Math.max(inCart > 0 ? inCart : 1, 1), Math.max(max, 1)));
-  const [state, action, pending] = useActionState<FormState, FormData>(setCartQuantity, IDLE);
+  /* The amount picked before the item is in the cart. Clamped to `max` so a
+     cookie written when the per-line cap was higher cannot mount above
+     today's. */
+  const [picked, setPicked] = useState(() =>
+    Math.min(Math.max(inCart > 0 ? inCart : 1, 1), Math.max(max, 1)),
+  );
+  const [cartUnits, setOptimistic] = useOptimistic(inCart);
+  const [pending, startTransition] = useTransition();
+  const [saved, setSaved] = useState<"added" | "updated" | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  /* The label follows the cart, not the local stepper: while this item is in
-     the cart the button's job is to change that quantity, whatever the stepper
-     currently reads. */
-  const alreadyIn = inCart > 0;
+  const alreadyIn = cartUnits > 0;
+  /* What the panel prices and the stepper shows: the cart line once there is
+     one, the local pick before. */
+  const units = alreadyIn ? cartUnits : picked;
 
-  const step = (delta: number) => setUnits((n) => Math.min(Math.max(n + delta, 1), max));
+  /** Save an absolute quantity to the cart — 0 takes the line out. */
+  const commit = (next: number) => {
+    const target = Math.min(Math.max(next, 0), max);
+    const wasIn = alreadyIn;
+    setError(null);
+    startTransition(async () => {
+      setOptimistic(target);
+      const fd = new FormData();
+      fd.set("kind", kind);
+      fd.set("key", contentKey);
+      if (target === 0) {
+        await removeCartLine(fd);
+        setPicked(1);
+        setSaved(null);
+        return;
+      }
+      fd.set("units", String(target));
+      const state: FormState = await setCartQuantity(IDLE, fd);
+      if (state.status === "error") {
+        setError(labels.errors[state.code] ?? labels.errors.generic);
+        setSaved(null);
+      } else {
+        setSaved(wasIn ? "updated" : "added");
+      }
+    });
+  };
 
-  const error = state.status === "error" ? (labels.errors[state.code] ?? labels.errors.generic) : null;
+  const step = (delta: number) => {
+    if (alreadyIn) commit(cartUnits + delta);
+    else setPicked((n) => Math.min(Math.max(n + delta, 1), max));
+  };
 
   if (max < 1) {
     return (
@@ -135,11 +179,7 @@ export function AddToCart({
   }
 
   return (
-    <form action={action} className="mt-8 rounded-2xl bg-sand p-5 sm:p-6">
-      <input type="hidden" name="kind" value={kind} />
-      <input type="hidden" name="key" value={contentKey} />
-      <input type="hidden" name="units" value={units} />
-
+    <div className="mt-8 rounded-2xl bg-sand p-5 sm:p-6">
       <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-5">
         {/* One live region wrapping both lines, so a screen reader announces
             the new total and the new weight together rather than twice. */}
@@ -158,7 +198,7 @@ export function AddToCart({
 
         <div>
           <span className="block font-body text-[10px] uppercase tracking-widest text-stone">
-            {labels.quantity}
+            {alreadyIn ? labels.inCartCaption : labels.quantity}
           </span>
           {/* `bg-cream` on the stepper, against the panel's sand: the control
               has to read as inset and operable, and a sand control on a sand
@@ -167,7 +207,8 @@ export function AddToCart({
             <button
               type="button"
               onClick={() => step(-1)}
-              disabled={units <= 1}
+              /* In the cart, one more press at 1 takes it out. */
+              disabled={!alreadyIn && units <= 1}
               aria-label={labels.decrease}
               className="grid size-9 place-items-center rounded-full text-forest transition-colors hover:bg-sand disabled:opacity-35 disabled:hover:bg-transparent"
             >
@@ -190,31 +231,42 @@ export function AddToCart({
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={pending}
-        /* Full width on a phone, where a thumb target should span the panel;
-           auto from `sm` up, because the right column is half a 1400px page
-           and a 576px-wide button reads as a stretched banner rather than a
-           button. `min-w-52` keeps it substantial rather than shrinking to
-           its label. */
-        className="mt-5 inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-forest px-7 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep disabled:opacity-60 sm:w-auto sm:min-w-52"
-      >
-        <ShoppingBag size={17} strokeWidth={1.75} />
-        {alreadyIn ? labels.update : labels.add}
-      </button>
+      {/* Full width on a phone, where a thumb target should span the panel;
+          auto from `sm` up, because the right column is half a 1400px page
+          and a 576px-wide button reads as a stretched banner rather than a
+          button. `min-w-52` keeps it substantial rather than shrinking to
+          its label. */}
+      {alreadyIn ? (
+        <Link
+          href="/cart"
+          className="mt-5 inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-forest px-7 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep sm:w-auto sm:min-w-52"
+        >
+          <ShoppingBag size={17} strokeWidth={1.75} />
+          {labels.viewCart}
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={() => commit(picked)}
+          disabled={pending}
+          className="mt-5 inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-forest px-7 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep disabled:opacity-60 sm:w-auto sm:min-w-52"
+        >
+          <ShoppingBag size={17} strokeWidth={1.75} />
+          {labels.add}
+        </button>
+      )}
 
       {/* Confirmation stays on the page rather than redirecting to /cart:
           §18.6 makes this the low-commitment entry point, and someone
           comparing three greens should not be bounced out of the catalogue on
-          each add. The link is offered, not forced. */}
-      {state.status === "saved" && (
-        <p className="mt-4 flex flex-wrap items-center gap-2 font-body text-sm font-medium text-forest">
+          each add. */}
+      {alreadyIn && saved && (
+        <p
+          role="status"
+          className="mt-4 flex flex-wrap items-center gap-2 font-body text-sm font-medium text-forest"
+        >
           <Check size={16} strokeWidth={2.25} />
-          {alreadyIn ? labels.updated : labels.added}
-          <Link href="/cart" className="font-semibold underline underline-offset-4 hover:text-forest-deep">
-            {labels.viewCart}
-          </Link>
+          {saved === "updated" ? labels.updated : labels.added}
         </p>
       )}
 
@@ -223,6 +275,6 @@ export function AddToCart({
       <p className="mt-5 border-t border-forest/10 pt-4 font-body text-xs leading-relaxed text-stone">
         {labels.note}
       </p>
-    </form>
+    </div>
   );
 }

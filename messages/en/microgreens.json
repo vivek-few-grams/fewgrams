@@ -43,7 +43,7 @@
     "lineTotal": "₹{total, number}",
     "lineBreakdown": "{grams, number} g · ₹{price, number} per 100 g",
     "readyInline": "Ready by {date}",
-    "updateCart": "Update cart",
+    "inYourCart": "In your cart",
     "updated": "Cart updated.",
     "crossSeed": "Want to grow it yourself? See our <link>{name} seeds</link>.",
     "moreMicrogreens": "More microgreens"

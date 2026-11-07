@@ -278,9 +278,9 @@ export default async function RackRangePage({
           {rack && cartKey ? (
             <AddToCart
               /* Re-keyed on the chosen rack so the stepper reseeds from that
-                 rack's own line. `inCart` is an initial value inside
-                 `AddToCart`, not a synced one, so without this a stepper set to
-                 3 on the 6 ft would carry that 3 over to the 4 ft. */
+                 rack's own line. The amount picked before adding is local to
+                 `AddToCart`, so without this a stepper set to 3 on the 6 ft
+                 would carry that 3 over to the 4 ft. */
               key={cartKey}
               kind="rack"
               contentKey={cartKey}
@@ -296,7 +296,7 @@ export default async function RackRangePage({
                 decrease: d("decrease"),
                 increase: d("increase"),
                 add: d("addToCart"),
-                update: d("updateCart"),
+                inCartCaption: d("inYourCart"),
                 added: d("added"),
                 updated: d("updated"),
                 viewCart: d("viewCart"),

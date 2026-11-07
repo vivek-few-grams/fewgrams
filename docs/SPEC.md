@@ -2984,6 +2984,12 @@ It used to mount at 1 every time, so with 3 in the cart the header badge read 3 
 read 1 — two numbers for one fact, and a refresh looked like it had discarded the quantity. `unitsFor`
 seeds it and the CTA becomes "Update cart".
 
+**Since 7 Nov 2026 there is no "Update cart".** The owner: the stepper is already there, so a press
+should change the cart. Once the item is in the cart the stepper's caption reads "In your cart", each
+press saves the absolute quantity (− at one takes the line out), and the button becomes "View cart" —
+`QuickAdd`'s behaviour on a grid card. Before the item is in the cart the stepper still picks an
+amount locally and "Add to cart" agrees to it, so the panel can price a choice before it is made.
+
 Once the control shows cart state, the mutation has to be absolute: `upsertLine(key, n)`, not
 `addToCart(key, +n)`. Committing 3 when the stepper reads 3 must leave 3, and being absolute also
 makes the action idempotent, so a double-click or a retried request cannot double the line. The seed

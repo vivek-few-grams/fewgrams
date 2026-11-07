@@ -17,10 +17,10 @@ import { removeCartLine, setCartQuantity } from "@/app/[locale]/cart/actions";
  * on its range page — so the rack grid carries no quick add, and should not
  * gain one.
  *
- * **Commits on every press, unlike `AddToCart`.** The detail page's buy box
- * has a price panel that follows the stepper and one button to agree to it;
- * a card has no room for that, and a stepper that did nothing until a second
- * button was pressed would read as broken. So each press sends an absolute
+ * **Commits on every press** — and since 7 Nov 2026 so does the detail page's
+ * buy box (`AddToCart`) once its item is in the cart; before that it still
+ * picks an amount to agree to with one button. A stepper that did nothing
+ * until a second button was pressed read as broken. So each press sends an absolute
  * quantity — `setCartQuantity` for one or more, `removeCartLine` at zero —
  * which is idempotent, so a double-click cannot double a line. The server
  * re-validates everything (`sellable()`); the `max` here is a convenience.

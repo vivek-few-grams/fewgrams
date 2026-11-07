@@ -186,7 +186,7 @@ export default async function TrayPage({ params }: PageProps<"/[locale]/shop/tra
             decrease: d("decrease"),
             increase: d("increase"),
             add: d("addToCart"),
-            update: d("updateCart"),
+            inCartCaption: d("inYourCart"),
             added: d("added"),
             updated: d("updated"),
             viewCart: d("viewCart"),

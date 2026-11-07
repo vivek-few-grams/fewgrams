@@ -140,7 +140,7 @@ export default async function GrowMediumPage({ params }: PageProps<"/[locale]/sh
             decrease: d("decrease"),
             increase: d("increase"),
             add: d("addToCart"),
-            update: d("updateCart"),
+            inCartCaption: d("inYourCart"),
             added: d("added"),
             updated: d("updated"),
             viewCart: d("viewCart"),

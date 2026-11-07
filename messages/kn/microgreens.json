@@ -43,7 +43,7 @@
     "lineTotal": "₹{total, number}",
     "lineBreakdown": "{grams, number} ಗ್ರಾಂ · 100 ಗ್ರಾಂಗೆ ₹{price, number}",
     "readyInline": "ಸಿದ್ಧ: {date}",
-    "updateCart": "ಕಾರ್ಟ್ ನವೀಕರಿಸಿ",
+    "inYourCart": "ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲಿ",
     "updated": "ಕಾರ್ಟ್ ನವೀಕರಿಸಲಾಗಿದೆ.",
     "crossSeed": "ನೀವೇ ಬೆಳೆಸಬೇಕೆ? ನಮ್ಮ <link>{name} ಬೀಜಗಳನ್ನು</link> ನೋಡಿ.",
     "moreMicrogreens": "ಇನ್ನಷ್ಟು ಮೈಕ್ರೋಗ್ರೀನ್ಸ್"
