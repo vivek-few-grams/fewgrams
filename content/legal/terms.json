@@ -31,6 +31,7 @@
           "{tradingName} is a sole proprietorship owned by {proprietor}. We grow microgreens to order and sell seeds, trays, cocopeat and growing racks.",
           "Address: {address}.",
           "GSTIN: {gstin}.",
+          "Seed dealer licence under the Seeds (Control) Order, 1983: {seedLicence}.",
           "Email: {email}. Phone and WhatsApp: {phone}.",
           "FSSAI: {fssai}."
         ]
@@ -176,6 +177,7 @@
           "{tradingName} ಎಂಬುದು {proprietor} ಅವರ ಏಕಮಾಲೀಕತ್ವದ ಸಂಸ್ಥೆ. ನಾವು ಆರ್ಡರ್‌ಗೆ ತಕ್ಕಂತೆ ಮೈಕ್ರೋಗ್ರೀನ್ಸ್ ಬೆಳೆಸುತ್ತೇವೆ ಮತ್ತು ಬೀಜಗಳು, ಟ್ರೇಗಳು, ಕೊಕೊಪೀಟ್ ಹಾಗೂ ಬೆಳೆಸುವ ರ್ಯಾಕ್‌ಗಳನ್ನು ಮಾರುತ್ತೇವೆ.",
           "ವಿಳಾಸ: {address}.",
           "ಜಿಎಸ್‌ಟಿಐಎನ್: {gstin}.",
+          "ಬೀಜ (ನಿಯಂತ್ರಣ) ಆದೇಶ, 1983 ರ ಅಡಿಯಲ್ಲಿ ಬೀಜ ಮಾರಾಟಗಾರರ ಪರವಾನಗಿ: {seedLicence}.",
           "ಇಮೇಲ್: {email}. ಫೋನ್ ಮತ್ತು ವಾಟ್ಸ್‌ಆ್ಯಪ್: {phone}.",
           "ಎಫ್‌ಎಸ್‌ಎಸ್‌ಎಐ: {fssai}."
         ]

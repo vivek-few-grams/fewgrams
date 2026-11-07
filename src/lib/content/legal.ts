@@ -41,6 +41,11 @@ export type Business = {
   address: string;
   /** Printed on the terms and every tax invoice, and sent to couriers that ask for it. */
   gstin: string;
+  /**
+   * Seed dealer licence, Form B under the Seeds (Control) Order, 1983 —
+   * issued 22 Oct 2026, valid to 30 Oct 2031. Printed on the terms.
+   */
+  seedLicence: string;
 };
 
 export const BUSINESS: Business = business;
@@ -63,6 +68,7 @@ export function legalTokens(fssai: string): Record<LegalToken, string> {
     grievanceOfficer: BUSINESS.grievanceOfficer,
     address: BUSINESS.address,
     gstin: BUSINESS.gstin,
+    seedLicence: BUSINESS.seedLicence,
     email: contact.email,
     phone: `+91 ${contactPhoneDisplay}`,
     fssai,

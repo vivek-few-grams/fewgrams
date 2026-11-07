@@ -45,7 +45,10 @@ describe.each(DOCS)("content/legal/%s.json", (name) => {
       /* The E-Commerce Rules and the SPDI Rules require the grievance officer
          to be named; the refund and shipping pages point to the Terms. */
       if (name === "terms" || name === "privacy") expect(text).toContain(BUSINESS.grievanceOfficer);
-      if (name === "terms") expect(text).toContain(BUSINESS.gstin);
+      if (name === "terms") {
+        expect(text).toContain(BUSINESS.gstin);
+        expect(text).toContain(BUSINESS.seedLicence);
+      }
     }
   });
 });

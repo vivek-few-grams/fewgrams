@@ -9,7 +9,7 @@
  * in `content-contract.ts`.
  *
  * Business identity (names, address) and contact details are **tokens**, not
- * text: `{address}` and `{gstin}` are filled from `content/legal/business.json`, `{email}`
+ * text: `{address}`, `{gstin}` and `{seedLicence}` are filled from `content/legal/business.json`, `{email}`
  * and `{phone}` from `content/contact.json`. A legal page that restated the
  * address would be the one place it went stale. An unknown token fails here
  * rather than rendering `{adress}` to a customer.
@@ -26,6 +26,7 @@ export const LEGAL_TOKENS = [
   "grievanceOfficer",
   "address",
   "gstin",
+  "seedLicence",
   "email",
   "phone",
   "fssai",
