@@ -82,8 +82,11 @@ export const PARAMETER_PATH = "/fewgrams/prod";
  * `${PARAMETER_PATH}/<NAME>` before a deploy, or CloudFormation stops and
  * names the missing one — see infra/README.md for the command.
  *
- * Only list what is actually configured. The couriers are left out until their
- * accounts are live; uncomment a line once its parameter exists.
+ * Only list what is actually configured; uncomment a line once its parameter
+ * exists (`scripts/ssm-from-env.mjs` copies one from .env.local). The four
+ * couriers went live on 7 Nov 2026, for quotes — booking is still off below.
+ * `VELOCITY_WAREHOUSES` waits for the warehouse ids from the Velocity
+ * dashboard: only booking reads it, so Velocity quotes without it.
  */
 export const RUNTIME_PARAMETERS = [
   "AUTH_SECRET",
@@ -95,14 +98,14 @@ export const RUNTIME_PARAMETERS = [
   "RAZORPAY_KEY_SECRET",
   "RAZORPAY_WEBHOOK_SECRET",
   "DATA_GOV_IN_API_KEY",
-  // "DELHIVERY_ENV",
-  // "DELHIVERY_API_TOKEN",
-  // "SHIPROCKET_EMAIL",
-  // "SHIPROCKET_PASSWORD",
-  // "EKART_CLIENT_ID",
-  // "EKART_USERNAME",
-  // "EKART_PASSWORD",
-  // "VELOCITY_API_KEY",
+  "DELHIVERY_ENV",
+  "DELHIVERY_API_TOKEN",
+  "SHIPROCKET_EMAIL",
+  "SHIPROCKET_PASSWORD",
+  "EKART_CLIENT_ID",
+  "EKART_USERNAME",
+  "EKART_PASSWORD",
+  "VELOCITY_API_KEY",
   // "VELOCITY_WAREHOUSES",
 ] as const;
 
