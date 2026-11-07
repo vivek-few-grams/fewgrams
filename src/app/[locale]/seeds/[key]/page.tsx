@@ -200,7 +200,6 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
           max={max}
           inCart={inCart}
           labels={{
-            quantity: d("quantity"),
             decrease: d("decrease"),
             increase: d("increase"),
             add: d("addToCart"),

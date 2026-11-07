@@ -136,7 +136,6 @@ export default async function GrowMediumPage({ params }: PageProps<"/[locale]/sh
           max={MAX_UNITS_PER_LINE}
           inCart={inCart}
           labels={{
-            quantity: d("quantity"),
             decrease: d("decrease"),
             increase: d("increase"),
             add: d("addToCart"),

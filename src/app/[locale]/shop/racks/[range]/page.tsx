@@ -277,10 +277,9 @@ export default async function RackRangePage({
 
           {rack && cartKey ? (
             <AddToCart
-              /* Re-keyed on the chosen rack so the stepper reseeds from that
-                 rack's own line. The amount picked before adding is local to
-                 `AddToCart`, so without this a stepper set to 3 on the 6 ft
-                 would carry that 3 over to the 4 ft. */
+              /* Re-keyed on the chosen rack, so the "Added to your cart" line
+                 and the stepper belong to that rack's own cart line and do not
+                 carry over to the next model or colour picked. */
               key={cartKey}
               kind="rack"
               contentKey={cartKey}
@@ -289,7 +288,6 @@ export default async function RackRangePage({
               max={MAX_UNITS_PER_LINE}
               inCart={inCart}
               labels={{
-                quantity: d("quantity"),
                 /* Its own strings rather than the tray page's: a rack is not a
                    pack, so "One pack fewer" would be wrong on this screen even
                    though the control is identical. */

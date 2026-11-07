@@ -42,16 +42,16 @@ import { removeCartLine, setCartQuantity } from "@/app/[locale]/cart/actions";
  * **sets** rather than adds (`setCartQuantity`), because "add 3" when the
  * control already shows 3 would silently make it 6.
  *
- * ## Once it is in the cart, every press saves (the owner, 7 Nov 2026)
+ * ## One button, then the stepper is the cart line (the owner, 7 Nov 2026)
  *
- * It had an "Update cart" button under a stepper that already showed the
- * cart, so changing 2 to 3 took a second press nobody expected. Now, with
- * the item in the cart, the stepper **is** the cart line, as on a grid card
- * (`QuickAdd`): each press sends the absolute quantity (`setCartQuantity`;
- * `removeCartLine` at zero), its caption reads "In your cart", and the
- * button becomes "View cart". Before the item is in the cart nothing has
- * changed: the stepper picks an amount locally, the panel prices it, and
- * "Add to cart" agrees to it.
+ * It was a stepper to pick an amount and a button to agree to it — and, once
+ * in the cart, an "Update cart" button under a stepper that already showed
+ * the cart. Two steps for one decision. Now, as on a grid card (`QuickAdd`)
+ * and in the quick-commerce apps people know: until the item is in the cart
+ * there is only "Add to cart", and one tap puts one unit in; from then on the
+ * − n + stepper **is** the cart line — each press sends the absolute quantity
+ * (`setCartQuantity`; `removeCartLine` at zero, which brings the button back),
+ * its caption reads "In your cart", and the button becomes "View cart".
  *
  * The cart figure is optimistic (`useOptimistic` over `inCart`), so the
  * number moves on the press; the action's re-render brings the real figure,
@@ -87,7 +87,6 @@ export function AddToCart({
   /** Units of this item already in the cart, 0 if none. */
   inCart: number;
   labels: {
-    quantity: string;
     decrease: string;
     increase: string;
     add: string;
@@ -121,21 +120,16 @@ export function AddToCart({
     soldOut?: { title: string; body: string };
   };
 }) {
-  /* The amount picked before the item is in the cart. Clamped to `max` so a
-     cookie written when the per-line cap was higher cannot mount above
-     today's. */
-  const [picked, setPicked] = useState(() =>
-    Math.min(Math.max(inCart > 0 ? inCart : 1, 1), Math.max(max, 1)),
-  );
   const [cartUnits, setOptimistic] = useOptimistic(inCart);
   const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState<"added" | "updated" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const alreadyIn = cartUnits > 0;
-  /* What the panel prices and the stepper shows: the cart line once there is
-     one, the local pick before. */
-  const units = alreadyIn ? cartUnits : picked;
+  /* What the panel prices: the cart line once there is one, and one unit —
+     what "Add to cart" puts in — before. Clamped to `max` so a cookie written
+     when the per-line cap was higher cannot price above today's. */
+  const units = alreadyIn ? Math.min(cartUnits, Math.max(max, 1)) : 1;
 
   /** Save an absolute quantity to the cart — 0 takes the line out. */
   const commit = (next: number) => {
@@ -149,7 +143,6 @@ export function AddToCart({
       fd.set("key", contentKey);
       if (target === 0) {
         await removeCartLine(fd);
-        setPicked(1);
         setSaved(null);
         return;
       }
@@ -164,10 +157,7 @@ export function AddToCart({
     });
   };
 
-  const step = (delta: number) => {
-    if (alreadyIn) commit(cartUnits + delta);
-    else setPicked((n) => Math.min(Math.max(n + delta, 1), max));
-  };
+  const step = (delta: number) => commit(cartUnits + delta);
 
   if (max < 1) {
     return (
@@ -196,39 +186,41 @@ export function AddToCart({
           )}
         </div>
 
-        <div>
-          <span className="block font-body text-[10px] uppercase tracking-widest text-stone">
-            {alreadyIn ? labels.inCartCaption : labels.quantity}
-          </span>
-          {/* `bg-cream` on the stepper, against the panel's sand: the control
+        {/* Only once the item is in the cart: the stepper is the cart line. */}
+        {alreadyIn && (
+          <div>
+            <span className="block font-body text-[10px] uppercase tracking-widest text-stone">
+              {labels.inCartCaption}
+            </span>
+            {/* `bg-cream` on the stepper, against the panel's sand: the control
               has to read as inset and operable, and a sand control on a sand
               panel reads as a label. */}
-          <div className="mt-1.5 flex items-center gap-1 rounded-full border border-forest/20 bg-cream p-1">
-            <button
-              type="button"
-              onClick={() => step(-1)}
-              /* In the cart, one more press at 1 takes it out. */
-              disabled={!alreadyIn && units <= 1}
-              aria-label={labels.decrease}
-              className="grid size-9 place-items-center rounded-full text-forest transition-colors hover:bg-sand disabled:opacity-35 disabled:hover:bg-transparent"
-            >
-              <Minus size={16} strokeWidth={2} />
-            </button>
-            {/* `tabular-nums` so the row does not jog sideways between 9 and 10. */}
-            <span className="min-w-12 text-center font-display text-base font-semibold tabular-nums text-forest">
-              {units}
-            </span>
-            <button
-              type="button"
-              onClick={() => step(1)}
-              disabled={units >= max}
-              aria-label={labels.increase}
-              className="grid size-9 place-items-center rounded-full text-forest transition-colors hover:bg-sand disabled:opacity-35 disabled:hover:bg-transparent"
-            >
-              <Plus size={16} strokeWidth={2} />
-            </button>
+            <div className="mt-1.5 flex items-center gap-1 rounded-full border border-forest/20 bg-cream p-1">
+              <button
+                type="button"
+                onClick={() => step(-1)}
+                /* At 1, one more press takes it out of the cart. */
+                aria-label={labels.decrease}
+                className="grid size-9 place-items-center rounded-full text-forest transition-colors hover:bg-sand disabled:opacity-35 disabled:hover:bg-transparent"
+              >
+                <Minus size={16} strokeWidth={2} />
+              </button>
+              {/* `tabular-nums` so the row does not jog sideways between 9 and 10. */}
+              <span className="min-w-12 text-center font-display text-base font-semibold tabular-nums text-forest">
+                {units}
+              </span>
+              <button
+                type="button"
+                onClick={() => step(1)}
+                disabled={units >= max}
+                aria-label={labels.increase}
+                className="grid size-9 place-items-center rounded-full text-forest transition-colors hover:bg-sand disabled:opacity-35 disabled:hover:bg-transparent"
+              >
+                <Plus size={16} strokeWidth={2} />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Full width on a phone, where a thumb target should span the panel;
@@ -247,7 +239,7 @@ export function AddToCart({
       ) : (
         <button
           type="button"
-          onClick={() => commit(picked)}
+          onClick={() => commit(1)}
           disabled={pending}
           className="mt-5 inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-forest px-7 py-3.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep disabled:opacity-60 sm:w-auto sm:min-w-52"
         >

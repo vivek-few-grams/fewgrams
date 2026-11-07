@@ -187,7 +187,6 @@ export default async function VarietyPage({ params }: PageProps<"/[locale]/micro
           max={MAX_UNITS_PER_LINE}
           inCart={inCart}
           labels={{
-            quantity: d("quantity"),
             decrease: d("decrease"),
             increase: d("increase"),
             add: d("addToCart"),

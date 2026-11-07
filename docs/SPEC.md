@@ -2985,10 +2985,11 @@ read 1 — two numbers for one fact, and a refresh looked like it had discarded 
 seeds it and the CTA becomes "Update cart".
 
 **Since 7 Nov 2026 there is no "Update cart".** The owner: the stepper is already there, so a press
-should change the cart. Once the item is in the cart the stepper's caption reads "In your cart", each
-press saves the absolute quantity (− at one takes the line out), and the button becomes "View cart" —
-`QuickAdd`'s behaviour on a grid card. Before the item is in the cart the stepper still picks an
-amount locally and "Add to cart" agrees to it, so the panel can price a choice before it is made.
+should change the cart. Until the item is in the cart there is only "Add to cart" (the
+owner chose this over a stepper starting at 0): one tap puts one unit in. From then on the stepper is
+the cart line: its caption reads "In your cart", each press saves the absolute quantity, − at one
+takes the line out and brings the button back, and the button becomes "View cart". That is
+`QuickAdd`'s behaviour on a grid card, and what Blinkit and Zepto customers expect.
 
 Once the control shows cart state, the mutation has to be absolute: `upsertLine(key, n)`, not
 `addToCart(key, +n)`. Committing 3 when the stepper reads 3 must leave 3, and being absolute also
