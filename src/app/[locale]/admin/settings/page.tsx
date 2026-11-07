@@ -41,6 +41,8 @@ export default async function SettingsPage() {
               <span className="font-body text-sm font-semibold text-forest">{label(type)}</span>
               <form action={toggleProductType}>
                 <input type="hidden" name="type" value={type} />
+                {/* Where the press goes, not "flip it" — see `switchTo`. */}
+                <input type="hidden" name="to" value={visible ? "off" : "on"} />
                 <button
                   /* Hover moves toward what the click does, same rule as the
                      variety table's active toggle: darker/greener when it will

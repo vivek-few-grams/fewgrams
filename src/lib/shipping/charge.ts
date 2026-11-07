@@ -390,8 +390,13 @@ export async function deliveryCharge(
 
   const chosen: DeliveryOption[] = [];
   for (const p of plan.parcels) {
-    const option = p.options.find((o) => o.id === choices[p.id]);
-    if (!option) return { ok: false, reason: "optionGone" };
+    /* Only the cheapest: it is the one the page showed and the only one the
+       customer can mean. Any option the scan offered used to be accepted,
+       so a hand-edited form could book a dearer courier at our cost — the
+       customer's fee is capped, the courier's quote is not (31 Oct 2026). A
+       cheaper option appearing since is a changed price, like any other. */
+    const option = p.options[0];
+    if (!option || option.id !== choices[p.id]) return { ok: false, reason: "optionGone" };
     chosen.push(option);
   }
   const goods = lines.reduce((sum, l) => sum + l.lineTotal, 0);

@@ -12,6 +12,7 @@ import {
   PURCHASE_CATEGORIES,
   freightCredit,
   lineTax,
+  stockLineDefaults,
   type CreditUse,
   type PurchaseBill,
   type PurchaseCategory,
@@ -52,6 +53,8 @@ type Row = {
   credit: CreditUse;
   /** Once the credit is picked by hand, a category change leaves it alone. */
   creditTouched: boolean;
+  /** Once the rate is picked by hand, picking an item leaves it alone. */
+  rateTouched: boolean;
 };
 
 let nextUid = 0;
@@ -71,6 +74,7 @@ const blankRow = (): Row => ({
   sgst: "",
   credit: DEFAULT_CREDIT.stock,
   creditTouched: false,
+  rateTouched: false,
 });
 
 function rowsOf(bill?: PurchaseBill): Row[] {
@@ -88,7 +92,23 @@ function rowsOf(bill?: PurchaseBill): Row[] {
     sgst: l.sgst ? rupees(l.sgst) : "",
     credit: l.credit,
     creditTouched: true,
+    rateTouched: true,
   }));
+}
+
+/**
+ * What picking `item` on `row` fills in: the rate it is bought at and the
+ * credit that gives (`stockLineDefaults` — a seed 0% with no credit, not the
+ * blank line's 18% and Full), each unless the owner already set it by hand.
+ * A new rate clears any GST typed for the old one, as a typed rate does.
+ */
+function itemDefaults(row: Row, item: ItemOption): Partial<Row> {
+  const d = stockLineDefaults({ kind: item.kind, key: item.value.slice(item.kind.length + 1) });
+  const rate = row.rateTouched ? row.rate : String(d.rate);
+  return {
+    ...(rate !== row.rate ? { rate, igst: "", cgst: "", sgst: "" } : {}),
+    ...(row.creditTouched ? {} : { credit: Number(rate) === 0 ? "none" : d.credit }),
+  };
 }
 
 const paise = (s: string) => {
@@ -177,7 +197,7 @@ export function BillEditor({
     setRows((rs) => rs.map((r) => (r.uid === uid ? { ...r, ...patch } : r)));
   /* A new value or rate makes any GST typed for the old one wrong — and a
      saved bill opens with its GST filled in — so it is worked out again. */
-  const retax = (uid: number, patch: Pick<Partial<Row>, "taxable" | "rate">) =>
+  const retax = (uid: number, patch: Pick<Partial<Row>, "taxable" | "rate" | "rateTouched">) =>
     set(uid, { ...patch, igst: "", cgst: "", sgst: "" });
 
   const worked = (r: Row) => lineTax(paise(r.taxable) ?? 0, noGst ? 0 : Number(r.rate) || 0, !!intra);
@@ -238,7 +258,8 @@ export function BillEditor({
             [...xs, item].sort((a, b) => a.kind.localeCompare(b.kind) || a.label.localeCompare(b.label)),
           );
           setLinked((ls) => [...ls, item.value]);
-          if (adding !== null) set(adding, { item: item.value, description: item.label });
+          const row = rows.find((r) => r.uid === adding);
+          if (row) set(row.uid, { item: item.value, description: item.label, ...itemDefaults(row, item) });
           setAdding(null);
         }}
       />
@@ -366,6 +387,7 @@ export function BillEditor({
                         set(row.uid, {
                           item: e.target.value,
                           ...(row.description === "" && picked ? { description: picked.label } : {}),
+                          ...(picked ? itemDefaults(row, picked) : {}),
                         });
                       }}
                       options={[
@@ -444,7 +466,7 @@ export function BillEditor({
                         label={t("rate")}
                         name="rate"
                         value={row.rate}
-                        onChange={(e) => retax(row.uid, { rate: e.target.value })}
+                        onChange={(e) => retax(row.uid, { rate: e.target.value, rateTouched: true })}
                         options={PURCHASE_RATES.map((r) => ({
                           value: String(r),
                           label: r === 0 ? t("rateExempt") : `${r}%`,

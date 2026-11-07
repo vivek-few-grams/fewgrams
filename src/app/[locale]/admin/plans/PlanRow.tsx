@@ -29,6 +29,7 @@ export function PlanRow({
   plan,
   weeks,
   choices,
+  warnings,
 }: {
   contentKey: string;
   /** From the content file; null only for an orphan row whose file is gone. */
@@ -38,6 +39,9 @@ export function PlanRow({
   /** week number → variety keys currently stored. */
   weeks: Record<number, string[]>;
   choices: VarietyChoice[];
+  /** Already worded by the page — what is wrong with the stored rotation.
+   *  Saving still works; these only say so. */
+  warnings: string[];
 }) {
   const t = useTranslations("admin.plans");
   const tc = useTranslations("admin.common");
@@ -113,6 +117,13 @@ export function PlanRow({
         )}
       </div>
 
+      {warnings.map((w) => (
+        <p key={w} className="mt-3 flex items-start gap-1.5 font-body text-[11px] text-terracotta">
+          <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
+          {w}
+        </p>
+      ))}
+
       {orphan ? (
         <p className="mt-3 flex items-start gap-1.5 font-body text-[11px] text-terracotta">
           <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
@@ -147,6 +158,7 @@ export function PlanRow({
             name="sortOrder"
             defaultValue={plan?.sortOrder ?? 0}
             hint={t("sortOrderHint")}
+            error={errorFor("sortOrder")}
           />
         </div>
 

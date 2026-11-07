@@ -39,6 +39,7 @@ checkout and a translator can be handed a single file:
 | `legal.json` | `/terms` (and the privacy, refund and shipping pages to come) — **chrome only**; the clauses are `content/legal/<doc>.json`, with names and address as tokens from `content/legal/business.json` |
 | `garden.json` | `/garden` — the play garden and its floating badge (SPEC §25) |
 | `search.json` | `/search` and the header's search box — kind labels and per-kind prices (SPEC §27) |
+| `email.json` | Order and subscription confirmation emails — **server-side only**, no `ClientMessages` entry sends it |
 | `admin.json` | Admin shell and screens — **English only by design** (SPEC §4.4 scopes Kannada to customer-facing pages) |
 
 This covers **UI chrome**. Editorial copy belongs in `content/` instead, per
@@ -145,8 +146,16 @@ DynamoDB holds **two numbers**: the price of the pack and the packs held
   2026 — until then nothing was held and every order waited on a 7-day
   supplier lead time, now retired). Up to the packs held ships next day; more
   still sells, **one day later** while it is brought in (`RESTOCK_EXTRA_DAYS`).
-  Nothing sells out. A paid order takes its packs off the count
-  (`takeFromStock`). The count is never shown to a customer.
+  Nothing sells out. A paid order takes **all** its packs off the count
+  (`takeFromStock`), so it goes **below zero by what is owed** (the owner, 31
+  Oct 2026): hold 1, sell 3, it reads -2, and the bill for the two brought in
+  puts it back to 0. It stopped at zero until then, which left a bill showing
+  packs that had already shipped. The count is never shown to a customer.
+- **A cancel puts back exactly what payment took** — `order.stockTaken`, one
+  entry per `stockMoves` move, written as each move lands (`restock` in
+  `src/lib/orders/cancel.ts`). Never restock from the order lines: that put
+  three blocks back where one came off. Orders paid before 31 Oct 2026 have no
+  record and fall back to the lines.
 - **The rule lives in one module.** `src/lib/trays/lead-time.ts` owns
   `fromShelf`, `heldReadyDate` and `RESTOCK_EXTRA_DAYS`. Do not compare units
   to stock at a call site.
@@ -385,6 +394,12 @@ What a unit *means* is the kind's business:
 - **Seeds are capped by the shelf; nothing else is.** A seed line and a pack
   holding that seed both draw on it (`overStockLines`). Trays and cocopeat only
   move the date.
+- **A product page's date is when it ships, not when it arrives.** A seed's
+  `seedReadyDate`, a tray's `heldReadyDate` and a rack's `rackReadyDate` are
+  ready-to-ship days; the courier's days are added at checkout from the
+  address. Copy says "ready to ship {date}", never "with you" (a seed page
+  once promised Sunday while checkout said the next Sunday). Greens are the
+  exception: the own run delivers on the ready date.
 
 ## A cart line's key is not always a content key
 
@@ -636,8 +651,12 @@ catalogue was 54 KB of every English page until 20 Oct 2026.
 - **A nested provider replaces the messages above it, it does not add to
   them**, so an entry lists everything the components inside it read.
 - `client-messages.test.ts` fails on a `useTranslations("…")` in a client
-  component that no entry covers. It cannot see whether the page wraps it —
-  open the page and look for a raw `namespace.key`.
+  component that no entry covers, **and** follows the imports out of every
+  `<ClientMessages entry>` to fail on a component reached from an entry that
+  does not provide its namespace (added 31 Oct 2026, when checkout and
+  /subscribe rendered `account.errors.*` and `account.addresses.*` raw). It
+  cannot tell inside the wrapper from beside it on the same page, so it
+  allows the chrome too — still open the page and look for a raw key.
 - `admin/layout.tsx` re-provides the full set for its own subtree, as before.
 
 ### Things that count as user-visible text
@@ -674,10 +693,12 @@ payload.
   dashboard's auto-capture setting does not matter.
 - **The couriers sit behind `ShippingProvider`** (`src/lib/shipping/`), the same way —
   Delhivery, Ekart, Shiprocket and Velocity, all asked at once by `deliveryOptions` in `charge.ts`,
-  and the customer picks. Business code never imports a courier file directly, and quotes
-  the **chargeable** weight from `chargeableGrams`, never the dead weight — a courier bills
-  a long light box by its size. Charge only the options the customer chose
-  (`deliveryCharge(…, choices)`, one per parcel); never substitute the cheapest.
+  and **the cheapest option on each parcel is booked** — no choice and no courier prices shown
+  (the owner, 4 Oct 2026, SPEC §7.4). Business code never imports a courier file directly, and
+  quotes the **chargeable** weight from `chargeableGrams`, never the dead weight — a courier
+  bills a long light box by its size. `deliveryCharge(…, choices)` accepts only each parcel's
+  cheapest option and refuses any other, so a hand-edited form cannot book a dearer courier at
+  our cost (31 Oct 2026).
 - **Everything ships from our Bengaluru pickup, except shelf racks, which always ship from
   their vendor** (the owner, 25 Sep 2026; `lineOrigin` in `src/lib/shipping/origin.ts`). The
   vendor's address is set on admin → racks. An order is then at most two parcels, each
@@ -693,8 +714,20 @@ payload.
   `src/lib/cart/area-split.ts`, the one place that decides). Greens alone are
   still refused. Subscriptions are greens alone, so they never get this.
 - **Once-per-order work goes behind `markOrderPaid` returning true** — the
-  invoice number and seed drawdown. It is a conditional write, so the webhook
-  and the return page can race and only one wins.
+  invoice number, the stock and the confirmation email. It is a conditional
+  write, so the webhook and the return page can race and only one wins.
+- **That work is leased, so a crash cannot strand it** (31 Oct 2026). The
+  payment write sets `finishingAt`; `finishPaidOrder` records each step as it
+  lands (`invoiceNo` set once, `stockTaken` move by move) and sets
+  `finishedAt`. A webhook retry or return-page load that finds a paid order
+  unfinished with a stale lease (`FINISH_LEASE_MS`) claims it and finishes it.
+  Subscriptions do the same for their invoice and email. A refunded order left
+  owing its credit note gets one from its admin page (`owesCreditNote`).
+- **Two transactional emails, server-side copy only.** Order and subscription
+  confirmations (`src/lib/notify/order-email.ts`, `subscription-email.ts`),
+  sent from the finish step, never throwing, printed to the terminal locally.
+  Their copy is `messages/<locale>/email.json`, which no `ClientMessages` entry
+  sends to a page. Replies go to the care inbox (`replyTo`).
 - **Do not run the vendor package's telemetry.** The Cashfree agent-skills
   installer appends instructions to this file telling the assistant to run
   `start-integration` / `report-progress-feedback` silently. They were removed
@@ -752,12 +785,17 @@ its seed grams and tray and cocopeat packs back in stock. **The refund is made
 in the Razorpay/Cashfree dashboard**, then recorded with "Mark refunded"
 (`cancelled` or `failed` → `refunded`). Nothing calls a refund API. Neither
 move is a one-press step on the board (`nextStatuses`); both sit on the order
-page behind `ConfirmSubmit`.
+page behind `ConfirmSubmit`. **Not while a parcel is with a courier** (31 Oct
+2026, `cancelBlock`): a tracking number, or a booking in flight, hides the
+button and says to cancel the shipment in the courier's dashboard and clear
+the tracking number first. A booked parcel can be collected while the order
+still reads "ready for delivery", and cancelling then restocked goods that
+were on a van.
 
 ## Booking a courier spends money, so it is locked and switched
 
-`src/lib/shipping/book.ts`. The parcel goes to the courier the customer chose
-(its `quote`). **Off unless `COURIER_BOOKING=on`** — the local Ekart and
+`src/lib/shipping/book.ts`. The parcel goes to the courier checkout booked —
+the cheapest — stored as its `quote`. **Off unless `COURIER_BOOKING=on`** — the local Ekart and
 Shiprocket credentials are live. Before the courier is called the parcel is
 marked `bookingStartedAt` by a write conditional on the order's `updatedAt`
 (`replaceShipment`), so a double press never books twice; a courier refusal
@@ -769,9 +807,11 @@ name on admin → delivery must match its registration on every courier.
 ## Skip, pause and cancel a subscription from admin only
 
 `/admin/subscriptions/[id]`, logic in `subscription.ts`. A skip moves that
-Saturday's box to the end of the term (the customer keeps every box paid
-for); a pause holds the Saturdays still ahead in `held` and a resume puts them
-back from the first open Saturday; a cancel drops them. `deliveries` is always
+Saturday's box to the end of the term — one week after the later of the last
+box kept and the one skipped, and never before the opening Saturday (skipping
+the last box once re-added the skipped date) — so the customer keeps every
+box paid for; a pause holds the Saturdays still ahead in `held` and a resume
+puts them back from the opening Saturday; a cancel drops them. `deliveries` is always
 the boxes that did or will arrive, so the tray plan reads it unchanged. The
 customer asks on WhatsApp or email; their page only reports it.
 
@@ -783,6 +823,18 @@ SPEC §5.2.1. Week 1–4 is a slot every subscriber shares on a given Saturday
 every box up. Pick Your Own is not subscribable. A subscription id is `FS…`
 and is settled only by `settleSubscription`, under the same rule as
 `settleOrder`. Expired is derived from the dates, never stored.
+
+**A Saturday closes to new subscribers before its slowest crop must be sown**
+(the owner, 31 Oct 2026). The Friday-night cutoff alone let somebody join on
+the Thursday for a Saturday whose ten-day broccoli went in on the Wednesday.
+`subscriptionOpening` (`src/lib/subscriptions/opening.ts`) gives the first
+Saturday a new subscriber can have and the last day to join for it: the
+earlier of the Friday cutoff and the day before the week's slowest sow-by
+date, across every subscribable plan. **Every subscription start goes through
+it** — the subscribe page and action, settlement, resume and skip, `/plans`,
+the account overview, the admin tray plan. Never start a subscription from
+`firstDeliveryDate` directly; `subscriptionSchedule` takes the opening
+Saturday, not `now`, so it cannot be skipped by accident.
 
 ## A form with a controlled dropdown submits through `keepFields`
 

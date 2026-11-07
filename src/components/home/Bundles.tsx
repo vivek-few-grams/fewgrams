@@ -1,12 +1,12 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
 import { CalendarDays, Check, X } from "lucide-react";
 import { planPanels, type Plan, type PlanPanel, type PlanWeek, type Variety } from "@/lib/types";
 import type { PlanText } from "@/lib/content/plans";
-import { firstDeliveryDate, formatDeliveryDate } from "@/lib/delivery-date";
+import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
 import { subscriptionSchedule, type ScheduledBox } from "@/lib/subscriptions/rotation";
 import Image from "next/image";
 import { placeholderProps, type Placeholder } from "@/lib/images/placeholder-props";
@@ -199,9 +199,14 @@ export function Bundles({
   varieties,
   varietyNames,
   adminEmpty,
+  opening,
   headingLevel = 2,
 }: {
   plans: PlanWithWeeks[];
+  /** The first Saturday a new subscriber gets and the last day to join for
+   *  it, `YYYY-MM-DD` IST — worked out on the server from the rotation's grow
+   *  days (`subscriptionOpening`), which this component cannot read. */
+  opening: { first: string; joinBy: string };
   varieties: Variety[];
   /** contentKey → display name, resolved from content files by the page. */
   varietyNames: Record<string, string>;
@@ -226,10 +231,12 @@ export function Bundles({
      be handed the same value so its header band matches the card that opened
      it. */
   const grounds = planPanels(plans.map(({ plan }) => plan.recommended));
-  const firstDelivery = formatDeliveryDate(firstDeliveryDate());
+  const dateLocale = useLocale() === "kn" ? "kn-IN" : "en-IN";
+  const firstDelivery = formatDeliveryDate(fromIstDateISO(opening.first), dateLocale);
+  const joinBy = formatDeliveryDate(fromIstDateISO(opening.joinBy), dateLocale);
   /* Each Saturday with the rotation week the shared calendar puts it on — so
      the modal opens on whichever week comes next, not always on week 1. */
-  const schedule = subscriptionSchedule();
+  const schedule = subscriptionSchedule(fromIstDateISO(opening.first));
   /* Varieties carry no name in DynamoDB (SPEC §4.3) — the caller resolves it
      from content/varieties/<key>.json and hands down a plain key→name map. */
   const nameOf = (key: string) => varietyNames[key] ?? key;
@@ -257,7 +264,7 @@ export function Bundles({
             {tp("heading")}
           </Heading>
           <p className="mt-4 font-body text-sm leading-relaxed text-stone">
-            {tp("firstDelivery")} <strong className="font-semibold text-forest">{firstDelivery}</strong>.
+            {tp("firstDelivery", { joinBy })} <strong className="font-semibold text-forest">{firstDelivery}</strong>.
             {plansAreCheaper && <> {tp("cheaperNote")}</>}
           </p>
         </div>

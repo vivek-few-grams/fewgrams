@@ -1,11 +1,11 @@
-import { getTranslations } from "next-intl/server";
+import { getFormatter, getTranslations } from "next-intl/server";
 import { listPlansWithWeeks } from "@/lib/repo/plans";
 import { listVarieties } from "@/lib/repo/varieties";
 import { varietyNameMap } from "@/lib/content/varieties";
 import { listPlanContent } from "@/lib/content/plans";
 import { routing } from "@/i18n/routing";
 import { PlanRow } from "./PlanRow";
-import type { VarietyChoice } from "./rotation";
+import { ESSENTIAL_PLAN, EXOTIC_PLAN, exoticGap, type VarietyChoice } from "./rotation";
 import type { Plan } from "@/lib/types";
 import { requireRole } from "@/lib/auth/guard";
 
@@ -38,6 +38,7 @@ export const dynamic = "force-dynamic";
 export default async function PlansAdmin() {
   await requireRole("admin");
   const t = await getTranslations("admin.plans");
+  const format = await getFormatter();
 
   const [entries, varieties, planContent, varietyNames] = await Promise.all([
     listPlansWithWeeks(),
@@ -83,6 +84,30 @@ export default async function PlansAdmin() {
 
   const configured = rows.filter((r) => r.plan !== null).length;
 
+  /* Rare & Exotic is Everyday Essentials plus more (the owner's rule) — said
+     on the Exotic row whenever its stored month is not. A warning: each plan
+     saves on its own, so the two are briefly out of step on every change. */
+  const month = (key: string) => (stored.get(key)?.weeks ?? []).flatMap((w) => w.varietyKeys);
+  const gap = exoticGap(month(ESSENTIAL_PLAN), month(EXOTIC_PLAN));
+  const nameOf = (key: string) => varietyNames[key] ?? key;
+  /* The plans by their content files' names, so a renamed plan is named
+     right here too. */
+  const planName = (key: string) => planContent.find((c) => c.key === key)?.text.name ?? key;
+  const plans = { essential: planName(ESSENTIAL_PLAN), exotic: planName(EXOTIC_PLAN) };
+  const exoticWarnings = gap
+    ? [
+        ...(gap.missing.length > 0
+          ? [
+              t("exoticMissing", {
+                ...plans,
+                names: format.list(gap.missing.map(nameOf), { type: "conjunction" }),
+              }),
+            ]
+          : []),
+        ...(gap.nothingMore ? [t("exoticNothingMore", plans)] : []),
+      ]
+    : [];
+
   return (
     <div className="space-y-10">
       <section>
@@ -106,6 +131,7 @@ export default async function PlansAdmin() {
             plan={row.plan}
             weeks={weeksOf(row.plan)}
             choices={choices}
+            warnings={row.contentKey === EXOTIC_PLAN ? exoticWarnings : []}
           />
         ))}
       </section>

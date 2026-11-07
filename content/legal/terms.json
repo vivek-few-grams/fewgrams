@@ -1,5 +1,5 @@
 {
-  "updated": "2026-10-20",
+  "updated": "2026-11-07",
   "sections": [
     "about",
     "acceptance",
@@ -80,7 +80,7 @@
       "plans": {
         "heading": "Weekly plans",
         "body": [
-          "A weekly plan is paid in advance for four boxes, one on each of four Saturdays. A plan paid before Friday midnight is sown that Sunday and starts on the Saturday after; a plan paid later starts one week later. The four Saturdays are shown before you pay.",
+          "A weekly plan is paid in advance for four boxes, one on each of four Saturdays. A plan paid before Friday midnight is sown that Sunday and starts on the Saturday after, unless that Saturday's box holds a slower crop that had to be sown earlier, in which case it starts on the next Saturday that can still be sown for. A plan paid later starts one week later. The last day to join and the four Saturdays are shown before you pay.",
           "A plan needs an address inside our delivery area. It does not renew automatically, and nothing is debited from you again; when it ends, you may take a new one.",
           "You cannot change a plan on the website, but you can ask us on WhatsApp or by email to skip a Saturday, pause the plan or cancel it. A skipped Saturday's box moves to the Saturday after your last one, so you still receive every box you paid for. A pause holds the Saturdays still to come until you ask us to resume; they then go back on the calendar from the first Saturday a new plan could start on. A cancellation drops the Saturdays still to come, and we refund the boxes not yet delivered. Only a Saturday that is still ahead can be changed, so ask as early as you can."
         ]
@@ -225,7 +225,7 @@
       "plans": {
         "heading": "ವಾರದ ಯೋಜನೆಗಳು",
         "body": [
-          "ವಾರದ ಯೋಜನೆಯಲ್ಲಿ ನಾಲ್ಕು ಶನಿವಾರಗಳಂದು ತಲಾ ಒಂದರಂತೆ ನಾಲ್ಕು ಡಬ್ಬಗಳಿಗೆ ಮುಂಚಿತವಾಗಿ ಪಾವತಿಸಲಾಗುತ್ತದೆ. ಶುಕ್ರವಾರ ಮಧ್ಯರಾತ್ರಿಯ ಮೊದಲು ಪಾವತಿಸಿದ ಯೋಜನೆಯನ್ನು ಆ ಭಾನುವಾರ ಬಿತ್ತಿ, ಅದರ ನಂತರದ ಶನಿವಾರ ಆರಂಭಿಸಲಾಗುತ್ತದೆ; ತಡವಾಗಿ ಪಾವತಿಸಿದ್ದು ಒಂದು ವಾರ ತಡವಾಗಿ ಆರಂಭವಾಗುತ್ತದೆ. ಪಾವತಿಸುವ ಮೊದಲು ನಾಲ್ಕು ಶನಿವಾರಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತದೆ.",
+          "ವಾರದ ಯೋಜನೆಯಲ್ಲಿ ನಾಲ್ಕು ಶನಿವಾರಗಳಂದು ತಲಾ ಒಂದರಂತೆ ನಾಲ್ಕು ಡಬ್ಬಗಳಿಗೆ ಮುಂಚಿತವಾಗಿ ಪಾವತಿಸಲಾಗುತ್ತದೆ. ಶುಕ್ರವಾರ ಮಧ್ಯರಾತ್ರಿಯ ಮೊದಲು ಪಾವತಿಸಿದ ಯೋಜನೆಯನ್ನು ಆ ಭಾನುವಾರ ಬಿತ್ತಿ, ಅದರ ನಂತರದ ಶನಿವಾರ ಆರಂಭಿಸಲಾಗುತ್ತದೆ; ಆ ಶನಿವಾರದ ಡಬ್ಬದಲ್ಲಿ ಮೊದಲೇ ಬಿತ್ತಬೇಕಾದ ನಿಧಾನ ಬೆಳೆ ಇದ್ದರೆ, ಇನ್ನೂ ಬಿತ್ತಲು ಸಾಧ್ಯವಿರುವ ಮುಂದಿನ ಶನಿವಾರದಿಂದ ಆರಂಭವಾಗುತ್ತದೆ. ತಡವಾಗಿ ಪಾವತಿಸಿದ್ದು ಒಂದು ವಾರ ತಡವಾಗಿ ಆರಂಭವಾಗುತ್ತದೆ. ಸೇರಲು ಕೊನೆಯ ದಿನ ಮತ್ತು ನಾಲ್ಕು ಶನಿವಾರಗಳನ್ನು ಪಾವತಿಸುವ ಮೊದಲು ತೋರಿಸಲಾಗುತ್ತದೆ.",
           "ಯೋಜನೆಗೆ ನಮ್ಮ ಡೆಲಿವರಿ ಪ್ರದೇಶದೊಳಗಿನ ವಿಳಾಸ ಬೇಕು. ಅದು ತಾನಾಗಿಯೇ ನವೀಕರಣಗೊಳ್ಳುವುದಿಲ್ಲ, ನಿಮ್ಮಿಂದ ಮತ್ತೆ ಏನನ್ನೂ ಕಡಿತಗೊಳಿಸುವುದಿಲ್ಲ; ಅದು ಮುಗಿದಾಗ ನೀವು ಹೊಸದನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು.",
           "ವೆಬ್‌ಸೈಟ್‌ನಲ್ಲಿ ಯೋಜನೆಯನ್ನು ನೀವೇ ಬದಲಿಸಲಾಗುವುದಿಲ್ಲ, ಆದರೆ ಒಂದು ಶನಿವಾರವನ್ನು ಬಿಡಲು, ಯೋಜನೆಯನ್ನು ತಡೆಹಿಡಿಯಲು ಅಥವಾ ರದ್ದುಮಾಡಲು ವಾಟ್ಸ್‌ಆ್ಯಪ್‌ನಲ್ಲಿ ಅಥವಾ ಇಮೇಲ್ ಮೂಲಕ ನಮ್ಮನ್ನು ಕೇಳಬಹುದು. ಬಿಟ್ಟ ಶನಿವಾರದ ಡಬ್ಬ ನಿಮ್ಮ ಕೊನೆಯ ಶನಿವಾರದ ನಂತರದ ಶನಿವಾರಕ್ಕೆ ಸರಿಯುತ್ತದೆ, ಹಾಗಾಗಿ ನೀವು ಪಾವತಿಸಿದ ಪ್ರತಿ ಡಬ್ಬವೂ ನಿಮಗೆ ಸಿಗುತ್ತದೆ. ತಡೆಹಿಡಿದಾಗ, ಮುಂದಿರುವ ಶನಿವಾರಗಳನ್ನು ನೀವು ಮತ್ತೆ ಆರಂಭಿಸಲು ಕೇಳುವವರೆಗೆ ಕಾಯ್ದಿರಿಸಲಾಗುತ್ತದೆ; ನಂತರ ಹೊಸ ಯೋಜನೆ ಆರಂಭವಾಗಬಹುದಾದ ಮೊದಲ ಶನಿವಾರದಿಂದ ಅವು ಮತ್ತೆ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರುತ್ತವೆ. ರದ್ದುಮಾಡಿದರೆ, ಮುಂದಿರುವ ಶನಿವಾರಗಳ ಡೆಲಿವರಿ ನಿಲ್ಲುತ್ತದೆ ಮತ್ತು ಇನ್ನೂ ತಲುಪಿಸದ ಡಬ್ಬಗಳ ಹಣವನ್ನು ಹಿಂದಿರುಗಿಸುತ್ತೇವೆ. ಇನ್ನೂ ಮುಂದಿರುವ ಶನಿವಾರವನ್ನು ಮಾತ್ರ ಬದಲಿಸಬಹುದು, ಹಾಗಾಗಿ ಆದಷ್ಟು ಬೇಗ ಕೇಳಿ."
         ]

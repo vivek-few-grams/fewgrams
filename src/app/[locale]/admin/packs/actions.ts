@@ -7,7 +7,7 @@ import { listTrays } from "@/lib/repo/trays";
 import { listGrowMedia } from "@/lib/repo/grow-media";
 import { listPackKeys } from "@/lib/content/packs";
 import { listSellableRacks } from "@/lib/racks/catalogue";
-import type { FormState } from "@/lib/forms";
+import { sortOrder, type FormState } from "@/lib/forms";
 import type { Pack } from "@/lib/types";
 
 /**
@@ -55,18 +55,27 @@ export async function savePack(_prev: FormState, fd: FormData): Promise<FormStat
   const price = Number(String(fd.get("price") ?? "").trim());
   if (!(Number.isFinite(price) && price > 0)) return fail("priceInvalid", "price");
 
+  /* A part the pack already names is kept even when it is off sale or gone:
+     the pack is then not on sale (`listSellablePacks`), but saving its price
+     must not quietly drop its rack and put it back on sale without one
+     (31 Oct 2026). Only a newly chosen part has to be on sale. */
+  const existing = (await listPacks()).find((p) => p.contentKey === contentKey);
+
   const rackSku = String(fd.get("rackSku") ?? "").trim() || null;
   let rackCount = 0;
   if (rackSku !== null) {
     const racks = await listSellableRacks();
-    if (!racks.some((r) => r.range === "angle" && r.sku === rackSku)) return fail("rackUnknown", "rackSku");
+    const known = racks.some((r) => r.range === "angle" && r.sku === rackSku) || rackSku === existing?.rackSku;
+    if (!known) return fail("rackUnknown", "rackSku");
     const n = whole(fd, "rackCount", 1);
     if (n === null) return fail("countInvalid", "rackCount");
     rackCount = n;
   }
 
   const trayKey = String(fd.get("trayKey") ?? "").trim();
-  if (!(await listTrays()).some((t) => t.contentKey === trayKey)) return fail("trayUnknown", "trayKey");
+  if (!(await listTrays()).some((t) => t.contentKey === trayKey) && trayKey !== existing?.trayKey) {
+    return fail("trayUnknown", "trayKey");
+  }
   const trayCount = whole(fd, "trayCount", 1);
   if (trayCount === null) return fail("countInvalid", "trayCount");
 
@@ -79,15 +88,15 @@ export async function savePack(_prev: FormState, fd: FormData): Promise<FormStat
   const mediumKey = String(fd.get("mediumKey") ?? "").trim() || null;
   let mediumCount = 0;
   if (mediumKey !== null) {
-    if (!(await listGrowMedia()).some((m) => m.contentKey === mediumKey))
+    if (!(await listGrowMedia()).some((m) => m.contentKey === mediumKey) && mediumKey !== existing?.mediumKey)
       return fail("mediumUnknown", "mediumKey");
     const n = whole(fd, "mediumCount", 1);
     if (n === null) return fail("countInvalid", "mediumCount");
     mediumCount = n;
   }
 
-  const sortOrder = Number(String(fd.get("sortOrder") ?? "").trim() || 0);
-  const existing = (await listPacks()).find((p) => p.contentKey === contentKey);
+  const order = sortOrder(fd);
+  if (order === null) return fail("sortOrderInvalid", "sortOrder");
 
   const pack: Pack = {
     id: existing?.id ?? crypto.randomUUID(),
@@ -103,7 +112,7 @@ export async function savePack(_prev: FormState, fd: FormData): Promise<FormStat
     mediumCount,
     onSite: fd.get("onSite") === "on",
     recommended: fd.get("recommended") === "on",
-    sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
+    sortOrder: order,
     active: fd.get("active") === "on",
   };
   await putPack(pack);

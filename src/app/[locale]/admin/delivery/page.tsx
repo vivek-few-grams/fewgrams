@@ -11,6 +11,15 @@ import { requireRole } from "@/lib/auth/guard";
 export const dynamic = "force-dynamic";
 
 /**
+ * Rupees declared as the goods' worth in the connection check below. Ekart
+ * refuses a quote whose `invoiceAmount` is zero ("invoiceAmount cannot be
+ * zero"), and the check has no goods — so it declares a nominal parcel. Only
+ * here: a real quote declares what is in the parcel (`deliveryPlan` sums its
+ * lines' totals). On our plans it sets liability, not the price.
+ */
+const CHECK_VALUE = 500;
+
+/**
  * `/admin/delivery` — SPEC §7. Where the courier collects from, how each kind
  * packs, and whether the courier connection works.
  *
@@ -113,7 +122,13 @@ export default async function DeliveryAdmin() {
       if (!settings) return { name, state: "noSettings" as const };
       const pin = settings.pickup.pincode;
       try {
-        const opts = await p.options({ originPin: pin, destinationPin: pin, grams: 500, speed: "surface" });
+        const opts = await p.options({
+          originPin: pin,
+          destinationPin: pin,
+          grams: 500,
+          speed: "surface",
+          value: CHECK_VALUE,
+        });
         return { name, state: "ok" as const, price: opts[0].total, count: opts.length };
       } catch (e) {
         return { name, state: "error" as const, detail: e instanceof Error ? e.message : String(e) };

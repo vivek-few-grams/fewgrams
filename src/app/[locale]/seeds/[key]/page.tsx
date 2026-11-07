@@ -171,8 +171,11 @@ export default async function SeedPage({ params }: PageProps<"/[locale]/seeds/[k
         prevLabel: d("prevPhotos"),
         nextLabel: d("nextPhotos"),
       }}
-      /* The smallest order, and how the seed reaches you — the two facts a
+      /* The smallest order, and when the seed ships — the two facts a
          seed buyer needs before the price, which lives in the buy box below.
+         Ships, never arrives: `seedReadyDate` is the day it leaves our shelf,
+         and the arrival depends on the address and the courier, which only
+         checkout knows (the tray page's "ready to ship {date}" exactly).
          The price is deliberately not repeated here: two copies of one number
          on one screen is where they start disagreeing (SPEC §18.10).
 

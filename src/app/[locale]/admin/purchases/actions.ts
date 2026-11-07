@@ -9,7 +9,7 @@ import { istDateISO } from "@/lib/delivery-date";
 import { err, type FormState } from "@/lib/forms";
 import { claimFromMatch, MATCH_TOLERANCE, matchStatement } from "@/lib/gst/gstr2b";
 import { isMonthId, monthOf, monthOfDate, nextMonth, type MonthId } from "@/lib/gst/period";
-import { isLockedMonth, type GstFiling } from "@/lib/gst/quarter";
+import { isLockedBill, isLockedMonth, type GstFiling } from "@/lib/gst/quarter";
 import {
   STOCK_KINDS,
   billTotals,
@@ -23,7 +23,7 @@ import {
 import { billItems } from "@/lib/purchases/cost";
 import { readBill } from "@/lib/purchases/read";
 import { costFromBills } from "@/lib/purchases/reprice";
-import { applyStockChange } from "@/lib/purchases/stock";
+import { applyStockChange, type StockShortfall } from "@/lib/purchases/stock";
 import { vendorSnapshot } from "@/lib/purchases/vendor";
 import { isValidContentKey } from "@/lib/content/content-key";
 import { growMediumNameMap } from "@/lib/content/grow-media";
@@ -49,9 +49,20 @@ import { getVendor, listVendors, putVendor } from "@/lib/repo/vendors";
  * admin role itself.
  *
  * **A filed quarter is closed.** Once its GSTR-3B is marked filed, a bill
- * claimed in it can be neither edited nor deleted, and no credit can be
- * claimed into it: the return already says what it says. A correction goes
- * in the next open month, as the law has it.
+ * in it — claimed in it, or dated in it with a 0% line its table 5 reports
+ * (`isLockedBill`) — can be neither added, edited nor deleted, and no credit
+ * can be claimed into it: the return already says what it says. A correction
+ * goes in the next open month, as the law has it.
+ *
+ * **Every bill write is conditional on the bill as read** (`putBill`,
+ * `deleteBill`). A save moves stock by the difference from the bill it read,
+ * so of two saves from one read the second is refused, not applied twice. The
+ * bill is written first and the stock moved after; if moving the stock fails
+ * it is undone (`applyStockChange` is all or nothing) and the bill put back,
+ * so saving again works out the whole change rather than none of it. The gap
+ * left open is a process killed between the two writes, which a stocktake
+ * finds; and a file uploaded by a save that is then refused has already
+ * replaced the bill's stored file.
  */
 
 function refresh(id?: string) {
@@ -72,6 +83,28 @@ function firstOpen(month: MonthId, filings: GstFiling[]): MonthId {
   let m = month;
   for (let i = 0; i < 240 && isLockedMonth(filings, m); i++) m = nextMonth(m);
   return m;
+}
+
+function logShort(billId: string, short: StockShortfall[]) {
+  for (const s of short) {
+    console.warn(
+      `[stock] bill ${billId}: ${s.kind}:${s.key} was ${s.short} short when taken back — count it on the stock screen`,
+    );
+  }
+}
+
+/**
+ * Put a bill back as it was before `written` — the save whose stock could not
+ * move. A new bill goes, with any file it uploaded; an edited one gets its
+ * old lines back, keeping the file as it is now stored, since the upload has
+ * already replaced the old one.
+ */
+async function restoreBill(current: PurchaseBill | null, written: PurchaseBill): Promise<void> {
+  const ok = current
+    ? await putBill({ ...current, file: written.file }, written.updatedAt)
+    : await deleteBill(written.id, written.updatedAt);
+  if (!ok) console.error(`[stock] bill ${written.id}: changed again before it could be put back`);
+  else if (!current && written.file) await deleteBillFile(written.id);
 }
 
 /** A stored GSTR-2B match, re-judged against edited lines. */
@@ -112,7 +145,7 @@ export async function saveBill(_prev: FormState, fd: FormData): Promise<FormStat
   });
   if (!read.ok) return read.state;
   const input = read.value;
-  if (current?.claim && isLockedMonth(filings, current.claim.month)) return err("locked");
+  if (current && isLockedBill(filings, current)) return err("locked");
 
   const upload = fd.get("file");
   const file = upload instanceof File && upload.size > 0 ? upload : null;
@@ -138,6 +171,9 @@ export async function saveBill(_prev: FormState, fd: FormData): Promise<FormStat
     createdAt: current?.createdAt ?? now,
     updatedAt: now,
   };
+  /* Unclaimed as yet, so this asks only whether its date puts it in a filed
+     return's table 5 — a claim is only ever made into an open month below. */
+  if (isLockedBill(filings, draft)) return err("lockedDate", "date");
   /* Reverse-charge credit needs no vendor's return: it is claimed in the
      month of the bill, or the first open month after it. Any other claim
      comes from GSTR-2B (or by hand) and survives an edit. */
@@ -174,12 +210,13 @@ export async function saveBill(_prev: FormState, fd: FormData): Promise<FormStat
     draft.file = null;
   }
 
-  await putBill(draft);
-  const short = await applyStockChange(stockChange(current?.lines ?? [], draft.lines));
-  for (const s of short) {
-    console.warn(
-      `[stock] bill ${draft.id}: ${s.kind}:${s.key} was ${s.short} short when taken back — count it on the stock screen`,
-    );
+  if (!(await putBill(draft, current?.updatedAt ?? null))) return err("conflict");
+  try {
+    logShort(draft.id, (await applyStockChange(stockChange(current?.lines ?? [], draft.lines))).short);
+  } catch (e) {
+    console.error(`[stock] bill ${draft.id}: the stock did not move, so the bill is put back`, e);
+    await restoreBill(current, draft);
+    return err("stockFailed");
   }
   await costFromBills([...billItems(current?.lines ?? []), ...billItems(draft.lines)]);
   refresh(draft.id);
@@ -192,12 +229,18 @@ export async function removeBill(fd: FormData): Promise<void> {
   await assertRole("admin");
   const bill = await getBill(String(fd.get("id") ?? ""));
   if (!bill) throw new Error("No such bill");
-  if (bill.claim && isLockedMonth(await listFilings(), bill.claim.month)) {
-    throw new Error("This bill is claimed in a filed quarter");
+  if (isLockedBill(await listFilings(), bill)) throw new Error("This bill is in a filed quarter");
+  /* Conditional on the bill as read: a second press, or a save landing at
+     the same moment, is refused here before any stock goes back. */
+  if (!(await deleteBill(bill.id, bill.updatedAt))) throw new Error("This bill changed — reload the page");
+  try {
+    logShort(bill.id, (await applyStockChange(stockChange(bill.lines, []))).short);
+  } catch (e) {
+    /* The stock is as it was, so the bill comes back as it was. */
+    await putBill(bill, null);
+    throw e;
   }
-  await applyStockChange(stockChange(bill.lines, []));
   if (bill.file) await deleteBillFile(bill.id);
-  await deleteBill(bill.id);
   /* After the delete, so the cost falls back to the bill before it. */
   await costFromBills(billItems(bill.lines));
   refresh();
@@ -223,14 +266,18 @@ export async function setClaim(_prev: FormState, fd: FormData): Promise<FormStat
   if (bill.reverseCharge) return err("reverseChargeClaim");
 
   const month = String(fd.get("month") ?? "");
-  if (month === "") {
-    await putBill({ ...bill, claim: null, updatedAt: new Date().toISOString() });
-  } else {
+  let claim: PurchaseBill["claim"] = null;
+  if (month !== "") {
     if (!isMonthId(month)) return err("monthInvalid", "month");
     if (!claimable(bill)) return err("notClaimable");
     if (month < monthOfDate(bill.date) || month > monthOf(new Date())) return err("monthInvalid", "month");
     if (isLockedMonth(filings, month)) return err("locked", "month");
-    await putBill({ ...bill, claim: { month, source: "manual" }, updatedAt: new Date().toISOString() });
+    claim = { month, source: "manual" };
+  }
+  /* Conditional, so a claim set from a stale read cannot write back lines a
+     save has just changed — and moved stock for. */
+  if (!(await putBill({ ...bill, claim, updatedAt: new Date().toISOString() }, bill.updatedAt))) {
+    return err("conflict");
   }
   refresh(bill.id);
   return { status: "saved" };

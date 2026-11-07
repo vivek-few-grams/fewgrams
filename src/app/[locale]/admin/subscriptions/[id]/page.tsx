@@ -3,7 +3,8 @@ import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { formatPhone } from "@/lib/account/validation";
-import { firstDeliveryDate, formatDeliveryDate, fromIstDateISO, istDateISO } from "@/lib/delivery-date";
+import { formatDeliveryDate, fromIstDateISO, istDateISO } from "@/lib/delivery-date";
+import { subscriptionOpening } from "@/lib/subscriptions/opening";
 import { documentNo } from "@/lib/orders/order";
 import { GATEWAY_LABEL } from "@/lib/payments/provider";
 import { getSubscription } from "@/lib/repo/subscriptions";
@@ -45,7 +46,7 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
   const format = await getFormatter();
   const now = new Date();
   const today = istDateISO(now);
-  const openDate = istDateISO(firstDeliveryDate(now));
+  const openDate = istDateISO((await subscriptionOpening(now)).first);
   const state = subscriptionState(sub, now);
   const gateway = GATEWAY_LABEL[sub.provider];
   const date = (iso: string) => formatDeliveryDate(fromIstDateISO(iso));

@@ -44,7 +44,7 @@ type Item = Tray | GrowMedium;
 type Picker = { supplyKey: string; vendors: VendorChoice[]; selected: string[] };
 type Action = (prev: FormState, fd: FormData) => Promise<FormState>;
 type PlainAction = (fd: FormData) => Promise<void>;
-type Actions = { update: Action; correct: Action; toggle: PlainAction; remove: PlainAction };
+type Actions = { update: Action; correct: Action; toggle: PlainAction; remove: Action };
 
 /* The number is typed straight into the cell, spreadsheet style: no box of
    its own, no spinner arrows (they sat over the right-aligned digits and cut
@@ -149,6 +149,9 @@ function Row({
   const t = useTranslations(namespace);
   const tc = useTranslations("admin.common");
   const [state, action, pending] = useActionState<FormState, FormData>(actions.update, IDLE);
+  /* A delete can be refused — a starter pack is made with this item — and
+     says so on the row under, with the save's messages. */
+  const [removeState, removeAction] = useActionState<FormState, FormData>(actions.remove, IDLE);
   const stock = item.stockPacks;
   const formId = `stock-${item.id}`;
 
@@ -175,6 +178,7 @@ function Row({
     /* Any error, field or form — a table cell has no room for an inline
        message, so it goes on the row under. */
     state.status === "error" && t(`errors.${state.code}`, state.values ?? {}),
+    removeState.status === "error" && t(`errors.${removeState.code}`, removeState.values ?? {}),
   ].filter((n): n is string => typeof n === "string");
 
   return (
@@ -188,7 +192,12 @@ function Row({
           <SupplierPicker {...picker} item={name ?? item.contentKey} />
           <p className="mt-1 flex items-center gap-1.5 font-body text-[11px] text-stone">
             <Truck aria-hidden size={12} strokeWidth={2} className="shrink-0" />
-            {stock === 0 ? t("stockNone") : t("stockLine", { count: stock })}
+            {/* Below zero is packs owed to customers (`StockCount`). */}
+            {stock < 0
+              ? t("stockOwed", { count: -stock })
+              : stock === 0
+                ? t("stockNone")
+                : t("stockLine", { count: stock })}
           </p>
         </td>
         <td className={`${CELL} px-3 py-2 text-right`}>
@@ -257,6 +266,8 @@ function Row({
             ) : (
               <form action={actions.toggle}>
                 <input type="hidden" name="id" value={item.id} />
+                {/* Where the press goes, not "flip it" — see `switchTo`. */}
+                <input type="hidden" name="to" value={item.active ? "off" : "on"} />
                 <button
                   className={`whitespace-nowrap rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
                     item.active
@@ -271,7 +282,7 @@ function Row({
             {bills > 0 ? (
               <OnBills count={bills} />
             ) : (
-              <form action={actions.remove}>
+              <form action={removeAction}>
                 <input type="hidden" name="id" value={item.id} />
                 <ConfirmSubmit
                   label={tc("delete")}

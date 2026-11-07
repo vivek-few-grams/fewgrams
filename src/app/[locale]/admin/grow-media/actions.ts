@@ -6,8 +6,9 @@ import { isOnABill } from "@/lib/repo/purchases";
 import { forgetSupply } from "@/lib/repo/vendors";
 import { deleteGrowMedium, getGrowMedium, patchGrowMedium, setGrowMediumStock } from "@/lib/repo/grow-media";
 import { marginOf, retailPrice } from "@/lib/pricing/margin";
-import { count, err, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
+import { count, err, optionalPositive, switchTo, zeroOrMore, type FormState } from "@/lib/forms";
 import { isValidStockPacks } from "@/lib/grow-media/lead-time";
+import { packUsing } from "../pack-usage";
 import type { GrowMedium } from "@/lib/types";
 
 /**
@@ -121,26 +122,34 @@ export async function correctGrowMediumStock(_prev: FormState, fd: FormData): Pr
 }
 
 /** Hide an item without losing its price — the only way something leaves
- *  this shelf. **Not switched on before a bill has costed it**: a row added
- *  from a bill is priced at 0 until that bill is saved. */
+ *  this shelf. Set to the state the button asks for (`switchTo`). **Not
+ *  switched on before a bill has costed it**: a row added from a bill is
+ *  priced at 0 until that bill is saved. */
 export async function toggleGrowMediumActive(fd: FormData): Promise<void> {
   await assertRole("admin");
   const existing = await getGrowMedium(String(fd.get("id")));
   if (!existing) throw new Error("Grow medium not found");
-  if (!existing.active && existing.cost === undefined) return;
-  await patchGrowMedium(existing.id, { active: !existing.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === existing.active) return;
+  if (active && existing.cost === undefined) return;
+  await patchGrowMedium(existing.id, { active });
   refresh();
 }
 
-export async function removeGrowMedium(fd: FormData): Promise<void> {
+/** Delete an item — refused while a starter pack is made with it (SPEC
+ *  §29): the pack would leave the site with nothing to say why. */
+export async function removeGrowMedium(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
-  const id = String(fd.get("id"));
-  const row = await getGrowMedium(id);
+  const row = await getGrowMedium(String(fd.get("id") ?? ""));
+  if (!row) return err("notFound");
   /* Its screen offers no Delete while a bill names it; this is for a
      request made without the screen. */
-  if (row && (await isOnABill(`media:${row.contentKey}`)))
-    throw new Error("This grow medium is on a purchase bill");
-  await deleteGrowMedium(id);
-  if (row) await forgetSupply(`media:${row.contentKey}`);
+  if (await isOnABill(`media:${row.contentKey}`)) return err("onABill");
+  const pack = await packUsing((p) => p.mediumKey === row.contentKey);
+  if (pack) return err("inPack", undefined, { pack });
+  await deleteGrowMedium(row.id);
+  await forgetSupply(`media:${row.contentKey}`);
   refresh();
+  return { status: "saved" };
 }

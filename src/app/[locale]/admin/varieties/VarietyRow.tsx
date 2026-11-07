@@ -61,6 +61,9 @@ export function VarietyRow({
   const t = useTranslations("admin.varieties");
   const tc = useTranslations("admin.common");
   const [state, action, pending] = useActionState<FormState, FormData>(updateVariety, IDLE);
+  /* Its own state: a refused delete (a plan's rotation still names it) says
+     why on the row, under the save's own messages. */
+  const [removeState, removeAction] = useActionState<FormState, FormData>(removeVariety, IDLE);
 
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field
@@ -139,6 +142,8 @@ export function VarietyRow({
 
       <form action={toggleVarietyActive} className="contents">
         <input type="hidden" name="id" value={variety.id} />
+        {/* Where the press goes, not "flip it" — see `switchTo`. */}
+        <input type="hidden" name="to" value={variety.active ? "off" : "on"} />
         <button
           /* Off and unpriced: switching it on would sell nothing, so it waits
              for a price (the line under the row says what is missing). */
@@ -155,7 +160,7 @@ export function VarietyRow({
         </button>
       </form>
 
-      <form action={removeVariety} className="contents">
+      <form action={removeAction} className="contents">
         <input type="hidden" name="id" value={variety.id} />
         <ConfirmSubmit
           label={tc("delete")}
@@ -197,6 +202,16 @@ export function VarietyRow({
       {state.status === "error" && !state.field && (
         <p className="col-span-full font-body text-[11px] text-terracotta">
           {t(`errors.${state.code}`, state.values ?? {})}
+        </p>
+      )}
+
+      {removeState.status === "error" && (
+        <p
+          role="alert"
+          className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta"
+        >
+          <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
+          {t(`errors.${removeState.code}`, removeState.values ?? {})}
         </p>
       )}
     </div>

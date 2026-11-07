@@ -34,3 +34,19 @@ describe("bestSelling", () => {
     expect(keys(bestSelling(items, {}, 3))).toEqual(["a", "b", "c"]);
   });
 });
+
+/* The audit, 31 Oct 2026: a tray page's "Seeds to sow" suggested beetroot
+   with 58 g held — sold out, since under 100 g cannot fill one pack. The
+   grids still list it, marked sold out; a suggestion never does. */
+describe("a sold-out item is never suggested", () => {
+  const shelf = items.map((item) => ({ ...item, soldOut: item.key === "b" || item.key === "d" }));
+
+  it("skips it and fills the place with the next one", () => {
+    expect(keys(after(shelf, "a", 3))).toEqual(["c", "e", "f"]);
+    expect(keys(bestSelling(shelf, { b: 900, d: 500, f: 200 }, 3))).toEqual(["f", "a", "c"]);
+  });
+
+  it("still gives a sold-out product's own page its neighbours", () => {
+    expect(keys(after(shelf, "b", 2))).toEqual(["c", "e"]);
+  });
+});

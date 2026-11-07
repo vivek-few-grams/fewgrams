@@ -1,4 +1,4 @@
-import { LIST_OPTS, READ_OPTS } from "@/lib/db/client";
+import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import type { EntityItem } from "electrodb";
 import { SowingEntity } from "@/lib/db/entities";
 import type { Sowing, SowingLine } from "@/lib/types";
@@ -43,15 +43,44 @@ export async function getSowing(id: string): Promise<Sowing | null> {
   return data ? fromRow(data) : null;
 }
 
-/** Write the whole row. A changed sow date moves its GSI1 sort key with it,
- *  because a put rewrites every key. */
-export async function putSowing({ seedsTaken, ...s }: Sowing): Promise<void> {
-  await SowingEntity.put({
+/**
+ * Write the whole row. A changed sow date moves its GSI1 sort key with it,
+ * because a put rewrites every key.
+ *
+ * **Conditional on the version read**: `read` is the `updatedAt` the sowing
+ * was read at, and the write is refused (false) if it has changed or gone
+ * since — or null for a new sowing, refused if the id is taken. A save moves
+ * the seed shelf from what it read, so two saves from one read must not both
+ * land.
+ */
+export async function putSowing({ seedsTaken, ...s }: Sowing, read: string | null): Promise<boolean> {
+  const row = {
     ...s,
     ...(seedsTaken ? { seedsTaken: Object.entries(seedsTaken).map(([key, grams]) => ({ key, grams })) } : {}),
-  }).go();
+  };
+  try {
+    if (read === null) await SowingEntity.create(row).go();
+    else
+      await SowingEntity.put(row)
+        .where(({ updatedAt }, { eq }) => eq(updatedAt, read))
+        .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
 }
 
-export async function deleteSowing(id: string): Promise<void> {
-  await SowingEntity.delete({ id }).go();
+/** Delete a sowing, conditional on the `updatedAt` it was read at — false
+ *  when it has changed or gone since, so its seed goes back once. */
+export async function deleteSowing(id: string, read: string): Promise<boolean> {
+  try {
+    await SowingEntity.delete({ id })
+      .where(({ updatedAt }, { eq }) => eq(updatedAt, read))
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
 }

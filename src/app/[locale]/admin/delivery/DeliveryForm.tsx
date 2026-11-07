@@ -13,6 +13,13 @@ import { saveShippingSettings } from "./actions";
  * form, one save. Vendors can also be added from a product's own screen,
  * where each product picks its vendor (`VendorPickupPanel`); here they are
  * edited and removed.
+ *
+ * **The vendor list is the stored one, as the page last rendered it**, plus
+ * the rows added here and less the ones removed here — not a copy taken on
+ * first load. The save posts the rows and, separately, the ids removed, and
+ * the server merges them over the row as it is then (`mergeOrigins`), so a
+ * vendor added on a rack screen meanwhile survives the save and shows up here
+ * once the page has refreshed.
  */
 export function DeliveryForm({ settings }: { settings: ShippingSettings | null }) {
   const t = useTranslations("admin.delivery");
@@ -23,9 +30,16 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
     state.status === "error" && state.field === field ? e(state.code, state.values ?? {}) : undefined;
 
   const p = settings?.pickup;
-  const [origins, setOrigins] = useState<Origin[]>(settings?.origins ?? []);
+  const [added, setAdded] = useState<Origin[]>([]);
+  const [removed, setRemoved] = useState<string[]>([]);
+  const stored = settings?.origins ?? [];
+  /* A row added here keeps its id once saved, so it moves from `added` to
+     `stored` without a second copy, and React keeps its inputs (keyed by id). */
+  const origins = [...stored, ...added.filter((a) => !stored.some((o) => o.id === a.id))].filter(
+    (o) => !removed.includes(o.id),
+  );
   const addOrigin = () =>
-    setOrigins((os) => [
+    setAdded((os) => [
       ...os,
       {
         id: `loc-${Math.random().toString(36).slice(2, 8)}`,
@@ -36,7 +50,7 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
         pincode: "",
       },
     ]);
-  const removeOrigin = (id: string) => setOrigins((os) => os.filter((o) => o.id !== id));
+  const removeOrigin = (id: string) => setRemoved((ids) => [...ids, id]);
   const k = settings?.packing;
 
   const text = (name: string, value: string | undefined, extra?: Record<string, string>) => (
@@ -80,6 +94,13 @@ export function DeliveryForm({ settings }: { settings: ShippingSettings | null }
         <legend className="px-1 font-display text-base font-semibold text-forest">
           {t("originsHeading")}
         </legend>
+        {/* What was taken off, said outright: a row merely missing from the
+            post is one this page never showed, and is kept. */}
+        {removed
+          .filter((id) => stored.some((o) => o.id === id))
+          .map((id) => (
+            <input key={id} type="hidden" name="removedOrigin" value={id} />
+          ))}
         <p className="font-body text-xs leading-relaxed text-stone">{t("originsHint")}</p>
         <div className="mt-4 space-y-4">
           {origins.map((o, i) => (

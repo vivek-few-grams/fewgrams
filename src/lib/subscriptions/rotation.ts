@@ -1,4 +1,4 @@
-import { deliverySchedule, fromIstDateISO, istDateISO } from "@/lib/delivery-date";
+import { fromIstDateISO, istDateISO } from "@/lib/delivery-date";
 import { ROTATION_WEEKS } from "@/lib/subscriptions/weeks";
 
 /**
@@ -41,15 +41,17 @@ export function rotationWeek(date: Date): number {
 export type ScheduledBox = { date: Date; week: number };
 
 /**
- * The Saturdays a subscription bought at `now` delivers on, each with its
- * rotation week — first box first. Starts on the §5.3 first-delivery date,
- * so whatever week that happens to be is the customer's first box.
+ * The Saturdays a subscription delivers on, each with its rotation week —
+ * first box first. Starts on `first`, the opening Saturday
+ * (`subscriptionOpening`), so whatever week that happens to be is the
+ * customer's first box. Taking the date rather than `now` keeps every caller
+ * on the one rule for when a new subscriber can start.
  */
-export function subscriptionSchedule(
-  now: Date = new Date(),
-  boxes: number = ROTATION_WEEKS.length,
-): ScheduledBox[] {
-  return deliverySchedule(now, boxes).map((date) => ({ date, week: rotationWeek(date) }));
+export function subscriptionSchedule(first: Date, boxes: number = ROTATION_WEEKS.length): ScheduledBox[] {
+  return Array.from({ length: boxes }, (_, i) => {
+    const date = new Date(first.getTime() + i * WEEK_MS);
+    return { date, week: rotationWeek(date) };
+  });
 }
 
 /**

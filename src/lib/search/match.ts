@@ -77,6 +77,53 @@ const STOP_WORDS = new Set([
   "buy",
 ]);
 
+/**
+ * Words a visitor searches by that the descriptions do not use, each with the
+ * words they do use for the same thing — the audit, 31 Oct 2026: "spicy"
+ * found nothing, though mustard, radish and rocket are written up as hot,
+ * heat and peppery.
+ *
+ * **One way only.** Typing the key also tries its words; typing one of the
+ * words does not try the key or its siblings, so "peppery" — a taste chip —
+ * finds exactly what it always found. A synonym hit is worth a little less
+ * than the word itself (`SYNONYM_WEIGHT`), so a product that does say
+ * "spicy" would rank first, and it is matched without forgiving a typo: a
+ * typo on top of a synonym is two steps from what was typed.
+ *
+ * Each word on the right must be in its `tokens` form and used by some
+ * description; `match.test.ts` checks both. Not a word that only *names*
+ * the heat: "mustard" would bring in the cabbage, which is described as
+ * "without the bite of mustard". Kannada needs no row: the Kannada files
+ * say ಖಾರ, the word a Kannada visitor types for it.
+ */
+export const SYNONYMS: ReadonlyMap<string, readonly string[]> = new Map([
+  ["spicy", ["hot", "heat", "peppery"]],
+]);
+
+/** What a synonym hit is worth, against a hit on the word itself. */
+const SYNONYM_WEIGHT = 0.9;
+
+/** One way a query word may be matched: as itself, or as a synonym. */
+type Alternative = { word: string; weight: number; synonym: boolean };
+
+/**
+ * The words one query word is matched as — itself, plus the words of any
+ * synonym key it calls up. The key is called up when it is typed whole, or
+ * from four letters as its start ("spic"), so the header box shows the hot
+ * ones while the word is still being typed. **Not by a typo**: forgiving one
+ * against the start of the key let "spin" call up "spicy".
+ */
+export function alternatives(q: string): Alternative[] {
+  const out: Alternative[] = [{ word: q, weight: 1, synonym: false }];
+  const started = Array.from(q).length >= 4;
+  for (const [key, words] of SYNONYMS) {
+    const fit = key === q ? 1 : started && key.startsWith(q) ? 0.75 : 0;
+    if (fit === 0) continue;
+    for (const word of words) out.push({ word, weight: fit * SYNONYM_WEIGHT, synonym: true });
+  }
+  return out;
+}
+
 /** The zero-width joiners Kannada uses between letters — "ಬೀಟ್‌ರೂಟ್" — which a
  *  visitor may or may not type. Removed from both sides. */
 const JOINERS = /[‌‍]/gu;
@@ -211,18 +258,21 @@ export function prepare<T extends { terms: SearchTerms }>(entries: T[]): Prepare
  *
  * **Every query word has to match something** — "red cabbage" is the red
  * cabbage, not every red thing plus every cabbage. Each word scores its best
- * hit across the fields, weighted by field; the entry scores the sum, plus a
- * bonus when the whole query is the start of a name, so typing "red" puts
- * Red Amaranthus above a description that mentions red stems.
+ * hit across the fields, weighted by field, as itself or as one of its
+ * synonyms (`alternatives`); the entry scores the sum, plus a bonus when the
+ * whole query is the start of a name, so typing "red" puts Red Amaranthus
+ * above a description that mentions red stems.
  */
 export function score<T>(prepared: Prepared<T>, words: string[]): number {
   let total = 0;
   for (const q of words) {
     let best = 0;
-    for (const { field, weight, fuzzy } of FIELDS) {
-      for (const w of prepared.words[field]) {
-        const s = wordScore(q, w, fuzzy) * weight;
-        if (s > best) best = s;
+    for (const alt of alternatives(q)) {
+      for (const { field, weight, fuzzy } of FIELDS) {
+        for (const w of prepared.words[field]) {
+          const s = wordScore(alt.word, w, fuzzy && !alt.synonym) * weight * alt.weight;
+          if (s > best) best = s;
+        }
       }
     }
     if (best === 0) return 0;

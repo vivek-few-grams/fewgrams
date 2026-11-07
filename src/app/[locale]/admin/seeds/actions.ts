@@ -7,7 +7,7 @@ import { forgetSupply } from "@/lib/repo/vendors";
 import { deleteSeed, getSeed, listSeeds, patchSeed, putSeedMargin, setSeedStock } from "@/lib/repo/seeds";
 import { retailPrice } from "@/lib/pricing/margin";
 import { repriceVarieties } from "@/lib/varieties/reprice";
-import { count, err, zeroOrMore, type FormState } from "@/lib/forms";
+import { count, err, switchTo, zeroOrMore, type FormState } from "@/lib/forms";
 
 /**
  * Seed mutations — SPEC §22.3.
@@ -54,14 +54,18 @@ export async function correctSeedStock(_prev: FormState, fd: FormData): Promise<
 }
 
 /** Hide a seed without losing its price or its stock figure — the only way a
- *  seed leaves the site. **Not switched on before a bill has costed it**: a
- *  seed added from a bill is priced at 0 until that bill is saved. */
+ *  seed leaves the site. Set to the state the button asks for (`switchTo`).
+ *  **Not switched on before a bill has costed it**: a seed added from a bill
+ *  is priced at 0 until that bill is saved. */
 export async function toggleSeedActive(fd: FormData): Promise<void> {
   await assertRole("admin");
   const existing = await getSeed(String(fd.get("id")));
   if (!existing) throw new Error("Seed not found");
-  if (!existing.active && existing.costPer100g === undefined) return;
-  await patchSeed(existing.id, { active: !existing.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === existing.active) return;
+  if (active && existing.costPer100g === undefined) return;
+  await patchSeed(existing.id, { active });
   refresh();
 }
 
@@ -100,8 +104,9 @@ export async function removeSeed(fd: FormData): Promise<void> {
   if (row) {
     await forgetSupply(`seed:${row.contentKey}`);
     /* The microgreen of the same key loses the seed cost it was priced from,
-       and with it every page that sells it. */
-    await repriceVarieties([row.contentKey]);
+       and with it every page that sells it. Told so outright: the seed list
+       may still show the row just deleted. */
+    await repriceVarieties([row.contentKey], { seedCosts: new Map([[row.contentKey, undefined]]) });
     revalidatePath("/[locale]", "layout");
   }
   refresh();

@@ -3,11 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
 import { cancelOrder as cancel } from "@/lib/orders/cancel";
-import { markOrderRefunded } from "@/lib/orders/refund";
+import { issueCreditNote, markOrderRefunded, owesCreditNote } from "@/lib/orders/refund";
 import { TRACKING_NUMBER, canAdvance, canMarkRefunded, isOrderId } from "@/lib/orders/order";
 import { advanceOrderStatus, getOrder, setPlaceOfSupply, setShipmentTracking } from "@/lib/repo/orders";
 import { listFilings } from "@/lib/repo/gst";
-import { monthOf, quarterOf } from "@/lib/gst/period";
+import { monthOf } from "@/lib/gst/period";
+import { isSalesLockedMonth } from "@/lib/gst/quarter";
 import { HOME_STATE, gstStateByCode } from "@/lib/tax/states";
 import { bookShipment, type BookFailure } from "@/lib/shipping/book";
 import { ORDER_STATUSES, type OrderStatus } from "@/lib/types";
@@ -73,6 +74,13 @@ export async function markRefunded(fd: FormData): Promise<void> {
   if (!isOrderId(id)) throw new Error("Bad refund request");
   const order = await getOrder(id);
   if (!order) throw new Error(`No order ${id}`);
+  /* A refunded order still owing its credit note gets it here — the press
+     that finishes what an interrupted refund started. */
+  if (owesCreditNote(order)) {
+    await issueCreditNote(order);
+    revalidateOrder(id);
+    return;
+  }
   if (!canMarkRefunded(order.status)) {
     throw new Error(`An order cannot be marked refunded from ${order.status}`);
   }
@@ -84,8 +92,14 @@ export async function markRefunded(fd: FormData): Promise<void> {
 
 /**
  * Record a courier parcel's tracking number, typed from the courier's
- * dashboard once it is booked (booking from here is not built). Blank clears
- * it. The customer's order page shows it from then on (Shipping policy).
+ * dashboard for a parcel booked there. Blank clears it — and with it any
+ * booking made from here (`setShipmentTracking`). The customer's order page
+ * shows it from then on (Shipping policy).
+ *
+ * The write is conditional on the order as read. When something else wrote
+ * first — a status move, say — it is read again and the number written onto
+ * that; when the parcel itself changed, a booking landed meanwhile, and
+ * nothing is written over it.
  */
 export async function setTracking(fd: FormData): Promise<void> {
   await assertRole("admin");
@@ -95,11 +109,16 @@ export async function setTracking(fd: FormData): Promise<void> {
   if (!isOrderId(id) || !Number.isInteger(index)) throw new Error("Bad tracking request");
   if (raw !== "" && !TRACKING_NUMBER.test(raw)) throw new Error("That is not a tracking number");
 
-  const order = await getOrder(id);
+  let order = await getOrder(id);
   if (!order) throw new Error(`No order ${id}`);
-  if (order.shipments[index]?.method !== "courier")
-    throw new Error("Only a courier parcel has a tracking number");
-  await setShipmentTracking(order, index, raw === "" ? null : raw);
+  const parcel = order.shipments[index];
+  if (parcel?.method !== "courier") throw new Error("Only a courier parcel has a tracking number");
+  for (let attempt = 0; !(await setShipmentTracking(order, index, raw === "" ? null : raw)); attempt++) {
+    order = await getOrder(id);
+    if (!order || attempt >= 2 || JSON.stringify(order.shipments[index]) !== JSON.stringify(parcel)) {
+      throw new Error("This parcel changed at the same moment — reload the page and check it");
+    }
+  }
 
   revalidatePath(`/[locale]/admin/orders/${id}`, "page");
   revalidatePath(`/[locale]/account/orders/${id}`, "page");
@@ -139,7 +158,8 @@ export async function bookParcel(_prev: BookState, fd: FormData): Promise<BookSt
  * (SPEC §26.2) — GSTR-1 needs a place of supply for every sale. Never
  * Karnataka: an order is placed in Karnataka by its PIN, so one left
  * unplaced is delivered elsewhere and its tax is already IGST. Refused once
- * the quarter's GSTR-1 is marked filed.
+ * the quarter's GSTR-1 or GSTR-3B is marked filed (`isSalesLockedMonth`) —
+ * both report the sale by state.
  */
 export async function setOrderPlaceOfSupply(fd: FormData): Promise<void> {
   await assertRole("admin");
@@ -149,8 +169,9 @@ export async function setOrderPlaceOfSupply(fd: FormData): Promise<void> {
   if (!order || !order.tax || !order.paidAt || order.placeOfSupply) throw new Error("Nothing to set");
   const state = gstStateByCode(String(fd.get("state") ?? ""));
   if (!state || state.code === HOME_STATE.code) throw new Error("Pick a state outside Karnataka");
-  const filed = (await listFilings()).find((f) => f.quarter === quarterOf(monthOf(order.paidAt!)));
-  if (filed?.gstr1) throw new Error("That quarter's GSTR-1 is filed");
+  if (isSalesLockedMonth(await listFilings(), monthOf(order.paidAt))) {
+    throw new Error("That quarter's GSTR-1 or GSTR-3B is filed");
+  }
   await setPlaceOfSupply(id, state);
   revalidateOrder(id);
   revalidatePath("/[locale]/admin/gst", "page");

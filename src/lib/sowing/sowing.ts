@@ -109,12 +109,21 @@ export function yieldByVariety(sowings: Sowing[]): VarietyYield[] {
 /**
  * What saving a sowing does to the seed shelf (the owner, 18 Oct 2026: the
  * seed sown comes off the stock the shop sells from) — grams to take per
- * seed key, negative to put back, to go from what the sowing has already
- * `taken` to what its `lines` call for. A new sowing has taken nothing; a
- * deleted one calls for nothing.
+ * seed key, negative to put back, when its lines go from `before` to
+ * `after`. A new sowing is `seedChange({}, [], lines)`; a deleted one
+ * `seedChange(taken, lines, [])`.
  *
- * Measured from what was *taken*, not from the old lines, so a sowing the
- * shelf was short for never returns more than came off it.
+ * **An edit moves the shelf by the change in grams sown**, and by nothing
+ * else (31 Oct 2026). It was measured from what the sowing had `taken`, so a
+ * shortfall — 50 g sown with 30 g on the shelf — was asked for again on every
+ * later edit, after the owner had already put the count right by stocktake.
+ * A variety whose seed row did not exist when it was sown (so took nothing)
+ * likewise takes nothing until its grams change.
+ *
+ * **Never puts back more than came off**: a reduction returns the grams no
+ * longer sown, up to what the sowing has `taken` of that seed, and a seed no
+ * longer sown at all returns all of it — so deleting a sowing returns
+ * exactly what it took.
  *
  * Keyed by the variety's content key, because a microgreen is sown from the
  * seed of the same key — `radish` from `radish`. A variety with no seed row
@@ -122,13 +131,24 @@ export function yieldByVariety(sowings: Sowing[]): VarietyYield[] {
  */
 export function seedChange(
   taken: Readonly<Record<string, number>>,
-  lines: readonly SowingLine[],
+  before: readonly SowingLine[],
+  after: readonly SowingLine[],
 ): Map<string, number> {
-  const m = new Map<string, number>();
-  for (const [k, g] of Object.entries(taken)) m.set(k, -g);
-  for (const l of lines) m.set(l.varietyKey, (m.get(l.varietyKey) ?? 0) + l.seedGrams);
-  for (const [k, v] of m) if (Math.abs(v) < 1e-9) m.delete(k);
-  return m;
+  const sown = (lines: readonly SowingLine[]) => {
+    const m = new Map<string, number>();
+    for (const l of lines) m.set(l.varietyKey, (m.get(l.varietyKey) ?? 0) + l.seedGrams);
+    return m;
+  };
+  const was = sown(before);
+  const now = sown(after);
+  const out = new Map<string, number>();
+  for (const k of new Set([...Object.keys(taken), ...was.keys(), ...now.keys()])) {
+    const had = taken[k] ?? 0;
+    const delta = (now.get(k) ?? 0) - (was.get(k) ?? 0);
+    const grams = !now.has(k) ? -had : delta < 0 ? Math.max(delta, -had) : delta;
+    if (Math.abs(grams) >= 1e-9) out.set(k, grams);
+  }
+  return out;
 }
 
 /* ───────────────────────── reading the form ───────────────────────── */

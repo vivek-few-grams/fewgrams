@@ -1,0 +1,42 @@
+{
+  "order": {
+    "subject": "Your {brand} order {number} is confirmed",
+    "invoiceRef": "Invoice {number}",
+    "orderRef": "Order {id}",
+    "heading": "Thank you, your order is placed",
+    "greeting": "Hello,",
+    "body": "We've received your payment. Here is everything in your order.",
+    "arrives": "Arrives by {date}",
+    "itemsHeading": "What you ordered",
+    "amount": "₹{amount, number}",
+    "delivery": "Delivery",
+    "deliveryFree": "Free",
+    "total": "Total",
+    "inclusive": "Inclusive of all taxes",
+    "addressHeading": "Delivering to",
+    "button": "View your order",
+    "fallback": "Or open this link in your browser:",
+    "help": "Questions about your order? Write to {email} or call {phone}."
+  },
+  "subscription": {
+    "subject": "Your {brand} subscription {number} is confirmed",
+    "invoiceRef": "Invoice {number}",
+    "subscriptionRef": "Subscription {id}",
+    "heading": "You're subscribed",
+    "greeting": "Hello,",
+    "body": "We've received your payment. Here are your plans and the Saturdays your boxes arrive.",
+    "plansHeading": "Your plans",
+    "planLine": "{plan} × {count, number}",
+    "planBoxes": "{count, plural, one {# box} other {# boxes}} every Saturday",
+    "amount": "₹{amount, number}",
+    "total": "Total paid",
+    "deliveryIncluded": "Delivery included",
+    "saturdaysHeading": "Your Saturdays",
+    "boxN": "Box {n}",
+    "termNote": "This is a one-time payment for the Saturdays above. It does not renew by itself.",
+    "addressHeading": "Delivering to",
+    "button": "View your subscription",
+    "fallback": "Or open this link in your browser:",
+    "help": "Questions about your subscription? Write to {email} or call {phone}."
+  }
+}

@@ -99,7 +99,9 @@
       "keyInvalid": "Lowercase letters and hyphens only — no numbers or spaces. For example red-amaranth.",
       "seedInvalid": "Seed per tray must be a positive number, or blank.",
       "zeroOrMore": "Must be 0 or more.",
-      "countInvalid": "Must be a whole number of 1 or more."
+      "countInvalid": "Must be a whole number of 1 or more.",
+      "inRotation": "Not deleted — {plan} grows it in week {week}. Take it out of that week on admin → plans, then delete it.",
+      "inRotationMore": "Not deleted — {plan} grows it in week {week}, and {more, plural, one {one more plan week names it} other {# more plan weeks name it}} too. Take it out of every rotation on admin → plans, then delete it."
     },
     "pickExisting": "Existing content files appear as suggestions as you type.",
     "deleteTitle": "Delete this variety?",
@@ -179,8 +181,11 @@
       "priceRequired": "A curated plan needs a monthly price, or tick Pick Your Own.",
       "priceInvalid": "Monthly price must be a positive number.",
       "gramsInvalid": "Grams per box must be at least 1. Pick Your Own is the exception — leave it at 0.",
-      "varietyUnknown": "\"{key}\" is not a variety any more. Remove it and save again."
-    }
+      "varietyUnknown": "\"{key}\" is not a variety any more. Remove it and save again.",
+      "sortOrderInvalid": "A whole number from 0 to 999."
+    },
+    "exoticMissing": "{exotic} should be {essential} plus more, but none of its four weeks has {names}. Add them to a week, or save anyway.",
+    "exoticNothingMore": "{exotic} should be {essential} plus more, but nothing in its four weeks is beyond {essential}. Add something rarer, or save anyway."
   },
   "racks": {
     "title": "Shelf racks",
@@ -309,7 +314,12 @@
       "heightUnknown": "That height is not one you sell. Add it to Heights above.",
       "gramsInvalid": "Weight must be more than zero, or blank.",
       "packedInvalid": "Packed thickness must be more than zero, or blank.",
-      "rangeInvalid": "That rack range does not exist."
+      "rangeInvalid": "That rack range does not exist.",
+      "plateExists": "A {depth} × {length} ft plate is already in the list. Edit that row instead.",
+      "angleExists": "A {thickness} mm grade is already in the list. Edit that row instead.",
+      "dimensionLocked": "This size is part of every rack's SKU on this row, so it can't change. Add the new size as its own row.",
+      "duplicateSku": "A rack with the SKU {sku} is already on sale. Two models with one SKU would be one product to the cart and the starter packs.",
+      "angleInPack": "Not deleted — the {pack} starter pack's rack is built on this grade. Choose another rack for it on admin → packs first."
     },
     "colGramsPerShelf": "Plate (g)",
     "gramsMissing": "Not weighed yet — the plate alone, without legs. Courier orders for racks on this size can't be priced",
@@ -385,7 +395,11 @@
       "angleUnknown": "That angle grade is not in the rates.",
       "heightUnknown": "That height is not one you sell. Add it to Heights on Shelf racks.",
       "duplicateRack": "That exact rack is already on sale.",
-      "gramsInvalid": "Grams per shelf must be more than zero, or blank."
+      "gramsInvalid": "Grams per shelf must be more than zero, or blank.",
+      "frameExists": "A {depth} × {length} ft footprint is already in the list. Use that row — switch it on if it is off.",
+      "duplicateSku": "A rack with the SKU {sku} is already on sale. Two models with one SKU would be one product to the cart and the starter packs.",
+      "frameInPack": "Not deleted — the {pack} starter pack's rack is built on this footprint. Choose another rack for it on admin → packs first.",
+      "rackInPack": "Not deleted — this is the {pack} starter pack's rack. Choose another rack for it on admin → packs first."
     }
   },
   "pipeRacks": {
@@ -466,7 +480,9 @@
       "heightTooTall": "Pipe racks stop at {max} ft.",
       "duplicateRack": "That exact rack is already on sale.",
       "gramsInvalid": "Weight must be more than zero, or blank.",
-      "packedInvalid": "Must be more than zero, or blank."
+      "packedInvalid": "Must be more than zero, or blank.",
+      "sizeExists": "A {depth} × {length} ft footprint is already in the list. Use that row — switch it on if it is off.",
+      "duplicateSku": "A rack with the SKU {sku} is already on sale. Two models with one SKU would be one product to the cart."
     },
     "pipeDiameterCm": "Pipe outer diameter (cm)",
     "pipeDiameterCmHint": "For courier prices. A pipe rack ships as a bundle: every piece of pipe laid end to end in lines as long as the longest piece, and the lines grouped square — four 4 ft legs are two pipes square. ¾ inch UPVC is about 2.7 cm across.",
@@ -481,15 +497,15 @@
   },
   "overview": {
     "varieties": "Varieties",
-    "varietiesHint": "Price per tray and grow days — what an ad-hoc order is charged and when it arrives",
+    "varietiesHint": "Grow days, yield and seed per tray — the price of a 100 g box is worked out from them, the seed's cost and the costing, never typed",
     "plans": "Plans",
-    "plansHint": "The bundles on the home page, and their 4-week rotation",
+    "plansHint": "The three weekly plans — monthly price, box weight and the 4-week rotation",
     "seeds": "Seeds",
-    "seedsHint": "Price per 50 g and the grams on the shelf — the shelf is the most a customer can order",
+    "seedsHint": "Priced per 100 g from the latest purchase bill's cost and the seeds margin. The grams held are the most a customer can order",
     "trays": "Trays & drainage",
-    "traysHint": "What a pack costs and how long the supplier takes — nothing here is held in stock",
+    "traysHint": "Held in stock and priced from the latest purchase bill's cost and each row's own margin — up to the packs held ships next day, more a day later",
     "growMedia": "Grow media",
-    "growMediaHint": "Cocopeat blocks — what a block costs and how long the maker takes. Nothing here is held in stock"
+    "growMediaHint": "Cocopeat blocks, held in stock and priced like trays — the latest bill's cost and each pack size's own margin"
   },
   "seeds": {
     "title": "Seeds",
@@ -558,7 +574,9 @@
       "packingIncomplete": "Fill in all six packing figures, or leave them all blank.",
       "packPiecesInvalid": "Pieces per pack must be a whole number.",
       "zeroOrMore": "Must be 0 or more.",
-      "countInvalid": "Must be a whole number of 1 or more."
+      "countInvalid": "Must be a whole number of 1 or more.",
+      "onABill": "Not deleted — a purchase bill names this item.",
+      "inPack": "Not deleted — the {pack} starter pack is made with this item. Choose other trays for it on admin → packs first."
     },
     "packing": {
       "packPieces": "Pieces per pack",
@@ -581,6 +599,7 @@
     "colStock": "Held",
     "stockLine": "{count, plural, one {# pack} other {# packs}} held — ships next day up to that, a day later beyond",
     "stockNone": "None held — every order ships a day later",
+    "stockOwed": "None held and {count, plural, one {# pack} other {# packs}} owed to paid orders — a purchase bill for them brings the count back up",
     "colActions": "Actions",
     "costMissing": "No cost yet — no saved bill has it on. It stays hidden until one does.",
     "needsBill": "Needs a bill"
@@ -617,7 +636,9 @@
       "packingIncomplete": "Fill in all six packing figures, or leave them all blank.",
       "packPiecesInvalid": "Blocks per pack must be a whole number.",
       "zeroOrMore": "Must be 0 or more.",
-      "countInvalid": "Must be a whole number of 1 or more."
+      "countInvalid": "Must be a whole number of 1 or more.",
+      "onABill": "Not deleted — a purchase bill names this item.",
+      "inPack": "Not deleted — the {pack} starter pack comes with this block. Choose another grow medium for it, or none, on admin → packs first."
     },
     "packing": {
       "packPieces": "Blocks per pack",
@@ -640,6 +661,7 @@
     "colStock": "Held",
     "stockLine": "{count, plural, one {# block} other {# blocks}} held — ships next day up to that, a day later beyond",
     "stockNone": "None held — every order ships a day later",
+    "stockOwed": "None held and {count, plural, one {# block} other {# blocks}} owed to paid orders — a purchase bill for them brings the count back up",
     "colActions": "Actions",
     "costMissing": "No cost yet — no saved bill has it on. It stays hidden until one does.",
     "needsBill": "Needs a bill"
@@ -654,6 +676,7 @@
     "onBillsTitle": "A product on a purchase bill can't be deleted, or the bill would name nothing. Hide it instead, or delete its bills first.",
     "grams": "{count, number} g",
     "packs": "{count, number}",
+    "owed": "{count, number} owed",
     "correctLabel": "Correct the count (stocktake)",
     "countLabel": "Counted on the shelf",
     "saveCount": "Save the count",
@@ -731,7 +754,7 @@
     "grams": "{grams, number} g",
     "units": "× {count, number}",
     "deliveryLine": "Delivery",
-    "deliveryQuote": "{courier} quote ₹{quoted, number}, zone {zone} — rounded up for the customer",
+    "deliveryQuote": "{courier} quote ₹{quoted, number}, zone {zone} — {basis, select, free {free for the customer} capped {capped for the customer} other {rounded up for the customer}}",
     "courier": {
       "delhivery": "Delhivery",
       "ekart": "Ekart",
@@ -782,21 +805,29 @@
       "label": "Tracking number",
       "placeholder": "From the courier",
       "save": "Save",
-      "hint": "Shown on the customer's order page."
+      "hint": "Shown on the customer's order page.",
+      "bookedTitle": "Change the tracking number of a parcel booked from here?",
+      "bookedConfirm": "This parcel was booked with {courier} from this page. Clearing its number forgets that booking and offers Book again — cancel the shipment in the {courier} dashboard first, or booking again pays for a second one.",
+      "bookedYes": "Yes, save it",
+      "cancel": "Cancel"
     },
     "cancelOrder": {
       "label": "Cancel order",
       "title": "Cancel this order?",
       "confirm": "The customer sees “Cancelled” on their order page, and any seeds, trays or cocopeat on it go back into stock. Refund the payment yourself in the {gateway} dashboard, then come back and mark it refunded.",
       "yes": "Yes, cancel it",
-      "keep": "Keep the order"
+      "keep": "Keep the order",
+      "blockedBooked": "A parcel on this order is booked with a courier. Cancel the shipment in the courier's dashboard and clear its tracking number below, then cancel the order.",
+      "blockedBooking": "A courier booking is in progress for this order. Wait for it to finish, then cancel the shipment with the courier before cancelling the order."
     },
     "refund": {
       "label": "Mark refunded",
       "title": "Mark this order refunded?",
       "confirm": "Only once you have refunded ₹{amount, number} in the {gateway} dashboard. Nothing is sent to {gateway} from here; the customer sees “Refunded” on their order page.",
       "yes": "Yes, it is refunded",
-      "hint": "Refund in the {gateway} dashboard first, then record it here."
+      "hint": "Refund in the {gateway} dashboard first, then record it here.",
+      "issueCreditNote": "Issue the credit note",
+      "creditNoteOwed": "This order was marked refunded but its credit note was never issued, so the sale is still in your GST returns."
     },
     "book": {
       "label": "Book with {courier}",
@@ -832,7 +863,7 @@
     "customerLink": "All orders from this customer",
     "gstSetState": "Pick the delivery state",
     "gstSetStateButton": "Set place of supply",
-    "gstStateFiled": "No place of supply, and this quarter's GSTR-1 is marked filed — correct it with an amendment (GSTR-1A) on the portal."
+    "gstStateFiled": "No place of supply, and this quarter's GSTR-1 or GSTR-3B is marked filed — correct it by amendment on the portal."
   },
   "delivery": {
     "title": "Delivery",
@@ -878,7 +909,10 @@
       "positive": "Must be more than zero.",
       "originId": "A pickup row is damaged. Reload the page and try again.",
       "originMissing": "That pickup was removed. Choose where this ships from now.",
-      "originInUse": "A vendor you removed is still the shelf-rack pickup. Choose another on admin → racks first."
+      "originInUse": "A vendor you removed is still the shelf-rack pickup. Choose another on admin → racks first.",
+      "wholeRupees": "A whole number of rupees, 1 or more.",
+      "nameTaken": "Another pickup is already called “{name}”. Couriers find a pickup by its name alone, so two with one name could have a parcel collected from the wrong address — give each its own, for example by adding the town.",
+      "changedElsewhere": "These settings were being saved somewhere else at the same moment. Reload the page and save again."
     },
     "sizePlate": "{depth, number} × {length, number} ft, {thickness, number} mm",
     "sizeFootprint": "{depth, number} × {length, number} ft",
@@ -936,7 +970,9 @@
       "vendorMissing": "That vendor was removed. Choose another.",
       "required": "Required.",
       "phoneInvalid": "Enter a 10-digit mobile number.",
-      "pincodeInvalid": "Enter a 6-digit PIN code."
+      "pincodeInvalid": "Enter a 6-digit PIN code.",
+      "nameTaken": "Another pickup is already called “{name}”. Couriers find a pickup by its name alone, so two with one name could have a parcel collected from the wrong address — give this one its own, for example by adding the town.",
+      "changedElsewhere": "The pickups were being saved somewhere else at the same moment. Reload the page and add it again."
     }
   },
   "subscriptions": {
@@ -945,7 +981,7 @@
     "statActive": "Active subscriptions",
     "statBoxes": "Boxes on {date}",
     "statOpen": "Last day to join {date}",
-    "statOpenHint": "The Friday-night cutoff for the next open Saturday",
+    "statOpenHint": "The Friday before, or the day before that Saturday's slowest crop must be sown",
     "statExpired": "Ended",
     "trayPlanHeading": "Tray plan",
     "trayPlanIntro": "Grams of each variety every paid box adds up to, per Saturday. Trays are at the variety's low yield, so a light tray still fills every box; the figure in brackets is the high yield. Sow by is the Saturday less the grow days.",
@@ -1145,7 +1181,8 @@
       "harvestDateInvalid": "Row {row}: pick a real harvest date.",
       "harvestBeforeSow": "Row {row}: the harvest date is before the sowing.",
       "harvestDateWithoutGrams": "Row {row}: a harvest date needs the grams harvested.",
-      "notFound": "This sowing no longer exists — reload the page."
+      "notFound": "This sowing no longer exists — reload the page.",
+      "conflict": "This sowing was changed somewhere else at the same moment, so your save was not applied. Reload the page and make your change again."
     },
     "notices": {
       "seedShort": "Saved, but the seed shelf had less {seeds} than this sowing used, so it now shows none. Count it and correct it on the seeds screen."
@@ -1312,6 +1349,7 @@
     "portalMatched": "In the {month} GSTR-2B as billed: {taxable} + {tax} GST.",
     "portalMismatch": "In the {month} GSTR-2B, but differently: {taxable} + {tax} GST. Check with the vendor, or correct the bill if you typed it wrong.",
     "lockedNote": "This bill is claimed in a quarter whose GSTR-3B is filed, so it can no longer change. Put any correction in the next open month.",
+    "lockedDateNote": "This bill is dated in a quarter whose GSTR-3B is filed, and its 0% lines are in that return's exempt purchases (table 5), so it can no longer change. Put any correction in the next open month.",
     "claimTitle": "Claim by hand",
     "claimHint": "For a bill that is in the portal's GSTR-2B but the upload couldn't match, usually because the vendor typed the number differently. Choose the month whose GSTR-2B shows it.",
     "claimMonth": "Claim in",
@@ -1340,6 +1378,9 @@
       "tooManyLines": "That's more lines than one bill can hold here — split it.",
       "notFound": "That bill no longer exists. Reload the page.",
       "locked": "This bill is in a filed quarter and can't change.",
+      "lockedDate": "That date is in a quarter whose GSTR-3B is filed, and this bill's 0% lines would change its exempt purchases (table 5). Date it in an open quarter, or put the correction in the next open month.",
+      "conflict": "This bill was changed somewhere else at the same moment, so your save was not applied. Reload the page and make your change again.",
+      "stockFailed": "The stock could not be updated, so the bill was not saved. Try again.",
       "fileType": "The file must be a PDF, JPEG, PNG or WebP.",
       "fileTooBig": "The file is over 3 MB. Save it smaller or as a PDF.",
       "reverseChargeClaim": "Reverse-charge credit is claimed in the bill's own month, automatically.",
@@ -1688,6 +1729,8 @@
     "rackNone": "No rack",
     "rackHint": "Open-frame angle racks only; the customer picks the colour",
     "rackOption": "{height, number} ft · {shelves, number} shelves · {depth, number} × {length, number} ft · ₹{price, number} ({sku})",
+    "rackOffSale": "{sku} — off sale; this pack is not on sale until it is published again",
+    "partMissing": "{key} — no longer listed; choose another",
     "rackCount": "Racks",
     "tray": "Tray",
     "trayCount": "Tray packs",
@@ -1727,7 +1770,8 @@
       "rackUnknown": "That rack is not a published angle rack.",
       "trayUnknown": "Choose a tray.",
       "mediumUnknown": "That grow medium does not exist.",
-      "menuTooSmall": "The menu must offer at least as many seeds as the pack asks for."
+      "menuTooSmall": "The menu must offer at least as many seeds as the pack asks for.",
+      "sortOrderInvalid": "A whole number from 0 to 999."
     }
   }
 }

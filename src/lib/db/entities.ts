@@ -1510,6 +1510,25 @@ export const OrderEntity = new Entity(
        *  year (SPEC §26.3). Replaces `receiptNo` from GST registration on. */
       invoiceNo: { type: "string" },
       paidAt: { type: "string" },
+      /** What payment actually took off the shelf, one entry per stock move
+       *  in `stockMoves` order — grams for a seed, packs otherwise. A cancel
+       *  puts back exactly this (31 Oct 2026). Absent on orders paid before. */
+      stockTaken: {
+        type: "list",
+        items: {
+          type: "map",
+          properties: {
+            kind: { type: ["seed", "tray", "media"] as const, required: true },
+            key: { type: "string", required: true },
+            amount: { type: "number", required: true },
+          },
+        },
+      },
+      /** The once-per-order work after payment — invoice number, stock,
+       *  confirmation email — is leased from `finishingAt` and done when
+       *  `finishedAt` is set, so a retry can complete what a crash left. */
+      finishingAt: { type: "string" },
+      finishedAt: { type: "string" },
       createdAt: { type: "string", required: true },
       updatedAt: { type: "string", required: true },
       expiresAt: { type: "string", required: true },
@@ -1651,6 +1670,10 @@ export const SubscriptionEntity = new Entity(
       tax: TAX_ROWS,
       placeOfSupply: PLACE_OF_SUPPLY,
       paidAt: { type: "string" },
+      /** The after-payment lease, as on an order: the invoice number and the
+       *  confirmation email are done when `finishedAt` is set. */
+      finishingAt: { type: "string" },
+      finishedAt: { type: "string" },
       createdAt: { type: "string", required: true },
       updatedAt: { type: "string", required: true },
       expiresAt: { type: "string", required: true },

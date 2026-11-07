@@ -29,9 +29,11 @@ export const CLIENT_MESSAGES = {
   garden: ["garden", "home.trayPlay"],
   /** `/how-we-grow`'s book. */
   story: ["story"],
-  /** `home.pinCheck` for `PinCheck`, kept for checkout to mount (SPEC §7). */
-  checkout: ["cart", "checkout", "account.addresses", "home.pinCheck"],
-  subscribe: ["checkout", "plans.subscribe"],
+  /** `home.pinCheck` for `PinCheck`, kept for checkout to mount (SPEC §7).
+   *  `account.errors` because checkout mounts the account's `AddressForm`. */
+  checkout: ["cart", "checkout", "account.addresses", "account.errors", "home.pinCheck"],
+  /** The address step is checkout's own, so it needs the same account words. */
+  subscribe: ["checkout", "plans.subscribe", "account.addresses", "account.errors"],
   account: ["account"],
   /** A starter pack's seed and colour picker (`PackBuilder`, SPEC §29.4). */
   packs: ["shop.packs"],

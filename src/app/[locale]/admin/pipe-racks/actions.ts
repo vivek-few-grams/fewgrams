@@ -5,6 +5,7 @@ import { assertRole } from "@/lib/auth/guard";
 import {
   PIPE_MAX_HEIGHT_FT,
   pipeRackCost,
+  pipeRackSku,
   retailPrice,
   shelvesForHeight,
   type RateCard,
@@ -22,7 +23,7 @@ import {
   putPipeSize,
 } from "@/lib/repo/racks";
 import { repriceAllRacks, revalidateRackScreens } from "@/lib/racks/reprice";
-import { err, money, optionalPositive, type FormState } from "@/lib/forms";
+import { err, money, optionalPositive, switchTo, type FormState } from "@/lib/forms";
 import type { PipeRackConfig, PipeRackModel, PipeSize } from "@/lib/types";
 
 /**
@@ -40,11 +41,13 @@ import type { PipeRackConfig, PipeRackModel, PipeSize } from "@/lib/types";
  * shared — the corner leg count, the heights on sale, markup and rounding —
  * is still edited only on `/admin/racks` and shown here read-only.
  *
- * As on the other two screens, **editing a rate or a footprint reprices every
- * rack that uses it immediately**, with no approval step (17 Sep 2026) — see
+ * As on the other two screens, **editing a rate reprices every rack that uses
+ * it immediately**, with no approval step (17 Sep 2026) — see
  * `src/lib/racks/reprice.ts`. Adding a footprint does not cascade, because no
- * existing rack references it. And there are no bulk actions — filling out the
- * range is `scripts/racks-fill.mjs`.
+ * existing rack references it. **A footprint cannot be edited** (31 Oct
+ * 2026), for the angle screen's reason: its size is in the SKU of every rack
+ * built on it (`pipeRackSku`), and it holds nothing else. And there are no
+ * bulk actions — filling out the range is `scripts/racks-fill.mjs`.
  */
 
 function refresh() {
@@ -122,34 +125,34 @@ function readSize(fd: FormData): { ok: true; value: Omit<PipeSize, "id"> } | { o
 /** Keyed by footprint — `pp-1.5x3` — so an operator reading a rack row or a
  *  DynamoDB item can tell which size it means. The `pp-` prefix rather than
  *  `p-`, which is already the shelf plate's: one character of difference
- *  between two id spaces is not enough. */
+ *  between two id spaces is not enough.
+ *
+ *  A footprint already listed — by id, or by size on a row saved before
+ *  sizes were fixed — is refused: the put would replace it, switching it back
+ *  on whatever its row said. */
 export async function addPipeSize(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   const read = readSize(fd);
   if (!read.ok) return read.state;
   const { depthFt, lengthFt } = read.value;
-  await putPipeSize({ id: `pp-${depthFt}x${lengthFt}`, ...read.value });
+  const id = `pp-${depthFt}x${lengthFt}`;
+  if ((await listPipeSizes()).some((p) => p.id === id || (p.depthFt === depthFt && p.lengthFt === lengthFt)))
+    return err("sizeExists", "depthFt", { depth: String(depthFt), length: String(lengthFt) });
+  await putPipeSize({ id, ...read.value });
   refresh();
   return { status: "saved" };
 }
 
-export async function savePipeSize(_prev: FormState, fd: FormData): Promise<FormState> {
-  await assertRole("admin");
-  const id = String(fd.get("id") ?? "").trim();
-  if (!id || !(await listPipeSizes()).some((p) => p.id === id)) return err("notFound");
-  const read = readSize(fd);
-  if (!read.ok) return read.state;
-  await putPipeSize({ id, ...read.value });
-  await cascade();
-  return { status: "saved" };
-}
-
+/** On or off, to the state the button asks for (`switchTo`). */
 export async function togglePipeSize(fd: FormData): Promise<void> {
   await assertRole("admin");
   const id = String(fd.get("id"));
   const current = (await listPipeSizes()).find((p) => p.id === id);
   if (!current) throw new Error("Pipe size not found");
-  await putPipeSize({ ...current, active: !current.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === current.active) return;
+  await putPipeSize({ ...current, active });
   refresh();
 }
 
@@ -199,6 +202,11 @@ function readConfig(fd: FormData): { ok: true; value: PipeRackConfig } | { ok: f
   };
 }
 
+function skuOf(config: PipeRackConfig, card: RateCard): string | null {
+  const size = card.pipes.find((p) => p.id === config.pipeSizeId);
+  return size ? pipeRackSku(config, size) : null;
+}
+
 function sameConfig(a: PipeRackConfig, b: PipeRackConfig): boolean {
   return a.heightFt === b.heightFt && a.shelves === b.shelves && a.pipeSizeId === b.pipeSizeId;
 }
@@ -218,6 +226,11 @@ export async function addPipeRack(_prev: FormState, fd: FormData): Promise<FormS
 
   const existing = await listPipeRackModels();
   if (existing.some((m) => sameConfig(m.config, read.value))) return err("duplicateRack", "pipeSizeId");
+  /* One SKU, one model: a cart line names a rack by its SKU, and the
+     catalogue takes the first model that answers to it. */
+  const sku = skuOf(read.value, card);
+  if (sku && existing.some((m) => skuOf(m.config, card) === sku))
+    return err("duplicateSku", "pipeSizeId", { sku });
 
   /* Null here means the pipe rates are still absent, which the form already
      blocks — but the action is reachable without the form. */
@@ -265,11 +278,15 @@ async function republish(models: PipeRackModel[]): Promise<void> {
   );
 }
 
+/** On or off sale, to the state the button asks for (`switchTo`). */
 export async function togglePipeRack(fd: FormData): Promise<void> {
   await assertRole("admin");
   const current = await getPipeRackModel(String(fd.get("id")));
   if (!current) throw new Error("Rack not found");
-  await putPipeRackModel({ ...current, active: !current.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === current.active) return;
+  await putPipeRackModel({ ...current, active });
   refresh();
 }
 

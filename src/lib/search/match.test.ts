@@ -9,6 +9,7 @@ import {
   rank,
   SEARCH_KINDS,
   stem,
+  SYNONYMS,
   tokens,
   type SearchKind,
   type SearchTerms,
@@ -171,6 +172,59 @@ describe("ranking the real catalogue", () => {
   it("finds nothing for nonsense, and nothing for nothing", () => {
     expect(search("zzzzqx")).toEqual([]);
     expect(search("   ")).toEqual([]);
+  });
+});
+
+describe("synonyms — a word the descriptions do not use", () => {
+  /* The audit, 31 Oct 2026: "spicy" found nothing, while mustard, radish and
+     rocket are described as hot, heat and peppery. */
+  it("finds the hot ones for 'spicy'", () => {
+    expect(search("spicy")).toEqual(
+      expect.arrayContaining([
+        "variety:mustard",
+        "variety:radish",
+        "variety:rocket",
+        "seed:mustard",
+        "seed:radish",
+        "seed:rocket",
+      ]),
+    );
+  });
+
+  it("does not find a green described by what it lacks", () => {
+    /* Cabbage is "without the bite of mustard"; pak choi is for "when
+       mustard is too much"; sunflower has a "nutty bite". */
+    const hits = search("spicy");
+    for (const mild of ["variety:cabbage", "variety:pak-choi", "variety:sunflower"]) {
+      expect(hits).not.toContain(mild);
+    }
+  });
+
+  it("calls a synonym up while the word is still being typed, not by a near miss", () => {
+    expect(search("spic")).toContain("variety:mustard");
+    expect(search("spin")).not.toContain("variety:mustard");
+  });
+
+  it("works one way only — a taste chip finds what it always found", () => {
+    /* Mustard is "wasabi-like heat", not peppery. */
+    expect(search("peppery")).not.toContain("variety:mustard");
+  });
+
+  it("narrows with another word like any other", () => {
+    expect(search("spicy seeds").every((hit) => hit.startsWith("seed:"))).toBe(true);
+  });
+
+  /* A synonym nobody's description uses is a dead row, and one not in its
+     `tokens` form never matches at all. */
+  it("only points at words some description actually uses", () => {
+    const blurbWords = new Set(catalogue.flatMap((e) => e.terms.blurbs.flatMap(tokens)));
+    for (const [key, words] of SYNONYMS) {
+      expect(tokens(key), key).toEqual([key]);
+      for (const word of words) {
+        expect(tokens(word), word).toEqual([word]);
+        expect(blurbWords.has(word), `"${word}" in a description`).toBe(true);
+      }
+    }
   });
 });
 

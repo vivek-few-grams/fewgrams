@@ -5,9 +5,15 @@ import { assertRole } from "@/lib/auth/guard";
 import { BUSINESS } from "@/lib/content/legal";
 import { istDateISO } from "@/lib/delivery-date";
 import { err, type FormState } from "@/lib/forms";
-import { claimAfterMatch, matchStatement, parseGstr2b } from "@/lib/gst/gstr2b";
+import {
+  claimAfterMatch,
+  matchStatement,
+  parseGstr2b,
+  type Gstr2b,
+  type MatchResult,
+} from "@/lib/gst/gstr2b";
 import { GST_FIRST_MONTH, isMonthId, isQuarterId, monthOf } from "@/lib/gst/period";
-import { isLockedMonth, quarterView } from "@/lib/gst/quarter";
+import { isLockedMonth, quarterView, type GstFiling } from "@/lib/gst/quarter";
 import { isIsoDate } from "@/lib/purchases/dates";
 import {
   deletePayment,
@@ -18,7 +24,7 @@ import {
   putGstr2b,
   putPayment,
 } from "@/lib/repo/gst";
-import { listBills, putBill } from "@/lib/repo/purchases";
+import { getBill, listBills, putBill } from "@/lib/repo/purchases";
 
 /**
  * GST page mutations — `/admin/gst`, SPEC §26.5. Each asserts the admin role
@@ -58,15 +64,33 @@ export async function uploadGstr2b(_prev: FormState, fd: FormData): Promise<Form
   await putGstr2b({ ...statement, fileName: file.name.slice(0, 120), uploadedAt: new Date().toISOString() });
 
   const { matched } = matchStatement(statement, await listBills());
-  const now = new Date().toISOString();
-  for (const found of matched) {
-    const { bill, match } = found;
-    /* A bill claimed in a filed quarter keeps the match it was filed on. */
-    if (bill.claim && isLockedMonth(filings, bill.claim.month)) continue;
-    await putBill({ ...bill, match, claim: claimAfterMatch(found), updatedAt: now });
-  }
+  for (const found of matched) await recordMatch(statement, found, filings);
   refresh();
   return { status: "saved" };
+}
+
+/**
+ * Record one bill's match, and the claim it brings. Conditional on the bill as
+ * read (`putBill`), so a bill saved while the upload runs is matched again as
+ * it now stands rather than written back with its old lines — under which its
+ * stock had already moved. One that keeps changing is left for its next save,
+ * which matches it against this statement anyway (`saveBill`).
+ */
+async function recordMatch(statement: Gstr2b, found: MatchResult["matched"][number], filings: GstFiling[]) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { bill, match } = found;
+    /* A bill claimed in a filed quarter keeps the match it was filed on. */
+    if (bill.claim && isLockedMonth(filings, bill.claim.month)) return;
+    const next = { ...bill, match, claim: claimAfterMatch(found), updatedAt: new Date().toISOString() };
+    if (await putBill(next, bill.updatedAt)) return;
+    const fresh = await getBill(bill.id);
+    const again = fresh && matchStatement(statement, [fresh]).matched[0];
+    if (!again) return;
+    found = again;
+  }
+  console.warn(
+    `[gst] bill ${found.bill.id} kept changing during the GSTR-2B upload; it is matched on its next save`,
+  );
 }
 
 const toPaise = (raw: FormDataEntryValue | null): number | null => {

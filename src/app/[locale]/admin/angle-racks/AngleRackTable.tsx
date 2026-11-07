@@ -146,6 +146,9 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
      by hand. */
   const tr = useTranslations("admin.racks");
   const { model, costNow, suggestedPrice } = view;
+  /* A delete is refused while this is a starter pack's rack, and says so
+     under the row. */
+  const [removeState, removeAction] = useActionState<FormState, FormData>(removeAngleRack, IDLE);
 
   /* Resolved from stored slugs. A slug that has left the palette has no
      message, so it falls back to itself rather than rendering a raw key. */
@@ -207,6 +210,8 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
 
       <form action={toggleAngleRack} className="contents">
         <input type="hidden" name="id" value={model.id} />
+        {/* Where the press goes, not "flip it" — see `switchTo`. */}
+        <input type="hidden" name="to" value={model.active ? "off" : "on"} />
         <button
           className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
             model.active
@@ -218,7 +223,7 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
         </button>
       </form>
 
-      <form action={removeAngleRack} className="contents">
+      <form action={removeAction} className="contents">
         <input type="hidden" name="id" value={model.id} />
         <ConfirmSubmit
           label={tc("delete")}
@@ -234,6 +239,16 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
           carries two figures and a sentence, which no column here is wide
           enough for, and they are the one thing on a row that must not be
           scanned past. */}
+      {removeState.status === "error" && (
+        <p
+          role="alert"
+          className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta"
+        >
+          <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />
+          {t(`errors.${removeState.code}`, removeState.values ?? {})}
+        </p>
+      )}
+
       {unpriceable && (
         <p className="col-span-full flex items-start gap-1.5 font-body text-[11px] text-terracotta">
           <AlertTriangle size={12} strokeWidth={1.75} className="mt-px shrink-0" />

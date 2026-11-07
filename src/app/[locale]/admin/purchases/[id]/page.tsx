@@ -5,7 +5,7 @@ import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { requireRole } from "@/lib/auth/guard";
 import { istDateISO } from "@/lib/delivery-date";
 import { monthOf, monthOfDate, nextMonth } from "@/lib/gst/period";
-import { isLockedMonth } from "@/lib/gst/quarter";
+import { isLockedBill, isLockedMonth } from "@/lib/gst/quarter";
 import { billStatus, claimable } from "@/lib/purchases/bill";
 import { listFilings } from "@/lib/repo/gst";
 import { getBill } from "@/lib/repo/purchases";
@@ -18,8 +18,11 @@ export const dynamic = "force-dynamic";
 
 /**
  * `/admin/purchases/[id]` — one bill: correct it, see where its credit
- * stands, claim it by hand, or delete it (SPEC §26.6). A bill claimed in a
- * quarter whose GSTR-3B is filed is shown, not edited.
+ * stands, claim it by hand, or delete it (SPEC §26.6). A bill in a quarter
+ * whose GSTR-3B is filed — claimed there, or dated there with a 0% line its
+ * table 5 reports (`isLockedBill`) — is shown, not edited. Only the first
+ * also closes its claim: a seed bill dated in a filed quarter may still have
+ * credit (its shipping) waiting for an open month.
  */
 export default async function BillPage({ params }: PageProps<"/[locale]/admin/purchases/[id]">) {
   await requireRole("admin");
@@ -34,7 +37,8 @@ export default async function BillPage({ params }: PageProps<"/[locale]/admin/pu
     billFormOptions(bill.vendor.id),
     listFilings(),
   ]);
-  const locked = !!bill.claim && isLockedMonth(filings, bill.claim.month);
+  const claimLocked = !!bill.claim && isLockedMonth(filings, bill.claim.month);
+  const locked = isLockedBill(filings, bill);
   const status = billStatus(bill);
   const monthLabel = (m: string) =>
     format.dateTime(new Date(`${m}-01T00:00:00+05:30`), { month: "long", year: "numeric" });
@@ -77,17 +81,20 @@ export default async function BillPage({ params }: PageProps<"/[locale]/admin/pu
         )}
       </section>
 
-      {locked ? (
-        <p className="rounded-xl bg-sand/60 px-4 py-3 font-body text-sm text-forest">{t("lockedNote")}</p>
-      ) : (
+      {locked && (
+        <p className="rounded-xl bg-sand/60 px-4 py-3 font-body text-sm text-forest">
+          {t(claimLocked ? "lockedNote" : "lockedDateNote")}
+        </p>
+      )}
+      {!claimLocked && claimable(bill) && !bill.reverseCharge && (
+        <section className="rounded-2xl border border-forest/15 p-6">
+          <h2 className="font-display text-lg font-semibold text-forest">{t("claimTitle")}</h2>
+          <p className="mb-4 mt-1 font-body text-sm text-stone">{t("claimHint")}</p>
+          <ClaimForm billId={bill.id} months={months} current={bill.claim?.month ?? null} />
+        </section>
+      )}
+      {!locked && (
         <>
-          {claimable(bill) && !bill.reverseCharge && (
-            <section className="rounded-2xl border border-forest/15 p-6">
-              <h2 className="font-display text-lg font-semibold text-forest">{t("claimTitle")}</h2>
-              <p className="mb-4 mt-1 font-body text-sm text-stone">{t("claimHint")}</p>
-              <ClaimForm billId={bill.id} months={months} current={bill.claim?.month ?? null} />
-            </section>
-          )}
           <section className="rounded-2xl border border-forest/15 p-6">
             <BillEditor
               vendors={vendors}

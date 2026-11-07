@@ -57,6 +57,13 @@ export function OnBills({ count }: { count: number }) {
 /**
  * The count on the shelf, with "Correct" for a stocktake — spilt seed, a
  * cracked tray, a recount. Everything else moves it by itself.
+ *
+ * **Packs can be owed** (the owner, 31 Oct 2026): a paid order takes its full
+ * quantity of trays or cocopeat, so selling 3 with 1 held leaves −2 — two
+ * packs owed to customers until a bill brings them in. That reads "2 owed",
+ * never a bare minus. A stocktake is the count on the shelf, never below
+ * zero, so the box opens at 0 for a row that owes. Seed grams never go below
+ * zero.
  */
 export function StockCount({
   id,
@@ -93,11 +100,15 @@ export function StockCount({
           align === "end" ? "justify-end" : ""
         }`}
       >
-        {t(unit, { count: value })}
+        {value < 0 ? (
+          <span className="text-terracotta">{t("owed", { count: -value })}</span>
+        ) : (
+          t(unit, { count: value })
+        )}
         <button
           type="button"
           onClick={() => {
-            setTyped(String(value));
+            setTyped(String(Math.max(0, value)));
             setEditing(true);
           }}
           aria-label={t("correctLabel")}

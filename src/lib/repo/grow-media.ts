@@ -1,5 +1,5 @@
 import type { EntityItem } from "electrodb";
-import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
+import { LIST_OPTS, READ_OPTS } from "@/lib/db/client";
 import { GrowMediumEntity } from "@/lib/db/entities";
 import type { GrowMedium } from "@/lib/types";
 import { marginOf, retailPrice } from "@/lib/pricing/margin";
@@ -54,29 +54,20 @@ export async function deleteGrowMedium(id: string): Promise<void> {
 }
 
 /**
- * Take up to `units` packs off the count for a paid order, and return how
- * many were there to take. Never below zero, never a refusal: more than is
- * held still sells, a day later (`heldReadyDate`). Conditional on the figure
- * read, so two orders paid at once cannot both take the same packs.
+ * Take `units` packs off the count for a paid order, and return how many were
+ * taken — all of them. More than is held still sells, a day later
+ * (`heldReadyDate`), so the count goes below zero by what is owed (the owner,
+ * 31 Oct 2026): hold 1, sell 3, and it reads -2 until the bill for the two
+ * brought in puts it back to 0. It used to stop at zero, which left the bill
+ * showing packs that had already shipped. An atomic `ADD`, so two orders paid
+ * at once each take their own. Nothing to take from a row that does not exist.
  */
 export async function takeFromStock(contentKey: string, units: number): Promise<number> {
-  for (let attempt = 0; attempt < 5; attempt++) {
-    const { data } = await GrowMediumEntity.query.byCatalogue({ contentKey }).go(LIST_OPTS);
-    const row = data[0];
-    const held = row?.stockPacks ?? 0;
-    if (!row || held <= 0) return 0;
-    const take = Math.min(units, held);
-    try {
-      await GrowMediumEntity.patch({ id: row.id })
-        .set({ stockPacks: held - take })
-        .where(({ stockPacks }, { eq }) => eq(stockPacks, held))
-        .go();
-      return take;
-    } catch (e) {
-      if (!isConditionFailure(e)) throw e;
-    }
-  }
-  throw new Error(`Stock for ${contentKey} kept changing; gave up after 5 attempts`);
+  const { data } = await GrowMediumEntity.query.byCatalogue({ contentKey }).go(LIST_OPTS);
+  const row = data[0];
+  if (!row) return 0;
+  await GrowMediumEntity.patch({ id: row.id }).add({ stockPacks: -units }).go();
+  return units;
 }
 
 /**

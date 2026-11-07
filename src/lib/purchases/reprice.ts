@@ -20,9 +20,15 @@ export async function costFromBills(items: Iterable<string>): Promise<void> {
   if (ids.length === 0) return;
   const [bills, seedMargin] = await Promise.all([listBills(), getSeedMargin()]);
   const costs = latestCosts(bills);
+  /* The seed costs just written, so the microgreens below are priced from
+     them and not from a list that may not show them yet. */
+  const seedCosts = new Map<string, number | undefined>();
   /* A `Record`, so a fourth stock kind is a type error until it is priced. */
   const SET: Record<StockKind, (key: string, cost: ItemCost | null) => Promise<void>> = {
-    seed: (key, cost) => setSeedCost(key, cost, seedMargin),
+    seed: async (key, cost) => {
+      const left = await setSeedCost(key, cost, seedMargin);
+      if (left) seedCosts.set(key, left.costPer100g);
+    },
     tray: setTrayCost,
     media: setGrowMediumCost,
   };
@@ -33,5 +39,5 @@ export async function costFromBills(items: Iterable<string>): Promise<void> {
     if (kind === "seed") seedKeys.push(key);
   }
   /* A microgreen of the same key is priced from this seed's cost. */
-  await repriceVarieties(seedKeys);
+  await repriceVarieties(seedKeys, { seedCosts });
 }

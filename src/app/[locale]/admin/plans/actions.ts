@@ -5,7 +5,7 @@ import { assertRole } from "@/lib/auth/guard";
 import { deletePlan, listPlans, putPlan } from "@/lib/repo/plans";
 import { listVarieties } from "@/lib/repo/varieties";
 import { listPlanKeys } from "@/lib/content/plans";
-import type { FormState } from "@/lib/forms";
+import { sortOrder, type FormState } from "@/lib/forms";
 import type { Plan, PlanWeek } from "@/lib/types";
 import { ROTATION_WEEKS, weekField } from "./rotation";
 
@@ -67,7 +67,12 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
     return { ok: false, state: { status: "error", code: "gramsInvalid", field: "gramsPerBox" } };
   }
 
-  const sortOrder = Number(String(fd.get("sortOrder") ?? "").trim() || 0);
+  /* Whole, 0–999: the GSI1 sort key pads it to three digits, so a fraction,
+     a negative or a 1000 would sort the cards wrongly (`sortOrder`). */
+  const order = sortOrder(fd);
+  if (order === null) {
+    return { ok: false, state: { status: "error", code: "sortOrderInvalid", field: "sortOrder" } };
+  }
 
   return {
     ok: true,
@@ -75,7 +80,7 @@ function readOps(fd: FormData): { ok: true; value: Ops } | { ok: false; state: F
       monthlyPrice: price,
       gramsPerBox: grams,
       recommended: fd.get("recommended") === "on",
-      sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
+      sortOrder: order,
       active: fd.get("active") === "on",
     },
   };

@@ -35,7 +35,7 @@ import { MAX_LEAD_DAYS, daysFromToday } from "@/lib/delivery-date";
  */
 
 /**
- * Days from order to delivery, for every rack. Our own build time.
+ * Days from order to ready-to-ship, for every rack. Our own build time.
  *
  * Not bounded by a min and a max the way `TRAY_MIN_LEAD_DAYS` is: there is no
  * operator typing this in, so there is no figure to validate and nothing to
@@ -57,7 +57,8 @@ if (RACK_LEAD_DAYS > MAX_LEAD_DAYS) {
 }
 
 /**
- * When a rack ordered now would arrive.
+ * When a rack ordered now is built and ready to ship — not when it arrives:
+ * the courier's days are added at checkout, from the address (31 Oct 2026).
  *
  * Day-granular in IST like every other date in the app, so the hour someone
  * orders cannot move the promise.

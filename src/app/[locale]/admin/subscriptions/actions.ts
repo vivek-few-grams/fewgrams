@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
 import { changeSubscriptionSchedule, getSubscription } from "@/lib/repo/subscriptions";
+import { subscriptionOpening } from "@/lib/subscriptions/opening";
 import {
   cancelDeliveries,
   isSubscriptionId,
@@ -24,7 +25,7 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 async function change(
   fd: FormData,
-  decide: (sub: Subscription, now: Date) => ScheduleChange | null,
+  decide: (sub: Subscription, now: Date, open: Date) => ScheduleChange | null,
 ): Promise<void> {
   await assertRole("admin");
   const id = String(fd.get("id") ?? "");
@@ -32,7 +33,8 @@ async function change(
   const sub = await getSubscription(id);
   if (!sub) throw new Error(`No subscription ${id}`);
 
-  const next = decide(sub, new Date());
+  const now = new Date();
+  const next = decide(sub, now, (await subscriptionOpening(now)).first);
   if (!next) throw new Error(`That change is not possible for ${id} as it stands`);
   /* False means someone else changed it first; the refreshed page shows the
      result, and the operator can decide again from there. */
@@ -46,7 +48,7 @@ async function change(
 export async function skipSaturday(fd: FormData): Promise<void> {
   const date = String(fd.get("date") ?? "");
   if (!ISO_DATE.test(date)) throw new Error("Bad date");
-  await change(fd, (sub, now) => skipDelivery(sub, date, now));
+  await change(fd, (sub, now, open) => skipDelivery(sub, date, now, open));
 }
 
 export async function pauseSubscription(fd: FormData): Promise<void> {
@@ -54,7 +56,7 @@ export async function pauseSubscription(fd: FormData): Promise<void> {
 }
 
 export async function resumeSubscription(fd: FormData): Promise<void> {
-  await change(fd, resumeDeliveries);
+  await change(fd, (sub, _now, open) => resumeDeliveries(sub, open));
 }
 
 export async function cancelSubscription(fd: FormData): Promise<void> {

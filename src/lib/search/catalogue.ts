@@ -18,6 +18,7 @@ import { listPlans } from "@/lib/repo/plans";
 import { listSeeds } from "@/lib/repo/seeds";
 import { listTrays } from "@/lib/repo/trays";
 import { listVarieties } from "@/lib/repo/varieties";
+import { seedSoldOut } from "@/lib/seeds/stock";
 import type { SearchEntry, SearchImage } from "./entry";
 import type { SearchKind } from "./match";
 
@@ -41,6 +42,15 @@ export type CatalogueEntry = SearchEntry & {
   /** ₹, read fresh; what it is *per* is the kind's (`PRICE_MESSAGE`). Null
    *  for a plan with no monthly price — Pick Your Own. */
   price: number | null;
+  /**
+   * True for a seed with under 100 g on the shelf — the one kind that sells
+   * out (CLAUDE.md, seeds). Search still finds it, because `/seeds` still
+   * lists it, marked sold out; **related suggestions skip it**
+   * (`src/lib/catalogue/related.ts`), because "Seeds to sow" offering one
+   * that cannot be bought is a dead end (the audit, 31 Oct 2026). Never
+   * reaches the header box's list, and says nothing of how much is held.
+   */
+  soldOut: boolean;
 };
 
 /** The cut-out when there is one, else the photo — the card grids' order. */
@@ -84,6 +94,7 @@ export const searchCatalogue = cache(async (locale: string): Promise<CatalogueEn
       href: (key: string) => string;
       image: (content: ResolvedContent<T>) => SearchImage | null;
       price: (row: R) => number;
+      soldOut: (row: R) => boolean;
     },
   ): Promise<CatalogueEntry[]> {
     const entries = await Promise.all(
@@ -104,6 +115,7 @@ export const searchCatalogue = cache(async (locale: string): Promise<CatalogueEn
           },
           blurb: shown.text.shortDescription ?? "",
           price: opts.price(row),
+          soldOut: opts.soldOut(row),
         } satisfies CatalogueEntry;
       }),
     );
@@ -120,6 +132,8 @@ export const searchCatalogue = cache(async (locale: string): Promise<CatalogueEn
             href: (key) => `/microgreens/${key}`,
             image: (c) => picture(varietyCutout(c), varietyHero(c)),
             price: (row) => row.pricePer100g,
+            /* Grown to order; `onSale` is the whole test. */
+            soldOut: () => false,
           }),
         )
       : [],
@@ -130,6 +144,7 @@ export const searchCatalogue = cache(async (locale: string): Promise<CatalogueEn
             href: (key) => `/seeds/${key}`,
             image: (c) => picture(seedCutout(c), seedHero(c)),
             price: (row) => row.pricePer100g,
+            soldOut: (row) => seedSoldOut(row.stockGrams),
           }),
         )
       : [],
@@ -140,6 +155,8 @@ export const searchCatalogue = cache(async (locale: string): Promise<CatalogueEn
             href: (key) => `/shop/trays/${key}`,
             image: (c) => picture(trayCutout(c), trayHero(c)),
             price: (row) => row.price,
+            /* Stock is a speed here, not a limit: nothing sells out. */
+            soldOut: () => false,
           }),
         )
       : [],
@@ -150,6 +167,7 @@ export const searchCatalogue = cache(async (locale: string): Promise<CatalogueEn
             href: (key) => `/shop/grow-media/${key}`,
             image: (c) => picture(growMediumCutout(c), growMediumHero(c)),
             price: (row) => row.price,
+            soldOut: () => false,
           }),
         )
       : [],
@@ -188,6 +206,9 @@ async function packEntries(locale: string, kind: string[]): Promise<CatalogueEnt
         },
         blurb: p.text.tagline,
         price: p.pack.price,
+        /* `listSellablePacks` already leaves out a pack whose seeds are not
+           there to fill it. */
+        soldOut: false,
       } satisfies CatalogueEntry;
     }),
   );
@@ -223,6 +244,7 @@ async function rackRanges(locale: string, kind: string[]): Promise<CatalogueEntr
         },
         blurb: shown(`${range}.line`),
         price: Math.min(...inRange.map((r) => r.price)),
+        soldOut: false,
       } satisfies CatalogueEntry,
     ];
   });
@@ -260,6 +282,7 @@ async function planEntries(locale: string, kind: string[]): Promise<CatalogueEnt
         },
         blurb: shown.text.tagline,
         price: plan.monthlyPrice,
+        soldOut: false,
       } satisfies CatalogueEntry;
     }),
   );

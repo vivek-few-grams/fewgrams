@@ -9,6 +9,9 @@ export type EmailMessage = {
   /** Plain-text body, for clients that do not render HTML and for filters. */
   text: string;
   html: string;
+  /** Where a reply goes. The sender is the sign-in address, which nobody
+   *  reads, so a receipt sets the care inbox (`content/contact.json`). */
+  replyTo?: string;
 };
 
 export interface NotificationProvider {

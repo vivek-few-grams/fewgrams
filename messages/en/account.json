@@ -29,7 +29,7 @@
     "noOrders": "Nothing ordered yet.",
     "allOrders": "View all orders",
     "nextDeliveryTitle": "Next delivery",
-    "nextDeliveryNone": "Nothing scheduled. Subscribe before Friday midnight and your first box arrives {date}.",
+    "nextDeliveryNone": "Nothing scheduled. Subscribe by {joinBy} and your first box arrives {date}.",
     "browsePlans": "See the plans"
   },
   "profile": {

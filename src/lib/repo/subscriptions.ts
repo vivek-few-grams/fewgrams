@@ -35,6 +35,8 @@ function toSubscription(row: Row): Subscription {
     tax: row.tax ?? null,
     placeOfSupply: row.placeOfSupply ?? null,
     paidAt: row.paidAt ?? null,
+    finishingAt: row.finishingAt ?? null,
+    finishedAt: row.finishedAt ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     expiresAt: row.expiresAt,
@@ -87,6 +89,7 @@ export async function markSubscriptionPaid(
       .set({
         status: "active",
         paidAt,
+        finishingAt: paidAt,
         deliveries,
         userId: sub.userId,
         createdAt: sub.createdAt,
@@ -101,8 +104,37 @@ export async function markSubscriptionPaid(
   }
 }
 
-export async function setSubscriptionInvoiceNo(id: string, invoiceNo: string): Promise<void> {
-  await SubscriptionEntity.patch({ id }).set({ invoiceNo, updatedAt: new Date().toISOString() }).go();
+/** Set the invoice number once; false when it already has one. */
+export async function setSubscriptionInvoiceNo(id: string, invoiceNo: string): Promise<boolean> {
+  try {
+    await SubscriptionEntity.patch({ id })
+      .set({ invoiceNo, updatedAt: new Date().toISOString() })
+      .where((attr, { notExists }) => notExists(attr.invoiceNo))
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
+}
+
+/** Take over a stale after-payment lease — see `claimFinishing` for orders. */
+export async function claimSubscriptionFinishing(sub: Subscription, now: string): Promise<boolean> {
+  if (!sub.finishingAt) return false;
+  try {
+    await SubscriptionEntity.patch({ id: sub.id })
+      .set({ finishingAt: now })
+      .where((attr, { eq, notExists }) => `${eq(attr.finishingAt, sub.finishingAt!)} AND ${notExists(attr.finishedAt)}`)
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
+}
+
+export async function markSubscriptionFinished(id: string, at: string): Promise<void> {
+  await SubscriptionEntity.patch({ id }).set({ finishedAt: at }).go();
 }
 
 /** Every subscription in one stored status, newest first. `active` holds the

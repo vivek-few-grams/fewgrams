@@ -6,8 +6,9 @@ import { isOnABill } from "@/lib/repo/purchases";
 import { forgetSupply } from "@/lib/repo/vendors";
 import { deleteTray, getTray, patchTray, setTrayStock } from "@/lib/repo/trays";
 import { marginOf, retailPrice } from "@/lib/pricing/margin";
-import { count, err, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
+import { count, err, optionalPositive, switchTo, zeroOrMore, type FormState } from "@/lib/forms";
 import { isValidStockPacks } from "@/lib/trays/lead-time";
+import { packUsing } from "../pack-usage";
 import type { Tray } from "@/lib/types";
 
 /**
@@ -132,25 +133,34 @@ export async function correctTrayStock(_prev: FormState, fd: FormData): Promise<
 }
 
 /** Hide an item without losing its price — the only way something leaves
- *  this shelf. **Not switched on before a bill has costed it**: a row added
- *  from a bill is priced at 0 until that bill is saved. */
+ *  this shelf. Set to the state the button asks for (`switchTo`). **Not
+ *  switched on before a bill has costed it**: a row added from a bill is
+ *  priced at 0 until that bill is saved. */
 export async function toggleTrayActive(fd: FormData): Promise<void> {
   await assertRole("admin");
   const existing = await getTray(String(fd.get("id")));
   if (!existing) throw new Error("Tray not found");
-  if (!existing.active && existing.cost === undefined) return;
-  await patchTray(existing.id, { active: !existing.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === existing.active) return;
+  if (active && existing.cost === undefined) return;
+  await patchTray(existing.id, { active });
   refresh();
 }
 
-export async function removeTray(fd: FormData): Promise<void> {
+/** Delete an item — refused while a starter pack is made with it (SPEC
+ *  §29): the pack would leave the site with nothing to say why. */
+export async function removeTray(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
-  const id = String(fd.get("id"));
-  const row = await getTray(id);
+  const row = await getTray(String(fd.get("id") ?? ""));
+  if (!row) return err("notFound");
   /* Its screen offers no Delete while a bill names it; this is for a
      request made without the screen. */
-  if (row && (await isOnABill(`tray:${row.contentKey}`))) throw new Error("This tray is on a purchase bill");
-  await deleteTray(id);
-  if (row) await forgetSupply(`tray:${row.contentKey}`);
+  if (await isOnABill(`tray:${row.contentKey}`)) return err("onABill");
+  const pack = await packUsing((p) => p.trayKey === row.contentKey);
+  if (pack) return err("inPack", undefined, { pack });
+  await deleteTray(row.id);
+  await forgetSupply(`tray:${row.contentKey}`);
   refresh();
+  return { status: "saved" };
 }

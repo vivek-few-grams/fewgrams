@@ -64,7 +64,9 @@ export async function Header({
   const t = await getTranslations("common.header");
   const account = actor ? ACCOUNT_STATE[actor.role] : null;
   /* Reads the cookie only — no catalogue query, because a count needs no
-     names or prices. The badge was a hardcoded "0" until 15 Sep 2026. */
+     names or prices. The badge was a hardcoded "0" until 15 Sep 2026. It
+     counts lines, the cart page's "N items" — not units, which mean 100 g,
+     a pack or a block depending on the kind (`cartLineCount`). */
   const cartCount = await readCartCount();
   const showMicrogreens = await isProductTypeEnabled("microgreens");
   /* Only while a pack is set up to sell (SPEC §29). */

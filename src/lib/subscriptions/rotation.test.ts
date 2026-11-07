@@ -25,9 +25,8 @@ describe("the shared rotation calendar — SPEC §5.2.1", () => {
   });
 
   it("starts a mid-month subscriber on whatever week comes next", () => {
-    /* Thursday 15 Oct, before the Friday cutoff: sown Sun 18, first box
-       Sat 24 Oct — week 3 — then 4, 1, 2. */
-    const s = subscriptionSchedule(new Date("2026-10-15T10:00:00+05:30"));
+    /* First box Sat 24 Oct — week 3 — then 4, 1, 2. */
+    const s = subscriptionSchedule(new Date("2026-10-24T00:00:00+05:30"));
     expect(s.map((b) => istDateISO(b.date))).toEqual([
       "2026-10-24",
       "2026-10-31",

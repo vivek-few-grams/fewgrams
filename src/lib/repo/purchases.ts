@@ -1,5 +1,5 @@
 import type { EntityItem } from "electrodb";
-import { LIST_OPTS, READ_OPTS } from "@/lib/db/client";
+import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import { BillFileChunkEntity, PurchaseBillEntity } from "@/lib/db/entities";
 import type { BillFile, PurchaseBill, PurchaseLine } from "@/lib/purchases/bill";
 import { billsPerItem } from "@/lib/purchases/cost";
@@ -106,13 +106,42 @@ export async function getBill(id: string): Promise<PurchaseBill | null> {
   return data ? fromRow(data) : null;
 }
 
-/** Write the whole bill. A changed bill date moves its GSI1 key with it. */
-export async function putBill(b: PurchaseBill): Promise<void> {
-  await PurchaseBillEntity.put(toRow(b)).go();
+/**
+ * Write the whole bill. A changed bill date moves its GSI1 key with it.
+ *
+ * **Conditional on the version read**: `read` is the `updatedAt` the bill
+ * was read at, and the write is refused (false) if it has changed or gone
+ * since — or null for a new bill, refused if the id is taken. A bill save
+ * moves stock by the difference from the bill it read, so two saves from one
+ * read must not both land (SPEC §26.6).
+ */
+export async function putBill(b: PurchaseBill, read: string | null): Promise<boolean> {
+  try {
+    if (read === null) await PurchaseBillEntity.create(toRow(b)).go();
+    else
+      await PurchaseBillEntity.put(toRow(b))
+        .where(({ updatedAt }, { eq }) => eq(updatedAt, read))
+        .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
 }
 
-export async function deleteBill(id: string): Promise<void> {
-  await PurchaseBillEntity.delete({ id }).go();
+/** Delete a bill, conditional on the `updatedAt` it was read at — false when
+ *  it has changed or gone since, so a second press cannot take its stock
+ *  back twice. */
+export async function deleteBill(id: string, read: string): Promise<boolean> {
+  try {
+    await PurchaseBillEntity.delete({ id })
+      .where(({ updatedAt }, { eq }) => eq(updatedAt, read))
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
 }
 
 /* ──────────────────────────── bill files ───────────────────────────── */

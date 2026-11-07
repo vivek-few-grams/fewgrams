@@ -16,7 +16,7 @@ import {
   quartersSince,
   returnPeriod,
 } from "./period";
-import { openingFor, quarterView, type GstBooks } from "./quarter";
+import { isLockedBill, isSalesLockedMonth, openingFor, quarterView, type GstBooks } from "./quarter";
 import type { CreditDoc, SaleDoc } from "./sales";
 
 const KERALA = gstStateFor("Kerala")!;
@@ -322,6 +322,66 @@ describe("the quarter", () => {
     };
     expect(openingFor(books({ filings: [filed] }), "2627-Q4").credit).toEqual({ igst: 5, cgst: 6, sgst: 7 });
     expect(quarterView(books({ filings: [filed] }), "2627-Q3").locked).toBe(true);
+  });
+
+  describe("what a filed GSTR-3B locks", () => {
+    const filed = (gstr1: boolean, gstr3b: boolean) => [
+      {
+        quarter: "2627-Q3",
+        gstr1: gstr1 ? { filedOn: "2027-01-10", arn: "AA" } : null,
+        gstr3b: gstr3b ? { filedOn: "2027-01-20", arn: "BB" } : null,
+        closing: null,
+        updatedAt: "",
+      },
+    ];
+    const seed = line({ item: { kind: "seed", key: "radish" }, rate: 0, cgst: 0, sgst: 0, credit: "none" });
+
+    it("locks a seed bill by its date, though it is never claimed", () => {
+      /* Table 5 counts it by bill date: adding, editing or deleting it
+         would change a return already filed. */
+      const v = quarterView(books({ bills: [bill({ lines: [seed] })] }), "2627-Q3");
+      expect(v.figures.gstr3b.exemptInward.intra).toBe(100000);
+      expect(isLockedBill(filed(true, true), bill({ lines: [seed] }))).toBe(true);
+      expect(isLockedBill(filed(true, false), bill({ lines: [seed] }))).toBe(false);
+      expect(isLockedBill(filed(true, true), bill({ lines: [seed], date: "2027-01-05" }))).toBe(false);
+    });
+
+    it("locks a bill dated in a filed quarter but claimed in an open one, when it has a 0% line", () => {
+      const mixed = bill({
+        lines: [seed, line({ category: "freight" })],
+        claim: { month: "2027-01", source: "gstr2b" },
+      });
+      expect(isLockedBill(filed(true, true), mixed)).toBe(true);
+      /* All taxed: only its claim puts it in a return, and that is open. */
+      expect(isLockedBill(filed(true, true), bill({ claim: { month: "2027-01", source: "gstr2b" } }))).toBe(
+        false,
+      );
+    });
+
+    it("locks a bill claimed in a filed quarter whatever its date", () => {
+      expect(
+        isLockedBill(
+          filed(true, true),
+          bill({ date: "2026-12-01", claim: { month: "2026-12", source: "manual" } }),
+        ),
+      ).toBe(true);
+    });
+
+    it("leaves an unregistered vendor's 0% bill out of table 5, and free", () => {
+      const local = bill({
+        vendor: { id: "v", name: "Market", kind: "unregistered", gstin: null, state: null },
+        lines: [seed],
+      });
+      expect(quarterView(books({ bills: [local] }), "2627-Q3").figures.gstr3b.exemptInward.intra).toBe(0);
+      expect(isLockedBill(filed(true, true), local)).toBe(false);
+    });
+
+    it("closes a sale's place of supply once either return is filed", () => {
+      expect(isSalesLockedMonth(filed(false, false), "2026-11")).toBe(false);
+      expect(isSalesLockedMonth(filed(true, false), "2026-11")).toBe(true);
+      expect(isSalesLockedMonth(filed(false, true), "2026-11")).toBe(true);
+      expect(isSalesLockedMonth(filed(true, true), "2027-01")).toBe(false);
+    });
   });
 
   it("works out month 2's payment on the quarter so far, less month 1's deposit", () => {

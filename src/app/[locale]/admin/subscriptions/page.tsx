@@ -1,12 +1,6 @@
 import { getFormatter, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import {
-  firstDeliveryDate,
-  formatDeliveryDate,
-  fromIstDateISO,
-  istDateISO,
-  nextCutoff,
-} from "@/lib/delivery-date";
+import { formatDeliveryDate, fromIstDateISO, istDateISO } from "@/lib/delivery-date";
 import { documentNo } from "@/lib/orders/order";
 import { getPlanContent } from "@/lib/content/plans";
 import { varietyNameMap } from "@/lib/content/varieties";
@@ -15,6 +9,7 @@ import { listSubscriptionsByStatus } from "@/lib/repo/subscriptions";
 import { listVarieties } from "@/lib/repo/varieties";
 import { demandFor, type DeliveryDemand } from "@/lib/subscriptions/demand";
 import { rotationWeek, upcomingSaturdays } from "@/lib/subscriptions/rotation";
+import { subscriptionOpening } from "@/lib/subscriptions/opening";
 import {
   boxesPerWeek,
   nextDelivery,
@@ -89,10 +84,12 @@ export default async function SubscriptionsAdmin({
   const expired = paid.filter((s) => subscriptionState(s, now) === "expired");
   const saturdays = upcomingSaturdays(now, HORIZON);
   const demand = saturdays.map((d) => demandFor(d, paid, rotations, byKey));
-  const openDate = istDateISO(firstDeliveryDate(now));
-  /* The cutoff for `openDate` is the Saturday 00:00 after `now`; the last day
-     to join is the Friday before it. */
-  const lastDayToJoin = new Date(nextCutoff(now).getTime() - 24 * 60 * 60 * 1000);
+  /* The first Saturday a new subscriber can still be sown for, and the last
+     day to join for it — the Friday before, or earlier when that week has a
+     slow crop (`subscriptionOpening`). */
+  const opening = await subscriptionOpening(now);
+  const openDate = istDateISO(opening.first);
+  const lastDayToJoin = opening.joinBy;
   const subscribable = planRows.filter(({ plan }) => plan.monthlyPrice !== null && plan.active);
 
   const date = (iso: string) => formatDeliveryDate(fromIstDateISO(iso));

@@ -188,11 +188,24 @@ export type Order = {
    *  whole invoice, so its rows are `tax`. */
   creditNote: CreditNote | null;
   paidAt: string | null;
+  /** What payment took off the shelf, one entry per `stockMoves` move, in
+   *  that order. Null on orders paid before 31 Oct 2026, which a cancel
+   *  restocks from the lines as before. */
+  stockTaken: StockTaken[] | null;
+  /** The after-payment lease (`finishPaidOrder`): set by the payment write,
+   *  renewed by a retry that takes over, and `finishedAt` once the invoice,
+   *  stock and email are done. Both null on orders paid before 31 Oct 2026. */
+  finishingAt: string | null;
+  finishedAt: string | null;
   createdAt: string;
   updatedAt: string;
   /** When the gateway stops accepting payment for it. */
   expiresAt: string;
 };
+
+/** One stock move as it actually happened — grams for a seed, packs for a
+ *  tray or a block. */
+export type StockTaken = { kind: "seed" | "tray" | "media"; key: string; amount: number };
 
 /** How long the gateway keeps an order payable. Short, because the delivery
  *  date and the seed promise were worked out when it was created. */
@@ -350,6 +363,37 @@ const CANCELLABLE: readonly OrderStatus[] = ["paid", "picked", "ready_for_delive
 
 export function canCancel(from: OrderStatus): boolean {
   return CANCELLABLE.includes(from);
+}
+
+/**
+ * Why an order in a cancellable status still cannot be cancelled: a parcel
+ * is with a courier (a tracking number) or being booked right now. A booked
+ * parcel can be collected while the order still reads "ready for delivery"
+ * (moving it on is a manual step), and cancelling then put its stock back
+ * while the goods were on a van (31 Oct 2026). The owner cancels the
+ * shipment in the courier's dashboard and clears the tracking number first.
+ */
+export function cancelBlock(
+  order: Pick<Order, "shipments">,
+  now: Date = new Date(),
+): "booked" | "booking" | null {
+  if (order.shipments.some((x) => x.trackingNumber)) return "booked";
+  /* Only a booking still in flight. One older than that is "stuck"
+     (`bookingState`) — the page already says to check the courier's
+     dashboard — and blocking on it would leave the order uncancellable for
+     good, since clearing a tracking number typed over it makes it stuck again. */
+  const inFlight = (x: Order["shipments"][number]) =>
+    x.bookingStartedAt !== null && now.getTime() - Date.parse(x.bookingStartedAt) < BOOKING_IN_FLIGHT_MS;
+  if (order.shipments.some(inFlight)) return "booking";
+  return null;
+}
+
+/** A courier booking call takes seconds; past this it has died. */
+export const BOOKING_IN_FLIGHT_MS = 5 * 60 * 1000;
+
+/** Cancellable now: the status allows it and no parcel is booked. */
+export function canCancelOrder(order: Pick<Order, "status" | "shipments">, now: Date = new Date()): boolean {
+  return canCancel(order.status) && cancelBlock(order, now) === null;
 }
 
 /**

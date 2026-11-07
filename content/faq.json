@@ -176,8 +176,8 @@
       "first-box": {
         "question": "When does my first box arrive?",
         "answer": [
-          "Subscribe before Friday midnight and your greens are sown that Sunday, for the Saturday after. Subscribe later and everything moves a week.",
-          "The subscribe page lists your four Saturdays before you pay."
+          "Subscribe before Friday midnight and your greens are sown that Sunday, for the Saturday after. When that Saturday's box holds a slower crop, it has to be sown sooner, so that Saturday stops taking new subscribers earlier and your first box is the one after. Subscribe later and everything moves a week.",
+          "The plans page shows the last day to join, and the subscribe page lists your four Saturdays before you pay."
         ]
       },
       "choose-varieties": {
@@ -389,8 +389,8 @@
       "first-box": {
         "question": "ನನ್ನ ಮೊದಲ ಡಬ್ಬಿ ಯಾವಾಗ ಬರುತ್ತದೆ?",
         "answer": [
-          "ಶುಕ್ರವಾರ ಮಧ್ಯರಾತ್ರಿಯ ಮೊದಲು ಚಂದಾದಾರರಾದರೆ ನಿಮ್ಮ ಸೊಪ್ಪನ್ನು ಆ ಭಾನುವಾರ ಬಿತ್ತಿ, ಅದರ ನಂತರದ ಶನಿವಾರ ತಲುಪಿಸುತ್ತೇವೆ. ತಡವಾಗಿ ಚಂದಾದಾರರಾದರೆ ಎಲ್ಲವೂ ಒಂದು ವಾರ ಮುಂದಕ್ಕೆ ಹೋಗುತ್ತದೆ.",
-          "ನೀವು ಪಾವತಿಸುವ ಮೊದಲು ಚಂದಾದಾರಿಕೆ ಪುಟ ನಿಮ್ಮ ನಾಲ್ಕು ಶನಿವಾರಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುತ್ತದೆ."
+          "ಶುಕ್ರವಾರ ಮಧ್ಯರಾತ್ರಿಯ ಮೊದಲು ಚಂದಾದಾರರಾದರೆ ನಿಮ್ಮ ಸೊಪ್ಪನ್ನು ಆ ಭಾನುವಾರ ಬಿತ್ತಿ, ಅದರ ನಂತರದ ಶನಿವಾರ ತಲುಪಿಸುತ್ತೇವೆ. ಆ ಶನಿವಾರದ ಡಬ್ಬಿಯಲ್ಲಿ ನಿಧಾನವಾಗಿ ಬೆಳೆಯುವ ಬೆಳೆ ಇದ್ದರೆ ಅದನ್ನು ಮೊದಲೇ ಬಿತ್ತಬೇಕು, ಆದ್ದರಿಂದ ಆ ಶನಿವಾರಕ್ಕೆ ಹೊಸ ಚಂದಾದಾರರನ್ನು ಬೇಗನೆ ನಿಲ್ಲಿಸುತ್ತೇವೆ ಮತ್ತು ನಿಮ್ಮ ಮೊದಲ ಡಬ್ಬಿ ಅದರ ಮುಂದಿನ ಶನಿವಾರ ಬರುತ್ತದೆ. ತಡವಾಗಿ ಚಂದಾದಾರರಾದರೆ ಎಲ್ಲವೂ ಒಂದು ವಾರ ಮುಂದಕ್ಕೆ ಹೋಗುತ್ತದೆ.",
+          "ಸೇರಲು ಕೊನೆಯ ದಿನವನ್ನು ಯೋಜನೆಗಳ ಪುಟ ತೋರಿಸುತ್ತದೆ, ಮತ್ತು ನೀವು ಪಾವತಿಸುವ ಮೊದಲು ಚಂದಾದಾರಿಕೆ ಪುಟ ನಿಮ್ಮ ನಾಲ್ಕು ಶನಿವಾರಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುತ್ತದೆ."
         ]
       },
       "choose-varieties": {

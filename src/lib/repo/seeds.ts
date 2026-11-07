@@ -104,11 +104,20 @@ export async function setSeedStock(id: string, grams: number): Promise<void> {
  * before, as `openingCost`, so that `null` — no bill names it any more — can
  * put it back. A seed added from a bill has no cost to go back to, so it goes
  * back to unpriced and hidden, as it was before the bill.
+ *
+ * Returns the cost the row is left holding (`costPer100g` absent for none),
+ * or `null` when nothing was written — no such seed, or nothing to undo. The
+ * microgreen of the same key is repriced from this rather than from a fresh
+ * list, which may not show the write yet (`RepriceOverrides`).
  */
-export async function setSeedCost(contentKey: string, cost: ItemCost | null, margin: Margin): Promise<void> {
+export async function setSeedCost(
+  contentKey: string,
+  cost: ItemCost | null,
+  margin: Margin,
+): Promise<{ costPer100g?: number } | null> {
   const { data } = await SeedEntity.query.byCatalogue({ contentKey }).go(LIST_OPTS);
   const row = data[0];
-  if (!row) return;
+  if (!row) return null;
   if (cost) {
     const opening = !row.costBill && row.costPer100g !== undefined ? { openingCost: row.costPer100g } : {};
     await SeedEntity.patch({ id: row.id })
@@ -119,7 +128,9 @@ export async function setSeedCost(contentKey: string, cost: ItemCost | null, mar
         ...opening,
       })
       .go();
-  } else if (row.costBill) {
+    return { costPer100g: cost.cost };
+  }
+  if (row.costBill) {
     const opening = row.openingCost;
     await (
       opening !== undefined
@@ -131,7 +142,10 @@ export async function setSeedCost(contentKey: string, cost: ItemCost | null, mar
     )
       .remove(["costBill", "openingCost"])
       .go();
+    return opening !== undefined ? { costPer100g: opening } : {};
   }
+  /* No bill costed it and none does now: nothing written. */
+  return null;
 }
 
 /**

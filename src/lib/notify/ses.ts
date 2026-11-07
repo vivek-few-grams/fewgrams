@@ -10,10 +10,11 @@ export function sesProvider(from: string): NotificationProvider {
   const client = new SESv2Client({ region: process.env.AWS_REGION ?? "ap-south-1" });
   return {
     name: "ses",
-    async sendEmail({ to, subject, text, html }: EmailMessage) {
+    async sendEmail({ to, subject, text, html, replyTo }: EmailMessage) {
       await client.send(
         new SendEmailCommand({
           FromEmailAddress: from,
+          ...(replyTo ? { ReplyToAddresses: [replyTo] } : {}),
           Destination: { ToAddresses: [to] },
           Content: {
             Simple: {

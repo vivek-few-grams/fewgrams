@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   asCartKind,
   cartGrams,
-  cartUnitCount,
+  cartLineCount,
   isWeighed,
   lineId,
   MAX_LINES,
@@ -277,21 +277,29 @@ describe("asCartKind — the only way a string becomes a kind", () => {
 });
 
 describe("totals", () => {
-  it("counts units and grams across the weighed kinds", () => {
+  it("counts lines, and grams across the weighed kinds", () => {
     const lines = [seed("radish", 2), tray("tray-pair", 1)];
-    expect(cartUnitCount(lines)).toBe(3);
+    expect(cartLineCount(lines)).toBe(2);
     /* Two 100 g seed units (the unit since 3 Oct 2026); the tray weighs
        nothing here. */
     expect(cartGrams(lines)).toBe(200);
   });
 
+  /* The audit, 31 Oct 2026: the badge read 8 over a cart that said "4
+     items", because it summed 100 g packs, tray packs and blocks. The badge
+     and the cart page's "N items" are one count. */
+  it("counts lines, not units — the badge matches the cart's item count", () => {
+    const lines = [seed("radish", 3), seed("dill", 2), tray("tray-pair", 2), medium("horti-coir", 1)];
+    expect(cartLineCount(lines)).toBe(4);
+  });
+
   it("is zero for an empty cart", () => {
-    expect(cartUnitCount([])).toBe(0);
+    expect(cartLineCount([])).toBe(0);
     expect(cartGrams([])).toBe(0);
   });
 
   /**
-   * The bug this replaced: `cartGrams` was `cartUnitCount × 100`, which was
+   * The bug this replaced: `cartGrams` was the unit count × 100, which was
    * right while every kind was sold by weight and became a lie the moment
    * trays arrived. A cart holding one pack of trays would have reported 100 g
    * of nothing. A green joined the unweighed side on 19 Sep 2026, when
@@ -300,13 +308,13 @@ describe("totals", () => {
    */
   it("weighs a green in 100 g boxes, and a tray not at all", () => {
     const lines = [green("broccoli", 3), tray("tray-pair", 2)];
-    expect(cartUnitCount(lines)).toBe(5);
+    expect(cartLineCount(lines)).toBe(2);
     expect(cartGrams(lines)).toBe(300);
   });
 
   it("gives a trays-only cart no weight at all", () => {
     const lines = [tray("tray-pair", 1), tray("drain-cell-mat", 4)];
-    expect(cartUnitCount(lines)).toBe(5);
+    expect(cartLineCount(lines)).toBe(2);
     expect(cartGrams(lines)).toBe(0);
   });
 });
@@ -327,9 +335,9 @@ describe("the grow-media kind on the wire", () => {
     expect(serialiseCart([medium("horti-coir-bulk", 1)])).toBe("m:horti-coir-bulk:1");
   });
 
-  it("adds a block to the unit count and nothing to the weight", () => {
+  it("adds a block to the line count and nothing to the weight", () => {
     const lines = [seed("radish", 2), medium("horti-coir", 3)];
-    expect(cartUnitCount(lines)).toBe(5);
+    expect(cartLineCount(lines)).toBe(2);
     expect(cartGrams(lines)).toBe(200);
   });
 

@@ -1,6 +1,7 @@
 import { addDaysISO } from "@/lib/purchases/dates";
 import type { Heads } from "@/lib/gst/ledger";
 import { GST_FROM_DATE, type MonthId } from "@/lib/gst/period";
+import { taxClassFor } from "@/lib/tax/classes";
 import { HOME_STATE, type GstState } from "@/lib/tax/states";
 
 /**
@@ -79,6 +80,20 @@ export function freightCredit(
 export const STOCK_KINDS = ["tray", "media", "seed"] as const;
 export type StockKind = (typeof STOCK_KINDS)[number];
 export type StockItem = { kind: StockKind; key: string };
+
+/**
+ * What a stock line of `item` is bought at, by default: the GST rate it is
+ * sold at (`taxClassFor` — seed exempt, a tray 18%, cocopeat 5%; the same
+ * goods carry the same rate both ways), and the credit that rate gives — none
+ * on an exempt line, else a stock line's own. The bill form fills both in when
+ * the item is picked, so a seed bill no longer starts at 18% with Full credit
+ * and folds GST nobody charged into the seed's cost (31 Oct 2026). The owner
+ * still types over either when a vendor's bill says otherwise.
+ */
+export function stockLineDefaults(item: StockItem): { rate: number; credit: CreditUse } {
+  const { rate } = taxClassFor(item.kind, item.key);
+  return { rate, credit: rate === 0 ? "none" : DEFAULT_CREDIT.stock };
+}
 
 export type PurchaseLine = {
   category: PurchaseCategory;

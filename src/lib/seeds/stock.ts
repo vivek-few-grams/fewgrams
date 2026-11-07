@@ -63,7 +63,8 @@ export function seedSoldOut(stockGrams: number): boolean {
 }
 
 /**
- * The day a seed line reaches the customer: next day, off our shelf.
+ * The day a seed line is ready to ship: next day, off our shelf. Not the day
+ * it arrives — the courier's days are added at checkout (31 Oct 2026).
  * Day-granular in IST, like every other date on the site (`delivery-date.ts`).
  */
 export function seedReadyDate(now: Date = new Date()): Date {

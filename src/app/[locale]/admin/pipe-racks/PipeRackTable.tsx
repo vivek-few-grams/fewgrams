@@ -200,6 +200,8 @@ function PipeRackRow({ view }: { view: PipeRackView }) {
 
       <form action={togglePipeRack} className="contents">
         <input type="hidden" name="id" value={model.id} />
+        {/* Where the press goes, not "flip it" — see `switchTo`. */}
+        <input type="hidden" name="to" value={model.active ? "off" : "on"} />
         <button
           className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
             model.active

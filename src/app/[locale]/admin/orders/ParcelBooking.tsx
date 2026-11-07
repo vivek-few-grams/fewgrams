@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { daysFromToday, istDateISO } from "@/lib/delivery-date";
 import { bookingState, canBook, type Order } from "@/lib/orders/order";
 import { bookingEnabled } from "@/lib/shipping/book";
@@ -10,7 +11,9 @@ import { BookParcel } from "./BookParcel";
  * "Book with …" button when it can be booked, what the courier answered once
  * it is, a warning when a booking was left unfinished — and, always, the
  * hand-typed tracking number for a parcel booked in the courier's own
- * dashboard.
+ * dashboard. On a parcel booked from here, saving that number asks first:
+ * clearing it forgets the booking and offers "Book" again, which pays twice
+ * unless the shipment was cancelled with the courier.
  */
 export async function ParcelBooking({
   order,
@@ -96,12 +99,23 @@ export async function ParcelBooking({
               className="w-44 rounded-lg border border-forest/20 bg-cream px-2 py-1 font-mono text-xs text-forest"
             />
           </label>
-          <button
-            type="submit"
-            className="rounded-full border border-forest/25 px-3 py-1 font-semibold text-forest transition-colors hover:bg-forest hover:text-cream"
-          >
-            {t("tracking.save")}
-          </button>
+          {x.booking ? (
+            <ConfirmSubmit
+              label={t("tracking.save")}
+              title={t("tracking.bookedTitle")}
+              message={t("tracking.bookedConfirm", { courier })}
+              confirmLabel={t("tracking.bookedYes")}
+              cancelLabel={t("tracking.cancel")}
+              className="rounded-full border border-forest/25 px-3 py-1 font-semibold text-forest transition-colors hover:bg-forest hover:text-cream"
+            />
+          ) : (
+            <button
+              type="submit"
+              className="rounded-full border border-forest/25 px-3 py-1 font-semibold text-forest transition-colors hover:bg-forest hover:text-cream"
+            >
+              {t("tracking.save")}
+            </button>
+          )}
           <span className="text-stone">{t("tracking.hint")}</span>
         </form>
       </details>

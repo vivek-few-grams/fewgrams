@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
 import { isRackColour } from "@/lib/racks/colours";
-import { rackCost, retailPrice, shelvesForHeight, type RateCard } from "@/lib/racks/pricing";
+import { rackCost, rackSku, retailPrice, shelvesForHeight, type RateCard } from "@/lib/racks/pricing";
 import {
   deleteAngleGrade,
   deleteRackModel,
@@ -23,7 +23,8 @@ import {
   seedRateCard,
 } from "@/lib/repo/racks";
 import { repriceAllRacks, revalidateRackScreens } from "@/lib/racks/reprice";
-import { count, csv, err, money, optionalPositive, zeroOrMore, type FormState } from "@/lib/forms";
+import { count, csv, err, money, optionalPositive, switchTo, zeroOrMore, type FormState } from "@/lib/forms";
+import { packLosingRack } from "../pack-usage";
 import {
   RACK_RANGES,
   type AngleGrade,
@@ -53,6 +54,14 @@ import {
  * retiring or deleting one makes racks *unpriceable* rather than cheaper —
  * they keep their last good price and stay flagged, which is the one case
  * where writing a new price would be wrong.
+ *
+ * **A part's SKU-forming size is fixed once it exists** (31 Oct 2026): a
+ * plate's depth and length, a grade's thickness. Every rack built on it
+ * carries them in its SKU (`rackSku`), and a starter pack and every cart line
+ * name a rack by that SKU — so changing one quietly re-identified every rack
+ * on the part, and could give two models the same SKU. The rows show those
+ * figures as text and the save refuses a change; a different size is a new
+ * row, and adding one that is already listed is refused too.
  */
 
 function refresh() {
@@ -168,12 +177,32 @@ function isRackRange(value: string): value is RackRange {
 
 /* ──────────────────────────── shelf plates ─────────────────────────── */
 
+/**
+ * A posted size that differs from the stored one, as an error — or null.
+ * Absent is fine: a saved row shows its SKU-forming size as text and posts
+ * nothing for it. Present and the same is fine too.
+ */
+function lockedChange(fd: FormData, stored: Record<string, number>): FormState | null {
+  for (const [field, value] of Object.entries(stored)) {
+    const raw = String(fd.get(field) ?? "").trim();
+    if (raw !== "" && Number(raw) !== value) return err("dimensionLocked", field);
+  }
+  return null;
+}
+
+/** A plate's form. `footprint` is the saved row's, which the form cannot
+ *  change; without it (a new plate) depth and length are read from the form. */
 function readPlate(
   fd: FormData,
+  footprint?: Pick<ShelfPlate, "depthFt" | "lengthFt">,
 ): { ok: true; value: Omit<ShelfPlate, "id"> } | { ok: false; state: FormState } {
-  const depthFt = money(fd, "depthFt");
+  if (footprint) {
+    const locked = lockedChange(fd, footprint);
+    if (locked) return { ok: false, state: locked };
+  }
+  const depthFt = footprint?.depthFt ?? money(fd, "depthFt");
   if (depthFt === null) return { ok: false, state: err("dimensionInvalid", "depthFt") };
-  const lengthFt = money(fd, "lengthFt");
+  const lengthFt = footprint?.lengthFt ?? money(fd, "lengthFt");
   if (lengthFt === null) return { ok: false, state: err("dimensionInvalid", "lengthFt") };
   const thicknessMm = money(fd, "thicknessMm");
   if (thicknessMm === null) return { ok: false, state: err("dimensionInvalid", "thicknessMm") };
@@ -212,34 +241,49 @@ function readPlate(
  * Re-adding a size the owner deleted also lands on the same id, which silently
  * re-prices the racks that referenced it — the forgiving behaviour, and the
  * reason a plate id is not random.
+ *
+ * **A size already listed is refused**, by id or by footprint. The write is a
+ * put, so it used to replace that row outright — its weight and packed
+ * thickness with it — and skip the cascade its new price needed.
  */
 export async function addPlate(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   const read = readPlate(fd);
   if (!read.ok) return read.state;
   const { depthFt, lengthFt } = read.value;
-  await putShelfPlate({ id: `p-${depthFt}x${lengthFt}`, ...read.value });
+  const id = `p-${depthFt}x${lengthFt}`;
+  if (
+    (await listShelfPlates()).some((p) => p.id === id || (p.depthFt === depthFt && p.lengthFt === lengthFt))
+  )
+    return err("plateExists", "depthFt", { depth: String(depthFt), length: String(lengthFt) });
+  await putShelfPlate({ id, ...read.value });
   refresh();
   return { status: "saved" };
 }
 
+/** Everything but the footprint, which is fixed — see the note at the top. */
 export async function savePlate(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   const id = String(fd.get("id") ?? "").trim();
-  if (!id || !(await listShelfPlates()).some((p) => p.id === id)) return err("notFound");
-  const read = readPlate(fd);
+  const current = id ? (await listShelfPlates()).find((p) => p.id === id) : undefined;
+  if (!current) return err("notFound");
+  const read = readPlate(fd, { depthFt: current.depthFt, lengthFt: current.lengthFt });
   if (!read.ok) return read.state;
   await putShelfPlate({ id, ...read.value });
   await cascade();
   return { status: "saved" };
 }
 
+/** On or off, to the state the button asks for (`switchTo`). */
 export async function togglePlate(fd: FormData): Promise<void> {
   await assertRole("admin");
   const id = String(fd.get("id"));
   const current = (await listShelfPlates()).find((p) => p.id === id);
   if (!current) throw new Error("Shelf plate not found");
-  await putShelfPlate({ ...current, active: !current.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === current.active) return;
+  await putShelfPlate({ ...current, active });
   refresh();
 }
 
@@ -251,10 +295,17 @@ export async function removePlate(fd: FormData): Promise<void> {
 
 /* ──────────────────────────── angle grades ─────────────────────────── */
 
+/** A grade's form. `gauge` is the saved row's thickness, which the form
+ *  cannot change; without it (a new grade) it is read from the form. */
 function readAngle(
   fd: FormData,
+  gauge?: Pick<AngleGrade, "thicknessMm">,
 ): { ok: true; value: Omit<AngleGrade, "id"> } | { ok: false; state: FormState } {
-  const thicknessMm = money(fd, "thicknessMm");
+  if (gauge) {
+    const locked = lockedChange(fd, gauge);
+    if (locked) return { ok: false, state: locked };
+  }
+  const thicknessMm = gauge?.thicknessMm ?? money(fd, "thicknessMm");
   if (thicknessMm === null) return { ok: false, state: err("dimensionInvalid", "thicknessMm") };
   const ratePerFt = money(fd, "ratePerFt");
   if (ratePerFt === null) return { ok: false, state: err("priceInvalid", "ratePerFt") };
@@ -289,22 +340,29 @@ function readAngle(
 
 /** Keyed by gauge, for the same reason plates are keyed by footprint: `a-1.4`
  *  is readable where a UUID is not. One row per gauge is also the vendor's own
- *  structure — they quote 1, 1.2 and 1.4 mm, and finish follows from it. */
+ *  structure — they quote 1, 1.2 and 1.4 mm, and finish follows from it — so
+ *  a gauge already listed is refused rather than put over its row. */
 export async function addAngle(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   const read = readAngle(fd);
   if (!read.ok) return read.state;
-  await putAngleGrade({ id: `a-${read.value.thicknessMm}`, ...read.value });
+  const { thicknessMm } = read.value;
+  const id = `a-${thicknessMm}`;
+  if ((await listAngleGrades()).some((a) => a.id === id || a.thicknessMm === thicknessMm))
+    return err("angleExists", "thicknessMm", { thickness: String(thicknessMm) });
+  await putAngleGrade({ id, ...read.value });
   /* The grades table is on Angle racks too, so refresh every rack screen. */
   revalidateRackScreens();
   return { status: "saved" };
 }
 
+/** Everything but the thickness, which is fixed — see the note at the top. */
 export async function saveAngle(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   const id = String(fd.get("id") ?? "").trim();
-  if (!id || !(await listAngleGrades()).some((a) => a.id === id)) return err("notFound");
-  const read = readAngle(fd);
+  const current = id ? (await listAngleGrades()).find((a) => a.id === id) : undefined;
+  if (!current) return err("notFound");
+  const read = readAngle(fd, { thicknessMm: current.thicknessMm });
   if (!read.ok) return read.state;
   await putAngleGrade({ id, ...read.value });
   /* The angle rate prices the legs of both steel ranges, so this cascades
@@ -313,21 +371,32 @@ export async function saveAngle(_prev: FormState, fd: FormData): Promise<FormSta
   return { status: "saved" };
 }
 
+/** On or off, to the state the button asks for (`switchTo`). */
 export async function toggleAngle(fd: FormData): Promise<void> {
   await assertRole("admin");
   const id = String(fd.get("id"));
   const current = (await listAngleGrades()).find((a) => a.id === id);
   if (!current) throw new Error("Angle grade not found");
-  await putAngleGrade({ ...current, active: !current.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === current.active) return;
+  await putAngleGrade({ ...current, active });
   /* The grades table is on Angle racks too, so refresh every rack screen. */
   revalidateRackScreens();
 }
 
-export async function removeAngle(fd: FormData): Promise<void> {
+/** Delete a grade — refused while a starter pack's rack is built on it
+ *  (SPEC §29): the rack's SKU would no longer exist, and the pack would leave
+ *  the site with nothing to say why. */
+export async function removeAngle(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
-  await deleteAngleGrade(String(fd.get("id")));
+  const id = String(fd.get("id") ?? "");
+  const pack = await packLosingRack((m) => m.config.angleId === id);
+  if (pack) return err("angleInPack", undefined, { pack });
+  await deleteAngleGrade(id);
   /* The grades table is on Angle racks too, so refresh every rack screen. */
   revalidateRackScreens();
+  return { status: "saved" };
 }
 
 /* ───────────────────────── racks on sale ───────────────────────────── */
@@ -394,6 +463,13 @@ export async function addModel(_prev: FormState, fd: FormData): Promise<FormStat
 
   const existing = await listRackModels();
   if (existing.some((m) => sameConfig(m.config, read.value))) return err("duplicateRack", "plateId");
+  /* One SKU, one model: a cart line and a pack name a rack by its SKU, and
+     the catalogue finds the first model that answers to it. Two plates of one
+     footprint — possible on rows saved before sizes were fixed — would
+     otherwise publish a second. */
+  const sku = skuOf(read.value, card);
+  if (sku && existing.some((m) => skuOf(m.config, card) === sku))
+    return err("duplicateSku", "plateId", { sku });
 
   const cost = rackCost(read.value, card);
   if (!cost) return err("notFound");
@@ -410,6 +486,12 @@ export async function addModel(_prev: FormState, fd: FormData): Promise<FormStat
   });
   refresh();
   return { status: "saved" };
+}
+
+function skuOf(config: RackConfig, card: RateCard): string | null {
+  const plate = card.plates.find((p) => p.id === config.plateId);
+  const angle = card.angles.find((a) => a.id === config.angleId);
+  return plate && angle ? rackSku(config, plate, angle) : null;
 }
 
 function sameConfig(a: RackConfig, b: RackConfig): boolean {
@@ -448,11 +530,15 @@ async function republish(models: RackModel[]): Promise<void> {
   );
 }
 
+/** On or off sale, to the state the button asks for (`switchTo`). */
 export async function toggleModel(fd: FormData): Promise<void> {
   await assertRole("admin");
   const current = await getRackModel(String(fd.get("id")));
   if (!current) throw new Error("Rack not found");
-  await putRackModel({ ...current, active: !current.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === current.active) return;
+  await putRackModel({ ...current, active });
   refresh();
 }
 

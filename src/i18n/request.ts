@@ -32,6 +32,9 @@ export const NAMESPACES = [
   "legal",
   "garden",
   "search",
+  /** Transactional email copy — read on the server only, never sent to a
+   *  page (no `CLIENT_MESSAGES` entry names it). */
+  "email",
   "admin",
 ] as const;
 

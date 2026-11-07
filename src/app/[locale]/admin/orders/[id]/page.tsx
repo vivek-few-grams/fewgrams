@@ -8,7 +8,8 @@ import { taxTotals } from "@/lib/tax/order-tax";
 import { GST_STATES, HOME_STATE } from "@/lib/tax/states";
 import { setOrderPlaceOfSupply } from "../actions";
 import { listFilings } from "@/lib/repo/gst";
-import { monthOf, quarterOf } from "@/lib/gst/period";
+import { monthOf } from "@/lib/gst/period";
+import { isSalesLockedMonth } from "@/lib/gst/quarter";
 import { getOrder, listPayments } from "@/lib/repo/orders";
 import { ParcelBooking } from "../ParcelBooking";
 import { orderCreditNote, orderInvoice } from "@/components/tax/docs";
@@ -35,11 +36,10 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
   if (!isOrderId(id)) notFound();
   const order = await getOrder(id);
   if (!order) notFound();
-  /* Once the quarter's GSTR-1 is filed, a missing state is corrected by
-     amendment on the portal, not here. */
-  const gstr1Filed =
-    !!order.paidAt &&
-    !!(await listFilings()).find((f) => f.quarter === quarterOf(monthOf(order.paidAt!)))?.gstr1;
+  /* Once the quarter's GSTR-1 or GSTR-3B is filed, a missing state is
+     corrected by amendment on the portal, not here — the same lock
+     `setOrderPlaceOfSupply` applies. */
+  const salesFiled = !!order.paidAt && isSalesLockedMonth(await listFilings(), monthOf(order.paidAt));
 
   const t = await getTranslations("admin.orders");
   const format = await getFormatter();
@@ -49,11 +49,15 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
     q.carrier
       ? t("courierVia", { carrier: q.carrier, courier: t(`courier.${q.courier}`) })
       : t(`courier.${q.courier}`);
-  const quoteText = (q: ShippingQuote) =>
+  /* What the customer was charged against the courier's quote: nothing over
+     the free-delivery line, the capped fee when the quote was above it, else
+     the quote rounded up to the rupee (`customerDelivery`). */
+  const quoteText = (q: ShippingQuote, charge: number) =>
     t("deliveryQuote", {
       courier: courierLabel(q),
       zone: q.zone,
       quoted: q.quotedTotal,
+      basis: charge <= 0 ? "free" : charge < Math.ceil(q.quotedTotal) ? "capped" : "roundedUp",
     });
   const payments = await listPayments(id);
 
@@ -100,10 +104,10 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
           )}
           {/* GSTR-1 needs a state for every sale: name it where checkout
               could not read one from the address. */}
-          {order.tax && order.paidAt && !order.placeOfSupply && gstr1Filed && (
+          {order.tax && order.paidAt && !order.placeOfSupply && salesFiled && (
             <p className="mt-2 font-body text-xs text-terracotta">{t("gstStateFiled")}</p>
           )}
-          {order.tax && order.paidAt && !order.placeOfSupply && !gstr1Filed && (
+          {order.tax && order.paidAt && !order.placeOfSupply && !salesFiled && (
             <form action={setOrderPlaceOfSupply} className="mt-2 flex flex-wrap items-center gap-2">
               <input type="hidden" name="id" value={order.id} />
               <select
@@ -185,7 +189,7 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                         pincode: x.origin.pincode,
                       })}
                       <span className="block text-xs text-stone">
-                        {x.quote ? quoteText(x.quote) : t("deliveryOwnRun")}
+                        {x.quote ? quoteText(x.quote, x.charge) : t("deliveryOwnRun")}
                         {" · "}
                         {x.lines
                           .map((id) => order.lines.find((l) => `${l.kind}:${l.key}` === id)?.name ?? id)
@@ -222,7 +226,9 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                     <td className="py-2.5 font-body text-sm text-forest">
                       {t("deliveryLine")}
                       <span className="block text-xs text-stone">
-                        {order.shippingQuote ? quoteText(order.shippingQuote) : t("deliveryOwnRun")}
+                        {order.shippingQuote
+                          ? quoteText(order.shippingQuote, order.deliveryCharge)
+                          : t("deliveryOwnRun")}
                       </span>
                     </td>
                     <td className="py-2.5 font-body text-sm tabular-nums text-forest">

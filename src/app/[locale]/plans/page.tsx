@@ -8,6 +8,8 @@ import { varietyNameMap } from "@/lib/content/varieties";
 import { listVarieties } from "@/lib/repo/varieties";
 import { pageMetadata } from "@/lib/seo/metadata";
 import { planCards } from "@/lib/subscriptions/plan-cards";
+import { subscriptionOpening } from "@/lib/subscriptions/opening";
+import { istDateISO } from "@/lib/delivery-date";
 
 /**
  * `/plans` — the weekly plans as a page of their own (SPEC §28.8), so a search
@@ -32,6 +34,10 @@ export default async function PlansPage({ params }: PageProps<"/[locale]/plans">
   const { locale } = await params;
   setRequestLocale(locale);
 
+  /* The first box and the last day to join, worked out here because the plan
+     cards are a client component and cannot read the rotation (`opening.ts`). */
+  const opened = await subscriptionOpening();
+  const opening = { first: istDateISO(opened.first), joinBy: istDateISO(opened.joinBy) };
   const [{ plans, adminEmpty }, varieties, varietyNames, microgreensOn] = await Promise.all([
     planCards(locale),
     listVarieties({ activeOnly: true }),
@@ -41,9 +47,14 @@ export default async function PlansPage({ params }: PageProps<"/[locale]/plans">
   const nav = await getTranslations("common.nav");
   const tp = await getTranslations("plans");
 
-  /* A green links to its page only when that page would open: on sale, and
-     microgreens switched on. Otherwise its name is printed plain. */
-  const linkable = new Set(microgreensOn ? varieties.map((v) => v.contentKey) : []);
+  /* A green links to its page only when that page would open — the variety
+     page's own test (`load` in microgreens/[key]): on sale (`onSale`, which
+     is what `activeOnly` keeps — an unpriced green such as one with no costed
+     seed is not), a content file, and microgreens switched on. Otherwise its
+     name is printed plain, so a rotation never links to a 404. */
+  const linkable = new Set(
+    microgreensOn ? varieties.map((v) => v.contentKey).filter((key) => key in varietyNames) : [],
+  );
   /* Pick Your Own has no rotation; it is a card and nothing more. */
   const rotations = plans.filter(({ weeks }) => weeks.some((w) => w.varietyKeys.length > 0));
 
@@ -60,6 +71,7 @@ export default async function PlansPage({ params }: PageProps<"/[locale]/plans">
             varieties={varieties}
             varietyNames={varietyNames}
             adminEmpty={adminEmpty}
+            opening={opening}
             headingLevel={1}
           />
         </ClientMessages>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { keepFields } from "@/lib/keep-fields";
 import { useTranslations } from "next-intl";
 import { Crosshair, MapPin } from "lucide-react";
 import type { Address, Geo } from "@/lib/types";
@@ -92,8 +93,12 @@ export function AddressForm({
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field ? e(state.code, state.values ?? {}) : undefined;
 
+  /* `keepFields`, not `action=`: React resets a form after its action, which
+     wiped what the customer had typed whenever the server refused one field
+     (31 Oct 2026). `noValidate` so the server's words in red are the only
+     error, never the browser's English bubble. */
   return (
-    <form action={action} className="space-y-5">
+    <form onSubmit={keepFields(action)} noValidate className="space-y-5">
       {address && <input type="hidden" name="addrId" value={address.addrId} />}
       <input type="hidden" name="pincode" value={checked.pincode} />
 

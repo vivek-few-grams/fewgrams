@@ -49,6 +49,8 @@
   "secureNote": "Nothing is charged until you pay.",
   "lineSoldOut": "Sold out. Remove it to continue.",
   "lineOverStock": "We have less than this now. Reduce it to continue.",
+  "lineSharedSeed": "Your starter pack has {name} in it too, and together they come to more than we have. Reduce or remove this line to continue.",
+  "linePackShort": "Not enough {seeds} seed for this now. Reduce or remove it to continue.",
   "overStockBlock": "Adjust the highlighted line to continue.",
   "inclusive": "Inclusive of all taxes",
   "linePriceStarter": "₹{price, number} each",

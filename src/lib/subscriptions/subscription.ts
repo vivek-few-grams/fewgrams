@@ -80,6 +80,10 @@ export type Subscription = {
   tax: TaxRow[] | null;
   placeOfSupply: GstState | null;
   paidAt: string | null;
+  /** The after-payment lease (`settleSubscription`); both null on
+   *  subscriptions paid before 31 Oct 2026. */
+  finishingAt: string | null;
+  finishedAt: string | null;
   createdAt: string;
   updatedAt: string;
   expiresAt: string;
@@ -196,17 +200,25 @@ export type ScheduleChange = Pick<Subscription, "status" | "deliveries" | "skipp
  * Skip one Saturday. The box is not lost: it moves to the Saturday after the
  * last one, on whatever rotation week that is, so the customer still gets
  * every box they paid for. Null when that Saturday cannot be skipped.
+ *
+ * "The last one" is the later of the last box kept and the one skipped:
+ * skipping the final Saturday once measured from the box before it, which
+ * put the new box back on the skipped date (31 Oct 2026). Never earlier than
+ * `open`, the first Saturday still open to new boxes (`subscriptionOpening`),
+ * or a skip after a pause could land in the past or on a sown Saturday.
  */
 export function skipDelivery(
   sub: Pick<Subscription, "status" | "deliveries" | "skipped" | "held">,
   date: string,
-  now: Date = new Date(),
+  now: Date,
+  open: Date,
 ): ScheduleChange | null {
   if (sub.status !== "active") return null;
   if (!changeableDeliveries(sub, now).some((d) => d.date === date)) return null;
   const kept = sub.deliveries.filter((d) => d.date !== date).sort(byDate);
-  const last = kept.at(-1)?.date ?? date;
-  const added = new Date(fromIstDateISO(last).getTime() + WEEK_MS);
+  const last = [kept.at(-1)?.date ?? date, date].sort().at(-1)!;
+  const after = fromIstDateISO(last).getTime() + WEEK_MS;
+  const added = new Date(Math.max(after, fromIstDateISO(istDateISO(open)).getTime()));
   return {
     status: "active",
     deliveries: [...kept, { date: istDateISO(added), week: rotationWeek(added) }],
@@ -233,14 +245,15 @@ export function pauseDeliveries(
   };
 }
 
-/** Resume: the held boxes go back on the calendar from the first Saturday
- *  still open to new boxes (SPEC §5.3), each on its own rotation week. */
+/** Resume: the held boxes go back on the calendar from `open`, the first
+ *  Saturday still open to new boxes (`subscriptionOpening`), each on its own
+ *  rotation week. */
 export function resumeDeliveries(
   sub: Pick<Subscription, "status" | "deliveries" | "skipped" | "held">,
-  now: Date = new Date(),
+  open: Date,
 ): ScheduleChange | null {
   if (sub.status !== "paused" || sub.held <= 0) return null;
-  const added = subscriptionSchedule(now, sub.held).map((b) => ({ date: istDateISO(b.date), week: b.week }));
+  const added = subscriptionSchedule(open, sub.held).map((b) => ({ date: istDateISO(b.date), week: b.week }));
   return {
     status: "active",
     deliveries: [...sub.deliveries, ...added].sort(byDate),

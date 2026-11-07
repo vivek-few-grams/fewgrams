@@ -287,7 +287,7 @@ export function upsertLine(lines: CartLine[], kind: CartKind, key: string, units
 }
 
 /** Units of one item currently in the cart, or 0. This is what seeds a detail
- *  page's stepper, so the control and the header badge agree. */
+ *  page's stepper, so the control and the cart agree. */
 export function unitsFor(lines: CartLine[], kind: CartKind, key: string): number {
   return lines.find((l) => l.kind === kind && l.key === key)?.units ?? 0;
 }
@@ -297,20 +297,23 @@ export function removeFromCart(lines: CartLine[], kind: CartKind, key: string): 
 }
 
 /**
- * Total units across the cart — what the header badge shows.
+ * Lines in the cart — what the header badge shows, and the same figure the
+ * cart page prints as "N items".
  *
- * Deliberately **mixes the kinds**: the badge counts things you are buying, and
- * "3" for two punnets and a tray pack is what a customer would count. It is
- * not a weight and has never been used as one.
+ * **Lines, not units** (the audit, 31 Oct 2026). The badge used to sum units,
+ * and a unit is 100 g of a seed, a pack of trays or a block depending on the
+ * kind — so 300 g of radish and a block of cocopeat read "4" beside a cart
+ * that said "2 items". A sum across kinds of things that are not the same
+ * thing is not a count of anything.
  */
-export function cartUnitCount(lines: CartLine[]): number {
-  return lines.reduce((sum, l) => sum + l.units, 0);
+export function cartLineCount(lines: CartLine[]): number {
+  return lines.filter((l) => l.units > 0).length;
 }
 
 /**
  * Total weight of the cart, counting **only the kinds sold by weight**.
  *
- * It used to be `cartUnitCount × 100`, which was right while every kind was
+ * It used to be the unit count × 100, which was right while every kind was
  * weighed and became a lie the moment trays arrived — a cart holding one tray
  * pack would have reported 100 g of nothing.
  */

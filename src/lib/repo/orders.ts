@@ -1,7 +1,7 @@
 import type { EntityItem } from "electrodb";
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import { CounterEntity, OrderEntity, PaymentEntity } from "@/lib/db/entities";
-import type { CreditNote, Order, OrderLine } from "@/lib/orders/order";
+import type { CreditNote, Order, OrderLine, StockTaken } from "@/lib/orders/order";
 import type { GatewayName, PaymentAttempt } from "@/lib/payments";
 import type { OrderStatus, OrderSummary } from "@/lib/types";
 import { ordersPerProduct } from "@/lib/orders/popularity";
@@ -55,6 +55,9 @@ function toOrder(row: OrderRow): Order {
     buyer: row.buyer ?? null,
     creditNote: row.creditNote ?? null,
     paidAt: row.paidAt ?? null,
+    stockTaken: row.stockTaken ?? null,
+    finishingAt: row.finishingAt ?? null,
+    finishedAt: row.finishedAt ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     expiresAt: row.expiresAt,
@@ -98,6 +101,9 @@ function toRow(o: Order) {
     ...(o.buyer ? { buyer: o.buyer } : {}),
     ...(o.creditNote ? { creditNote: o.creditNote } : {}),
     ...(o.paidAt ? { paidAt: o.paidAt } : {}),
+    ...(o.stockTaken ? { stockTaken: o.stockTaken } : {}),
+    ...(o.finishingAt ? { finishingAt: o.finishingAt } : {}),
+    ...(o.finishedAt ? { finishedAt: o.finishedAt } : {}),
     createdAt: o.createdAt,
     updatedAt: o.updatedAt,
     expiresAt: o.expiresAt,
@@ -189,13 +195,26 @@ export async function listPayments(orderId: string): Promise<StoredPayment[]> {
  * `pending_payment` is what puts the order into the sparse delivery-run and
  * customer-history indexes (see `OrderEntity`).
  */
-export async function markOrderPaid(order: Order, paidAt: string, deliveryDate: string): Promise<boolean> {
+/**
+ * The payment write: one caller wins. It also takes the after-payment lease
+ * (`finishingAt`), so the winner goes straight on to the invoice and stock,
+ * and moves each parcel's date with the order's when payment landed a day
+ * late — the parcels used to keep the old date (31 Oct 2026).
+ */
+export async function markOrderPaid(
+  order: Order,
+  paidAt: string,
+  deliveryDate: string,
+  shipments: Order["shipments"] = order.shipments,
+): Promise<boolean> {
   try {
     await OrderEntity.patch({ id: order.id })
       .set({
         status: "paid",
         paidAt,
         deliveryDate,
+        finishingAt: paidAt,
+        ...(shipments.length > 0 ? { shipments: shipments.map(toShipmentRow) } : {}),
         userId: order.userId,
         createdAt: order.createdAt,
         updatedAt: paidAt,
@@ -209,8 +228,47 @@ export async function markOrderPaid(order: Order, paidAt: string, deliveryDate: 
   }
 }
 
-export async function setCreditNote(id: string, creditNote: CreditNote): Promise<void> {
-  await OrderEntity.patch({ id }).set({ creditNote, updatedAt: new Date().toISOString() }).go();
+/**
+ * Take over an unfinished order's after-payment lease, from whoever held it
+ * at `order.finishingAt`. True for one caller only; the stale holder, if it
+ * is still alive, loses its next conditional write instead of doubling one.
+ */
+export async function claimFinishing(order: Order, now: string): Promise<boolean> {
+  if (!order.finishingAt) return false;
+  try {
+    await OrderEntity.patch({ id: order.id })
+      .set({ finishingAt: now })
+      .where((attr, { eq, notExists }) => `${eq(attr.finishingAt, order.finishingAt!)} AND ${notExists(attr.finishedAt)}`)
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
+}
+
+/** What has come off the shelf so far, written after each move so a retry
+ *  carries on from the next one rather than taking any twice. */
+export async function recordStockTaken(id: string, stockTaken: StockTaken[]): Promise<void> {
+  await OrderEntity.patch({ id }).set({ stockTaken }).go();
+}
+
+export async function markOrderFinished(id: string, at: string): Promise<void> {
+  await OrderEntity.patch({ id }).set({ finishedAt: at }).go();
+}
+
+/** Set the credit note once; false when the order already has one. */
+export async function setCreditNote(id: string, creditNote: CreditNote): Promise<boolean> {
+  try {
+    await OrderEntity.patch({ id })
+      .set({ creditNote, updatedAt: new Date().toISOString() })
+      .where((attr, { notExists }) => notExists(attr.creditNote))
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
 }
 
 /** Set a paid order's place of supply where checkout could not place its
@@ -223,8 +281,19 @@ export async function setPlaceOfSupply(
   await OrderEntity.patch({ id }).set({ placeOfSupply, updatedAt: new Date().toISOString() }).go();
 }
 
-export async function setInvoiceNo(id: string, invoiceNo: string): Promise<void> {
-  await OrderEntity.patch({ id }).set({ invoiceNo, updatedAt: new Date().toISOString() }).go();
+/** Set the invoice number once. False when the order already has one, so a
+ *  retry that lost a race never gives one order two invoices. */
+export async function setInvoiceNo(id: string, invoiceNo: string): Promise<boolean> {
+  try {
+    await OrderEntity.patch({ id })
+      .set({ invoiceNo, updatedAt: new Date().toISOString() })
+      .where((attr, { notExists }) => notExists(attr.invoiceNo))
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
 }
 
 /** The next number in a sequence, from an atomic `ADD`. The first call on a
@@ -275,25 +344,45 @@ function toShipmentRow({
 }
 
 /**
- * Record (or clear, with null) one parcel's tracking number. The whole list
- * is written back: an order's parcels are fixed at checkout and never change
- * afterwards, so there is nothing to race except another tracking edit.
+ * Record (or clear, with null) one parcel's tracking number, **conditional on
+ * the order not having changed since it was read** (`updatedAt`) — the lock
+ * `replaceShipment` uses. The whole list is written back, so without it a
+ * tracking edit could write over a booking that landed in between. Returns
+ * false when somebody else wrote first.
+ *
+ * Clearing a number also clears the booking made from here that gave it:
+ * `bookingState` reads the number alone, so the parcel reads as unbooked
+ * either way, and an old `booking` left on it is a record of a shipment the
+ * owner has just said is not there. `bookingStartedAt` is left as it is —
+ * null after a finished booking; set only when a number was typed over an
+ * unfinished one, which the parcel goes back to (`stuck`, with its
+ * check-the-dashboard warning) rather than to a plain "Book".
  */
 export async function setShipmentTracking(
   order: Order,
   index: number,
   trackingNumber: string | null,
-): Promise<void> {
-  const shipments = order.shipments.map((x, i) => (i === index ? { ...x, trackingNumber } : x));
-  await OrderEntity.patch({ id: order.id })
-    .set({
-      shipments: shipments.map(toShipmentRow),
-      deliveryDate: order.deliveryDate,
-      userId: order.userId,
-      createdAt: order.createdAt,
-      updatedAt: new Date().toISOString(),
-    })
-    .go();
+): Promise<boolean> {
+  const cleared = { trackingNumber: null, booking: null };
+  const shipments = order.shipments.map((x, i) =>
+    i !== index ? x : { ...x, ...(trackingNumber === null ? cleared : { trackingNumber }) },
+  );
+  try {
+    await OrderEntity.patch({ id: order.id })
+      .set({
+        shipments: shipments.map(toShipmentRow),
+        deliveryDate: order.deliveryDate,
+        userId: order.userId,
+        createdAt: order.createdAt,
+        updatedAt: new Date().toISOString(),
+      })
+      .where((attr, { eq }) => eq(attr.updatedAt, order.updatedAt))
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
 }
 
 function summarise(o: Order): OrderSummary {

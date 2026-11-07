@@ -21,3 +21,30 @@ export const weekField = (week: number) => `week-${week}`;
  *  that is the figure the week assignment turns on (SPEC §5.2), and the
  *  operator should not have to open another screen to see it. */
 export type VarietyChoice = { key: string; name: string; growDays: number };
+
+/** The two plans the rule below compares — their content keys, which never
+ *  change (SPEC §5.1.1). */
+export const ESSENTIAL_PLAN = "essential";
+export const EXOTIC_PLAN = "exotic";
+
+/**
+ * Where Rare & Exotic falls short of being **Everyday Essentials plus more**
+ * (the owner's rule), across the whole four-week month: `missing` is every
+ * Essentials variety Exotic never grows, `nothingMore` that it grows nothing
+ * Essentials does not. Null when it holds — and when either plan has no
+ * rotation yet, since there is nothing to compare.
+ *
+ * A warning on admin → plans, not a refusal: the two are saved one at a time,
+ * so a save in between is always going to be half done.
+ */
+export function exoticGap(
+  essential: Iterable<string>,
+  exotic: Iterable<string>,
+): { missing: string[]; nothingMore: boolean } | null {
+  const base = new Set(essential);
+  const more = new Set(exotic);
+  if (base.size === 0 || more.size === 0) return null;
+  const missing = [...base].filter((key) => !more.has(key));
+  const nothingMore = [...more].every((key) => base.has(key));
+  return missing.length === 0 && !nothingMore ? null : { missing, nothingMore };
+}

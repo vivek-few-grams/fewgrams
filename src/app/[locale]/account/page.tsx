@@ -4,7 +4,9 @@ import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { getDefaultAddress, getProfile } from "@/lib/repo/profile";
 import { listOrdersForUser } from "@/lib/repo/orders";
-import { firstDeliveryDate, formatDeliveryDate } from "@/lib/delivery-date";
+import { documentNo } from "@/lib/orders/order";
+import { formatDeliveryDate } from "@/lib/delivery-date";
+import { subscriptionOpening } from "@/lib/subscriptions/opening";
 import { formatPhone } from "@/lib/account/validation";
 import { AddressLines, Card, Detail } from "./ui";
 
@@ -27,11 +29,13 @@ export default async function AccountOverview({ params }: PageProps<"/[locale]/a
   const t = await getTranslations("account.overview");
   const actor = await requireRole("customer");
 
-  const [profile, address, orders] = await Promise.all([
+  const [profile, address, orders, opening] = await Promise.all([
     getProfile(actor.userId),
     getDefaultAddress(actor.userId),
     listOrdersForUser(actor.userId),
+    subscriptionOpening(),
   ]);
+  const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
 
   /* The profile row wins over whatever Google supplied, because it is the
      name the customer chose. Neither exists after a magic-link sign-in, so
@@ -95,7 +99,8 @@ export default async function AccountOverview({ params }: PageProps<"/[locale]/a
               when there is nothing scheduled yet. */}
           <EmptyNote icon={<CalendarDays size={18} strokeWidth={1.5} />}>
             {t("nextDeliveryNone", {
-              date: formatDeliveryDate(firstDeliveryDate(), locale === "kn" ? "kn-IN" : "en-IN"),
+              date: formatDeliveryDate(opening.first, dateLocale),
+              joinBy: formatDeliveryDate(opening.joinBy, dateLocale),
             })}
           </EmptyNote>
           <Link
@@ -121,8 +126,18 @@ export default async function AccountOverview({ params }: PageProps<"/[locale]/a
             <EmptyNote icon={<Package size={18} strokeWidth={1.5} />}>{t("noOrders")}</EmptyNote>
           ) : (
             <ul className="space-y-2 font-body text-sm text-forest">
+              {/* The reference the orders list and the order page print —
+                  the invoice number, else the id — so one order is not
+                  called two things on two account pages. */}
               {orders.slice(0, 3).map((order) => (
-                <li key={order.id}>{order.id}</li>
+                <li key={order.id}>
+                  <Link
+                    href={`/account/orders/${order.id}`}
+                    className="underline underline-offset-4 transition-colors hover:text-stone"
+                  >
+                    {documentNo(order) ?? order.id}
+                  </Link>
+                </li>
               ))}
             </ul>
           )}

@@ -113,22 +113,11 @@ function PlateRow({ plate }: { plate: ShelfPlate }) {
             forward rather than clearing it. */}
         <input type="hidden" name="active" value={plate.active ? "on" : "off"} />
 
-        <NumberField
-          compact
-          label={t("colDepth")}
-          name="depthFt"
-          min={0}
-          defaultValue={plate.depthFt}
-          error={errorFor("depthFt")}
-        />
-        <NumberField
-          compact
-          label={t("colLength")}
-          name="lengthFt"
-          min={0}
-          defaultValue={plate.lengthFt}
-          error={errorFor("lengthFt")}
-        />
+        {/* Text, not inputs: the footprint is in the SKU of every rack on this
+            plate, which packs and carts name, so it is fixed once saved and
+            the save refuses a change. A different size is a new row. */}
+        <span className="px-3 font-body text-sm tabular-nums text-forest">{plate.depthFt}</span>
+        <span className="px-3 font-body text-sm tabular-nums text-forest">{plate.lengthFt}</span>
         <NumberField
           compact
           label={t("colThickness")}
@@ -185,6 +174,8 @@ function PlateRow({ plate }: { plate: ShelfPlate }) {
 
       <form action={togglePlate} className="contents">
         <input type="hidden" name="id" value={plate.id} />
+        {/* Where the press goes, not "flip it" — see `switchTo`. */}
+        <input type="hidden" name="to" value={plate.active ? "off" : "on"} />
         {/* Hover moves in the direction of what the click does: greener when
             it will switch on, plain when off. */}
         <button

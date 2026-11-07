@@ -18,6 +18,11 @@ export const dynamic = "force-dynamic";
  * Racks are not counted here on purpose: three ranges of a hundred published models each would make this the
  * loudest number on the page while being the least actionable — the rack
  * screens are a price calculator, not a stock list.
+ *
+ * Each hint says how the screen works **now**, and has to be kept so: on 31
+ * Oct 2026 they still described greens priced per tray, seeds per 50 g and
+ * trays and cocopeat as never held in stock — all retired weeks before
+ * (CLAUDE.md is the reference).
  */
 export default async function AdminHome() {
   await requireRole("admin");

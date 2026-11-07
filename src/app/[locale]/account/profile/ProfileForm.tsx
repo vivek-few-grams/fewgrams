@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { keepFields } from "@/lib/keep-fields";
 import { useTranslations } from "next-intl";
 import { Card, Field, FormMessage, PrimaryButton } from "../ui";
 import { saveProfileAction } from "../actions";
@@ -28,7 +29,11 @@ export function ProfileForm({ email, name, phone }: { email: string; name: strin
 
   return (
     <Card>
-      <form action={action} className="space-y-5">
+      {/* `keepFields`, not `action=`: React resets a form after its action, which
+          wiped what the customer had typed whenever the server refused one
+          field (31 Oct 2026). `noValidate` so the server's words in red are
+          the only error, never the browser's English bubble. */}
+      <form onSubmit={keepFields(action)} noValidate className="space-y-5">
         <Field
           label={t("name")}
           name="name"

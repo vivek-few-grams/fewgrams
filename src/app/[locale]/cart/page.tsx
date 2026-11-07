@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getFormatter, getTranslations, setRequestLocale } from "next-intl/server";
 import { ArrowLeft, Lock, ShieldCheck, ShoppingBag, Sprout, Truck } from "lucide-react";
 import { localeAlternates } from "@/i18n/alternates";
 import { Link } from "@/i18n/navigation";
@@ -52,7 +52,21 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
   setRequestLocale(locale);
 
   const t = await getTranslations("cart");
+  const format = await getFormatter();
   const cart = await hydrateCart(locale);
+
+  /* What a flagged line says. A line short of a seed it shares with a
+     starter pack names the seed (`overStockSeeds`): the seed line beside
+     the pack is the one to reduce, and a pack holds several seeds, so
+     "less than this" alone would not say which. */
+  const shortNote = (item: (typeof cart.items)[number]): string => {
+    const seeds = cart.overStockSeeds[lineId(item)];
+    if (seeds && item.kind === "pack") {
+      return t("linePackShort", { seeds: format.list(seeds, { type: "conjunction" }) });
+    }
+    if (seeds) return t("lineSharedSeed", { name: item.name });
+    return item.maxUnits === 0 ? t("lineSoldOut") : t("lineOverStock");
+  };
 
   if (cart.items.length === 0) {
     return (
@@ -149,14 +163,14 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
                           Checkout waits until it is reduced; how much is
                           left is never said. */}
                       {/* `overStock` rather than `units > maxUnits`: a
-                          pack is also flagged when it and a seed line want
+                          seed line is also flagged when it and a pack want
                           more of one seed between them than is held. */}
                       {cart.overStock.includes(lineId(item)) && (
                         <span
                           role="status"
                           className="mt-1 block font-body text-xs font-semibold text-terracotta"
                         >
-                          {item.maxUnits === 0 ? t("lineSoldOut") : t("lineOverStock")}
+                          {shortNote(item)}
                         </span>
                       )}
                     </span>

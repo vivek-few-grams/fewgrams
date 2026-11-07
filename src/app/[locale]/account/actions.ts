@@ -8,6 +8,7 @@ import { checkDeliveryArea, type PinPlace } from "@/lib/pincode/place";
 import {
   deleteAddress,
   getAddress,
+  getProfile,
   listAddresses,
   putAddress,
   saveProfile,
@@ -16,6 +17,7 @@ import {
 import { routing } from "@/i18n/routing";
 import type { Address } from "@/lib/types";
 import type { FormState } from "@/lib/forms";
+import { profileFromAddress } from "./profile-fill";
 
 /**
  * Account mutations — SPEC §8 and §12.
@@ -83,6 +85,14 @@ export async function saveAddressAction(_prev: FormState, fd: FormData): Promise
   };
 
   await putAddress(address);
+
+  /* The name and mobile typed on an address fill the profile's when it has
+     none — checkout saves its address through here, so a first order no
+     longer leaves "Not added yet" on the overview. Never overwrites a value
+     the customer set (`profileFromAddress`). */
+  const filled = profileFromAddress(await getProfile(actor.userId), actor.name, address);
+  if (filled) await saveProfile(actor.userId, filled);
+
   refresh();
   return { status: "saved" };
 }

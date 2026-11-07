@@ -42,9 +42,9 @@
       "soldOut": "This seed is sold out right now.",
       "overStock": "That is more than we have right now. Choose a smaller amount."
     },
-    "dispatchLabel": "Getting it to you",
+    "dispatchLabel": "When it ships",
     "dispatchFact": "Next day from our shelf",
-    "dispatchNote": "Order today and it is with you {date}.",
+    "dispatchNote": "Order today and it is ready to ship {date}.",
     "soldOutFact": "Sold out right now",
     "soldOutTitle": "Sold out",
     "soldOutBody": "We have none of this seed on the shelf right now. Check back soon, as we restock regularly.",

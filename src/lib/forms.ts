@@ -86,6 +86,39 @@ export function optionalPositive(fd: FormData, key: string): number | undefined 
   return Number.isFinite(n) && n > 0 ? n : "invalid";
 }
 
+/** The highest sort order a plan or a pack can have. Their GSI1 sort key pads
+ *  it to three digits (src/lib/db/entities.ts), and DynamoDB sorts that key as
+ *  a string — so a 1000 would land between 100 and 101. */
+export const MAX_SORT_ORDER = 999;
+
+/**
+ * A card's place in its row — plans and starter packs. Whole, 0 to
+ * `MAX_SORT_ORDER`; blank is 0, as it always was. A fraction or a negative
+ * would pad into a key that sorts out of order, which is why this is not
+ * `zeroOrMore`.
+ */
+export function sortOrder(fd: FormData, key = "sortOrder"): number | null {
+  const raw = String(fd.get(key) ?? "").trim();
+  if (raw === "") return 0;
+  const n = Number(raw);
+  return Number.isInteger(n) && n >= 0 && n <= MAX_SORT_ORDER ? n : null;
+}
+
+/**
+ * What an on/off button asks for — `true` for on, `false` for off — posted as
+ * a hidden `to` field beside the button, or `null` when it is missing.
+ *
+ * The button says where it is going rather than "flip whatever is stored": a
+ * double click, or a press in a tab opened before someone else switched the
+ * row, then lands on the state the button showed instead of undoing itself.
+ * The action compares it with the stored state and writes nothing when they
+ * already agree.
+ */
+export function switchTo(fd: FormData): boolean | null {
+  const to = fd.get("to");
+  return to === "on" ? true : to === "off" ? false : null;
+}
+
 /** Comma-separated free text → a clean list. Used for heights, which have no
  *  fixed set to pick from and so stay typed. */
 export function csv(fd: FormData, key: string): string[] {

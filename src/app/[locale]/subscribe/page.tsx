@@ -11,6 +11,7 @@ import { listVarieties } from "@/lib/repo/varieties";
 import { varietyNameMap } from "@/lib/content/varieties";
 import { subscribablePlans } from "@/lib/subscriptions/catalogue";
 import { subscriptionSchedule } from "@/lib/subscriptions/rotation";
+import { subscriptionOpening } from "@/lib/subscriptions/opening";
 import { SubscribeForm, type SubscribeBox } from "./SubscribeForm";
 
 export const dynamic = "force-dynamic";
@@ -63,7 +64,7 @@ export default async function SubscribePage({ params, searchParams }: PageProps<
   const growDays = new Map(varieties.map((v) => [v.contentKey, v.growDays]));
   const provider = paymentProvider();
 
-  const schedule: SubscribeBox[] = subscriptionSchedule().map(({ date, week }) => ({
+  const schedule: SubscribeBox[] = subscriptionSchedule((await subscriptionOpening()).first).map(({ date, week }) => ({
     date: istDateISO(date),
     week,
     plans: Object.fromEntries(

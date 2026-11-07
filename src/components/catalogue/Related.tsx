@@ -6,10 +6,14 @@ import { entryId } from "@/lib/search/entry";
 /**
  * Products to go on to, under a detail page — SPEC §28.8. Drawn with search's
  * result card and priced as search prices them, from `searchCatalogue`, so
- * nothing the grids hide is suggested. Renders nothing when there is nothing
- * to suggest.
+ * nothing the grids hide is suggested — and **nothing sold out**, which the
+ * grids do show (`src/lib/catalogue/related.ts`). Renders nothing when there
+ * is nothing to suggest.
  */
-export async function Related({ heading, entries }: { heading: string; entries: CatalogueEntry[] }) {
+export async function Related({ heading, entries: given }: { heading: string; entries: CatalogueEntry[] }) {
+  /* The pickers in `related.ts` skip a sold-out entry already and keep the
+     row full; this catches a caller that slices its own list. */
+  const entries = given.filter((entry) => !entry.soldOut);
   if (entries.length === 0) return null;
   const t = await getTranslations("search.price");
   return (

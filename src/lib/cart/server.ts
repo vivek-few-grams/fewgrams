@@ -16,11 +16,12 @@ import { fromShelf, heldReadyDate } from "@/lib/trays/lead-time";
 import { resolvePackLine } from "@/lib/packs/catalogue";
 import type { PackPart } from "@/lib/types";
 import { adhocReadyDate, latestDate } from "@/lib/delivery-date";
+import { overStockLines } from "./over-stock";
 import {
   CART_COOKIE,
   GRAMS_PER_UNIT,
   MAX_UNITS_PER_LINE,
-  cartUnitCount,
+  cartLineCount,
   isWeighed,
   lineId,
   parseCart,
@@ -157,6 +158,9 @@ export type HydratedCart = {
    *  including a seed now sold out. Checkout refuses until they are reduced;
    *  the cart page says which. Never says how much is held. */
   overStock: string[];
+  /** For a flagged line whose shortage is a seed a starter pack shares, the
+   *  seeds' names, so the cart can say which is short (`overStockLines`). */
+  overStockSeeds: Record<string, string[]>;
   /**
    * Keys that were in the cookie but no longer resolve to something sellable —
    * deactivated in admin, deleted, or its content file removed.
@@ -174,17 +178,19 @@ export async function readCartLines(): Promise<CartLine[]> {
   return parseCart(store.get(CART_COOKIE)?.value);
 }
 
-/** Total units across every kind, for the header badge. One catalogue read is
- *  avoided entirely: the badge needs no names or prices. */
+/** Lines in the cart, for the header badge — the cart page's "N items"
+ *  (`cartLineCount`). One catalogue read is avoided entirely: the badge needs
+ *  no names or prices, so a line that no longer resolves still counts until
+ *  the next mutation drops it, as it is still listed on the cart page. */
 export async function readCartCount(): Promise<number> {
-  return cartUnitCount(await readCartLines());
+  return cartLineCount(await readCartLines());
 }
 
 /**
  * How many 100 g units of one item are already in the cart.
  *
- * Seeds the stepper on a detail page so the control and the header badge
- * cannot disagree — the stepper used to mount at 1 while the badge read 3.
+ * Seeds the stepper on a detail page so the control and the cart cannot
+ * disagree — the stepper used to mount at 1 while the cart held 3.
  * Cookie-only, so it costs no catalogue read.
  */
 export async function readCartUnitsFor(kind: CartKind, key: string): Promise<number> {
@@ -204,6 +210,7 @@ const EMPTY: HydratedCart = {
   hasMedia: false,
   hasRacks: false,
   overStock: [],
+  overStockSeeds: {},
   unavailable: [],
 };
 
@@ -492,6 +499,14 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
   }
 
   const dates = items.map((i) => i.readyDate);
+  const short = overStockLines(
+    items,
+    withSeedContent.map((s) => ({
+      contentKey: s.contentKey,
+      stockGrams: s.stockGrams,
+      name: s.content?.text.name ?? s.contentKey,
+    })),
+  );
 
   return {
     items,
@@ -510,44 +525,9 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
     hasMedia: items.some((i) => i.kind === "media"),
     hasRacks: items.some((i) => i.kind === "rack"),
     unavailable,
-    overStock: overStockLines(items, withSeedContent),
+    overStock: short.lines,
+    overStockSeeds: short.seeds,
   };
-}
-
-/**
- * Lines asking for more than the shelf holds.
- *
- * Per line as before — a seed line past its 100 g units, a pack past the
- * scarcest of its seeds — and then **across lines for one seed**: a pack holds
- * 100 g of each seed it was filled with, so a separate radish line and a pack
- * with radish in it draw on the same shelf. When the two together want more
- * than is held, the pack line is the one flagged, because reducing the seed
- * line is the smaller change and the cart page says which line to adjust.
- */
-function overStockLines(
-  items: readonly CartItem[],
-  seeds: readonly { contentKey: string; stockGrams: number }[],
-): string[] {
-  const over = new Set(items.filter((i) => i.units > i.maxUnits).map(lineId));
-  const packs = items.filter((i) => i.pack);
-  if (packs.length === 0) return [...over];
-
-  const held = new Map(seeds.map((s) => [s.contentKey, s.stockGrams]));
-  const wanted = new Map<string, number>();
-  const want = (key: string, grams: number) => wanted.set(key, (wanted.get(key) ?? 0) + grams);
-  for (const i of items) {
-    if (i.kind === "seed" && i.grams !== null) want(i.key, i.grams);
-    for (const part of i.pack?.parts ?? []) {
-      if (part.kind === "seed") want(part.key, part.units * i.units * GRAMS_PER_UNIT);
-    }
-  }
-  for (const i of packs) {
-    const short = i.pack!.parts.some(
-      (part) => part.kind === "seed" && (wanted.get(part.key) ?? 0) > (held.get(part.key) ?? Infinity),
-    );
-    if (short) over.add(lineId(i));
-  }
-  return [...over];
 }
 
 /** Cookie options, in one place so a mutation cannot set them differently

@@ -10,10 +10,13 @@ import {
   putVarietyCosting,
   setVarietyActive,
 } from "@/lib/repo/varieties";
+import { listPlansWithWeeks } from "@/lib/repo/plans";
 import { isValidContentKey } from "@/lib/content/varieties";
-import { count, err, zeroOrMore, type FormState } from "@/lib/forms";
+import { getPlanContent } from "@/lib/content/plans";
+import { routing } from "@/i18n/routing";
+import { count, err, switchTo, zeroOrMore, type FormState } from "@/lib/forms";
 import { repriceVarieties } from "@/lib/varieties/reprice";
-import type { Variety } from "@/lib/types";
+import type { Variety, VarietyCosting } from "@/lib/types";
 
 /**
  * Variety mutations — the operational record only.
@@ -30,7 +33,9 @@ import type { Variety } from "@/lib/types";
  * **Nor a price** (the owner, 19 Oct 2026). A green is priced per 100 g from
  * what a tray costs — its seed, cocopeat, and power and water — over its low
  * yield, with the microgreens margin. Every save here ends in
- * `repriceVarieties`, which writes it.
+ * `repriceVarieties`, which writes it — handed the row or costing just
+ * written, because the list it would otherwise read may not show the write
+ * yet (`RepriceOverrides`).
  */
 
 /** Public pages that change when the catalogue does — every one that prints
@@ -138,8 +143,9 @@ export async function addVariety(_prev: FormState, fd: FormData): Promise<FormSt
   const ops = readOps(fd);
   if (!ops.ok) return ops.state;
 
-  await putVariety({ id: crypto.randomUUID(), contentKey, pricePer100g: 0, ...ops.value });
-  await repriceVarieties([contentKey]);
+  const row: Variety = { id: crypto.randomUUID(), contentKey, pricePer100g: 0, ...ops.value };
+  await putVariety(row);
+  await repriceVarieties([contentKey], { varieties: [row] });
   refresh();
   return { status: "saved" };
 }
@@ -162,26 +168,56 @@ export async function updateVariety(_prev: FormState, fd: FormData): Promise<For
   const next: Variety = { ...current, ...ops.value };
   if (ops.value.seedGramsPerTray === undefined) delete next.seedGramsPerTray;
   await putVariety(next);
-  await repriceVarieties([current.contentKey]);
+  await repriceVarieties([current.contentKey], { varieties: [next] });
   refresh();
   return { status: "saved" };
 }
 
-/** On and off sale. **Not switched on while it cannot be priced** — it would
- *  stay off sale at 0 anyway, and the switch would say otherwise. */
+/** On and off sale, to the state the button asks for (`switchTo`). **Not
+ *  switched on while it cannot be priced** — it would stay off sale at 0
+ *  anyway, and the switch would say otherwise. */
 export async function toggleVarietyActive(fd: FormData): Promise<void> {
   await assertRole("admin");
   const existing = await getVariety(String(fd.get("id")));
   if (!existing) throw new Error("Variety not found");
-  if (!existing.active && existing.pricePer100g <= 0) return;
-  await setVarietyActive(existing.id, !existing.active);
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === existing.active) return;
+  if (active && existing.pricePer100g <= 0) return;
+  await setVarietyActive(existing.id, active);
   refresh();
 }
 
-export async function removeVariety(fd: FormData): Promise<void> {
+/**
+ * Delete a variety — **refused while a plan's rotation names it**. Its key
+ * would stay in that week, and `savePlan` refuses any rotation naming a
+ * variety that no longer exists, so the plan could not be saved again until
+ * someone found the key by hand. The error names the plan and the week to
+ * take it out of.
+ */
+export async function removeVariety(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
-  await deleteVariety(String(fd.get("id")));
+  const current = await getVariety(String(fd.get("id") ?? ""));
+  if (!current) return err("notFound");
+
+  const uses = (await listPlansWithWeeks()).flatMap(({ plan, weeks }) =>
+    weeks.filter((w) => w.varietyKeys.includes(current.contentKey)).map((w) => ({ plan, week: w.week })),
+  );
+  if (uses.length > 0) {
+    const [first] = uses;
+    const name =
+      (await getPlanContent(first.plan.contentKey, routing.defaultLocale))?.text.name ??
+      first.plan.contentKey;
+    return err(uses.length > 1 ? "inRotationMore" : "inRotation", undefined, {
+      plan: name,
+      week: String(first.week),
+      more: String(uses.length - 1),
+    });
+  }
+
+  await deleteVariety(current.id);
   refresh();
+  return { status: "saved" };
 }
 
 /**
@@ -203,13 +239,14 @@ export async function saveVarietyCosting(_prev: FormState, fd: FormData): Promis
   const roundUpToNearest = count(fd, "roundUpToNearest");
   if (roundUpToNearest === null) return err("countInvalid", "roundUpToNearest");
 
-  await putVarietyCosting({
+  const costing: VarietyCosting = {
     cocopeatBlockCost,
     traysPerBlock,
     overheadPerTray,
     margin: { markupPercent, roundUpToNearest },
-  });
-  await repriceVarieties();
+  };
+  await putVarietyCosting(costing);
+  await repriceVarieties(undefined, { costing });
   refresh();
   return { status: "saved" };
 }

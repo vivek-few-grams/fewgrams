@@ -28,6 +28,8 @@ import { growMediumNameMap } from "@/lib/content/grow-media";
 import { GROW_MEDIA_TILE_WORDS } from "@/lib/shop";
 import { RACK_RANGES } from "@/lib/racks/cart-key";
 import { ClientMessages } from "@/i18n/client-messages";
+import { subscriptionOpening } from "@/lib/subscriptions/opening";
+import { istDateISO } from "@/lib/delivery-date";
 
 /**
  * Home page — SPEC §18.3.
@@ -69,6 +71,10 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
   setRequestLocale(locale);
 
+  /* The first box and the last day to join, worked out here because the plan
+     cards are a client component and cannot read the rotation (`opening.ts`). */
+  const opened = await subscriptionOpening();
+  const opening = { first: istDateISO(opened.first), joinBy: istDateISO(opened.joinBy) };
   const [{ plans, adminEmpty }, counts, varieties, categories, microgreensOn, seeds, trays, media, seedsOn, gramsSold] =
     await Promise.all([
       planCards(locale),
@@ -147,7 +153,13 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       <Process />
       <WhyMicrogreens growDays={growDays} />
       <ClientMessages entry="home">
-        <Bundles plans={plans} varieties={varieties} varietyNames={varietyNames} adminEmpty={adminEmpty} />
+        <Bundles
+          plans={plans}
+          varieties={varieties}
+          varietyNames={varietyNames}
+          adminEmpty={adminEmpty}
+          opening={opening}
+        />
       </ClientMessages>
       <OtherProducts
         counts={counts}

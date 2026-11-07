@@ -69,14 +69,19 @@ function itcLines(bills: PurchaseBill[], months: readonly MonthId[]): ItcLine[] 
     );
 }
 
+/**
+ * The lines of a bill that GSTR-3B table 5 reports — exempt purchases from a
+ * registered vendor — which it groups by the **bill date**, not by a claim.
+ * The one figure in a return a bill reaches through its date, so the one
+ * `isLockedBill` has to check the date for.
+ */
+const exemptLines = (b: Pick<PurchaseBill, "vendor" | "lines">) =>
+  b.vendor.kind === "registered" ? b.lines.filter((l) => l.rate === 0) : [];
+
 function exemptInward(bills: PurchaseBill[], months: readonly MonthId[]): ExemptInward[] {
   return bills
-    .filter((b) => b.vendor.kind === "registered" && inMonths(months, b.date))
-    .flatMap((b) =>
-      b.lines
-        .filter((l) => l.rate === 0)
-        .map((l) => ({ value: l.taxable, intra: isIntraPurchase(b.vendor) })),
-    );
+    .filter((b) => inMonths(months, b.date))
+    .flatMap((b) => exemptLines(b).map((l) => ({ value: l.taxable, intra: isIntraPurchase(b.vendor) })));
 }
 
 export type PeriodFigures = {
@@ -232,4 +237,32 @@ export function quarterView(books: GstBooks, quarter: QuarterId): QuarterView {
 /** True when `month` sits in a quarter whose GSTR-3B is marked filed. */
 export function isLockedMonth(filings: GstFiling[], month: MonthId): boolean {
   return !!filings.find((f) => f.quarter === quarterOf(month))?.gstr3b;
+}
+
+/**
+ * True when a bill is in a filed GSTR-3B and so can no longer change: its
+ * credit is claimed in a filed quarter, or it has a line table 5 reports by
+ * bill date (`exemptLines` — a 0% line from a registered vendor) and that
+ * date is in one. A seed bill is never claimed, so the claim alone left it
+ * free to be added, edited or deleted under a filed return.
+ *
+ * Check a bill as it was **and** as it would be saved: moving one into a
+ * filed quarter changes that return as surely as moving one out.
+ */
+export function isLockedBill(
+  filings: GstFiling[],
+  bill: Pick<PurchaseBill, "claim" | "date" | "vendor" | "lines">,
+): boolean {
+  if (bill.claim && isLockedMonth(filings, bill.claim.month)) return true;
+  return exemptLines(bill).length > 0 && isLockedMonth(filings, monthOfDate(bill.date));
+}
+
+/**
+ * True when a sale in `month` is already reported: its quarter's GSTR-1
+ * (every invoice, by place of supply) or GSTR-3B (table 3.2, inter-state
+ * supplies by state) is marked filed. What a sale's reporting — its place of
+ * supply — must not change after.
+ */
+export function isSalesLockedMonth(filings: GstFiling[], month: MonthId): boolean {
+  return !!filings.find((f) => f.quarter === quarterOf(month))?.gstr1 || isLockedMonth(filings, month);
 }

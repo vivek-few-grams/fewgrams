@@ -2,11 +2,10 @@
 
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { FrameSize } from "@/lib/types";
-import { addFrame, removeFrame, saveFrame, toggleFrame } from "./actions";
+import { addFrame, removeFrame, toggleFrame } from "./actions";
 import { CheckField, NumberField } from "../fields";
 
 /**
@@ -23,8 +22,9 @@ import { CheckField, NumberField } from "../fields";
  * despite covering less floor: the mid-rail runs along the length, so length
  * is counted three times and depth twice.
  *
- * Row layout follows `PlateTable` — a CSS grid, not a `<table>`, because three
- * server actions act on one row so it needs three `<form>` elements, and a
+ * Row layout follows `PlateTable` — a CSS grid, not a `<table>`, because two
+ * server actions act on one row (the switch and the delete; a saved footprint
+ * has nothing to edit) so it needs two `<form>` elements, and a
  * `<form>` is invalid inside `<tbody>`. `display: contents` lets each form's
  * children join this grid. Every track is explicitly sized for the reason
  * given there: `auto` resolves against content, and the header's action cells
@@ -91,64 +91,38 @@ export function FrameTable({ frames }: { frames: FrameSize[] }) {
 function FrameRow({ frame }: { frame: FrameSize }) {
   const t = useTranslations("admin.angleRacks");
   const tc = useTranslations("admin.common");
-  const [state, action, pending] = useActionState<FormState, FormData>(saveFrame, IDLE);
-
-  const errorFor = (field: string) =>
-    state.status === "error" && state.field === field
-      ? t(`errors.${state.code}`, state.values ?? {})
-      : undefined;
+  /* A delete is refused while a starter pack's rack is built on this
+     footprint, and says so under the row. */
+  const [removeState, removeAction] = useActionState<FormState, FormData>(removeFrame, IDLE);
 
   return (
     <div
       style={{ gridTemplateColumns: COLUMNS }}
       className="grid items-center gap-x-3 gap-y-2 rounded-xl border border-forest/12 bg-cream px-4 py-3 lg:gap-y-0"
     >
-      <form action={action} className="contents">
-        <input type="hidden" name="id" value={frame.id} />
-        {/* Active has its own toggle, so this form carries the current value
-            forward rather than clearing it. */}
-        <input type="hidden" name="active" value={frame.active ? "on" : "off"} />
+      {/* Text, not inputs, and no Save (31 Oct 2026): the footprint is in the
+          SKU of every rack built on it, which packs and carts name, so it is
+          fixed once added. A footprint is nothing but its size and its
+          switch, so that leaves nothing to save. A different size is a new
+          row. */}
+      <span className="px-3 font-body text-sm tabular-nums text-forest">{frame.depthFt}</span>
+      <span className="px-3 font-body text-sm tabular-nums text-forest">{frame.lengthFt}</span>
 
-        <NumberField
-          compact
-          label={t("colDepth")}
-          name="depthFt"
-          min={0}
-          defaultValue={frame.depthFt}
-          error={errorFor("depthFt")}
-        />
-        <NumberField
-          compact
-          label={t("colLength")}
-          name="lengthFt"
-          min={0}
-          defaultValue={frame.lengthFt}
-          error={errorFor("lengthFt")}
-        />
+      <span className="font-body text-sm tabular-nums text-stone">
+        {t("frameFeetValue", {
+          feet: feetPerShelf(frame.depthFt, frame.lengthFt),
+          length: frame.lengthFt,
+          depth: frame.depthFt,
+        })}
+      </span>
 
-        {/* Derived from what is **stored**, not from the inputs beside it. An
-            unsaved edit showing its own consequence would state a figure the
-            rate card is not using yet. */}
-        <span className="font-body text-sm tabular-nums text-stone">
-          {t("frameFeetValue", {
-            feet: feetPerShelf(frame.depthFt, frame.lengthFt),
-            length: frame.lengthFt,
-            depth: frame.depthFt,
-          })}
-        </span>
-
-        <button
-          type="submit"
-          disabled={pending}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
-        >
-          {state.status === "saved" && !pending && <Check size={13} strokeWidth={2.5} />}
-          {state.status === "saved" && !pending ? t("savedRow") : t("save")}
-        </button>
-      </form>
+      {/* The Save column, kept so the row lines up with the plated tables. */}
+      <span />
 
       <form action={toggleFrame} className="contents">
         <input type="hidden" name="id" value={frame.id} />
+        {/* Where the press goes, not "flip it" — see `switchTo`. */}
+        <input type="hidden" name="to" value={frame.active ? "off" : "on"} />
         {/* Hover moves in the direction of what the click does: greener when
             it will switch on, plain when off. */}
         <button
@@ -162,7 +136,7 @@ function FrameRow({ frame }: { frame: FrameSize }) {
         </button>
       </form>
 
-      <form action={removeFrame} className="contents">
+      <form action={removeAction} className="contents">
         <input type="hidden" name="id" value={frame.id} />
         <ConfirmSubmit
           label={tc("delete")}
@@ -174,9 +148,9 @@ function FrameRow({ frame }: { frame: FrameSize }) {
         />
       </form>
 
-      {state.status === "error" && !state.field && (
-        <p className="col-span-full font-body text-[11px] text-terracotta">
-          {t(`errors.${state.code}`, state.values ?? {})}
+      {removeState.status === "error" && (
+        <p role="alert" className="col-span-full font-body text-[11px] text-terracotta">
+          {t(`errors.${removeState.code}`, removeState.values ?? {})}
         </p>
       )}
     </div>

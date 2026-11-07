@@ -2,11 +2,10 @@
 
 import { useActionState, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check } from "lucide-react";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { PipeSize } from "@/lib/types";
-import { addPipeSize, removePipeSize, savePipeSize, togglePipeSize } from "./actions";
+import { addPipeSize, removePipeSize, togglePipeSize } from "./actions";
 import { CheckField, NumberField } from "../fields";
 
 /**
@@ -22,8 +21,9 @@ import { CheckField, NumberField } from "../fields";
  * on the table below does not.
  *
  * Row layout follows `PlateTable` and `FrameTable` — a CSS grid, not a
- * `<table>`, because three server actions act on one row so it needs three
- * `<form>` elements, and a `<form>` is invalid inside `<tbody>`.
+ * `<table>`, because two server actions act on one row (the switch and the
+ * delete) so it needs two `<form>` elements, and a `<form>` is invalid inside
+ * `<tbody>`.
  * `display: contents` lets each form's children join this grid. Every track is
  * explicitly sized for the reason given there: `auto` resolves against
  * content, and the header's action cells are empty where a row's hold buttons,
@@ -118,61 +118,31 @@ function LegsCell({ legs, cornerLegs }: { legs: number; cornerLegs: number }) {
 function PipeSizeRow({ size, legs, cornerLegs }: { size: PipeSize; legs: number; cornerLegs: number }) {
   const t = useTranslations("admin.pipeRacks");
   const tc = useTranslations("admin.common");
-  const [state, action, pending] = useActionState<FormState, FormData>(savePipeSize, IDLE);
-
-  const errorFor = (field: string) =>
-    state.status === "error" && state.field === field
-      ? t(`errors.${state.code}`, state.values ?? {})
-      : undefined;
 
   return (
     <div
       style={{ gridTemplateColumns: COLUMNS }}
       className="grid items-center gap-x-3 gap-y-2 rounded-xl border border-forest/12 bg-cream px-4 py-3 lg:gap-y-0"
     >
-      <form action={action} className="contents">
-        <input type="hidden" name="id" value={size.id} />
-        {/* Active has its own toggle, so this form carries the current value
-            forward rather than clearing it. */}
-        <input type="hidden" name="active" value={size.active ? "on" : "off"} />
+      {/* Text, not inputs, and no Save (31 Oct 2026): the footprint is in the
+          SKU of every rack built on it (`pipeRackSku`), which carts name, so
+          it is fixed once added — and a footprint holds nothing else to save.
+          A different size is a new row. */}
+      <span className="px-3 font-body text-sm tabular-nums text-forest">{size.depthFt}</span>
+      <span className="px-3 font-body text-sm tabular-nums text-forest">{size.lengthFt}</span>
 
-        <NumberField
-          compact
-          label={t("colDepth")}
-          name="depthFt"
-          min={0}
-          defaultValue={size.depthFt}
-          error={errorFor("depthFt")}
-        />
-        <NumberField
-          compact
-          label={t("colLength")}
-          name="lengthFt"
-          min={0}
-          defaultValue={size.lengthFt}
-          error={errorFor("lengthFt")}
-        />
+      <span className="font-body text-sm tabular-nums text-stone">
+        {t("pipeFeetValue", { feet: feetPerShelf(size.depthFt, size.lengthFt) })}
+      </span>
+      <LegsCell legs={legs} cornerLegs={cornerLegs} />
 
-        {/* Both derived from what is **stored**, not from the inputs beside
-            them. An unsaved edit showing its own consequence would state a
-            figure the rate card is not using yet. */}
-        <span className="font-body text-sm tabular-nums text-stone">
-          {t("pipeFeetValue", { feet: feetPerShelf(size.depthFt, size.lengthFt) })}
-        </span>
-        <LegsCell legs={legs} cornerLegs={cornerLegs} />
-
-        <button
-          type="submit"
-          disabled={pending}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
-        >
-          {state.status === "saved" && !pending && <Check size={13} strokeWidth={2.5} />}
-          {state.status === "saved" && !pending ? t("savedRow") : t("save")}
-        </button>
-      </form>
+      {/* The Save column, kept so the row lines up with the other rack tables. */}
+      <span />
 
       <form action={togglePipeSize} className="contents">
         <input type="hidden" name="id" value={size.id} />
+        {/* Where the press goes, not "flip it" — see `switchTo`. */}
+        <input type="hidden" name="to" value={size.active ? "off" : "on"} />
         {/* Hover moves in the direction of what the click does: greener when
             it will switch on, plain when off. */}
         <button
@@ -197,12 +167,6 @@ function PipeSizeRow({ size, legs, cornerLegs }: { size: PipeSize; legs: number;
           className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
         />
       </form>
-
-      {state.status === "error" && !state.field && (
-        <p className="col-span-full font-body text-[11px] text-terracotta">
-          {t(`errors.${state.code}`, state.values ?? {})}
-        </p>
-      )}
     </div>
   );
 }

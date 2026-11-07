@@ -4,6 +4,7 @@ import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { listOrdersForUser } from "@/lib/repo/orders";
 import { documentNo } from "@/lib/orders/order";
+import { formatDeliveryDate, fromIstDateISO } from "@/lib/delivery-date";
 import { Card } from "../ui";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,11 @@ export default async function OrdersPage({ params }: PageProps<"/[locale]/accoun
   const status = await getTranslations("account.orders.status");
   const format = await getFormatter();
   const actor = await requireRole("customer");
+  /* Dates the way the rest of the site writes them — "Sat 31 Oct", the
+     order page's "Arrives Sun 8 Nov" — not the formatter's "Oct 31, 2026",
+     which is US order on an `en` page. IST, so a late-evening order is
+     dated the day it was placed here. */
+  const dateLocale = locale === "kn" ? "kn-IN" : "en-IN";
 
   const orders = await listOrdersForUser(actor.userId);
 
@@ -95,13 +101,11 @@ export default async function OrdersPage({ params }: PageProps<"/[locale]/accoun
                       </span>
                     </td>
                     <td className="py-3 font-body text-sm text-stone">
-                      {format.dateTime(new Date(order.placedAt), { dateStyle: "medium" })}
+                      {formatDeliveryDate(new Date(order.placedAt), dateLocale)}
                     </td>
                     <td className="py-3 font-body text-sm text-stone">
                       {order.deliveryDate
-                        ? format.dateTime(new Date(`${order.deliveryDate}T00:00:00+05:30`), {
-                            dateStyle: "medium",
-                          })
+                        ? formatDeliveryDate(fromIstDateISO(order.deliveryDate), dateLocale)
                         : t("notScheduled")}
                     </td>
                     <td className="py-3 font-body text-sm text-forest">{status(order.status)}</td>

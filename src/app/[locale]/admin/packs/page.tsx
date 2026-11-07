@@ -71,6 +71,19 @@ export default async function PacksAdmin() {
     ...media.map((m) => ({ value: m.contentKey, label: m.content?.text.name ?? m.contentKey })),
   ];
 
+  /* A part a pack names but the list no longer offers — a rack switched off,
+     a tray or block deleted — is still listed, marked, so the row's dropdown
+     shows what is stored. A controlled select whose value matches no option
+     shows and posts its first option instead, which once saved a rack pack
+     with no rack in it (31 Oct 2026). */
+  const keepStored = <T extends { value: string }>(options: T[], stored: (string | null)[], label: (v: string) => string) => {
+    const missing = [...new Set(stored)].filter((v): v is string => !!v && !options.some((o) => o.value === v));
+    return [...options, ...missing.map((v) => ({ value: v, label: label(v) }))];
+  };
+  const rackChoices = keepStored(rackOptions, packs.map((p) => p.rackSku), (sku) => t("rackOffSale", { sku }));
+  const trayChoices = keepStored(trayOptions, packs.map((p) => p.trayKey), (key) => t("partMissing", { key }));
+  const mediumChoices = keepStored(mediumOptions, packs.map((p) => p.mediumKey), (key) => t("partMissing", { key }));
+
   /** On sale, or the first part that stops it — the same tests, in the same
    *  order, as `listSellablePacks`. */
   const statusOf = (pack: Pack): PackStatus => {
@@ -120,9 +133,9 @@ export default async function PacksAdmin() {
             name={row.name}
             pack={row.pack}
             status={row.pack ? statusOf(row.pack) : null}
-            rackOptions={rackOptions}
-            trayOptions={trayOptions}
-            mediumOptions={mediumOptions}
+            rackOptions={rackChoices}
+            trayOptions={trayChoices}
+            mediumOptions={mediumChoices}
           />
         ))}
       </section>

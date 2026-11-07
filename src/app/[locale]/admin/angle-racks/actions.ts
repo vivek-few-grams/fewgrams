@@ -2,7 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
-import { angleRackCost, retailPrice, shelvesForHeight, type RateCard } from "@/lib/racks/pricing";
+import {
+  angleRackCost,
+  angleRackSku,
+  retailPrice,
+  shelvesForHeight,
+  type RateCard,
+} from "@/lib/racks/pricing";
 import {
   deleteAngleRackModel,
   deleteFrameSize,
@@ -14,8 +20,8 @@ import {
   putAngleRackModel,
   putFrameSize,
 } from "@/lib/repo/racks";
-import { repriceAllRacks, revalidateRackScreens } from "@/lib/racks/reprice";
-import { err, money, type FormState } from "@/lib/forms";
+import { err, money, switchTo, type FormState } from "@/lib/forms";
+import { packLosingRack } from "../pack-usage";
 import type { AngleRackConfig, AngleRackModel, FrameSize } from "@/lib/types";
 
 /**
@@ -33,12 +39,16 @@ import type { AngleRackConfig, AngleRackModel, FrameSize } from "@/lib/types";
  * are genuinely its own: the footprints, and which open-frame racks are on
  * sale.
  *
- * As on the plated screen, **editing a footprint reprices every rack built on
- * it immediately** (17 Sep 2026) — a depth or length change moves the running
- * feet of angle, which moves the cost. `saveFrame` therefore cascades across
- * all three ranges; adding a footprint does not, because no existing rack
- * references it, and retiring or deleting one makes racks unpriceable rather
- * than cheaper. See `src/lib/racks/reprice.ts`.
+ * **A footprint cannot be edited** (31 Oct 2026). Its depth and length are in
+ * the SKU of every rack built on it (`angleRackSku`), and a starter pack and
+ * every cart line name a rack by that SKU — so an edit quietly re-identified
+ * every rack on it, and could give two models one SKU. A footprint is only
+ * its size and its switch, so there is nothing left to save: a different
+ * size is a new row, and adding one already listed is refused. Until then
+ * `saveFrame` repriced every rack built on the edited size (17 Sep 2026);
+ * adding a footprint never did, because no existing rack references it, and
+ * retiring or deleting one makes racks unpriceable rather than cheaper. See
+ * `src/lib/racks/reprice.ts`.
  *
  * **And there are no bulk actions.** The owner's call, 17 Sep 2026: *"do not
  * build too many UI elements to load the different combination or accept the
@@ -49,13 +59,6 @@ import type { AngleRackConfig, AngleRackModel, FrameSize } from "@/lib/types";
 
 function refresh() {
   revalidatePath("/[locale]/admin/angle-racks", "page");
-}
-
-/** See `src/lib/racks/reprice.ts`. Editing a footprint's dimensions changes
- *  what every rack built on it costs, so the price follows immediately. */
-async function cascade() {
-  await repriceAllRacks();
-  revalidateRackScreens();
 }
 
 /* ──────────────────────────── frame sizes ──────────────────────────── */
@@ -85,41 +88,48 @@ function readFrame(
 /** Keyed by footprint — `f-1x4` — for the same reason a plate is `p-1x3`: an
  *  operator reading a rack row, a packing slip or a DynamoDB item can tell
  *  which frame it means. The `f-` prefix keeps the two size lists apart, so a
- *  frame id can never be mistaken for a plate id. */
+ *  frame id can never be mistaken for a plate id.
+ *
+ *  A footprint already listed — by id, or by size on a row saved before
+ *  sizes were fixed — is refused: the put would replace it, switching it back
+ *  on whatever its row said. */
 export async function addFrame(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   const read = readFrame(fd);
   if (!read.ok) return read.state;
   const { depthFt, lengthFt } = read.value;
-  await putFrameSize({ id: `f-${depthFt}x${lengthFt}`, ...read.value });
+  const id = `f-${depthFt}x${lengthFt}`;
+  if ((await listFrameSizes()).some((f) => f.id === id || (f.depthFt === depthFt && f.lengthFt === lengthFt)))
+    return err("frameExists", "depthFt", { depth: String(depthFt), length: String(lengthFt) });
+  await putFrameSize({ id, ...read.value });
   refresh();
   return { status: "saved" };
 }
 
-export async function saveFrame(_prev: FormState, fd: FormData): Promise<FormState> {
-  await assertRole("admin");
-  const id = String(fd.get("id") ?? "").trim();
-  if (!id || !(await listFrameSizes()).some((f) => f.id === id)) return err("notFound");
-  const read = readFrame(fd);
-  if (!read.ok) return read.state;
-  await putFrameSize({ id, ...read.value });
-  await cascade();
-  return { status: "saved" };
-}
-
+/** On or off, to the state the button asks for (`switchTo`). */
 export async function toggleFrame(fd: FormData): Promise<void> {
   await assertRole("admin");
   const id = String(fd.get("id"));
   const current = (await listFrameSizes()).find((f) => f.id === id);
   if (!current) throw new Error("Frame size not found");
-  await putFrameSize({ ...current, active: !current.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === current.active) return;
+  await putFrameSize({ ...current, active });
   refresh();
 }
 
-export async function removeFrame(fd: FormData): Promise<void> {
+/** Delete a footprint — refused while a starter pack's rack is built on it
+ *  (SPEC §29): the rack's SKU would no longer exist, and the pack would leave
+ *  the site with nothing to say why. */
+export async function removeFrame(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
-  await deleteFrameSize(String(fd.get("id")));
+  const id = String(fd.get("id") ?? "");
+  const pack = await packLosingRack((m) => m.config.frameId === id);
+  if (pack) return err("frameInPack", undefined, { pack });
+  await deleteFrameSize(id);
   refresh();
+  return { status: "saved" };
 }
 
 /* ──────────────────── open-frame racks on sale ─────────────────────── */
@@ -156,6 +166,12 @@ function readConfig(fd: FormData): { ok: true; value: AngleRackConfig } | { ok: 
   };
 }
 
+function skuOf(config: AngleRackConfig, card: RateCard): string | null {
+  const frame = card.frames.find((f) => f.id === config.frameId);
+  const angle = card.angles.find((a) => a.id === config.angleId);
+  return frame && angle ? angleRackSku(config, frame, angle) : null;
+}
+
 function sameConfig(a: AngleRackConfig, b: AngleRackConfig): boolean {
   return (
     a.heightFt === b.heightFt && a.shelves === b.shelves && a.frameId === b.frameId && a.angleId === b.angleId
@@ -177,6 +193,11 @@ export async function addAngleRack(_prev: FormState, fd: FormData): Promise<Form
 
   const existing = await listAngleRackModels();
   if (existing.some((m) => sameConfig(m.config, read.value))) return err("duplicateRack", "frameId");
+  /* One SKU, one model: a starter pack and a cart line name a rack by its
+     SKU, and the catalogue takes the first model that answers to it. */
+  const sku = skuOf(read.value, card);
+  if (sku && existing.some((m) => skuOf(m.config, card) === sku))
+    return err("duplicateSku", "frameId", { sku });
 
   const cost = angleRackCost(read.value, card);
   if (!cost) return err("notFound");
@@ -222,16 +243,26 @@ async function republish(models: AngleRackModel[]): Promise<void> {
   );
 }
 
+/** On or off sale, to the state the button asks for (`switchTo`). */
 export async function toggleAngleRack(fd: FormData): Promise<void> {
   await assertRole("admin");
   const current = await getAngleRackModel(String(fd.get("id")));
   if (!current) throw new Error("Rack not found");
-  await putAngleRackModel({ ...current, active: !current.active });
+  const active = switchTo(fd);
+  if (active === null) throw new Error("No target state posted");
+  if (active === current.active) return;
+  await putAngleRackModel({ ...current, active });
   refresh();
 }
 
-export async function removeAngleRack(fd: FormData): Promise<void> {
+/** Delete a rack — refused while it is a starter pack's rack (SPEC §29),
+ *  unless another model still answers to its SKU. */
+export async function removeAngleRack(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
-  await deleteAngleRackModel(String(fd.get("id")));
+  const id = String(fd.get("id") ?? "");
+  const pack = await packLosingRack((m) => m.id === id);
+  if (pack) return err("rackInPack", undefined, { pack });
+  await deleteAngleRackModel(id);
   refresh();
+  return { status: "saved" };
 }

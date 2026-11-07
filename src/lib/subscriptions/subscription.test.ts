@@ -62,7 +62,7 @@ describe("skip, pause, resume, cancel — admin, 27 Sep 2026", () => {
   const sub = { status: "active" as const, deliveries, skipped: [] as string[], held: 0 };
 
   it("skip moves the box to the Saturday after the last, on that Saturday's rotation week", () => {
-    const next = skipDelivery(sub, "2026-10-17", at("2026-10-12"))!;
+    const next = skipDelivery(sub, "2026-10-17", at("2026-10-12"), at("2026-10-24"))!;
     expect(next.deliveries.map((d) => d.date)).toEqual([
       "2026-10-10",
       "2026-10-24",
@@ -76,10 +76,43 @@ describe("skip, pause, resume, cancel — admin, 27 Sep 2026", () => {
   });
 
   it("will not skip a Saturday that is today, past, or not on the calendar", () => {
-    expect(skipDelivery(sub, "2026-10-17", at("2026-10-17"))).toBeNull();
-    expect(skipDelivery(sub, "2026-10-10", at("2026-10-12"))).toBeNull();
-    expect(skipDelivery(sub, "2026-10-18", at("2026-10-12"))).toBeNull();
-    expect(skipDelivery({ ...sub, status: "paused" }, "2026-10-24", at("2026-10-12"))).toBeNull();
+    const open = at("2026-10-24");
+    expect(skipDelivery(sub, "2026-10-17", at("2026-10-17"), open)).toBeNull();
+    expect(skipDelivery(sub, "2026-10-10", at("2026-10-12"), open)).toBeNull();
+    expect(skipDelivery(sub, "2026-10-18", at("2026-10-12"), open)).toBeNull();
+    expect(skipDelivery({ ...sub, status: "paused" }, "2026-10-24", at("2026-10-12"), open)).toBeNull();
+  });
+
+  it("skipping the last Saturday adds the one after it, and drops the skipped one", () => {
+    // Found 31 Oct 2026: the new box landed back on the skipped date.
+    const next = skipDelivery(sub, "2026-10-31", at("2026-10-30"), at("2026-11-07"))!;
+    expect(next.deliveries.map((d) => d.date)).toEqual([
+      "2026-10-10",
+      "2026-10-17",
+      "2026-10-24",
+      "2026-11-07",
+    ]);
+    expect(next.skipped).toEqual(["2026-10-31"]);
+  });
+
+  it("skipping after a pause never lands in the past", () => {
+    const resumed = {
+      ...sub,
+      deliveries: [
+        { date: "2026-10-03", week: 4 },
+        { date: "2026-10-10", week: 1 },
+        { date: "2026-11-07", week: 1 },
+      ],
+    };
+    const next = skipDelivery(resumed, "2026-11-07", at("2026-11-01"), at("2026-11-14"))!;
+    expect(next.deliveries.map((d) => d.date)).toEqual(["2026-10-03", "2026-10-10", "2026-11-14"]);
+  });
+
+  it("never adds a box before the first Saturday still open to new boxes", () => {
+    const early = { ...sub, deliveries: [{ date: "2026-10-03", week: 4 }, { date: "2026-10-10", week: 1 }] };
+    // A slow crop has closed 17 Oct; the replacement waits for 24 Oct.
+    const next = skipDelivery(early, "2026-10-10", at("2026-10-05"), at("2026-10-24"))!;
+    expect(next.deliveries.map((d) => d.date)).toEqual(["2026-10-03", "2026-10-24"]);
   });
 
   it("pause holds every Saturday still ahead, and resume puts them back from the next open Saturday", () => {
@@ -88,7 +121,7 @@ describe("skip, pause, resume, cancel — admin, 27 Sep 2026", () => {
     expect(paused.deliveries.map((d) => d.date)).toEqual(["2026-10-10"]);
     expect(paused.held).toBe(3);
 
-    const resumed = resumeDeliveries({ ...paused }, at("2026-11-02"))!;
+    const resumed = resumeDeliveries({ ...paused }, at("2026-11-14"))!;
     expect(resumed.status).toBe("active");
     expect(resumed.held).toBe(0);
     expect(resumed.deliveries).toHaveLength(4);
@@ -100,7 +133,7 @@ describe("skip, pause, resume, cancel — admin, 27 Sep 2026", () => {
 
   it("will not pause with nothing ahead, or resume what is not paused", () => {
     expect(pauseDeliveries(sub, at("2026-11-01"))).toBeNull();
-    expect(resumeDeliveries(sub, at("2026-10-12"))).toBeNull();
+    expect(resumeDeliveries(sub, at("2026-10-24"))).toBeNull();
   });
 
   it("cancel drops the Saturdays ahead and counts them as owed", () => {

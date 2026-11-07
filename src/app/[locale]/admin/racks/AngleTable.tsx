@@ -114,6 +114,9 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
   const t = useTranslations("admin.racks");
   const tc = useTranslations("admin.common");
   const [state, action, pending] = useActionState<FormState, FormData>(saveAngle, IDLE);
+  /* A delete is refused while a starter pack's rack is built on this grade,
+     and says so under the row. */
+  const [removeState, removeAction] = useActionState<FormState, FormData>(removeAngle, IDLE);
 
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field
@@ -129,14 +132,9 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
         <input type="hidden" name="id" value={angle.id} />
         <input type="hidden" name="active" value={angle.active ? "on" : "off"} />
 
-        <NumberField
-          compact
-          label={t("colThickness")}
-          name="thicknessMm"
-          min={0}
-          defaultValue={angle.thicknessMm}
-          error={errorFor("thicknessMm")}
-        />
+        {/* Text, not an input: the gauge is in the SKU of every rack on this
+            grade, so it is fixed once saved — see `PlateRow`. */}
+        <span className="px-3 font-body text-sm tabular-nums text-forest">{angle.thicknessMm}</span>
         <ColourSelect compact label={t("colColours")} initial={angle.colours} texts={colourTexts(t)} />
         <NumberField
           compact
@@ -168,6 +166,8 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
 
       <form action={toggleAngle} className="contents">
         <input type="hidden" name="id" value={angle.id} />
+        {/* Where the press goes, not "flip it" — see `switchTo`. */}
+        <input type="hidden" name="to" value={angle.active ? "off" : "on"} />
         <button
           className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
             angle.active
@@ -179,7 +179,7 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
         </button>
       </form>
 
-      <form action={removeAngle} className="contents">
+      <form action={removeAction} className="contents">
         <input type="hidden" name="id" value={angle.id} />
         <ConfirmSubmit
           label={tc("delete")}
@@ -194,6 +194,11 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
       {state.status === "error" && !state.field && (
         <p className="col-span-full font-body text-[11px] text-terracotta">
           {t(`errors.${state.code}`, state.values ?? {})}
+        </p>
+      )}
+      {removeState.status === "error" && (
+        <p role="alert" className="col-span-full font-body text-[11px] text-terracotta">
+          {t(`errors.${removeState.code}`, removeState.values ?? {})}
         </p>
       )}
     </div>

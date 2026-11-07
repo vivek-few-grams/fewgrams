@@ -4,7 +4,14 @@ import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
 import { normalisePhone } from "@/lib/account/validation";
 import { err, type FormState } from "@/lib/forms";
-import { addVendorPickup, getShippingSettings, setVendorPickups } from "@/lib/repo/shipping";
+import {
+  addVendorPickup,
+  allOrigins,
+  getShippingSettings,
+  samePickupName,
+  setVendorPickups,
+  type Origin,
+} from "@/lib/repo/shipping";
 
 /** Every screen that shows a vendor panel, plus the two that use the result. */
 function revalidateVendorScreens() {
@@ -37,7 +44,13 @@ export async function saveVendorPickups(_prev: FormState, fd: FormData): Promise
   return { status: "saved" };
 }
 
-/** Add a vendor pickup address from a product screen. */
+/**
+ * Add a vendor pickup address from a product screen — **refused when another
+ * pickup has its name** (trimmed, any case). Couriers know a pickup by its
+ * name alone, so two of one name could have a parcel collected from the
+ * wrong address. Written over the row as read, and read again if admin →
+ * delivery saved in between, so neither save drops the other's work.
+ */
 export async function addVendor(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   if (!(await getShippingSettings())) return err("noSettings");
@@ -49,14 +62,25 @@ export async function addVendor(_prev: FormState, fd: FormData): Promise<FormSta
   const pincode = get("pincode");
   if (!/^[1-9]\d{5}$/.test(pincode)) return err("pincodeInvalid", "pincode");
 
-  await addVendorPickup({
+  const origin: Origin = {
     id: `loc-${crypto.randomUUID().slice(0, 8)}`,
     name: get("name"),
     phone,
     address: get("address"),
     city: get("city"),
     pincode,
-  });
-  revalidateVendorScreens();
-  return { status: "saved" };
+  };
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const settings = await getShippingSettings();
+    if (!settings) return err("noSettings");
+    /* Against each pickup on its own, so a clash already stored between two
+       others does not block an unrelated name. */
+    if (allOrigins(settings).some((o) => samePickupName(o.name, origin.name)))
+      return err("nameTaken", "name", { name: origin.name });
+    if (await addVendorPickup(settings, origin)) {
+      revalidateVendorScreens();
+      return { status: "saved" };
+    }
+  }
+  return err("changedElsewhere");
 }

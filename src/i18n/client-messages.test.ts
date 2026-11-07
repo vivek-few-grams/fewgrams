@@ -59,4 +59,61 @@ describe("client components are covered", () => {
     expect(seen).toBeGreaterThan(10);
     expect(missing).toEqual([]);
   });
+
+  /* The check above passes as long as *some* entry provides a namespace, so
+     checkout once rendered `account.errors.phoneInvalid` raw: the account's
+     own entry had it, checkout's did not (31 Oct 2026). This one follows the
+     imports out of each `<ClientMessages entry>` and holds every client
+     component it reaches to that entry. A component can sit outside the
+     wrapper on the same page and read the chrome instead, which a static walk
+     cannot tell apart — so the chrome counts too. */
+  it("every client component under a ClientMessages entry is covered by that entry", async () => {
+    const all = await files(SRC);
+    const resolve = (from: string, spec: string): string | null => {
+      const base = spec.startsWith("@/")
+        ? path.join(SRC, spec.slice(2))
+        : spec.startsWith(".")
+          ? path.resolve(path.dirname(from), spec)
+          : null;
+      if (!base) return null;
+      const tries = [base, `${base}.tsx`, `${base}.ts`, path.join(base, "index.tsx"), path.join(base, "index.ts")];
+      return tries.find((t) => all.includes(t)) ?? null;
+    };
+    const source = new Map<string, string>();
+    const read = async (f: string) => source.get(f) ?? source.set(f, await readFile(f, "utf8")).get(f)!;
+
+    const missing: string[] = [];
+    let wrappers = 0;
+    for (const file of all) {
+      const src = await read(file);
+      for (const [, entry] of src.matchAll(/<ClientMessages\s+entry="(\w+)"/g)) {
+        wrappers += 1;
+        const provided = [...CLIENT_MESSAGES[entry as keyof typeof CLIENT_MESSAGES], ...CLIENT_MESSAGES.chrome];
+        const covered = (ns: string) => provided.some((p) => ns === p || ns.startsWith(`${p}.`));
+        /* A layout wraps every page beneath it; a page wraps only itself. */
+        const roots = file.endsWith("layout.tsx")
+          ? all.filter((f) => f.startsWith(path.dirname(file) + path.sep))
+          : [file];
+        const seen = new Set<string>();
+        const queue = [...roots];
+        while (queue.length > 0) {
+          const f = queue.pop()!;
+          if (seen.has(f)) continue;
+          seen.add(f);
+          const s = await read(f);
+          if (/^["']use client["']/m.test(s)) {
+            for (const [, ns] of s.matchAll(/useTranslations\(\s*["']([^"']+)["']\s*\)/g)) {
+              if (!covered(ns)) missing.push(`${entry} → ${path.relative(SRC, f)}: ${ns}`);
+            }
+          }
+          for (const [, spec] of s.matchAll(/(?:from|import)\s+["']([^"']+)["']/g)) {
+            const next = resolve(f, spec);
+            if (next) queue.push(next);
+          }
+        }
+      }
+    }
+    expect(wrappers).toBeGreaterThan(5);
+    expect([...new Set(missing)]).toEqual([]);
+  });
 });

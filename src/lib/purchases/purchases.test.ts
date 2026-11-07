@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { HOME_STATE } from "@/lib/tax/states";
-import { freightCredit, owesPayBy } from "./bill";
+import { freightCredit, owesPayBy, stockLineDefaults } from "./bill";
 import { billCosts, billsPerItem, latestCosts } from "./cost";
 import { readBill } from "./read";
 import { isSupplyKey, supplierChanges, suppliersOf } from "./supplies";
@@ -58,6 +58,17 @@ const bill = (lines: Record<string, string>[], extra: Record<string, string> = {
     ...extra,
     ...Object.fromEntries(Object.keys(line()).map((k) => [k, lines.map((l) => l[k])])),
   });
+
+describe("stockLineDefaults", () => {
+  it("starts a line at the rate the item is sold at, with no credit when exempt", () => {
+    /* A test bill for 1 kg of radish seed defaulted to 18% and Full credit,
+       and folded ₹72 of GST nobody charged into the seed's cost. */
+    expect(stockLineDefaults({ kind: "seed", key: "radish" })).toEqual({ rate: 0, credit: "none" });
+    expect(stockLineDefaults({ kind: "seed", key: "mustard" })).toEqual({ rate: 0, credit: "none" });
+    expect(stockLineDefaults({ kind: "tray", key: "tray-pair" })).toEqual({ rate: 18, credit: "full" });
+    expect(stockLineDefaults({ kind: "media", key: "horti-coir" })).toEqual({ rate: 5, credit: "full" });
+  });
+});
 
 describe("readVendor", () => {
   it("reads the state off a registered vendor's GSTIN", () => {

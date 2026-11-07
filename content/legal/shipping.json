@@ -48,7 +48,7 @@
       "plans": {
         "heading": "Weekly plans",
         "body": [
-          "A weekly plan delivers one box every Saturday for four Saturdays. A plan paid before Friday midnight is sown that Sunday and starts on the Saturday after; a plan paid later starts one week later. The four Saturdays are shown before you pay. Delivery is included."
+          "A weekly plan delivers one box every Saturday for four Saturdays. A plan paid before Friday midnight is sown that Sunday and starts on the Saturday after, unless that Saturday's box holds a slower crop that had to be sown earlier, in which case it starts on the next Saturday that can still be sown for. A plan paid later starts one week later. The last day to join and the four Saturdays are shown before you pay. Delivery is included."
         ]
       },
       "courier": {
@@ -152,7 +152,7 @@
       "plans": {
         "heading": "ವಾರದ ಯೋಜನೆಗಳು",
         "body": [
-          "ವಾರದ ಯೋಜನೆಯಲ್ಲಿ ನಾಲ್ಕು ಶನಿವಾರಗಳ ಕಾಲ ಪ್ರತಿ ಶನಿವಾರ ಒಂದು ಡಬ್ಬ ತಲುಪಿಸಲಾಗುತ್ತದೆ. ಶುಕ್ರವಾರ ಮಧ್ಯರಾತ್ರಿಯ ಮೊದಲು ಪಾವತಿಸಿದ ಯೋಜನೆಯನ್ನು ಆ ಭಾನುವಾರ ಬಿತ್ತಿ, ಅದರ ನಂತರದ ಶನಿವಾರ ಆರಂಭಿಸಲಾಗುತ್ತದೆ; ತಡವಾಗಿ ಪಾವತಿಸಿದ್ದು ಒಂದು ವಾರ ತಡವಾಗಿ ಆರಂಭವಾಗುತ್ತದೆ. ಪಾವತಿಸುವ ಮೊದಲು ನಾಲ್ಕು ಶನಿವಾರಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತದೆ. ಡೆಲಿವರಿ ಸೇರಿದೆ."
+          "ವಾರದ ಯೋಜನೆಯಲ್ಲಿ ನಾಲ್ಕು ಶನಿವಾರಗಳ ಕಾಲ ಪ್ರತಿ ಶನಿವಾರ ಒಂದು ಡಬ್ಬ ತಲುಪಿಸಲಾಗುತ್ತದೆ. ಶುಕ್ರವಾರ ಮಧ್ಯರಾತ್ರಿಯ ಮೊದಲು ಪಾವತಿಸಿದ ಯೋಜನೆಯನ್ನು ಆ ಭಾನುವಾರ ಬಿತ್ತಿ, ಅದರ ನಂತರದ ಶನಿವಾರ ಆರಂಭಿಸಲಾಗುತ್ತದೆ; ಆ ಶನಿವಾರದ ಡಬ್ಬದಲ್ಲಿ ಮೊದಲೇ ಬಿತ್ತಬೇಕಾದ ನಿಧಾನ ಬೆಳೆ ಇದ್ದರೆ, ಇನ್ನೂ ಬಿತ್ತಲು ಸಾಧ್ಯವಿರುವ ಮುಂದಿನ ಶನಿವಾರದಿಂದ ಆರಂಭವಾಗುತ್ತದೆ. ತಡವಾಗಿ ಪಾವತಿಸಿದ್ದು ಒಂದು ವಾರ ತಡವಾಗಿ ಆರಂಭವಾಗುತ್ತದೆ. ಸೇರಲು ಕೊನೆಯ ದಿನ ಮತ್ತು ನಾಲ್ಕು ಶನಿವಾರಗಳನ್ನು ಪಾವತಿಸುವ ಮೊದಲು ತೋರಿಸಲಾಗುತ್ತದೆ. ಡೆಲಿವರಿ ಸೇರಿದೆ."
         ]
       },
       "courier": {

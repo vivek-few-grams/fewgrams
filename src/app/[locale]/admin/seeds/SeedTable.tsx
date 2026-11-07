@@ -230,6 +230,8 @@ function SeedRow({
       ) : (
         <form action={toggleSeedActive} className="contents">
           <input type="hidden" name="id" value={seed.id} />
+          {/* Where the press goes, not "flip it" — see `switchTo`. */}
+          <input type="hidden" name="to" value={seed.active ? "off" : "on"} />
           <button
             /* Hover moves in the direction of what the click does: greener when
                it will switch on, plain when off. */

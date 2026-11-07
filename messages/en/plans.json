@@ -1,7 +1,7 @@
 {
   "eyebrow": "Weekly plans",
   "heading": "One month, four Saturdays, nothing grown until you ask.",
-  "firstDelivery": "Order by Friday night and your first box arrives",
+  "firstDelivery": "Order by {joinBy} and your first box arrives",
   "empty": {
     "title": "Weekly plans open soon",
     "body": "None are published yet. Greens are still available by the 100 g, sown when you order them.",
@@ -56,7 +56,7 @@
     "deliveryIncluded": "Included",
     "pay": "Pay ₹{amount, number}",
     "paying": "Starting your subscription…",
-    "termNote": "Paid once for four Saturdays. It does not renew by itself, but we'll remind you before the last box.",
+    "termNote": "Paid once for four Saturdays. It does not renew by itself.",
     "confirmingTitle": "Confirming your payment",
     "confirmingBody": "Setting up your Saturdays. This takes a few seconds.",
     "errors": {

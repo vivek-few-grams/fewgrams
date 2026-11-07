@@ -212,13 +212,22 @@ describe("deliveryPlan", () => {
 });
 
 describe("deliveryCharge", () => {
-  it("books the option posted, and charges the customer no more than ₹79 for it", async () => {
-    providers.push(courier("delhivery", [opt("delhivery", 59.14)]), courier("ekart", [opt("ekart", 106.2)]));
+  it("books the cheapest option, and charges the customer no more than ₹79 for it", async () => {
+    providers.push(courier("delhivery", [opt("delhivery", 112.5)]), courier("ekart", [opt("ekart", 106.2)]));
     const r = await deliveryCharge(seeds, String(pin), { home: "ekart" });
     expect(r).toMatchObject({
       ok: true,
       amount: 79,
       shipments: [{ method: "courier", amount: 79, quote: { courier: "ekart", quotedTotal: 106.2 } }],
+    });
+  });
+
+  it("refuses a dearer option than the cheapest, even one the scan offered", async () => {
+    // A hand-edited form once booked a pricier courier at our cost (31 Oct 2026).
+    providers.push(courier("delhivery", [opt("delhivery", 59.14)]), courier("ekart", [opt("ekart", 106.2)]));
+    expect(await deliveryCharge(seeds, String(pin), { home: "ekart" })).toEqual({
+      ok: false,
+      reason: "optionGone",
     });
   });
 

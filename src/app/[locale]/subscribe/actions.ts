@@ -13,6 +13,7 @@ import { subscriptionTax } from "@/lib/tax/order-tax";
 import { placeOfSupply } from "@/lib/tax/states";
 import { subscribablePlans } from "@/lib/subscriptions/catalogue";
 import { subscriptionSchedule } from "@/lib/subscriptions/rotation";
+import { subscriptionOpening } from "@/lib/subscriptions/opening";
 import {
   MAX_BOXES_PER_PLAN,
   newSubscriptionId,
@@ -87,7 +88,7 @@ export async function startSubscription(_prev: CheckoutState, fd: FormData): Pro
     status: "pending_payment",
     lines,
     total,
-    deliveries: subscriptionSchedule(now).map((b) => ({ date: istDateISO(b.date), week: b.week })),
+    deliveries: subscriptionSchedule((await subscriptionOpening(now)).first).map((b) => ({ date: istDateISO(b.date), week: b.week })),
     skipped: [],
     held: 0,
     address: addressSnapshot(address),
@@ -99,6 +100,8 @@ export async function startSubscription(_prev: CheckoutState, fd: FormData): Pro
     tax: subscriptionTax(lines, placeOfSupply(address)),
     placeOfSupply: placeOfSupply(address),
     paidAt: null,
+    finishingAt: null,
+    finishedAt: null,
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
     expiresAt: expiresAt.toISOString(),
