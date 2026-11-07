@@ -3325,6 +3325,29 @@ preload is the newer form. Do not "fix" the absent `loading` attribute.
 
 ---
 
+**The badge, the cart page and checkout read one cart, and an off-sale line leaves it (7 Nov
+2026).** The badge counted the raw cookie, to spare a catalogue read, while the cart page listed
+only what is on sale. When the sowing log priced alfalfa and beetroot microgreens off sale, the
+owner's badge read 3 over a page listing one alfalfa *seed* line, under a red box naming
+"alfalfa, beetroot" by bare key. It read as the seed being refused, and "Clear cart" was the only
+way out, which threw the seed away too. Now:
+
+- **One read.** `cartContents(locale)` — `hydrateCart` behind React `cache` — feeds the header
+  badge (`readCartCount`), `/cart` and `/checkout` within a request, so the badge is `items.length`
+  of the very list the page prints. An empty cookie still costs no read. If the catalogue cannot be
+  read, the badge falls back to the cookie's count rather than take every page down.
+- **Off-sale lines leave the cookie at the first write.** Every cart action saves through
+  `sellableLines`. A visitor who only looks gets `CartCleanup`, which calls `dropUnavailable` once
+  the cart or checkout page is on screen; a page cannot write a cookie while it renders.
+- **One notice, named by product and kind**: "Taken out of your cart. No longer on sale: Alfalfa
+  microgreens and Beetroot microgreens" (`removedNotice`). A line with no name left says what it
+  was ("a rack"). The words are held in the client component's state, because the cookie write
+  re-renders the page without those lines. Both pages put it first inside the same root `<div>` in
+  every branch, so it survives a re-render into the empty cart.
+- **Checkout no longer stops for an off-sale line**, since it has already been taken out and the
+  notice says so. It still stops for a quantity over the shelf, and `startCheckout` still refuses a
+  cart that changed after the page loaded.
+
 ### 18.6.2 Quick add from the grid — 24 Sep 2026
 
 The owner: add to cart should not need the detail page. Every grid whose item
@@ -5009,6 +5032,8 @@ change:
   It had been wrong for seeds since §22.6 and was plainly wrong for a tray. The
   cart cannot name the kind there anyway: an unresolvable line is a bare key,
   which is precisely why it could not be resolved. It now says "item".
+  (Superseded 7 Nov 2026: the line keeps its kind, and its content file
+  usually still names it — see §18.6.1, "one cart".)
 
 **Nothing gained a stock test.** A tray has no stock (§23.1) and a seed's
 stopped being a limit (§22.2), so `sellable()` is the same two questions for all

@@ -8,7 +8,9 @@ import { SignInOptions } from "@/components/auth/SignInOptions";
 import { formatPhone, formatPlace } from "@/lib/account/validation";
 import { lineId } from "@/lib/cart/cart";
 import { lineUnits } from "@/lib/cart/line-display";
-import { hydrateCart } from "@/lib/cart/server";
+import { cartContents } from "@/lib/cart/server";
+import { removedNotice } from "@/lib/cart/removed-notice";
+import { CartCleanup } from "@/components/cart/CartCleanup";
 import { GATEWAY_LABEL, paymentProvider } from "@/lib/payments";
 import { shippingProviders } from "@/lib/shipping";
 import { travelsOnOwnRun } from "@/lib/shipping/parcel";
@@ -65,7 +67,8 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
   const tc = await getTranslations("cart");
 
   const [cart, addresses, profile] = await Promise.all([
-    hydrateCart(locale),
+    /* The header badge's read, shared (`cartContents`). */
+    cartContents(locale),
     actor ? listAddresses(actor.userId) : [],
     actor ? getProfile(actor.userId) : null,
   ]);
@@ -91,21 +94,30 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
   const provider = paymentProvider();
   const open = provider !== null;
 
+  /* A line gone off sale is taken out of the cookie as the page opens
+     (`CartCleanup`), and the page re-renders without it. Every branch puts
+     the notice first inside a root <div>, so it keeps its place — and its
+     words — through that re-render, even into the empty branch. */
+  const notice = await removedNotice(cart);
+
   if (cart.items.length === 0) {
     return (
-      <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
-        <h1 className="font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
-          {t("heading")}
-        </h1>
-        <p className="mt-4 font-display text-lg font-semibold text-forest">{t("empty")}</p>
-        <Link
-          href="/microgreens"
-          className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-forest px-7 py-3 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
-        >
-          <ShoppingBag size={17} strokeWidth={1.75} />
-          {tc("browse")}
-        </Link>
-      </section>
+      <div>
+        <CartCleanup notice={notice} />
+        <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
+          <h1 className="font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
+            {t("heading")}
+          </h1>
+          <p className="mt-4 font-display text-lg font-semibold text-forest">{t("empty")}</p>
+          <Link
+            href="/microgreens"
+            className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-forest px-7 py-3 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
+          >
+            <ShoppingBag size={17} strokeWidth={1.75} />
+            {tc("browse")}
+          </Link>
+        </section>
+      </div>
     );
   }
 
@@ -184,17 +196,21 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
 
   if (!actor) {
     return (
-      <GuestCheckout
-        locale={locale}
-        heading={t("heading")}
-        subheading={t("subheading")}
-        summary={summaryFor(true)}
-      />
+      <div className="co-page">
+        <CartCleanup notice={notice} />
+        <GuestCheckout
+          locale={locale}
+          heading={t("heading")}
+          subheading={t("subheading")}
+          summary={summaryFor(true)}
+        />
+      </div>
     );
   }
 
   return (
     <div className="co-page">
+      <CartCleanup notice={notice} />
       <section className="mx-auto max-w-[1400px] px-6 pb-12 pt-8 md:px-12 md:pb-16 md:pt-10">
         <h1 className="flex items-center gap-2.5 font-display text-[clamp(1.6rem,3.2vw,2.4rem)] font-bold leading-tight tracking-tight text-forest">
           {t("heading")}
@@ -203,7 +219,11 @@ export default async function CheckoutPage({ params }: PageProps<"/[locale]/chec
         <p className="mt-1 font-body text-sm text-stone">{t("subheading")}</p>
 
         <div className="mt-5">
-          {cart.unavailable.length > 0 || cart.overStock.length > 0 ? (
+          {/* Over the shelf still sends the customer back to the cart; a line
+              off sale no longer does — it is taken out, and the notice above
+              says so. `startCheckout` still refuses a cart that changed after
+              the page loaded. */}
+          {cart.overStock.length > 0 ? (
             <div className="grid gap-8 lg:grid-cols-[1fr_400px] lg:gap-12">
               <div className="rounded-2xl bg-sand p-6 md:p-8">
                 <Notice

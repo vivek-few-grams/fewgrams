@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { ShoppingBag, User } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { brand } from "@/lib/brand";
 import { NavLinks } from "./NavLinks";
@@ -63,11 +63,12 @@ export async function Header({
 }) {
   const t = await getTranslations("common.header");
   const account = actor ? ACCOUNT_STATE[actor.role] : null;
-  /* Reads the cookie only — no catalogue query, because a count needs no
-     names or prices. The badge was a hardcoded "0" until 15 Sep 2026. It
-     counts lines, the cart page's "N items" — not units, which mean 100 g,
-     a pack or a block depending on the kind (`cartLineCount`). */
-  const cartCount = await readCartCount();
+  /* The lines the cart page lists, from the same per-request read
+     (`cartContents`), so a line gone off sale is not counted here while the
+     page leaves it out (7 Nov 2026 — it counted the raw cookie). Lines, the
+     cart page's "N items" — not units, which mean 100 g, a pack or a block
+     depending on the kind. The badge was a hardcoded "0" until 15 Sep 2026. */
+  const cartCount = await readCartCount(await getLocale());
   const showMicrogreens = await isProductTypeEnabled("microgreens");
   /* Only while a pack is set up to sell (SPEC §29). */
   const showPacks = await hasActivePacks();

@@ -296,6 +296,16 @@ export function removeFromCart(lines: CartLine[], kind: CartKind, key: string): 
   return lines.filter((l) => !(l.kind === kind && l.key === key));
 }
 
+/** The lines left once every one named in `drop` is taken out, matched by
+ *  kind **and** key (`lineId`), in their order. */
+export function withoutLines(
+  lines: readonly CartLine[],
+  drop: readonly { kind: CartKind; key: string }[],
+): CartLine[] {
+  const gone = new Set(drop.map(lineId));
+  return lines.filter((l) => !gone.has(lineId(l)));
+}
+
 /**
  * Lines in the cart — what the header badge shows, and the same figure the
  * cart page prints as "N items".

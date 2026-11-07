@@ -16,7 +16,7 @@
   "total": "Total",
   "arrives": "Everything arrives <b>{date}</b>",
   "cartChangedHeading": "Your cart has changed",
-  "cartChangedBody": "Something in your cart is no longer on sale. Review your cart before paying.",
+  "cartChangedBody": "Something in your cart is more than we have on the shelf right now. Review your cart before paying.",
   "reviewCart": "Review your cart",
   "closedHeading": "Payment is not open yet",
   "closedBody": "Online payment is not switched on yet. Nothing has been ordered and nothing has been charged, and your cart stays saved.",

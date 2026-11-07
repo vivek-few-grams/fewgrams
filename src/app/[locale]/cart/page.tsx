@@ -6,7 +6,9 @@ import { Link } from "@/i18n/navigation";
 import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { PinnedColumn } from "@/components/ui/PinnedColumn";
 import { KindIcon } from "@/components/cart/KindIcon";
-import { hydrateCart } from "@/lib/cart/server";
+import { cartContents } from "@/lib/cart/server";
+import { removedNotice } from "@/lib/cart/removed-notice";
+import { CartCleanup } from "@/components/cart/CartCleanup";
 import { lineId } from "@/lib/cart/cart";
 import { lineHref, lineUnits, stepKey } from "@/lib/cart/line-display";
 import { clearCart } from "./actions";
@@ -53,7 +55,10 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
 
   const t = await getTranslations("cart");
   const format = await getFormatter();
-  const cart = await hydrateCart(locale);
+  /* The header badge counts from this same read (`cartContents`), so the
+     badge and "N items" cannot disagree. */
+  const cart = await cartContents(locale);
+  const notice = await removedNotice(cart);
 
   /* What a flagged line says. A line short of a seed it shares with a
      starter pack names the seed (`overStockSeeds`): the seed line beside
@@ -68,27 +73,34 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
     return item.maxUnits === 0 ? t("lineSoldOut") : t("lineOverStock");
   };
 
+  /* Both branches put `CartCleanup` first inside a root <div>: taking the
+     off-sale lines out re-renders the page — possibly as the empty cart — and
+     the notice keeps its state only if it stays at the same place. */
   if (cart.items.length === 0) {
     return (
-      <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
-        <h1 className="font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
-          {t("heading")}
-        </h1>
-        <p className="mt-4 font-display text-lg font-semibold text-forest">{t("empty")}</p>
-        <p className="mt-2 max-w-md font-body text-sm text-stone">{t("emptyBody")}</p>
-        <Link
-          href="/microgreens"
-          className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-forest px-7 py-3 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
-        >
-          <ShoppingBag size={17} strokeWidth={1.75} />
-          {t("browse")}
-        </Link>
-      </section>
+      <div>
+        <CartCleanup notice={notice} />
+        <section className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-24">
+          <h1 className="font-display text-[clamp(1.9rem,4.4vw,3.2rem)] font-bold leading-tight tracking-tight text-forest">
+            {t("heading")}
+          </h1>
+          <p className="mt-4 font-display text-lg font-semibold text-forest">{t("empty")}</p>
+          <p className="mt-2 max-w-md font-body text-sm text-stone">{t("emptyBody")}</p>
+          <Link
+            href="/microgreens"
+            className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-forest px-7 py-3 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
+          >
+            <ShoppingBag size={17} strokeWidth={1.75} />
+            {t("browse")}
+          </Link>
+        </section>
+      </div>
     );
   }
 
   return (
     <div className="co-page">
+      <CartCleanup notice={notice} />
       <section className="mx-auto max-w-[1400px] px-6 pb-14 pt-8 md:px-12 md:pb-20 md:pt-10">
         <p className="font-body text-[11px] uppercase tracking-widest text-stone">
           {t("count", { count: cart.items.length })}
@@ -101,20 +113,6 @@ export default async function CartPage({ params }: PageProps<"/[locale]/cart">) 
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_380px] lg:gap-10">
           <div className="min-w-0 space-y-3">
-            {cart.unavailable.length > 0 && (
-              <div className="rounded-2xl border border-terracotta/25 bg-terracotta/[0.04] p-5">
-                <h2 className="font-display text-base font-semibold text-terracotta">
-                  {t("unavailableHeading")}
-                </h2>
-                <p className="mt-1.5 font-body text-sm text-ink">
-                  {t("unavailableBody", {
-                    count: cart.unavailable.length,
-                    keys: cart.unavailable.join(", "),
-                  })}
-                </p>
-              </div>
-            )}
-
             <ul className="space-y-3">
               {cart.items.map((item) => (
                 <li

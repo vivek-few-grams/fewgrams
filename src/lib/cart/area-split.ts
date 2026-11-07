@@ -1,4 +1,4 @@
-import { lineId, type CartKind, type CartLine } from "./cart";
+import { withoutLines, type CartKind, type CartLine } from "./cart";
 
 /**
  * What of a cart can go to an address — SPEC §7 (the owner, 26 Sep 2026).
@@ -35,6 +35,5 @@ export function cartAfterOrder(
   cart: readonly CartLine[],
   bought: readonly { kind: CartKind; key: string }[],
 ): CartLine[] {
-  const gone = new Set(bought.map(lineId));
-  return cart.filter((l) => !gone.has(lineId(l)));
+  return withoutLines(cart, bought);
 }

@@ -1,13 +1,14 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
 import { listVarieties } from "@/lib/repo/varieties";
 import { listSeeds } from "@/lib/repo/seeds";
 import { listTrays } from "@/lib/repo/trays";
 import { listGrowMedia } from "@/lib/repo/grow-media";
-import { attachContent, varietyHero } from "@/lib/content/varieties";
-import { attachSeedContent, seedHero } from "@/lib/content/seeds";
-import { attachTrayContent, trayHero } from "@/lib/content/trays";
-import { attachGrowMediumContent, growMediumHero } from "@/lib/content/grow-media";
+import { attachContent, getVarietyContent, varietyHero } from "@/lib/content/varieties";
+import { attachSeedContent, getSeedContent, seedHero } from "@/lib/content/seeds";
+import { attachTrayContent, getTrayContent, trayHero } from "@/lib/content/trays";
+import { attachGrowMediumContent, getGrowMediumContent, growMediumHero } from "@/lib/content/grow-media";
 import { findSellableRack } from "@/lib/racks/catalogue";
 import { rackLineName } from "@/lib/racks/describe";
 import { rackReadyDate } from "@/lib/racks/lead-time";
@@ -27,6 +28,7 @@ import {
   parseCart,
   unitsFor,
   serialiseCart,
+  withoutLines,
   type CartKind,
   type CartLine,
 } from "./cart";
@@ -162,15 +164,25 @@ export type HydratedCart = {
    *  seeds' names, so the cart can say which is short (`overStockLines`). */
   overStockSeeds: Record<string, string[]>;
   /**
-   * Keys that were in the cookie but no longer resolve to something sellable —
-   * deactivated in admin, deleted, or its content file removed.
+   * Lines the cookie holds that are no longer on sale — a green priced at 0
+   * by the sowing log, a seed or tray switched off, a deleted row or content
+   * file. Not in `items`, so not in any count or total.
    *
    * Surfaced rather than silently swallowed: the customer put it there, so
-   * "it is gone" is information they are owed. The stale cookie entry is
-   * cleaned up by the next mutation; a read cannot write.
+   * "it is gone" is information they are owed. A read cannot write the
+   * cookie, so the cart and checkout pages call `dropUnavailable` to take
+   * them out, and every cart action drops them as it saves (`sellableLines`).
    */
-  unavailable: string[];
+  unavailable: UnavailableLine[];
 };
+
+/**
+ * A cookie line that no longer resolves, named for the notice. `name` is its
+ * content file's name where it still has one (a green or a seed off sale keeps
+ * its file), and null for a deleted file, a rack or a pack — the notice then
+ * says what kind of thing it was.
+ */
+export type UnavailableLine = { kind: CartKind; key: string; name: string | null };
 
 /** The raw cookie lines. Cheap — no database work. */
 export async function readCartLines(): Promise<CartLine[]> {
@@ -178,12 +190,26 @@ export async function readCartLines(): Promise<CartLine[]> {
   return parseCart(store.get(CART_COOKIE)?.value);
 }
 
-/** Lines in the cart, for the header badge — the cart page's "N items"
- *  (`cartLineCount`). One catalogue read is avoided entirely: the badge needs
- *  no names or prices, so a line that no longer resolves still counts until
- *  the next mutation drops it, as it is still listed on the cart page. */
-export async function readCartCount(): Promise<number> {
-  return cartLineCount(await readCartLines());
+/**
+ * Lines in the cart, for the header badge: **exactly the lines the cart page
+ * lists** — `cartContents(locale).items`, the same read the page makes, shared
+ * within a request.
+ *
+ * It counted the raw cookie until 7 Nov 2026, to spare the catalogue read, so
+ * a green that went off sale still counted: the badge said 3 over a cart
+ * showing one line. An empty cookie still costs no read. If the catalogue
+ * cannot be read the badge falls back to the cookie's count rather than take
+ * the header (and every page) down with it.
+ */
+export async function readCartCount(locale: string): Promise<number> {
+  const lines = await readCartLines();
+  if (lines.length === 0) return 0;
+  try {
+    return (await cartContents(locale)).items.length;
+  } catch (e) {
+    console.error("[cart] badge fell back to the cookie's count", e);
+    return cartLineCount(lines);
+  }
 }
 
 /**
@@ -224,7 +250,56 @@ const EMPTY: HydratedCart = {
  * than tomorrow (SPEC §22.2). A tray has no stock to test at all (§23.1).
  */
 export async function hydrateCart(locale: string, now: Date = new Date()): Promise<HydratedCart> {
-  const lines = await readCartLines();
+  return hydrateLines(await readCartLines(), locale, now);
+}
+
+/**
+ * The cart as every page shows it — the header badge, `/cart` and
+ * `/checkout` — read **once per request** (React `cache`), so no two of them
+ * can count or list it differently. Server actions call `hydrateCart` or
+ * `sellableLines` instead: `cache` only shares within a render.
+ */
+export const cartContents = cache((locale: string) => hydrateCart(locale));
+
+/**
+ * The lines still on sale, in their order — what the cookie should hold.
+ * Every cart action saves through this, so a line that went off sale leaves
+ * the cookie on the first write after it did (`dropUnavailable` is the write
+ * for a visitor who only looks).
+ */
+export async function sellableLines(lines: CartLine[]): Promise<CartLine[]> {
+  if (lines.length === 0) return lines;
+  /* English: every content file has it, and the names are not used here. */
+  const { unavailable } = await hydrateLines(lines, "en");
+  return unavailable.length ? withoutLines(lines, unavailable) : lines;
+}
+
+/** The name of a line that is off sale, from its content file if it has one. */
+async function offSaleName(line: CartLine, locale: string): Promise<string | null> {
+  switch (line.kind) {
+    case "variety":
+      return (await getVarietyContent(line.key, locale))?.text.name ?? null;
+    case "seed":
+      return (await getSeedContent(line.key, locale))?.text.name ?? null;
+    case "tray":
+      return (await getTrayContent(line.key, locale))?.text.name ?? null;
+    case "media":
+      return (await getGrowMediumContent(line.key, locale))?.text.name ?? null;
+    /* A rack's name is composed from a model that may be gone, and a pack's
+       key carries the customer's choice; the notice names the kind instead. */
+    case "rack":
+    case "pack":
+      return null;
+  }
+}
+
+/** `hydrateCart` for lines already in hand — what a server action checks
+ *  before it writes them. */
+export async function hydrateLines(
+  lines: CartLine[],
+  locale: string,
+  now: Date = new Date(),
+): Promise<HydratedCart> {
   if (lines.length === 0) return EMPTY;
 
   /* Each catalogue is read only when the cart actually holds that kind — a
@@ -429,14 +504,14 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
   }
 
   const items: CartItem[] = [];
-  const unavailable: string[] = [];
+  const offSale: CartLine[] = [];
 
   /* Cookie order is preserved — it is the order the customer added things in,
      and re-sorting a cart makes a line appear to move when you edit it. */
   for (const line of lines) {
     const base = byId.get(lineId(line));
     if (!base) {
-      unavailable.push(line.key);
+      offSale.push(line);
       continue;
     }
     /* A weight only for the kinds that have one. A tray is a pack, and
@@ -497,6 +572,10 @@ export async function hydrateCart(locale: string, now: Date = new Date()): Promi
       sourcing,
     });
   }
+
+  const unavailable: UnavailableLine[] = await Promise.all(
+    offSale.map(async (l) => ({ kind: l.kind, key: l.key, name: await offSaleName(l, locale) })),
+  );
 
   const dates = items.map((i) => i.readyDate);
   const short = overStockLines(

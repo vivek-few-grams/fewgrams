@@ -415,6 +415,20 @@ What a unit *means* is the kind's business:
   once promised Sunday while checkout said the next Sunday). Greens are the
   exception: the own run delivers on the ready date.
 
+## The badge counts what the cart page lists
+
+7 Nov 2026, SPEC §18.6.1. The header badge, `/cart` and `/checkout` all read
+`cartContents(locale)`, one `hydrateCart` per request. Never count or list
+the raw cookie (`readCartLines`) for anything a customer reads: a line that
+went off sale is still in it.
+
+- **Off-sale lines leave the cookie at the first write.** Every cart action
+  saves through `sellableLines`. The cart and checkout pages render
+  `CartCleanup`, which calls `dropUnavailable` and shows the one
+  `removedNotice`, named by product and kind, never by key.
+- **A new cart action saves through `sellableLines` too**, or it writes the
+  stale lines back.
+
 ## A cart line's key is not always a content key
 
 `CART_KINDS` is `variety | seed | tray | rack | media | pack`. All but `rack` and

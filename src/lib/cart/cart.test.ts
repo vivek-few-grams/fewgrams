@@ -12,6 +12,7 @@ import {
   serialiseCart,
   unitsFor,
   upsertLine,
+  withoutLines,
   type CartLine,
 } from "./cart";
 
@@ -231,6 +232,24 @@ describe("unitsFor — what seeds a detail page's stepper", () => {
     const parsed = parseCart(serialiseCart(lines));
     expect(unitsFor(parsed, "seed", "radish")).toBe(1);
     expect(unitsFor(parsed, "variety", "radish")).toBe(4);
+  });
+});
+
+describe("withoutLines", () => {
+  it("takes out the named lines by kind and key, keeping the rest in order", () => {
+    const lines = [green("alfalfa", 1), seed("alfalfa", 1), green("beetroot", 1)];
+    /* The alfalfa seed stays: same key as the green, different kind. */
+    expect(
+      withoutLines(lines, [
+        { kind: "variety", key: "alfalfa" },
+        { kind: "variety", key: "beetroot" },
+      ]),
+    ).toEqual([seed("alfalfa", 1)]);
+  });
+
+  it("leaves the lines alone when nothing is named", () => {
+    const lines = [green("radish", 2)];
+    expect(withoutLines(lines, [])).toEqual(lines);
   });
 });
 

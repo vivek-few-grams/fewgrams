@@ -21,7 +21,7 @@ import {
   upsertLine,
   type CartKind,
 } from "@/lib/cart/cart";
-import { readCartLines, writeCartLines } from "@/lib/cart/server";
+import { readCartLines, sellableLines, writeCartLines } from "@/lib/cart/server";
 import { err, type FormState } from "@/lib/forms";
 
 /**
@@ -70,6 +70,16 @@ import { err, type FormState } from "@/lib/forms";
  *  the root layout, so the layout is revalidated rather than a single page. */
 function refresh() {
   revalidatePath("/[locale]", "layout");
+}
+
+/**
+ * The cookie's lines, less any no longer on sale. Every mutation starts here,
+ * so whatever it saves holds only sellable lines — a green the sowing log
+ * priced off sale leaves the cookie on the first save after, and no badge or
+ * "N items" can count it (7 Nov 2026).
+ */
+async function currentLines() {
+  return sellableLines(await readCartLines());
 }
 
 /**
@@ -193,7 +203,7 @@ export async function setCartQuantity(_prev: FormState, fd: FormData): Promise<F
   const check = await sellable(kind, key, units);
   if (!check.ok) return err(check.code, undefined, check.values);
 
-  const before = await readCartLines();
+  const before = await currentLines();
   const after = upsertLine(before, kind, key, units);
 
   /* A full cart silently returning the same lines would look like a working
@@ -226,7 +236,7 @@ export async function updateCartLine(fd: FormData): Promise<void> {
   /* Decreasing and removing are always allowed — only an increase has to
      clear the sellable check, so a customer holding a line that has since been
      withdrawn can always reduce or remove it. */
-  const lines = await readCartLines();
+  const lines = await currentLines();
   if (units > unitsFor(lines, kind, key)) {
     const check = await sellable(kind, key, units);
     if (!check.ok) return;
@@ -241,13 +251,26 @@ export async function removeCartLine(fd: FormData): Promise<void> {
   if (!kind) return;
   const key = readKey(fd);
   if (!isValidKeyFor(kind, key)) return;
-  await writeCartLines(removeFromCart(await readCartLines(), kind, key));
+  await writeCartLines(removeFromCart(await currentLines(), kind, key));
   refresh();
 }
 
-/** Drop every line, including any that no longer resolve — this is also how a
- *  stale cookie entry reported as unavailable gets cleaned up. */
+/** Drop every line. */
 export async function clearCart(): Promise<void> {
   await writeCartLines([]);
+  refresh();
+}
+
+/**
+ * Take every line that is no longer on sale out of the cookie — what the cart
+ * and checkout pages call, once, when they find one (`CartCleanup`), so a
+ * visitor who only looks is cleaned up too. Takes nothing from the browser:
+ * the server decides what is off sale. Writes only when something changed.
+ */
+export async function dropUnavailable(): Promise<void> {
+  const lines = await readCartLines();
+  const kept = await sellableLines(lines);
+  if (kept.length === lines.length) return;
+  await writeCartLines(kept);
   refresh();
 }
