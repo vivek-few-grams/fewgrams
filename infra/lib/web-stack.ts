@@ -6,8 +6,10 @@ import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { Architecture } from "aws-cdk-lib/aws-lambda";
 import { NextjsGlobalFunctions } from "cdk-nextjs";
 import type { Construct } from "constructs";
+import { Alerts } from "./alerts";
 import { MAX_CONCURRENCY, PARAMETER_PATH, RUNTIME_CONSTANTS, RUNTIME_PARAMETERS } from "./config";
 import { LogRetention } from "./log-retention";
+import { lockToCloudflare } from "./origin-lock";
 import { blockScanners } from "./scanner-block";
 import { gateSite } from "./site-gate";
 import { signPaymentWebhooks } from "./webhook-signing";
@@ -18,6 +20,9 @@ export interface WebStackProps extends StackProps {
   readonly tables: TableV2[];
   /** `user:password` while the site is private; `null` once it is public. */
   readonly siteGate: string | null;
+  /** The value Cloudflare's Transform Rule sends in `x-origin-verify`; `null`
+   *  until Cloudflare is proxying the domain (origin-lock.ts). */
+  readonly originLockSecret: string | null;
   readonly domain?: { name: string; certificate: ICertificate };
 }
 
@@ -86,6 +91,14 @@ export class WebStack extends Stack {
        password prompt, whether or not the site is public. */
     blockScanners(viewerRequestFn);
     signPaymentWebhooks(nextjs, viewerRequestFn);
+    /* Last, so it is prepended ahead of everything: a request that did not
+       come through Cloudflare gets a 403 before the scanner block, the gate
+       or the Lambda. */
+    if (props.originLockSecret) lockToCloudflare(viewerRequestFn, props.originLockSecret);
+
+    new Alerts(this, "Alerts", {
+      functions: nextjs.nextjsFunctions.functionGroups.map((group) => group.function),
+    });
 
     Aspects.of(this).add(new LogRetention());
 

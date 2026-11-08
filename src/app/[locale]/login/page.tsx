@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
 import { auth } from "@/auth";
-import { MAGIC_LINK_REFUSALS } from "@/lib/auth/magic-link-quota";
+import { MAGIC_LINK_DAY_OVER, MAGIC_LINK_REFUSALS } from "@/lib/auth/magic-link-quota";
 import { brand } from "@/lib/brand";
 import Image from "next/image";
 import { placeholderFor } from "@/lib/images/placeholder";
@@ -52,11 +52,13 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
   const callbackUrl = safeCallbackPath(params.callbackUrl);
   const errorCode = typeof params.error === "string" ? params.error : undefined;
 
-  /* Out of email links for today (src/lib/auth/magic-link-quota.ts): point
-     at Google and take the email form away, rather than leave a button that
-     can only fail. Without Google the form stays, and either way the message
-     sends them to customer care. */
-  const emailExhausted = errorCode === "EmailLimit";
+  /* Out of email links for today — this address's two, or the site-wide
+     ceiling (src/lib/auth/magic-link-quota.ts): point at Google and take the
+     email form away, rather than leave a button that can only fail. Without
+     Google the form stays, and either way the message sends them to customer
+     care. */
+  const dayOver = MAGIC_LINK_DAY_OVER.find((code) => code === errorCode);
+  const emailExhausted = !!dayOver;
   /* Out of links, the way forward is a person: the message links to /contact,
      which carries the care numbers from content/contact.json. */
   const careLink = (chunks: React.ReactNode) => (
@@ -69,8 +71,8 @@ export default async function LoginPage({ params: routeParams, searchParams }: P
   );
   const errorMessage = !errorCode
     ? null
-    : emailExhausted
-      ? t.rich(googleConfigured ? "errors.EmailLimit" : "errors.EmailLimitNoGoogle", { link: careLink })
+    : dayOver
+      ? t.rich(googleConfigured ? `errors.${dayOver}` : `errors.${dayOver}NoGoogle`, { link: careLink })
       : ERROR_KEYS.includes(errorCode)
         ? t(`errors.${errorCode}`)
         : t("errors.default");

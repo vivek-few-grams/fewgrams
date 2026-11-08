@@ -748,6 +748,31 @@ export const MagicLinkQuotaEntity = new Entity(
 );
 
 /**
+ * Every sign-in link sent on one IST day, to any address — the site-wide cap
+ * (src/lib/auth/magic-link-quota.ts). One row a day, gone two days later by
+ * TTL like the per-address rows. `MAGICLINKS` cannot meet a per-address
+ * partition: those are all `MAGICLINK#<email>`, with the `#`.
+ */
+export const MagicLinkDayTotalEntity = new Entity(
+  {
+    model: { ...model, entity: "magicLinkDayTotal" },
+    attributes: {
+      day: { type: "string", required: true },
+      sent: { type: "number", required: true },
+      /** Epoch seconds — the DynamoDB TTL format. */
+      expires: { type: "number", required: true },
+    },
+    indexes: {
+      byDay: {
+        pk: { field: "PK", composite: [], template: "MAGICLINKS", casing: "none" },
+        sk: { field: "SK", composite: ["day"], template: "DAY#${day}", casing: "none" },
+      },
+    },
+  },
+  usersConfig,
+);
+
+/**
  * Rack rate card — SPEC §19–§21. Nine entities, one partition.
  *
  *   PK = RACKSPEC   SK = SETTINGS | PLATE#<id> | ANGLE#<id>

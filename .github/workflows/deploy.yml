@@ -7,6 +7,8 @@
 #   variable  AWS_DEPLOY_ROLE_ARN  output DeployRoleArn of the FewgramsOps stack
 #   secret    SITE_GATE            user:password while the site is private
 #   variable  SITE_PUBLIC          "true" once it is opened (then SITE_GATE can go)
+#   secret    CLOUDFLARE_ORIGIN_SECRET  only once Cloudflare proxies the domain
+#             (infra/lib/origin-lock.ts); unset, nothing is locked
 name: Deploy
 
 on:
@@ -63,6 +65,7 @@ jobs:
         run: npx cdk deploy FewgramsWeb 'edge-lambda-stack-*' --exclusively --require-approval never
         env:
           SITE_GATE: ${{ secrets.SITE_GATE }}
+          CLOUDFLARE_ORIGIN_SECRET: ${{ secrets.CLOUDFLARE_ORIGIN_SECRET }}
           SITE_PUBLIC: ${{ vars.SITE_PUBLIC }}
           # Makes every deploy re-read the Parameter Store values (web-stack.ts).
           DEPLOY_REVISION: ${{ github.run_id }}

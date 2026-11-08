@@ -1,4 +1,4 @@
-import { MagicLinkQuotaEntity } from "@/lib/db/entities";
+import { MagicLinkDayTotalEntity, MagicLinkQuotaEntity } from "@/lib/db/entities";
 import { isConditionFailure, READ_OPTS } from "@/lib/db/client";
 import { istDateISO } from "@/lib/delivery-date";
 
@@ -17,14 +17,36 @@ import { istDateISO } from "@/lib/delivery-date";
  * Enforced in Auth.js's `signIn` callback (src/auth.ts), which runs before the
  * link is created, so a request posted straight to /api/auth meets the same
  * limit as the login form.
+ *
+ * ## And a ceiling for the whole site (8 Nov 2026)
+ *
+ * The per-address rule cannot stop the bot above: it types a new address each
+ * time, and every new address gets its two. So there is also a cap on links
+ * sent to **anyone** in one IST day, `MAGIC_LINKS_SITE_PER_DAY` — a circuit
+ * breaker, not a rate a customer should ever meet. Sessions last 30 days and
+ * Google sign-in is untouched, so a real day is a handful of links; the
+ * owner set 1,000 (8 Nov 2026 — 100 was too tight) so that no launch or
+ * promotion day can meet it. Past it the login page says email links are paused for today
+ * and offers Google and customer care. The bounce alarm (infra/lib/alerts.ts)
+ * and, once Cloudflare is in front, a per-IP limit on the sign-in form are the
+ * finer defences; this is the fuse behind them. Raise it here if a real day
+ * ever comes near it.
  */
 export const MAGIC_LINKS_PER_DAY = 2;
 export const MAGIC_LINK_GAP_MS = 60_000;
+export const MAGIC_LINKS_SITE_PER_DAY = 1000;
 
 /** Also the `?error=` code the login page translates (`auth.login.errors`). */
-export type MagicLinkRefusal = "EmailWait" | "EmailLimit";
+export type MagicLinkRefusal = "EmailWait" | "EmailLimit" | "EmailPaused";
 
-export const MAGIC_LINK_REFUSALS: readonly MagicLinkRefusal[] = ["EmailWait", "EmailLimit"];
+export const MAGIC_LINK_REFUSALS: readonly MagicLinkRefusal[] = ["EmailWait", "EmailLimit", "EmailPaused"];
+
+/** The two refusals that end email sign-in for the day — the login page then
+ *  points at Google instead of offering a form that can only fail again. */
+export const MAGIC_LINK_DAY_OVER = [
+  "EmailLimit",
+  "EmailPaused",
+] as const satisfies readonly MagicLinkRefusal[];
 
 /** Pure: whether the day's row so far allows another link at `now`. */
 export function magicLinkRefusal(
@@ -47,6 +69,12 @@ export function magicLinkRefusal(
  *
  * A link is counted even if sending it then fails. That errs towards sending
  * too few, which is the safe side for this rule.
+ *
+ * The address's own limit is taken first, so a bot hammering one address is
+ * refused there and never eats into the site-wide count. Only a link that the
+ * address may have is then counted against the day's total; if that is full,
+ * the address has spent one of its two for nothing — the same "too few" side,
+ * and only on a day the breaker has already tripped.
  */
 export async function takeMagicLink(email: string, now: Date = new Date()): Promise<MagicLinkRefusal | null> {
   const day = istDateISO(now);
@@ -61,12 +89,31 @@ export async function takeMagicLink(email: string, now: Date = new Date()): Prom
           `${notExists(sent)} OR (${lt(sent, MAGIC_LINKS_PER_DAY)} AND ${lte(lastSentAt, at - MAGIC_LINK_GAP_MS)})`,
       )
       .go();
-    return null;
   } catch (err) {
     if (!isConditionFailure(err)) throw err;
     const { data } = await MagicLinkQuotaEntity.get({ email, day }).go(READ_OPTS);
     /* Null only if the row vanished between the two calls; a wait is the
        honest answer to a write that just lost a race. */
     return magicLinkRefusal(data, at) ?? "EmailWait";
+  }
+  return (await takeSiteWideLink(day, at)) ? null : "EmailPaused";
+}
+
+/**
+ * Counts one link against today's site-wide total, or returns false if the
+ * day already has `MAGIC_LINKS_SITE_PER_DAY`. One conditional write, so
+ * concurrent sign-ins cannot both take the last link.
+ */
+async function takeSiteWideLink(day: string, at: number): Promise<boolean> {
+  try {
+    await MagicLinkDayTotalEntity.update({ day })
+      .add({ sent: 1 })
+      .set({ expires: Math.floor(at / 1000) + 2 * 86_400 })
+      .where(({ sent }, { notExists, lt }) => `${notExists(sent)} OR ${lt(sent, MAGIC_LINKS_SITE_PER_DAY)}`)
+      .go();
+    return true;
+  } catch (err) {
+    if (!isConditionFailure(err)) throw err;
+    return false;
   }
 }

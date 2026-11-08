@@ -178,7 +178,7 @@ Done for fewgrams.com on 11 Oct 2026; the steps, for a move to another domain:
 
 ## Without a WAF
 
-There is no WAF (SPEC §2.2). What stands in for one:
+There is no AWS WAF (SPEC §2.2). What stands in for one:
 
 - **The site gate** (`lib/site-gate.ts`) — while private, everything but the
   payment webhooks gets a 401 at CloudFront and never reaches the Lambda.
@@ -189,12 +189,24 @@ There is no WAF (SPEC §2.2). What stands in for one:
 - **Cost ceilings** — the Lambda serves at most `MAX_CONCURRENCY` requests at
   once and each table is capped in request units per second (`lib/config.ts`).
   A flood is throttled instead of billed; the budget alarms email at $0 and $10.
+- **Alarms** (`lib/alerts.ts`, 8 Nov 2026) — email `ALERT_EMAIL` within minutes
+  when the Lambda throttles (visitors turned away), traffic surges past 3,000
+  requests in five minutes, the app errors, or SES's bounce or complaint rate
+  nears the level at which AWS reviews the account. Five of CloudWatch's ten
+  free alarms. The SNS email subscription must be confirmed once, from the
+  "AWS Notification - Subscription Confirmation" mail, or nothing arrives.
+- **Cost Anomaly Detection** — a per-service monitor with a daily email over
+  $1 of unexpected spend. Free; created by hand in the Fewgrams account
+  (`aws ce create-anomaly-monitor`, 8 Nov 2026), not by a stack.
+- **SES account-level suppression** for bounces and complaints (on), so an
+  address that bounced is never mailed again.
 - **AWS Shield Standard** — on every CloudFront distribution, free, against
   network-level floods.
 - **In the app** — roles checked on every admin page and server action, the
-  magic-link limit, payment webhooks verified by signature and settled server
-  to server, Google sign-ins accepted only for a Google-verified address,
-  and no off-site `callbackUrl` redirects.
+  magic-link limits (two a day per address, and 1,000 a day for the whole site
+  as a fuse against a bot typing new addresses), payment webhooks verified by
+  signature and settled server to server, Google sign-ins accepted only for a
+  Google-verified address, and no off-site `callbackUrl` redirects.
 - **Security headers** — HSTS, `nosniff`, frame options and referrer policy
   from cdk-nextjs's response-headers policies; Content-Security-Policy,
   Permissions-Policy and COOP from the app (`src/lib/security-headers.ts`).
@@ -202,10 +214,49 @@ There is no WAF (SPEC §2.2). What stands in for one:
   advisories have included SSRF and cache poisoning on self-hosted sites like
   this one, so upgrade promptly when it does not.
 
-CloudFront's flat-rate **Free** plan includes a WAF with rate limiting and has
-no overage charges, but allows 5 cache behaviors; cdk-nextjs makes one per
-top-level `public/` entry, 20 in all. Moving `public/` under a single folder
-would be the way in, if the bill or the bots ever call for it.
+### The firewall is Cloudflare's (the owner, 8 Nov 2026)
+
+The domain's DNS is already on Cloudflare. Its **free** plan, proxying
+("orange cloud"), puts a WAF in front of CloudFront at $0 with no request cap:
+unmetered DDoS protection at every layer, the Free Managed Ruleset, a few
+custom rules (challenges included) and one rate-limiting rule. Chosen over:
+
+- **CloudFront's flat-rate Free plan** ($0, AWS WAF with 5 rules and per-IP
+  rate limiting, ~1M requests a month). The 5 cache behaviors fit since
+  `public/` moved under `/img`, but the plan tiers allow only *managed* cache
+  and response-headers policies below Business ($200/month), and cdk-nextjs
+  makes two custom cache policies and three custom header policies. The
+  header ones swap for `SecurityHeadersPolicy` easily; the image one cannot —
+  every managed policy that keys on query strings also keys on `Host`, which
+  breaks a Function URL origin, so `_next/image` would have to become prebuilt
+  sizes in S3 first.
+- **AWS WAF pay-as-you-go** — about $10 a month (web ACL $5 + $1 a rule +
+  $0.60 per million requests), in us-east-1.
+
+Turning it on, once Razorpay has approved the website:
+
+1. Cloudflare → SSL/TLS: **Full (strict)** (CloudFront holds a valid
+   certificate for the apex).
+2. Leave **Bot Fight Mode off** — on the free plan it cannot be skipped for a
+   path, and it would challenge Razorpay's webhooks. Leave "Block AI bots"
+   off too (the owner allows AI crawlers, `src/app/robots.ts`).
+3. Turn off **Email Address Obfuscation** and **Rocket Loader**: both rewrite
+   the HTML, which breaks React hydration and the CSP.
+4. A Cache Rule that **bypasses cache for everything** — CloudFront stays the
+   one cache, so a deploy's invalidation is the only purge ever needed.
+5. Generate a secret (`openssl rand -hex 32`); add a Transform Rule → Modify
+   Request Header → set `x-origin-verify` to it, for all requests.
+6. Switch the apex record to **Proxied**.
+7. Put the same secret in the GitHub secret `CLOUDFLARE_ORIGIN_SECRET` and
+   deploy: `lib/origin-lock.ts` then 403s anything that skipped Cloudflare
+   (the `*.cloudfront.net` name included). Not before step 6, or every visitor
+   gets the 403.
+8. WAF rules: a rate limit on `POST /api/auth/signin/email` per IP, and skip
+   the managed rules for `/api/payments/*/webhook` if they ever flag one.
+
+**Undoing it is the reverse order:** clear `CLOUDFLARE_ORIGIN_SECRET` and
+deploy *first*, then set the record back to DNS-only — otherwise the lock
+turns everyone away.
 
 ## Costs to watch
 

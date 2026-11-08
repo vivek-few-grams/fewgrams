@@ -52,5 +52,7 @@ new WebStack(app, "FewgramsWeb", {
   appDirectory: process.cwd(),
   tables: [data.users, data.catalogue, data.orders],
   siteGate,
+  /* Set only once Cloudflare proxies the domain — infra/lib/origin-lock.ts. */
+  originLockSecret: process.env.CLOUDFLARE_ORIGIN_SECRET || null,
   domain: cert && DOMAIN_NAME ? { name: DOMAIN_NAME, certificate: cert.certificate } : undefined,
 });
