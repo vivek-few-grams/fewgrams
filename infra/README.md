@@ -258,8 +258,16 @@ Turning it on, once Razorpay has approved the website:
    deploy: `lib/origin-lock.ts` then 403s anything that skipped Cloudflare
    (the `*.cloudfront.net` name included). Not before step 6, or every visitor
    gets the 403.
-8. WAF rules: a rate limit on `POST /api/auth/signin/email` per IP, and skip
-   the managed rules for `/api/payments/*/webhook` if they ever flag one.
+8. Security rules → Rate limiting rule "Sign-in" (the free plan's one):
+   `(http.request.method eq "POST" and (http.request.uri.path contains "/login" or starts_with(http.request.uri.path, "/api/auth/signin")))`,
+   per IP, 10 requests in 10 seconds, Block for 10 seconds. The login form
+   posts a server action to `/login` (or `/kn/login`), not to `/api/auth`
+   directly, so the path has to cover both. Only sign-in submissions count —
+   browsing never does — and 10 rather than 5 leaves room for mobile
+   carriers that put many phones behind one IP. Tested 8 Nov 2026: the
+   request past the limit gets Cloudflare's 429. If the managed rules ever
+   flag a payment webhook, a custom rule (5 free) can skip them for
+   `/api/payments/*/webhook`.
 
 **Undoing it is the reverse order:** clear `CLOUDFLARE_ORIGIN_SECRET` and
 deploy *first*, then set the record back to DNS-only — otherwise the lock
