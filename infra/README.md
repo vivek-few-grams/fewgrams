@@ -242,8 +242,15 @@ Turning it on, once Razorpay has approved the website:
    off too (the owner allows AI crawlers, `src/app/robots.ts`).
 3. Turn off **Email Address Obfuscation** and **Rocket Loader**: both rewrite
    the HTML, which breaks React hydration and the CSP.
-4. A Cache Rule that **bypasses cache for everything** — CloudFront stays the
-   one cache, so a deploy's invalidation is the only purge ever needed.
+4. A Cache Rule, **Bypass cache** for
+   `(not starts_with(http.request.uri.path, "/_next/static/"))`. CloudFront
+   stays the one cache for pages, `/img` and `/_next/image`, so a deploy's
+   invalidation is the only purge they ever need — a photo replaced in place
+   never goes stale at Cloudflare. `/_next/static/` is left to Cloudflare's
+   own cache: those names are content hashes, new on every build, so a copy
+   cannot be stale, and serving them from Cloudflare's edge saves the extra
+   hop to CloudFront (measured 8 Nov 2026: ~41 ms → ~23 ms a file on a reused
+   connection; straight to CloudFront is ~8 ms).
 5. Generate a secret (`openssl rand -hex 32`); add a Transform Rule → Modify
    Request Header → set `x-origin-verify` to it, for all requests.
 6. Switch the apex record to **Proxied**.
