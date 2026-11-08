@@ -11,7 +11,9 @@ import {
 } from "aws-cdk-lib/aws-cloudfront";
 import { FunctionUrlOrigin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { Code, Runtime } from "aws-cdk-lib/aws-lambda";
+import { LogRetention as SetLogRetention } from "aws-cdk-lib/aws-logs";
 import type { NextjsGlobalFunctions } from "cdk-nextjs";
+import { LOG_RETENTION } from "./config";
 
 /**
  * Lets the payment webhooks reach the app through CloudFront.
@@ -59,6 +61,20 @@ export function signPaymentWebhooks(nextjs: NextjsGlobalFunctions, viewerRequest
         return request;
       };
     `),
+  });
+
+  /* Lambda@Edge logs where the request was served, not in us-east-1: each
+     region gets `/aws/lambda/us-east-1.<function name>`, created by Lambda
+     itself with no expiry, so neither the stack nor the LogRetention aspect
+     (log-retention.ts, Web stack only) can pre-create it. CDK's LogRetention
+     construct sets the policy on the group whether or not it exists yet. It
+     lives in the edge stack, where the function's name is a plain reference,
+     and reaches across to the region our viewers' requests are served from
+     (`Stack.of(nextjs)` — ap-south-1). Seen with no expiry until 8 Nov 2026. */
+  new SetLogRetention(Stack.of(hashBody.lambda), "PaymentBodyHashRegionalLogs", {
+    logGroupName: `/aws/lambda/us-east-1.${hashBody.lambda.functionName}`,
+    logGroupRegion: stack.region,
+    retention: LOG_RETENTION,
   });
 
   nextjs.nextjsDistribution.distribution.addBehavior(
