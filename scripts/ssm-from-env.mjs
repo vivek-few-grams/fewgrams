@@ -6,6 +6,17 @@
  *
  *   node scripts/ssm-from-env.mjs NAME...           # dry run: set locally or not
  *   aws-vault exec fg -- node scripts/ssm-from-env.mjs --write NAME...
+ *   node scripts/ssm-from-env.mjs --file .env.live NAME...   # from that file only
+ *
+ * ## `--file`: values production has and this laptop must not
+ *
+ * The live Razorpay keys (the owner, 8 Nov 2026). `.env.local` holds the
+ * **test** keys that `next dev` uses, so putting live ones there would turn
+ * local checkout into real money. They go in `.env.live` instead: git ignores
+ * every `.env*`, and Next loads only `.env`, `.env.local` and
+ * `.env.<mode>[.local]`, so nothing but this script ever reads it. Its values
+ * are taken **literally** (`util.parseEnv`, no `$` expansion), so a `$` needs
+ * no backslash there — unlike `.env.local`, below.
  *
  * ## Why a script instead of typing `aws ssm put-parameter`
  *
@@ -16,17 +27,18 @@
  * - **Values are read the way Next reads them** (`@next/env`). `.env.local`
  *   escapes `$` as `\$` for Next's parser; a raw copy sends the backslash too,
  *   and that wrong Shiprocket password locked the account on 25 Sep 2026.
- * - **Only `.env.local` and friends are read**, never the shell's own
+ * - **Only `.env.local` and friends (or the one `--file`) are read**, never the shell's own
  *   environment, so a stray exported variable cannot go up by mistake.
  *
  * String, not SecureString: CloudFormation cannot put a SecureString into a
  * Lambda's environment (infra/README.md). IAM still decides who reads them.
  */
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseEnv } from "node:util";
 import nextEnv from "@next/env";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -35,7 +47,14 @@ const REGION = "ap-south-1";
 
 const args = process.argv.slice(2);
 const write = args.includes("--write");
-const names = args.filter((a) => a !== "--write");
+const fileAt = args.indexOf("--file");
+const fromFile = fileAt === -1 ? null : args[fileAt + 1];
+if (fileAt !== -1 && !/^\.env[\w.-]*$/.test(fromFile ?? "")) {
+  /* A bare `.env…` name in the repository root, so it is always one git ignores. */
+  console.error("--file takes a .env file name in the repository root, e.g. --file .env.live");
+  process.exit(1);
+}
+const names = args.filter((a, i) => a !== "--write" && (fileAt === -1 || (i !== fileAt && i !== fileAt + 1)));
 if (names.length === 0) {
   console.error("Name at least one setting, e.g. node scripts/ssm-from-env.mjs DELHIVERY_ENV");
   process.exit(1);
@@ -46,11 +65,22 @@ if (bad.length) {
   process.exit(1);
 }
 
-const { parsedEnv = {} } = nextEnv.loadEnvConfig(ROOT, true, { info() {}, error: console.error });
+const source = fromFile ?? ".env.local";
+let parsedEnv;
+if (fromFile) {
+  const file = path.join(ROOT, fromFile);
+  if (!existsSync(file)) {
+    console.error(`${fromFile} not found in ${ROOT}`);
+    process.exit(1);
+  }
+  parsedEnv = parseEnv(readFileSync(file, "utf8"));
+} else {
+  ({ parsedEnv = {} } = nextEnv.loadEnvConfig(ROOT, true, { info() {}, error: console.error }));
+}
 const missing = names.filter((n) => !parsedEnv[n]);
-for (const n of names) console.log(`${n}: ${parsedEnv[n] ? "set in .env.local" : "MISSING"}`);
+for (const n of names) console.log(`${n}: ${parsedEnv[n] ? `set in ${source}` : "MISSING"}`);
 if (missing.length) {
-  console.error(`\nNothing written: ${missing.join(", ")} not set in .env.local.`);
+  console.error(`\nNothing written: ${missing.join(", ")} not set in ${source}.`);
   process.exit(1);
 }
 if (!write) {
