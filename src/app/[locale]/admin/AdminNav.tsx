@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { ADMIN_NAV_GROUPS } from "./nav-items";
 
 /**
@@ -37,7 +37,16 @@ import { ADMIN_NAV_GROUPS } from "./nav-items";
  * opens by itself — derived from the path, not stored, so following a link
  * into another group opens that one — and a heading pressed open or shut
  * stays that way while the rail is on screen (it lives in the layout, so it
- * survives navigation). Desktop only: the phone strip shows every link.
+ * survives navigation). Desktop only.
+ *
+ * ## Below `lg`, one dropdown
+ *
+ * It was a sideways-scrolling strip of every link, and with twenty of them
+ * the current screen was off the edge from Racks onward — nothing on a phone
+ * said where you were (9 Nov 2026). Now it is a single `<select>` showing the
+ * current screen, with every screen in it under its group heading, and
+ * choosing one goes there. Admin needs JavaScript for every form anyway, so a
+ * select that navigates on change loses nothing.
  *
  * Top-level rows — Overview and the group headings — are set larger and
  * bolder than the screens inside a group, and an open group sits on a sand
@@ -53,6 +62,7 @@ export function AdminNav({
   navLabel: string;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   /* `/admin` is a prefix of every other admin route, so it matches exactly and
      everything else matches by prefix — which is what keeps a group item
@@ -64,15 +74,45 @@ export function AdminNav({
   /* Only the headings someone has pressed; the rest follow the current page. */
   const [pressed, setPressed] = useState<Record<string, boolean>>({});
   const isOpen = (heading: string) => pressed[heading] ?? heading === current;
+  const here = ADMIN_NAV_GROUPS.flatMap((g) => g.items).find((i) => isActive(i.href))?.href;
 
   return (
     <nav aria-label={navLabel} className="lg:mt-2">
-      {/* Below `lg` the whole thing is one horizontally scrolling strip: a
-          stack of eighteen rows would push the page content off the first
-          screen on a phone, which is the opposite of the problem this solves.
-          Group headings are hidden there — a heading inside a scrolling strip
-          reads as another link. */}
-      <ul className="flex gap-1.5 overflow-x-auto pb-1 lg:flex-col lg:gap-0 lg:overflow-visible lg:pb-0">
+      <div className="relative mt-3 lg:hidden">
+        <select
+          aria-label={navLabel}
+          value={here ?? ""}
+          onChange={(e) => router.push(e.target.value)}
+          className="w-full appearance-none rounded-xl border border-forest/20 bg-white py-3 pl-4 pr-11 font-body text-[15px] font-semibold text-forest outline-none focus:border-forest"
+        >
+          {!here && <option value="" disabled />}
+          {ADMIN_NAV_GROUPS.map((group, i) =>
+            group.heading ? (
+              <optgroup key={group.heading} label={labels[group.heading]}>
+                {group.items.map((item) => (
+                  <option key={item.href} value={item.href}>
+                    {labels[item.label]}
+                  </option>
+                ))}
+              </optgroup>
+            ) : (
+              group.items.map((item) => (
+                <option key={`${i}-${item.href}`} value={item.href}>
+                  {labels[item.label]}
+                </option>
+              ))
+            ),
+          )}
+        </select>
+        <ChevronDown
+          aria-hidden
+          size={18}
+          strokeWidth={2}
+          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-forest"
+        />
+      </div>
+
+      <ul className="hidden lg:flex lg:flex-col">
         {ADMIN_NAV_GROUPS.map((group, i) => (
           <li key={group.heading ?? `group-${i}`} className="contents lg:block">
             {group.heading && (

@@ -52,7 +52,10 @@ export function AccountTabs() {
 
   return (
     <nav aria-label={t("ariaLabel")}>
-      <ul className="-mx-6 mt-6 flex gap-2 overflow-x-auto whitespace-nowrap px-6 md:mx-0 md:px-0 lg:hidden">
+      {/* Wraps rather than scrolling (9 Nov 2026): on a phone the row ran
+          exactly to the edge after Addresses, so nothing showed that Orders
+          and Subscriptions were further along. */}
+      <ul className="mt-6 flex flex-wrap gap-2 whitespace-nowrap lg:hidden">
         {TABS.map((tab) => {
           const active = isActive(tab);
           return (

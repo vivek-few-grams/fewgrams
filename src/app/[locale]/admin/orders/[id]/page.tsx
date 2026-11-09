@@ -171,10 +171,10 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                     {l.sourcing && ` · ${t(`sourcing.${l.sourcing}`)}`}
                   </span>
                 </td>
-                <td className="py-2.5 font-body text-sm tabular-nums text-forest">
+                <td className="whitespace-nowrap py-2.5 pl-3 font-body text-sm tabular-nums text-forest">
                   {l.grams !== null ? t("grams", { grams: l.grams }) : t("units", { count: l.units })}
                 </td>
-                <td className="py-2.5 text-right font-body text-sm tabular-nums text-forest">
+                <td className="whitespace-nowrap py-2.5 pl-3 text-right font-body text-sm tabular-nums text-forest">
                   {t("amount", { amount: l.lineTotal })}
                 </td>
               </tr>
@@ -216,10 +216,10 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                         />
                       )}
                     </td>
-                    <td className="py-2.5 font-body text-sm tabular-nums text-forest">
+                    <td className="whitespace-nowrap py-2.5 pl-3 font-body text-sm tabular-nums text-forest">
                       {x.quote && t("grams", { grams: x.quote.chargedGrams })}
                     </td>
-                    <td className="py-2.5 text-right font-body text-sm tabular-nums text-forest">
+                    <td className="whitespace-nowrap py-2.5 pl-3 text-right font-body text-sm tabular-nums text-forest">
                       {t("amount", { amount: x.charge })}
                     </td>
                   </tr>
@@ -234,10 +234,10 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
                           : t("deliveryOwnRun")}
                       </span>
                     </td>
-                    <td className="py-2.5 font-body text-sm tabular-nums text-forest">
+                    <td className="whitespace-nowrap py-2.5 pl-3 font-body text-sm tabular-nums text-forest">
                       {order.shippingQuote && t("grams", { grams: order.shippingQuote.chargedGrams })}
                     </td>
-                    <td className="py-2.5 text-right font-body text-sm tabular-nums text-forest">
+                    <td className="whitespace-nowrap py-2.5 pl-3 text-right font-body text-sm tabular-nums text-forest">
                       {t("amount", { amount: order.deliveryCharge })}
                     </td>
                   </tr>

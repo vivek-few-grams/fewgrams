@@ -179,7 +179,10 @@ export function DetailPage({
 
         <div className="lg:col-start-2 lg:row-start-1 lg:row-span-2">
           {eyebrow && <div className="mb-4">{eyebrow}</div>}
-          <h1 className="font-display text-[clamp(2rem,4.6vw,3.4rem)] font-bold leading-[1.05] tracking-tight text-forest">
+          {/* A 1.75rem floor on a phone: a rack's composed name ("… · 2 ft ·
+              1 shelf · 1 × 2 ft · Orange") ran to four lines at 2rem
+              (9 Nov 2026). The floor only binds below about 610px. */}
+          <h1 className="font-display text-[clamp(1.75rem,4.6vw,3.4rem)] font-bold leading-[1.05] tracking-tight text-forest">
             {name}
           </h1>
           {shortDescription && (

@@ -84,7 +84,11 @@ export function AddressBook({
                       <AddressLines address={address} />
                     </div>
 
-                    <div className="flex flex-col items-end gap-2">
+                    {/* Under the address in a row on a phone, where the
+                        column beside it had no room and wrapped below as a
+                        ragged right-aligned stack (9 Nov 2026); beside it,
+                        stacked, from `sm`. */}
+                    <div className="flex w-full flex-wrap items-center gap-x-5 gap-y-2 border-t border-forest/10 pt-3 sm:w-auto sm:flex-col sm:items-end sm:gap-2 sm:border-0 sm:pt-0">
                       <button
                         type="button"
                         onClick={() => {

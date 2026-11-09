@@ -19,8 +19,9 @@
  * second copy of the nav's route list — and the two would drift the first time
  * a route was added.
  *
- * Six links opt in, all of them in the header: the **brand logo**, the four
- * section links, and the **language switch**. Everything else navigates
+ * The links that opt in are all in the header: the **brand logo**, the
+ * section links, and the **language switch** — in the bar from 1100px, and
+ * the same three in the menu panel below it (`MobileMenu`, 9 Nov 2026). Everything else navigates
  * plainly — variety cards, shop category tiles, the cart and account icons,
  * footer links, in-page CTAs.
  *

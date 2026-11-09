@@ -44,7 +44,7 @@ export function NumberField({
     />
   );
 
-  if (compact) return field;
+  if (compact) return <RowField label={label}>{field}</RowField>;
 
   return (
     <label className="block">
@@ -111,7 +111,7 @@ export function TextField({
     />
   );
 
-  if (compact) return field;
+  if (compact) return <RowField label={label}>{field}</RowField>;
 
   return (
     <label className="block">
@@ -181,7 +181,7 @@ export function SelectField({
     </span>
   );
 
-  if (compact) return field;
+  if (compact) return <RowField label={label}>{field}</RowField>;
 
   return (
     <label className="block">
@@ -190,5 +190,50 @@ export function SelectField({
       {hint && !error && <span className="mt-1 block font-body text-[11px] text-stone">{hint}</span>}
       {error && <span className="mt-1 block font-body text-[11px] text-terracotta">{error}</span>}
     </label>
+  );
+}
+
+/**
+ * A compact field's wrapper: the field, and its name over it on a phone.
+ *
+ * In a grid row the name is the column heading above, and the input carries
+ * it only as its `aria-label`. Below `lg` the rows become cards
+ * (`.row-card` in globals.css) and the heading is hidden, so the name shows
+ * here instead — `aria-hidden`, because the input is already named by it.
+ * Outside a `.row-card` the caption never shows.
+ */
+function RowField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <span className="row-field block min-w-0">
+      <span aria-hidden="true" className="row-caption">
+        {label}
+      </span>
+      {children}
+    </span>
+  );
+}
+
+/**
+ * A read-only cell in a grid row, with its column's name over it on a phone
+ * (see `RowField`). `wide` for the cell that names the row — it takes the
+ * card's full width. Not `aria-hidden`: nothing else names the value.
+ */
+export function RowCell({
+  label,
+  wide,
+  className = "",
+  children,
+}: {
+  /** The column heading; omit for a cell that needs none on a phone. */
+  label?: string;
+  wide?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <span className={`${wide ? "row-wide" : "row-field"} block min-w-0 ${className}`}>
+      {label && <span className="row-caption">{label}</span>}
+      {children}
+    </span>
   );
 }

@@ -1378,6 +1378,12 @@ headings are hidden: a stack of eighteen rows would push the page content off a
 phone's first screen, and a heading inside a scrolling strip reads as another
 link.
 
+**Amended 9 Nov 2026: below `lg` it is one dropdown.** With twenty links the
+strip put the current screen off the edge from Racks onward. A single
+`<select>` shows the screen you are on and lists every screen under its group
+heading (`<optgroup>`); choosing one goes there. The rail above `lg` is
+unchanged.
+
 The same pass fixed a **pre-existing mobile overflow** in the three rack
 tables. A row's tracks come from an inline `gridTemplateColumns`, which applies
 at every width, so at 414px the Save / Active / Delete controls pushed the
@@ -1387,6 +1393,24 @@ it. Each table's rows now sit in their own `overflow-x-auto` box with a
 rows. Stacking to one column was not the alternative: a compact row's inputs
 carry their label only as an `aria-label`, so it would leave an operator with
 unlabelled boxes.
+
+**Amended 9 Nov 2026 (the owner): below `lg` every admin table is a stack of
+cards.** The sideways box kept the page from overflowing but hid the column
+headings, so a phone showed rows of bare numbers. Two shared rules in
+`globals.css` do it, and neither applies from `lg`:
+
+- **`.row-card`** on a grid row: a six-track card, a field taking half
+  (`.row-field`), the row's name the width (`.row-wide`), Save / Active /
+  Delete a third each on a line of their own (`.row-action`). Every compact
+  field now carries its name over it on a phone (`.row-caption`, from
+  `fields.tsx`) — the label stacking lacked — and a read-only cell takes it
+  through `RowCell`. The `min-w-` box applies from `lg` only.
+- **`.stack-table`** on a real `<table>`: each row a two-column card of
+  label-over-value pairs, the label being the cell's `data-label` (the heading
+  it sat under), the first cell full width.
+
+The GST figure tables are the exception: they are month-by-head matrices, so
+they stay tables, with the row names pinned while the figures scroll (§26).
 
 ### 8.1 Authentication — DECIDED & IMPLEMENTED 14 Sep 2026
 
@@ -2307,18 +2331,17 @@ window. A cream spinner sits in the middle.
 ### 18.1 Header
 
 ```
-Desktop and mobile carry the same four items. Nothing collapses into a menu;
-on a narrow screen the nav takes its own row under the logo.
+From 1100px the section links sit in the bar. Below 1100px they are behind a
+menu button (☰) that opens a panel from the right (§18.2, amended 9 Nov 2026).
 
 The logo owns the left edge. Everything else is grouped on the right.
 
 ┌──────────────────────────────────────────────────────────────────┐
 │ FEWGRAMS      MICROGREENS  PLANS  SHOP  HOW WE GROW   ⊕EN ⌂⁰ ◯  │
 └──────────────────────────────────────────────────────────────────┘
-                              ▼ narrow
+                              ▼ below 1100px
 ┌────────────────────────────────────┐
-│ FEWGRAMS                 ⌂⁰   ◯    │
-│ MICROGREENS PLANS SHOP HOW WE GROW │
+│ FEWGRAMS              ⓠ  ⌂⁰  ◯  ☰  │
 └────────────────────────────────────┘
 ```
 
@@ -2385,6 +2408,12 @@ lockup, not a divider.
 - It renders at 52px tall on a phone and 64px on desktop. Even at 64px the lockup's "Goodness in
   every gram" tagline is only a few pixels high and **not legible**; a wordmark-only or horizontal
   variant would suit a header far better. Flagged, not guessed at.
+**Superseded in part, 9 Nov 2026:** the links no longer take a second row on a narrow screen (§18.2),
+so below 1100px the bar is one row and the logo no longer spans two. The grid/flex split stays, now
+at 1100px rather than `lg` — the five links, the utilities and the `ml-12` need 1084px in English, and
+from 1024 to 1083px the row had been wrapping to a 121px bar since the starter packs arrived. The
+history below is kept for the reasoning.
+
 **The header bar is a grid below `lg` and a flex row above it** — changed while fixing the logo's
 vertical centring, and the reason is worth keeping.
 
@@ -2415,6 +2444,22 @@ driving the bar. Adding `py-*` back to the bar would reintroduce the padded-box 
   footer sits on forest. `-white` variants exist in the brand folder if that changes.
 
 ### 18.2 Navigation — persistent, not hidden
+
+**Amended 9 Nov 2026, by the owner: below 1100px the links are behind a menu.** On a phone the row
+scrolled sideways under the logo with "Weekly plans" cut in half and the rest off screen, which did
+not look professional. From 1100px nothing changes — the links stay persistent, as below.
+
+- **A menu button (☰) at the right end of the bar** opens a panel that slides in from the right
+  over a dimmed page (`MobileMenu.tsx`): the section links large, the current one marked, then
+  account (or sign in), FAQ and contact, then both languages side by side. The language switch had
+  been hidden in the bar below `sm`, so a phone had no way to Kannada at all.
+- **The objections below are kept where they still bite.** The panel is rendered on the server,
+  closed, so every link is in the HTML (the old overlay's were not). It is a side panel, not a
+  full-screen blank, and it closes on any navigation. The section links carry the curtain as the
+  bar's do, and the curtain covers the panel.
+- **Modal while open:** focus moves into it and stays there, Escape and the dimmed page close it,
+  the page behind does not scroll, and it is `inert` while shut.
+- `nav-items.ts` is the one list of section links; the bar's row and the panel both read it.
 
 **Decided 15 Sep 2026: four persistent items, identical on mobile and desktop.** No full-screen
 overlay, no hamburger, no dropdown. This replaces the two-level `PRODUCTS` overlay built on

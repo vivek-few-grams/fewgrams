@@ -22,7 +22,10 @@
     "account": "ಖಾತೆ",
     "admin": "ನಿರ್ವಾಹಕ",
     "signedInAs": "{label}, {who} ಆಗಿ ಸೈನ್ ಇನ್ ಆಗಿದೆ",
-    "cartWithCount": "ಕಾರ್ಟ್, {count, plural, one {# ವಸ್ತು} other {# ವಸ್ತುಗಳು}}"
+    "cartWithCount": "ಕಾರ್ಟ್, {count, plural, one {# ವಸ್ತು} other {# ವಸ್ತುಗಳು}}",
+    "menu": "ಮೆನು",
+    "openMenu": "ಮೆನು ತೆರೆಯಿರಿ",
+    "closeMenu": "ಮೆನು ಮುಚ್ಚಿರಿ"
   },
   "language": {
     "label": "ಭಾಷೆ",

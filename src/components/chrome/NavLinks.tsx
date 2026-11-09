@@ -3,54 +3,17 @@
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { CURTAIN_ATTR } from "./curtain-anchor";
+import { currentNavMatch, visibleNavItems } from "./nav-items";
 
 /**
- * The persistent nav items — SPEC §18.1. Four, and a fifth for the starter
- * packs while one is on sale (SPEC §29).
+ * The section links in the bar, from 1100px — SPEC §18.1. Below that the same
+ * links are in the menu panel (`MobileMenu`, SPEC §18.2 as amended
+ * 9 Nov 2026); the list both read is `nav-items.ts`.
  *
  * Client-side only so the current section can be marked. That is the one
  * thing persistent navigation gives you that a menu cannot: the visitor can
  * see where they are without opening anything.
- *
- * `usePathname` here comes from @/i18n/navigation, so it returns the path
- * WITHOUT the locale prefix — `/shop` in both languages. `match` is a prefix,
- * so /shop/trays still lights up SHOP.
  */
-const ITEMS = [
-  {
-    href: "/microgreens",
-    key: "microgreens",
-    match: "/microgreens",
-    hover: "microgreensHover",
-  },
-  /* `/plans`, the page of its own (the owner, 20 Oct 2026; SPEC §28.8), so
-     the link on every page points search engines at it. The home page keeps
-     its plans section for anyone scrolling, and the hero's button still
-     scrolls to it. Until then this was `/#plans` and re-scrolled the home
-     page through `onSectionClick`. */
-  { href: "/plans", key: "plans", match: "/plans", hover: "plansHover" },
-  /* `hover` is the word the link grows into under the pointer
-     (`.nav-sprout` in globals.css) — the owner's, 24 Sep 2026.
-
-     **A hover word must be no wider than its label, in both languages.** Both
-     words share one grid cell, so the link is as wide as the longer one — a
-     wider hover word leaves a gap after the label at rest. "Subscribe now"
-     did exactly that beside "Weekly plans", and the Kannada "ನಿಮ್ಮದನ್ನು ಆರಿಸಿ"
-     beside "ಮೈಕ್ರೋಗ್ರೀನ್ಸ್" (24 Sep 2026). Measure in the browser, not by
-     letter count; no test can see it. */
-  { href: "/shop", key: "shop", match: "/shop", hover: "shopHover" },
-  /* Starter packs (the owner, 30 Oct 2026, SPEC §29) — a way in for someone
-     starting out, beside the shop it is part of. Shown only while a pack is
-     set up to sell. */
-  { href: "/shop/packs", key: "packs", match: "/shop/packs", hover: "packsHover" },
-  {
-    href: "/how-we-grow",
-    key: "howWeGrow",
-    match: "/how-we-grow",
-    hover: "howWeGrowHover",
-  },
-] as const;
-
 export function NavLinks({
   showMicrogreens,
   showPacks,
@@ -62,15 +25,8 @@ export function NavLinks({
 }) {
   const t = useTranslations("common.nav");
   const pathname = usePathname();
-  const items = ITEMS.filter(
-    (item) => (showMicrogreens || item.key !== "microgreens") && (showPacks || item.key !== "packs"),
-  );
-  /* The longest prefix wins: `/shop/packs` is under `/shop` too, and only the
-     starter packs item should be marked there. */
-  const matches = (match: string) => pathname === match || pathname.startsWith(`${match}/`);
-  const current = items
-    .filter((item) => matches(item.match))
-    .sort((a, b) => b.match.length - a.match.length)[0]?.match;
+  const items = visibleNavItems({ showMicrogreens, showPacks });
+  const current = currentNavMatch(items, pathname);
 
   /* Two pieces of vertical bookkeeping, both load-bearing:
        - `pt-1` on each link matches its `pb-0.5 + border-b-2`, so the active
@@ -82,18 +38,12 @@ export function NavLinks({
   return (
     <nav
       aria-label={t("ariaLabel")}
-      /* Identical on mobile and desktop — no hamburger, nothing hidden. On a
-         narrow screen it takes its own row under the logo and scrolls
-         sideways if it has to, rather than collapsing into a menu.
-         `md:ml-auto` is what pushes the whole group to the right-hand side
-         on desktop, so the logo owns the left and everything else sits
+      /* `display: none` below 1100px (why that width: `Header`), so it is
+         out of the accessibility tree there and the menu panel's nav is the
+         only "Main" landmark. `ml-auto` is what pushes the whole group to the
+         right-hand side, so the logo owns the left and everything else sits
          together on the right. */
-      /* Row 2 of the header grid, in the column beside the logo — so the logo
-         can span both rows and stay optically centred in the bar. Scrolls
-         sideways inside that column when it has to; `min-w-0` is required or
-         the grid column sizes to the nav's full intrinsic width and the bar
-         overflows instead of scrolling. */
-      className="col-start-2 row-start-2 flex min-w-0 items-center gap-5 overflow-x-auto lg:order-2 lg:ml-auto lg:w-auto lg:overflow-visible"
+      className="hidden min-w-0 items-center gap-5 min-[1100px]:order-2 min-[1100px]:ml-auto min-[1100px]:flex"
     >
       {items.map((item) => {
         const active = item.match === current;
@@ -101,12 +51,13 @@ export function NavLinks({
           <Link
             key={item.href}
             href={item.href}
-            /* Opts this link into the full-screen brand curtain. These four
-               and the language switch are the only links on the site that
-               carry it — see `curtain-anchor.ts` for why it is per-link. */
+            /* Opts this link into the full-screen brand curtain. These, the
+               menu panel's and the language switch are the only links on the
+               site that carry it — see `curtain-anchor.ts` for why it is
+               per-link. */
             {...{ [CURTAIN_ATTR]: "" }}
             aria-current={active ? "page" : undefined}
-            className={`ui-label nav-sprout whitespace-nowrap border-b-2 pb-0.5 pt-1 font-body font-medium transition-colors [--label-size:12px] md:[--label-size:13px] ${
+            className={`ui-label nav-sprout whitespace-nowrap border-b-2 pb-0.5 pt-1 font-body font-medium transition-colors [--label-size:13px] ${
               active ? "border-forest text-forest" : "border-transparent text-forest/70 hover:text-forest"
             }`}
           >

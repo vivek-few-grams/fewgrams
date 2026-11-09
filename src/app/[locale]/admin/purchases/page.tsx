@@ -189,8 +189,11 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
       {bills.length === 0 ? (
         <p className="font-body text-sm text-stone">{all.length === 0 ? t("empty") : t("emptyFiltered")}</p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-forest/15">
-          <table className="w-full min-w-[56rem] font-body text-sm">
+        /* Cards below `lg` (`.stack-table`, globals.css): each cell's
+           `data-label` is the heading it sits under, and the file link, which
+           has none, is left off a card when the bill has no file (9 Nov 2026). */
+        <div className="lg:overflow-x-auto lg:rounded-2xl lg:border lg:border-forest/15">
+          <table className="stack-table w-full min-w-[56rem] font-body text-sm">
             <thead className="bg-forest/5">
               <tr className="text-left text-[11px] uppercase tracking-wider text-stone">
                 <th className="px-4 py-2.5 font-medium">{t("colDate")}</th>
@@ -210,8 +213,10 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
                 const note = isCreditNote(b);
                 return (
                   <tr key={b.id} className="border-t border-forest/10 align-top">
-                    <td className="whitespace-nowrap px-4 py-2.5 tabular-nums">{day(b.date)}</td>
-                    <td className="px-4 py-2.5">
+                    <td data-label={t("colDate")} className="whitespace-nowrap px-4 py-2.5 tabular-nums">
+                      {day(b.date)}
+                    </td>
+                    <td data-label={t("colVendor")} className="px-4 py-2.5">
                       <Link
                         href={`/admin/purchases/${b.id}`}
                         className="font-semibold underline-offset-4 hover:underline"
@@ -225,7 +230,7 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
                           .join(", ")}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 tabular-nums">
+                    <td data-label={t("colNumber")} className="px-4 py-2.5 tabular-nums">
                       {b.number}
                       {note && (
                         <span className="mt-1 block w-fit rounded-full border border-terracotta/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-terracotta">
@@ -233,9 +238,13 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">{money(x.taxable)}</td>
-                    <td className="px-4 py-2.5 text-right tabular-nums">{money(x.igst + x.cgst + x.sgst)}</td>
-                    <td className="px-4 py-2.5">
+                    <td data-label={t("colTaxable")} className="px-4 py-2.5 text-right tabular-nums">
+                      {money(x.taxable)}
+                    </td>
+                    <td data-label={t("colTax")} className="px-4 py-2.5 text-right tabular-nums">
+                      {money(x.igst + x.cgst + x.sgst)}
+                    </td>
+                    <td data-label={t("colStatus")} className="px-4 py-2.5">
                       <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${CHIP[s]}`}>
                         {note ? t(`noteStatus.${s}`) : t(`status.${s}`)}
                       </span>
@@ -245,7 +254,7 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 text-[12px]">
+                    <td data-label={t("colPaid")} className="px-4 py-2.5 text-[12px]">
                       {b.paidOn ? (
                         <span className="tabular-nums">{day(b.paidOn)}</span>
                       ) : owesPayBy(b) ? (
@@ -254,7 +263,7 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
                         <span className="text-stone">{note ? t("notSettled") : t("unpaid")}</span>
                       )}
                     </td>
-                    <td className="px-4 py-2.5 text-right">
+                    <td className="px-4 py-2.5 text-right max-lg:empty:!hidden">
                       {b.file && (
                         <a
                           href={`/api/admin/bills/${b.id}/file`}
@@ -277,9 +286,13 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
                 <td className="px-4 py-2.5" colSpan={3}>
                   {t("totalFor", { count: bills.length - notes, notes })}
                 </td>
-                <td className="px-4 py-2.5 text-right tabular-nums">{money(sum.taxable)}</td>
-                <td className="px-4 py-2.5 text-right tabular-nums">{money(sum.tax)}</td>
-                <td colSpan={3} />
+                <td data-label={t("colTaxable")} className="px-4 py-2.5 text-right tabular-nums">
+                  {money(sum.taxable)}
+                </td>
+                <td data-label={t("colTax")} className="px-4 py-2.5 text-right tabular-nums">
+                  {money(sum.tax)}
+                </td>
+                <td colSpan={3} className="max-lg:!hidden" />
               </tr>
             </tfoot>
           </table>

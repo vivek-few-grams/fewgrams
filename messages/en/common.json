@@ -22,7 +22,10 @@
     "account": "Account",
     "admin": "Admin",
     "signedInAs": "{label}, signed in as {who}",
-    "cartWithCount": "Cart, {count, plural, one {# item} other {# items}}"
+    "cartWithCount": "Cart, {count, plural, one {# item} other {# items}}",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "language": {
     "label": "Language",

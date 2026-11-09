@@ -222,8 +222,10 @@ async function StatusTable({ status }: { status: OrderStatus }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[46rem] border-collapse text-left">
+    /* Cards below `lg` (`.stack-table`, globals.css): each cell's
+       `data-label` is the heading it sits under (9 Nov 2026). */
+    <div className="lg:overflow-x-auto">
+      <table className="stack-table w-full min-w-[46rem] border-collapse text-left">
         <thead>
           <tr className="border-b border-forest/15">
             {[t("colOrder"), t("colCustomer"), t("colItems"), t("colDelivery"), t("colTotal")].map((h) => (
@@ -254,21 +256,21 @@ async function StatusTable({ status }: { status: OrderStatus }) {
                   })}
                 </span>
               </td>
-              <td className="py-3 font-body text-sm text-forest">
+              <td data-label={t("colCustomer")} className="stack-wide py-3 font-body text-sm text-forest">
                 {o.address.recipient}
                 <span className="block text-xs text-stone">{o.address.pincode}</span>
               </td>
-              <td className="py-3 font-body text-sm text-forest">
+              <td data-label={t("colItems")} className="stack-wide py-3 font-body text-sm text-forest">
                 {o.lines.map((l) => `${l.name} × ${l.units}`).join(", ")}
               </td>
-              <td className="py-3 font-body text-sm text-forest">
+              <td data-label={t("colDelivery")} className="py-3 font-body text-sm text-forest">
                 {format.dateTime(new Date(`${o.deliveryDate}T00:00:00+05:30`), {
                   weekday: "short",
                   day: "numeric",
                   month: "short",
                 })}
               </td>
-              <td className="py-3 font-body text-sm tabular-nums text-forest">
+              <td data-label={t("colTotal")} className="py-3 font-body text-sm tabular-nums text-forest">
                 {t("amount", { amount: o.total })}
               </td>
             </tr>

@@ -2765,3 +2765,103 @@ html[data-loader="out"] .loader__mark {
     margin: 14mm;
   }
 }
+
+/* ── Admin tables as phone cards (the owner, 9 Nov 2026) ───────────────
+   Below `lg` every admin table is a stack of cards rather than a grid that
+   scrolls sideways with its column headings hidden. Two kinds of table, one
+   rule each; above `lg` neither rule applies and the tables are as before.
+
+   1. `.row-card` — a row of an editable grid (a `div` grid whose columns come
+      from an inline `gridTemplateColumns`, so the header and the rows line
+      up). Below `lg` the row becomes a six-track card: a field takes half
+      (`.row-field`, which every compact admin field and `RowCell` carry), the
+      row's name takes the width (`.row-wide`), and the Save / Active / Delete
+      controls a third each (`.row-action`). Each field shows its name over it
+      (`.row-caption`), which is otherwise only the input's `aria-label` —
+      the reason stacking was refused before (`racks/PlateTable.tsx`).
+      `!important` because the columns are an inline style.
+
+   2. `.stack-table` — a real `<table>`. Below `lg` each row is a card of
+      label-over-value pairs, two to a line; the label is the cell's
+      `data-label`, the heading it sat under. The first cell names the row and
+      takes the width. A cell with no `data-label` shows no label.          */
+.row-caption {
+  display: none;
+}
+@media (width < 64rem) {
+  .row-card {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    row-gap: 0.75rem;
+    padding: 1rem;
+  }
+  .row-card .row-field {
+    grid-column: span 3;
+  }
+  .row-card .row-wide {
+    grid-column: 1 / -1;
+  }
+  .row-card .row-action {
+    grid-column: span 2;
+  }
+  /* The first control after the fields starts a line of its own, so Save,
+     Active and Delete sit together under the fields rather than Save
+     finishing the last field's line. */
+  .row-card :is(.row-field, .row-wide) + .row-action {
+    grid-column: 1 / span 2;
+  }
+  .row-card .row-caption {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-stone);
+  }
+
+  .stack-table {
+    display: block;
+    min-width: 0 !important;
+  }
+  .stack-table thead {
+    display: none;
+  }
+  .stack-table tbody,
+  .stack-table tfoot {
+    display: block;
+  }
+  .stack-table tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem 1rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgb(3 57 35 / 0.12) !important;
+    border-radius: 0.75rem;
+    background-color: var(--color-cream);
+    padding: 1rem;
+  }
+  .stack-table tr > td,
+  .stack-table tr > th {
+    display: block;
+    min-width: 0;
+    border: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+  }
+  .stack-table tr > :first-child,
+  .stack-table tr > .stack-wide {
+    grid-column: 1 / -1;
+  }
+  .stack-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 0.125rem;
+    font-family: var(--font-body);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-stone);
+  }
+}

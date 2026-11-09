@@ -6,7 +6,7 @@ import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { PipeSize } from "@/lib/types";
 import { addPipeSize, removePipeSize, togglePipeSize } from "./actions";
-import { CheckField, NumberField } from "../fields";
+import { RowCell, CheckField, NumberField } from "../fields";
 
 /**
  * Shelf footprints for the pipe range.
@@ -32,10 +32,11 @@ import { CheckField, NumberField } from "../fields";
 const COLUMNS =
   "minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) minmax(5.5rem, 1.1fr) minmax(7rem, 1.4fr) 6rem 5.5rem 4rem";
 
-/** Below this the rows scroll sideways inside their own box rather than
- *  widening the page — see the note in `FrameTable`. Wider than that table's
- *  because of the extra readout. */
-const MIN_WIDTH = "min-w-[52rem]";
+/** From `lg`, below this the rows scroll sideways inside their own box
+ *  rather than widening the page — see the note in `FrameTable`, which also
+ *  says why each row is a card below `lg`. Wider than that table's because
+ *  of the extra readout. */
+const MIN_WIDTH = "lg:min-w-[52rem]";
 
 /**
  * Duplicated from `pipeFeetPerShelf` and `pipeRackLegs` rather than imported:
@@ -76,7 +77,7 @@ export function PipeSizeTable({
       ) : (
         /* The add form sits outside this, so it never slides sideways with
            the rows. */
-        <div className="overflow-x-auto">
+        <div className="lg:overflow-x-auto">
           <div className={`${MIN_WIDTH} space-y-3`}>
             <div
               style={{ gridTemplateColumns: COLUMNS }}
@@ -109,9 +110,9 @@ export function PipeSizeTable({
 function LegsCell({ legs, cornerLegs }: { legs: number; cornerLegs: number }) {
   const t = useTranslations("admin.pipeRacks");
   return (
-    <span className="font-body text-sm tabular-nums text-stone">
+    <RowCell label={t("colLegs")} className="font-body text-sm tabular-nums text-stone">
       {legs > cornerLegs ? t("legsWithSupport", { legs }) : t("legsPlain", { legs })}
-    </span>
+    </RowCell>
   );
 }
 
@@ -122,31 +123,40 @@ function PipeSizeRow({ size, legs, cornerLegs }: { size: PipeSize; legs: number;
   return (
     <div
       style={{ gridTemplateColumns: COLUMNS }}
-      className="grid items-center gap-x-3 gap-y-2 rounded-xl border border-forest/12 bg-cream px-4 py-3 lg:gap-y-0"
+      className="row-card grid items-center gap-x-3 gap-y-2 rounded-xl border border-forest/12 bg-cream px-4 py-3 lg:gap-y-0"
     >
       {/* Text, not inputs, and no Save (31 Oct 2026): the footprint is in the
           SKU of every rack built on it (`pipeRackSku`), which carts name, so
           it is fixed once added — and a footprint holds nothing else to save.
           A different size is a new row. */}
-      <span className="px-3 font-body text-sm tabular-nums text-forest">{size.depthFt}</span>
-      <span className="px-3 font-body text-sm tabular-nums text-forest">{size.lengthFt}</span>
+      <RowCell label={t("colDepth")} className="px-3 font-body text-sm tabular-nums text-forest max-lg:px-0">
+        {size.depthFt}
+      </RowCell>
+      <RowCell label={t("colLength")} className="px-3 font-body text-sm tabular-nums text-forest max-lg:px-0">
+        {size.lengthFt}
+      </RowCell>
 
-      <span className="font-body text-sm tabular-nums text-stone">
+      <RowCell label={t("colPipeFeet")} className="font-body text-sm tabular-nums text-stone">
         {t("pipeFeetValue", { feet: feetPerShelf(size.depthFt, size.lengthFt) })}
-      </span>
+      </RowCell>
       <LegsCell legs={legs} cornerLegs={cornerLegs} />
 
-      {/* The Save column, kept so the row lines up with the other rack tables. */}
-      <span />
+      {/* The Save column, kept so the row lines up with the other rack tables.
+          Not on a phone card, where an empty cell is only a gap. */}
+      <span className="max-lg:hidden" />
 
       <form action={togglePipeSize} className="contents">
         <input type="hidden" name="id" value={size.id} />
         {/* Where the press goes, not "flip it" — see `switchTo`. */}
         <input type="hidden" name="to" value={size.active ? "off" : "on"} />
         {/* Hover moves in the direction of what the click does: greener when
-            it will switch on, plain when off. */}
+            it will switch on, plain when off.
+
+            On a phone card the controls start a line of their own (9 Nov
+            2026), said here because the `+ .row-action` rule in globals.css
+            cannot see past this form's hidden inputs to the field before. */}
         <button
-          className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
+          className={`row-action rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors max-lg:!col-[1/span_2] ${
             size.active
               ? "bg-sage text-forest hover:bg-forest hover:text-cream"
               : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
@@ -164,7 +174,7 @@ function PipeSizeRow({ size, legs, cornerLegs }: { size: PipeSize; legs: number;
           message={t("sizeDeleteConfirm")}
           confirmLabel={tc("confirmDelete")}
           cancelLabel={tc("cancel")}
-          className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
+          className="row-action font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
         />
       </form>
     </div>
@@ -243,10 +253,14 @@ function AddPipeSizeForm({
           type="submit"
           disabled={pending}
           style={{ gridColumn: "span 3" }}
+          /* `max-lg:!col-span-full` (9 Nov 2026): below `lg` the grid is one
+             or two columns, and the inline span of three made the grid add
+             columns of its own for it, so the fields beside it fell into
+             slivers with their labels overlapping. */
           /* `text-sm`, not `text-xs`, so the button is the same 38px as the
              fields beside it. At `text-xs` its line-height made it 34px and,
              with `items-end` aligning bottoms, its top sat 4px low. */
-          className="rounded-full border border-forest/25 px-4 py-2 font-body text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
+          className="rounded-full border border-forest/25 px-4 py-2 font-body text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60 max-lg:!col-span-full"
         >
           {t("addSize")}
         </button>

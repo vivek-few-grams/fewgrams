@@ -8,7 +8,7 @@ import { IDLE, type FormState } from "@/lib/forms";
 import type { AngleGrade } from "@/lib/types";
 import { addAngle, removeAngle, saveAngle, toggleAngle } from "./actions";
 import { ColourSelect } from "./ColourSelect";
-import { CheckField, NumberField } from "../fields";
+import { RowCell, CheckField, NumberField } from "../fields";
 
 /**
  * Angle grades — the legs, priced by the running foot.
@@ -45,16 +45,18 @@ import { CheckField, NumberField } from "../fields";
  */
 const COLUMNS =
   "minmax(5rem,0.8fr) minmax(9rem,1.6fr) minmax(5rem,0.8fr) minmax(5rem,0.8fr) 6rem 5.5rem 4rem";
-/** Below this the rows scroll sideways inside their own box rather than
- *  widening the page.
+/** From `lg`, below this the rows scroll sideways inside their own box
+ *  rather than widening the page.
  *
  *  Added 17 Sep 2026 with the nav rail, which made the bug visible: the row's
  *  tracks come from an inline `gridTemplateColumns`, so they apply at every
  *  width, and at 414px the Save, Active and Delete controls pushed the whole
- *  document 344px wide — taking the rail with them. Stacking to one column is
- *  not the alternative: a compact row's inputs carry their label only as an
- *  `aria-label`, so it would give an operator three unlabelled boxes. */
-const MIN_WIDTH = "min-w-[42rem]";
+ *  document 344px wide — taking the rail with them.
+ *
+ *  Below `lg` each row is a card instead (`.row-card`, 9 Nov 2026), with every
+ *  field's name over it — which is what stacking lacked when it was refused
+ *  here: a compact input carried its label only as an `aria-label`. */
+const MIN_WIDTH = "lg:min-w-[42rem]";
 
 export function AngleTable({ angles }: { angles: AngleGrade[] }) {
   const t = useTranslations("admin.racks");
@@ -68,7 +70,7 @@ export function AngleTable({ angles }: { angles: AngleGrade[] }) {
       ) : (
         /* The add form sits outside this, so it never slides sideways with
            the rows. */
-        <div className="overflow-x-auto">
+        <div className="lg:overflow-x-auto">
           <div className={`${MIN_WIDTH} space-y-3`}>
             <div
               style={{ gridTemplateColumns: COLUMNS }}
@@ -126,16 +128,28 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
   return (
     <div
       style={{ gridTemplateColumns: COLUMNS }}
-      className="grid items-center gap-x-3 gap-y-2 rounded-xl border border-forest/12 bg-cream px-4 py-3 lg:gap-y-0"
+      className="row-card grid items-center gap-x-3 gap-y-2 rounded-xl border border-forest/12 bg-cream px-4 py-3 lg:gap-y-0"
     >
       <form action={action} className="contents">
         <input type="hidden" name="id" value={angle.id} />
         <input type="hidden" name="active" value={angle.active ? "on" : "off"} />
 
         {/* Text, not an input: the gauge is in the SKU of every rack on this
-            grade, so it is fixed once saved — see `PlateRow`. */}
-        <span className="px-3 font-body text-sm tabular-nums text-forest">{angle.thicknessMm}</span>
-        <ColourSelect compact label={t("colColours")} initial={angle.colours} texts={colourTexts(t)} />
+            grade, so it is fixed once saved — see `PlateRow`. On a phone it
+            takes the card's width because it names the row. */}
+        <RowCell
+          wide
+          label={t("colThickness")}
+          className="px-3 font-body text-sm tabular-nums text-forest max-lg:px-0"
+        >
+          {angle.thicknessMm}
+        </RowCell>
+        {/* Full width on a phone too (9 Nov 2026): the picker opens from the
+            cell's left edge and is wider than half a card, so from the right
+            half it ran off the screen. */}
+        <RowCell wide label={t("colColours")}>
+          <ColourSelect compact label={t("colColours")} initial={angle.colours} texts={colourTexts(t)} />
+        </RowCell>
         <NumberField
           compact
           label={t("colRatePerFt")}
@@ -157,7 +171,7 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
         <button
           type="submit"
           disabled={pending}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
+          className="row-action flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
         >
           {state.status === "saved" && !pending && <Check size={13} strokeWidth={2.5} />}
           {state.status === "saved" && !pending ? t("savedRow") : t("save")}
@@ -169,7 +183,7 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
         {/* Where the press goes, not "flip it" — see `switchTo`. */}
         <input type="hidden" name="to" value={angle.active ? "off" : "on"} />
         <button
-          className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
+          className={`row-action rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
             angle.active
               ? "bg-sage text-forest hover:bg-forest hover:text-cream"
               : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
@@ -187,7 +201,7 @@ function AngleRow({ angle }: { angle: AngleGrade }) {
           message={t("angleDeleteConfirm")}
           confirmLabel={tc("confirmDelete")}
           cancelLabel={tc("cancel")}
-          className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
+          className="row-action font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
         />
       </form>
 
@@ -242,11 +256,15 @@ function AddAngleForm() {
           /* Spans the three action tracks — Save, Active and Delete have no
              field above them to align with. */
           style={{ gridColumn: "span 3" }}
+          /* `max-lg:!col-span-full` (9 Nov 2026): below `lg` the grid is one
+             or two columns, and the inline span of three made the grid add
+             columns of its own for it, so the fields beside it fell into
+             slivers with their labels overlapping. */
           /* `text-sm`, not `text-xs`, so the button is the same 38px as the
              fields beside it. At `text-xs` its line-height made it 34px and,
              with `items-end` on the row aligning bottoms, its top edge sat
              4px below every input's. */
-          className="rounded-full border border-forest/25 px-4 py-2 font-body text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
+          className="rounded-full border border-forest/25 px-4 py-2 font-body text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60 max-lg:!col-span-full"
         >
           {t("addAngle")}
         </button>

@@ -9,6 +9,7 @@ import { shelfPacks } from "@/lib/seeds/stock";
 import type { Seed } from "@/lib/types";
 import { correctSeedStock, removeSeed, toggleSeedActive } from "./actions";
 import { CostCell, OnBills, StockCount } from "../StockCells";
+import { RowCell } from "../fields";
 import { SupplierPicker, type VendorChoice } from "../vendors/SupplierPicker";
 
 /** The row's vendor picker (`SupplierPicker`): who to offer, who is ticked. */
@@ -51,19 +52,19 @@ const COLUMNS =
   "minmax(10rem,1.5fr) minmax(6.5rem,0.9fr) minmax(5rem,0.8fr) minmax(6rem,0.9fr) minmax(9.5rem,1fr) minmax(6rem,1fr) 6.5rem 4rem";
 
 /**
- * Below this the rows scroll sideways inside their own box rather than
- * widening the page.
+ * From `lg`, below this the rows scroll sideways inside their own box rather
+ * than widening the page.
  *
  * The same fix the rack tables carry, and for the same reason: a row's tracks
  * come from an inline `gridTemplateColumns`, so they apply at *every* width,
  * and at 414px the price, stock, Save, Active and Delete cells pushed the whole
  * document 785px wide — taking the admin nav rail with it.
  *
- * Stacking to one column is not the alternative: a compact row's inputs carry
- * their label only as an `aria-label`, so it would leave an operator two
- * unlabelled boxes and no way to tell the price from the grams.
+ * Below `lg` each row is a card instead (`.row-card`, 9 Nov 2026), with every
+ * figure's name over it — which is what stacking lacked when it was refused
+ * here: there was no way to tell the price from the grams.
  */
-const MIN_WIDTH = "min-w-[64rem]";
+const MIN_WIDTH = "lg:min-w-[64rem]";
 
 export function SeedTable({
   seeds,
@@ -138,11 +139,10 @@ export function SeedTable({
       ) : (
         /* The scroll box wraps the header *and* the rows, so they scroll
            together and stay aligned. */
-        <div className="overflow-x-auto">
+        <div className="lg:overflow-x-auto">
           <div className={`${MIN_WIDTH} space-y-2`}>
-            {/* Column headings, hidden below `lg` where the table is scrolled
-              rather than stacked and every input carries its own label as its
-              accessible name instead. */}
+            {/* Column headings, hidden below `lg` where each row is a card and
+              every figure shows its own name over it instead. */}
             <div style={{ gridTemplateColumns: COLUMNS }} className="hidden gap-x-3 px-4 lg:grid">
               {[
                 t("colSeed"),
@@ -191,44 +191,59 @@ function SeedRow({
   return (
     <div
       style={{ gridTemplateColumns: COLUMNS }}
-      className={`grid items-center gap-x-3 gap-y-2 rounded-xl border px-4 py-3 lg:gap-y-0 ${
+      className={`row-card grid items-center gap-x-3 gap-y-2 rounded-xl border px-4 py-3 lg:gap-y-0 ${
         name ? "border-forest/12 bg-cream" : "border-terracotta/40 bg-terracotta/5"
       }`}
     >
-      <div className="min-w-0">
+      <div className="row-wide min-w-0">
         <p className="truncate font-body text-sm font-semibold text-forest">{name ?? seed.contentKey}</p>
         <code className="font-body text-[11px] text-stone">{seed.contentKey}</code>
         <SupplierPicker {...picker} item={name ?? seed.contentKey} />
       </div>
 
-      <CostCell cost={seed.costPer100g} source={seed.costBill} />
+      {/* A cell wrapping a shared component is `lg:contents`, so from `lg`
+          the wrapper draws no box and the component is the grid item it was
+          before the rows became cards (9 Nov 2026). */}
+      <RowCell label={t("colCost")} className="lg:contents">
+        <CostCell cost={seed.costPer100g} source={seed.costBill} />
+      </RowCell>
       {/* Worked out from the cost and the margin, never typed. */}
-      <span className="font-body text-sm tabular-nums text-forest">
+      <RowCell label={t("colPrice")} className="font-body text-sm tabular-nums text-forest">
         {t("priceValue", { amount: seed.pricePer100g })}
-      </span>
-      <span className="font-body text-sm tabular-nums text-stone">
+      </RowCell>
+      <RowCell label={t("colMargin")} className="font-body text-sm tabular-nums text-stone">
         {seed.costPer100g === undefined
           ? "—"
           : t("marginValue", {
               amount: Math.round(seed.pricePer100g - seed.costPer100g),
               percent: Math.round(((seed.pricePer100g - seed.costPer100g) / seed.costPer100g) * 100),
             })}
-      </span>
-      <StockCount
-        id={seed.id}
-        value={seed.stockGrams}
-        unit="grams"
-        held={held}
-        correct={correctSeedStock}
-        align="start"
-      />
+      </RowCell>
+      <RowCell label={t("colStock")} className="lg:contents">
+        <StockCount
+          id={seed.id}
+          value={seed.stockGrams}
+          unit="grams"
+          held={held}
+          correct={correctSeedStock}
+          align="start"
+        />
+      </RowCell>
 
-      <PacksCell grams={seed.stockGrams} />
+      <RowCell label={t("colPacks")} className="lg:contents">
+        <PacksCell grams={seed.stockGrams} />
+      </RowCell>
 
       {/* A seed no bill has costed yet is priced at 0, so it cannot be
-          switched on — the chip says why instead of offering the switch. */}
+          switched on — the chip says why instead of offering the switch.
+
+          `max-lg:!col-end-3` on both: the toggle's own form puts hidden
+          inputs between it and the last field, so the card's rule for "the
+          first control starts a new line" (`.row-field + .row-action`) cannot
+          see it. Ending it at line 3 starts it at line 1, as that rule would;
+          `!` because the card's rules are unlayered. */}
       {!seed.active && seed.costPer100g === undefined ? (
-        <span className="rounded-full bg-forest/10 px-3 py-1 text-center font-body text-[11px] text-stone">
+        <span className="row-action rounded-full bg-forest/10 px-3 py-1 text-center font-body text-[11px] text-stone max-lg:!col-end-3">
           {t("needsBill")}
         </span>
       ) : (
@@ -239,7 +254,7 @@ function SeedRow({
           <button
             /* Hover moves in the direction of what the click does: greener when
                it will switch on, plain when off. */
-            className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
+            className={`row-action rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors max-lg:!col-end-3 ${
               seed.active
                 ? "bg-sage text-forest hover:bg-forest hover:text-cream"
                 : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
@@ -251,7 +266,9 @@ function SeedRow({
       )}
 
       {bills > 0 ? (
-        <OnBills count={bills} />
+        <span className="row-action lg:contents">
+          <OnBills count={bills} />
+        </span>
       ) : (
         <form action={removeSeed} className="contents">
           <input type="hidden" name="id" value={seed.id} />
@@ -261,7 +278,7 @@ function SeedRow({
             message={t("deleteConfirm")}
             confirmLabel={tc("confirmDelete")}
             cancelLabel={tc("cancel")}
-            className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
+            className="row-action font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
           />
         </form>
       )}
@@ -293,15 +310,18 @@ function PacksCell({ grams }: { grams: number }) {
   const t = useTranslations("admin.seeds");
   const packs = shelfPacks(grams);
 
+  /* Spans, not paragraphs: the cell sits in `RowCell`'s span on a phone. */
   if (packs === 0) {
     /* Terracotta: customers now see this seed as sold out. */
     return (
-      <p className="flex items-center gap-1.5 font-body text-xs font-semibold text-terracotta">
+      <span className="flex items-center gap-1.5 font-body text-xs font-semibold text-terracotta">
         <PackageX size={13} strokeWidth={2} className="shrink-0" />
         {t("soldOut")}
-      </p>
+      </span>
     );
   }
 
-  return <p className="font-body text-xs tabular-nums text-stone">{t("packs", { count: packs })}</p>;
+  return (
+    <span className="block font-body text-xs tabular-nums text-stone">{t("packs", { count: packs })}</span>
+  );
 }

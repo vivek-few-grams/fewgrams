@@ -164,50 +164,62 @@ export function SowingEditor({
                   error={errorFor(`varietyKey.${i}`)}
                 />
               </div>
-              <NumberField
-                compact
-                label={t("seedGrams")}
-                name="seedGrams"
-                placeholder={t("gramsPlaceholder")}
-                value={row.seedGrams}
-                onChange={(e) => set(row.uid, { seedGrams: e.target.value })}
-                error={errorFor(`seedGrams.${i}`)}
-              />
-              <NumberField
-                compact
-                label={t("trays")}
-                name="trays"
-                inputMode="numeric"
-                placeholder={t("traysPlaceholder")}
-                value={row.trays}
-                onChange={(e) => set(row.uid, { trays: e.target.value })}
-                error={errorFor(`trays.${i}`)}
-              />
-              {editing && (
+              <label className="block min-w-0">
+                <PhoneCaption text={t("seedGrams")} />
                 <NumberField
                   compact
-                  label={t("harvestGrams")}
-                  name="harvestGrams"
-                  placeholder={t("harvestPlaceholder")}
-                  value={row.harvestGrams}
-                  onChange={(e) => set(row.uid, { harvestGrams: e.target.value })}
-                  error={errorFor(`harvestGrams.${i}`)}
+                  label={t("seedGrams")}
+                  name="seedGrams"
+                  placeholder={t("gramsPlaceholder")}
+                  value={row.seedGrams}
+                  onChange={(e) => set(row.uid, { seedGrams: e.target.value })}
+                  error={errorFor(`seedGrams.${i}`)}
                 />
+              </label>
+              <label className="block min-w-0">
+                <PhoneCaption text={t("trays")} />
+                <NumberField
+                  compact
+                  label={t("trays")}
+                  name="trays"
+                  inputMode="numeric"
+                  placeholder={t("traysPlaceholder")}
+                  value={row.trays}
+                  onChange={(e) => set(row.uid, { trays: e.target.value })}
+                  error={errorFor(`trays.${i}`)}
+                />
+              </label>
+              {editing && (
+                <label className="block min-w-0">
+                  <PhoneCaption text={t("harvestGrams")} />
+                  <NumberField
+                    compact
+                    label={t("harvestGrams")}
+                    name="harvestGrams"
+                    placeholder={t("harvestPlaceholder")}
+                    value={row.harvestGrams}
+                    onChange={(e) => set(row.uid, { harvestGrams: e.target.value })}
+                    error={errorFor(`harvestGrams.${i}`)}
+                  />
+                </label>
               )}
               {editing && (
-                <input
-                  type="date"
-                  name="harvestedOn"
-                  aria-label={t("harvestedOn")}
-                  min={sowDate}
-                  max={today}
-                  value={row.harvestedOn}
-                  onChange={(e) => set(row.uid, { harvestedOn: e.target.value })}
-                  aria-invalid={errorFor(`harvestedOn.${i}`) ? true : undefined}
-                  className={`w-full rounded-lg border bg-cream px-3 py-2 font-body text-sm text-forest outline-none focus:border-forest ${
-                    errorFor(`harvestedOn.${i}`) ? "border-terracotta" : "border-forest/25"
-                  }`}
-                />
+                <label className="block min-w-0">
+                  <PhoneCaption text={t("harvestedOn")} />
+                  <input
+                    type="date"
+                    name="harvestedOn"
+                    aria-label={t("harvestedOn")}
+                    min={sowDate}
+                    max={today}
+                    value={row.harvestedOn}
+                    onChange={(e) => set(row.uid, { harvestedOn: e.target.value })}
+                    aria-invalid={errorFor(`harvestedOn.${i}`) ? true : undefined}
+                    className={`w-full rounded-lg border bg-cream px-3 py-2 font-body text-sm text-forest outline-none focus:border-forest ${
+                      errorFor(`harvestedOn.${i}`) ? "border-terracotta" : "border-forest/25"
+                    }`}
+                  />
+                </label>
               )}
               {editing && (
                 <label className="flex items-center gap-2 font-body text-xs text-forest sm:justify-center">
@@ -231,7 +243,7 @@ export function SowingEditor({
                 }
                 aria-label={t("removeLine", { row: i + 1 })}
                 title={t("removeLine", { row: i + 1 })}
-                className="flex size-8 items-center justify-center justify-self-end rounded-full text-stone transition-colors hover:bg-terracotta/10 hover:text-terracotta"
+                className="col-span-2 flex size-8 items-center justify-center justify-self-end rounded-full text-stone transition-colors hover:bg-terracotta/10 hover:text-terracotta sm:col-span-1"
               >
                 <X size={15} strokeWidth={2} aria-hidden="true" />
               </button>
@@ -291,5 +303,22 @@ export function SowingEditor({
         )}
       </div>
     </form>
+  );
+}
+
+/**
+ * A field's name over it, on a phone only (9 Nov 2026). Below `sm` the column
+ * headings are hidden and each row stacks, so the compact inputs showed only
+ * their placeholders — "40" and "Optional" — with nothing saying which was
+ * seed and which was trays. From `sm` the headings above the rows name them.
+ */
+function PhoneCaption({ text }: { text: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="mb-1 block font-body text-[11px] font-medium uppercase tracking-wider text-stone sm:hidden"
+    >
+      {text}
+    </span>
   );
 }

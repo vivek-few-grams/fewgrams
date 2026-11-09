@@ -141,7 +141,10 @@ export function MarqueeCard({
         <LinkPending />
       </div>
 
-      <div className="mt-4 flex items-baseline justify-between gap-3">
+      {/* Wraps, so the count drops under the name when both do not fit. On a
+          phone two tiles share the width, and "Microgreens · 12 varieties"
+          in one row widened the first tile into the second (9 Nov 2026). */}
+      <div className="mt-4 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
         <Heading className={`font-display text-lg font-semibold tracking-tight ${labelClass}`}>
           {label}
         </Heading>

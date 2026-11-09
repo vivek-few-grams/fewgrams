@@ -19,14 +19,18 @@ export async function Footer() {
        cream strip between that band and the footer reads as a gap. */
     <footer className="mt-24 bg-forest text-cream [main:has([data-footer-flush])+&]:mt-0">
       <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12">
-        <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-          <div>
+        {/* Two columns on a phone (9 Nov 2026): one ran the footer to three
+            screens of single links. The brand spans both, then the shop list
+            beside the other two stacked — six links against seven. From `md`,
+            one row of four as before. */}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:gap-12">
+          <div className="col-span-2 md:col-span-1">
             <p className="font-display text-2xl font-bold tracking-tight">{brand.name}</p>
             <p className="mt-3 max-w-xs font-body text-sm text-mint">{b("subline")}</p>
             <p className="mt-6 font-body text-sm text-mint/70">{t("deliveryNote")}</p>
           </div>
 
-          <FooterCol title={t("shop")}>
+          <FooterCol title={t("shop")} className="row-span-2 md:row-span-1">
             {navCategories.map((cat) => (
               /* Microgreens and seeds are described catalogues with routes of
                  their own; the rest are `/shop/<slug>`. `CATEGORY_HREF` is the
@@ -62,11 +66,17 @@ export async function Footer() {
         <div className="mt-14 flex flex-col gap-3 border-t border-cream/15 pt-7 font-body text-xs text-mint/70 md:flex-row md:items-center md:justify-between">
           <p>
             {t("copyright", { year: new Date().getFullYear(), brand: brand.name })} ·{" "}
-            <a href={`mailto:${contact.email}`} className="transition-colors hover:text-cream">
+            <a
+              href={`mailto:${contact.email}`}
+              className="whitespace-nowrap transition-colors hover:text-cream"
+            >
               {contact.email}
             </a>{" "}
             ·{" "}
-            <a href={contactTel} className="tabular-nums transition-colors hover:text-cream">
+            <a
+              href={contactTel}
+              className="whitespace-nowrap tabular-nums transition-colors hover:text-cream"
+            >
               {contactPhoneDisplay}
             </a>
           </p>
@@ -87,9 +97,17 @@ export async function Footer() {
   );
 }
 
-function FooterCol({ title, children }: { title: string; children: React.ReactNode }) {
+function FooterCol({
+  title,
+  children,
+  className = "",
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div>
+    <div className={className}>
       <p className="font-body text-[11px] uppercase tracking-widest text-sage">{title}</p>
       <ul className="mt-4 space-y-2.5">{children}</ul>
     </div>

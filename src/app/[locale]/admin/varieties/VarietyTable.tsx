@@ -28,8 +28,8 @@ import { VarietyRow, type VarietyWorking } from "./VarietyRow";
 const COLUMNS = "minmax(11rem,1.6fr) repeat(6, minmax(4.5rem, 0.7fr)) 6rem 5.5rem 4rem";
 
 /**
- * Below this the rows scroll sideways inside their own box rather than
- * widening the page.
+ * From `lg`, below this the rows scroll sideways inside their own box rather
+ * than widening the page.
  *
  * Added 17 Sep 2026, alongside the same fix on `/admin/seeds`. The rack tables
  * got it when the nav rail landed and this screen was missed: a row's tracks
@@ -37,11 +37,11 @@ const COLUMNS = "minmax(11rem,1.6fr) repeat(6, minmax(4.5rem, 0.7fr)) 6rem 5.5re
  * at 414px this table pushed the whole document 837px wide — taking the admin
  * rail with it.
  *
- * Stacking to one column is not the alternative: a compact row's inputs carry
- * their label only as an `aria-label`, so it would give an operator four
- * unlabelled boxes.
+ * Below `lg` each row is a card instead (`.row-card`, 9 Nov 2026), with every
+ * field's name over it — which is what stacking lacked when it was refused
+ * here: a compact input carried its label only as an `aria-label`.
  */
-const MIN_WIDTH = "min-w-[57rem]";
+const MIN_WIDTH = "lg:min-w-[57rem]";
 
 export function VarietyTable({
   varieties,
@@ -119,11 +119,10 @@ export function VarietyTable({
       ) : (
         /* The scroll box wraps the header *and* the rows, so they scroll
            together and stay aligned. */
-        <div className="overflow-x-auto">
+        <div className="lg:overflow-x-auto">
           <div className={`${MIN_WIDTH} space-y-2`}>
-            {/* Column headings, hidden below `lg` where the table is scrolled
-              rather than stacked and every input carries its own label as its
-              accessible name instead. */}
+            {/* Column headings, hidden below `lg` where each row is a card and
+              every field shows its own name over it instead. */}
             <div style={{ gridTemplateColumns: COLUMNS }} className="hidden gap-x-3 px-4 lg:grid">
               {[
                 t("colVariety"),

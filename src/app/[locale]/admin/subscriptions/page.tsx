@@ -167,8 +167,11 @@ export default async function SubscriptionsAdmin({
         {subscribable.length === 0 ? (
           <p className="mt-4 font-body text-sm text-stone">{t("noPlans")}</p>
         ) : (
-          <div className="mt-4 overflow-x-auto rounded-2xl border border-forest/15">
-            <table className="w-full min-w-[40rem] border-collapse text-left">
+          /* Cards below `lg` (`.stack-table`, globals.css): a plan's week is
+             labelled with the plan's name, the heading it sits under, and
+             takes the width (9 Nov 2026). */
+          <div className="mt-4 lg:overflow-x-auto lg:rounded-2xl lg:border lg:border-forest/15">
+            <table className="stack-table w-full min-w-[40rem] border-collapse text-left">
               <thead>
                 <tr className="border-b border-forest/15 bg-sand/50">
                   <th scope="col" className={th}>
@@ -193,7 +196,11 @@ export default async function SubscriptionsAdmin({
                       {subscribable.map(({ plan, weeks }) => {
                         const keys = weeks.find((w) => w.week === week)?.varietyKeys ?? [];
                         return (
-                          <td key={plan.id} className={td}>
+                          <td
+                            key={plan.id}
+                            data-label={planNames.get(plan.id)}
+                            className={`${td} stack-wide`}
+                          >
                             {keys.length === 0 ? (
                               <span className="text-terracotta">{t("weekEmpty")}</span>
                             ) : (
@@ -245,8 +252,9 @@ export default async function SubscriptionsAdmin({
         {list.length === 0 ? (
           <p className="mt-4 font-body text-sm text-stone">{t(`empty.${view}`)}</p>
         ) : (
-          <div className="mt-4 overflow-x-auto rounded-2xl border border-forest/15">
-            <table className="w-full min-w-[56rem] border-collapse text-left">
+          /* Cards below `lg`, as the rotation; `SubRow` labels its cells. */
+          <div className="mt-4 lg:overflow-x-auto lg:rounded-2xl lg:border lg:border-forest/15">
+            <table className="stack-table w-full min-w-[56rem] border-collapse text-left">
               <thead>
                 <tr className="border-b border-forest/15 bg-sand/50">
                   {[
@@ -350,8 +358,10 @@ async function DemandCard({
       )}
 
       {demand.lines.length > 0 && (
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[44rem] border-collapse text-left">
+        /* Cards below `lg` (`.stack-table`, globals.css): each cell's
+           `data-label` is the heading it sits under (9 Nov 2026). */
+        <div className="mt-4 lg:overflow-x-auto">
+          <table className="stack-table w-full min-w-[44rem] border-collapse text-left">
             <thead>
               <tr className="border-b border-forest/15">
                 {[t("colVariety"), t("colWeight"), t("colTrays"), t("colSeed"), t("colSowBy")].map((h) => (
@@ -376,10 +386,16 @@ async function DemandCard({
                         {t("inBoxes", { count: l.boxes })}
                       </span>
                     </td>
-                    <td className="py-2.5 pr-4 font-body text-sm tabular-nums text-forest">
+                    <td
+                      data-label={t("colWeight")}
+                      className="py-2.5 pr-4 font-body text-sm tabular-nums text-forest"
+                    >
                       {weight(l.grams)}
                     </td>
-                    <td className="py-2.5 pr-4 font-body text-sm tabular-nums text-forest">
+                    <td
+                      data-label={t("colTrays")}
+                      className="py-2.5 pr-4 font-body text-sm tabular-nums text-forest"
+                    >
                       {l.trays === null ? (
                         <span className="text-terracotta">{t("noYield")}</span>
                       ) : (
@@ -393,10 +409,13 @@ async function DemandCard({
                         </>
                       )}
                     </td>
-                    <td className="py-2.5 pr-4 font-body text-sm tabular-nums text-stone">
+                    <td
+                      data-label={t("colSeed")}
+                      className="py-2.5 pr-4 font-body text-sm tabular-nums text-stone"
+                    >
                       {l.seedGrams !== null ? weight(l.seedGrams) : "—"}
                     </td>
-                    <td className="py-2.5 pr-4 font-body text-sm">
+                    <td data-label={t("colSowBy")} className="py-2.5 pr-4 font-body text-sm">
                       {l.sowBy === null ? (
                         <span className="text-terracotta">{t("notInCatalogue")}</span>
                       ) : (
@@ -416,9 +435,14 @@ async function DemandCard({
             <tfoot>
               <tr>
                 <td className="pt-3 font-body text-sm font-semibold text-forest">{t("totalTrays")}</td>
-                <td />
-                <td className="pt-3 font-body text-base font-bold tabular-nums text-forest">{trays}</td>
-                <td colSpan={2} />
+                <td className="max-lg:!hidden" />
+                <td
+                  data-label={t("colTrays")}
+                  className="pt-3 font-body text-base font-bold tabular-nums text-forest"
+                >
+                  {trays}
+                </td>
+                <td colSpan={2} className="max-lg:!hidden" />
               </tr>
             </tfoot>
           </table>
@@ -459,14 +483,14 @@ function SubRow({
           {format.dateTime(new Date(sub.paidAt ?? sub.createdAt), { dateStyle: "medium" })}
         </span>
       </td>
-      <td className={td}>
+      <td data-label={t("colCustomer")} className={`${td} stack-wide`}>
         <span className="text-forest">{sub.address.recipient}</span>
         <span className="block text-xs text-stone">{sub.email ?? "—"}</span>
         <span className="block text-xs text-stone">
           {sub.address.phone} · {sub.address.pincode}
         </span>
       </td>
-      <td className={td}>
+      <td data-label={t("colPlans")} className={td}>
         {sub.lines.map((l) => (
           <span key={l.planId} className="block text-forest">
             {t("planBoxes", { plan: l.name, count: l.boxes })}
@@ -474,7 +498,7 @@ function SubRow({
         ))}
         <span className="block text-xs text-stone">{t("boxesPerWeek", { count: boxesPerWeek(sub) })}</span>
       </td>
-      <td className={td}>
+      <td data-label={t("colNext")} className={td}>
         {next ? (
           <>
             <span className="text-forest">{date(next.date)}</span>
@@ -484,14 +508,16 @@ function SubRow({
           <span className="text-stone">{t(`state.${state}`)}</span>
         )}
       </td>
-      <td className={td}>
+      <td data-label={t("colSchedule")} className={td}>
         <span className="text-forest">{t("left", { left, total: sub.deliveries.length })}</span>
         <span className="block text-xs text-stone">
           {sub.deliveries[0] &&
             t("range", { from: date(sub.deliveries[0].date), to: date(sub.deliveries.at(-1)!.date) })}
         </span>
       </td>
-      <td className={`${td} tabular-nums text-forest`}>{money(sub.total)}</td>
+      <td data-label={t("colTotal")} className={`${td} tabular-nums text-forest`}>
+        {money(sub.total)}
+      </td>
     </tr>
   );
 }

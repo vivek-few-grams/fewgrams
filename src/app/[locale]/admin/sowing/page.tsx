@@ -68,8 +68,10 @@ export default async function SowingAdmin() {
         <section>
           <h2 className="font-display text-lg font-semibold text-forest">{t("summaryTitle")}</h2>
           <p className="mt-1 font-body text-sm text-stone">{t("summaryHint")}</p>
-          <div className="mt-4 overflow-x-auto rounded-2xl border border-forest/15">
-            <table className="w-full min-w-[44rem] font-body text-sm">
+          {/* Cards below `lg` (`.stack-table`, globals.css): each cell's
+              `data-label` is the heading it sits under (9 Nov 2026). */}
+          <div className="mt-4 lg:overflow-x-auto lg:rounded-2xl lg:border lg:border-forest/15">
+            <table className="stack-table w-full min-w-[44rem] font-body text-sm">
               <thead className="bg-forest/5">
                 <tr className="text-left text-[11px] uppercase tracking-wider text-stone">
                   <th className="px-4 py-2.5 font-medium">{t("variety")}</th>
@@ -87,7 +89,7 @@ export default async function SowingAdmin() {
                   return (
                     <tr key={v.varietyKey} className="border-t border-forest/10 align-top">
                       <td className="px-4 py-2.5 font-semibold">{names[v.varietyKey] ?? v.varietyKey}</td>
-                      <td className="px-4 py-2.5 text-right">
+                      <td data-label={t("colSown")} className="px-4 py-2.5 text-right">
                         {t("sownCount", { harvested: v.harvested, sown: v.sown })}
                         {v.excluded > 0 && (
                           <span className="block text-[11px] text-terracotta">
@@ -95,14 +97,16 @@ export default async function SowingAdmin() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-2.5 text-right">{t("grams", { grams: v.seedGrams })}</td>
-                      <td className="px-4 py-2.5 text-right">
+                      <td data-label={t("colSeedTotal")} className="px-4 py-2.5 text-right">
+                        {t("grams", { grams: v.seedGrams })}
+                      </td>
+                      <td data-label={t("colHarvestTotal")} className="px-4 py-2.5 text-right">
                         {v.harvested ? t("grams", { grams: v.harvestGrams }) : t("none")}
                       </td>
-                      <td className="px-4 py-2.5 text-right font-semibold">
+                      <td data-label={t("colRatio")} className="px-4 py-2.5 text-right font-semibold">
                         {v.ratio === null ? t("none") : t("ratio", { ratio: v.ratio })}
                       </td>
-                      <td className="px-4 py-2.5 text-right">
+                      <td data-label={t("colPerTray")} className="px-4 py-2.5 text-right">
                         {v.perTray === null ? t("none") : t("grams", { grams: v.perTray })}
                         {variety && (
                           <span className="block text-[11px] text-stone">
@@ -113,7 +117,7 @@ export default async function SowingAdmin() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-2.5 text-right">
+                      <td data-label={t("colMeanDays")} className="px-4 py-2.5 text-right">
                         {v.meanDays === null ? t("none") : t("days", { days: v.meanDays })}
                         {variety && (
                           <span className="block text-[11px] text-stone">

@@ -255,12 +255,17 @@ export function AddressStep({
                sage border (not a dark one — the owner's call). */
             className="mt-4 rounded-xl border border-sage bg-sage/15 px-4 py-3 transition-colors"
           >
-            <div className="flex items-start justify-between gap-3">
-              <span className="min-w-0">
+            {/* `flex-wrap-reverse`: where the address and the chips do not fit
+                side by side — a phone — the chips go on a line of their own
+                above it, rather than holding a column down the right that
+                squeezed the address to two words a line (9 Nov 2026). The
+                cross axis is reversed with it, so `items-end` is the top. */}
+            <div className="flex flex-wrap-reverse items-end justify-between gap-x-3 gap-y-2">
+              <span className="min-w-0 flex-1 basis-60">
                 <AddressSummary address={selected} />
                 {selected.outsideArea && <OutsideNote text={t("setAsideAddress")} />}
               </span>
-              <span className="flex shrink-0 items-center gap-2">
+              <span className="ml-auto flex shrink-0 items-center gap-2">
                 {selected.isDefault && <DefaultChip label={ta("default")} />}
                 {confirmed && (
                   <button
@@ -324,12 +329,18 @@ export function AddressStep({
                       onChange={() => setAddrId(a.addrId)}
                       className="mt-3 size-4 accent-forest"
                     />
-                    <span className="flex min-w-0 flex-1 items-start justify-between gap-3">
-                      <span className="min-w-0">
+                    {/* Wraps the chip above the address on a phone, as the
+                        chosen card does. */}
+                    <span className="flex min-w-0 flex-1 flex-wrap-reverse items-end justify-between gap-x-3 gap-y-2">
+                      <span className="min-w-0 flex-1 basis-60">
                         <AddressSummary address={a} />
                         {a.outsideArea && <OutsideNote text={t("setAsideAddress")} />}
                       </span>
-                      {a.isDefault && <DefaultChip label={ta("default")} />}
+                      {a.isDefault && (
+                        <span className="ml-auto shrink-0">
+                          <DefaultChip label={ta("default")} />
+                        </span>
+                      )}
                     </span>
                   </label>
                   {!a.isDefault && (

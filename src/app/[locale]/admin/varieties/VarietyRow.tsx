@@ -8,7 +8,7 @@ import { IDLE, type FormState } from "@/lib/forms";
 import type { Variety } from "@/lib/types";
 import type { TrayCost, Unpriced } from "@/lib/varieties/pricing";
 import { removeVariety, toggleVarietyActive, updateVariety } from "./actions";
-import { NumberField } from "../fields";
+import { NumberField, RowCell } from "../fields";
 
 /** A variety's price, worked — what the row prints under itself. Built by the
  *  page with `varietyCost`, which is pure, so the row shows the very figures
@@ -42,9 +42,10 @@ const round2 = (n: number) => Math.round(n * 100) / 100;
  *
  * `display: contents` on each inner form solves it: the forms keep working
  * and own their fields, while their children participate directly in this
- * row's grid, so the columns line up with the header. Below `lg` the
- * `contents` is dropped and the row falls back to a stacked card, which is
- * what a phone wants anyway.
+ * row's grid, so the columns line up with the header. Below `lg` the row is a
+ * card (`.row-card` in globals.css, 9 Nov 2026): the name across the top, the
+ * figures two to a line with their names over them, then Save, Active and
+ * Delete on a line of their own.
  *
  * Editing matters more than it did before variety text moved to content
  * files: the numbers are now the *only* thing this screen owns, and yield in
@@ -80,11 +81,11 @@ export function VarietyRow({
   return (
     <div
       style={{ gridTemplateColumns: columns }}
-      className={`grid items-center gap-x-3 gap-y-2 rounded-xl border px-4 py-3 lg:gap-y-0 ${
+      className={`row-card grid items-center gap-x-3 gap-y-2 rounded-xl border px-4 py-3 lg:gap-y-0 ${
         name ? "border-forest/12 bg-cream" : "border-terracotta/40 bg-terracotta/5"
       }`}
     >
-      <div className="min-w-0">
+      <div className="row-wide min-w-0">
         <p className="truncate font-body text-sm font-semibold text-forest">{name ?? variety.contentKey}</p>
         <code className="font-body text-[11px] text-stone">{variety.contentKey}</code>
       </div>
@@ -127,18 +128,25 @@ export function VarietyRow({
           defaultValue={variety.seedGramsPerTray ?? ""}
           error={errorFor("seedGramsPerTray")}
         />
-        {/* Worked out, never typed — see `working` below the row. */}
-        <p className="text-right font-body text-sm tabular-nums text-stone">
+        {/* Worked out, never typed — see `working` below the row. Left-aligned
+            on a phone, under its name like the inputs beside it. */}
+        <RowCell
+          label={t("colCost")}
+          className="text-right font-body text-sm tabular-nums text-stone max-lg:text-left"
+        >
           {variety.costPer100g === undefined ? t("none") : t("rupees", { amount: variety.costPer100g })}
-        </p>
-        <p className="text-right font-body text-sm font-semibold tabular-nums text-forest">
+        </RowCell>
+        <RowCell
+          label={t("colPrice")}
+          className="text-right font-body text-sm font-semibold tabular-nums text-forest max-lg:text-left"
+        >
           {variety.pricePer100g > 0 ? t("rupees", { amount: variety.pricePer100g }) : t("none")}
-        </p>
+        </RowCell>
 
         <button
           type="submit"
           disabled={pending}
-          className="flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
+          className="row-action flex items-center justify-center gap-1.5 rounded-full border border-forest/25 px-4 py-1.5 font-body text-xs font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
         >
           {state.status === "saved" && !pending && (
             <Check size={13} strokeWidth={2.5} className="text-forest" />
@@ -157,7 +165,7 @@ export function VarietyRow({
           disabled={!variety.active && variety.pricePer100g <= 0}
           /* Hover has to move in the direction of what the click does:
              darker/greener when it will switch ON, plain when OFF. */
-          className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+          className={`row-action rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
             variety.active
               ? "bg-sage text-forest hover:bg-forest hover:text-cream"
               : "bg-forest/10 text-stone enabled:hover:bg-sage enabled:hover:text-forest"
@@ -175,7 +183,7 @@ export function VarietyRow({
           message={t("deleteConfirm")}
           confirmLabel={tc("confirmDelete")}
           cancelLabel={tc("cancel")}
-          className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
+          className="row-action font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
         />
       </form>
 

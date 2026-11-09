@@ -9,7 +9,7 @@ import { keepFields } from "@/lib/keep-fields";
 import type { AngleGrade, AngleRackModel, FrameSize, RackSettings } from "@/lib/types";
 import { addAngleRack, removeAngleRack, republishAngleRack, toggleAngleRack } from "./actions";
 import { Swatch } from "../racks/ColourSelect";
-import { CheckField, SelectField } from "../fields";
+import { RowCell, CheckField, SelectField } from "../fields";
 
 /**
  * Open-frame racks on sale — the same frozen-price mechanism as the plated
@@ -66,9 +66,10 @@ export type AngleRackView = {
  */
 const COLUMNS = "3.5rem 3.5rem 5rem 3.5rem 4.5rem 4rem 4rem 5rem 5.5rem 6rem 4.5rem 3.5rem";
 
-/** Below this the table scrolls rather than compressing: a squeezed price
- *  column is worse than a scrollbar. */
-const MIN_WIDTH = "min-w-[61rem]";
+/** From `lg`, below this the table scrolls rather than compressing: a
+ *  squeezed price column is worse than a scrollbar. Below `lg` each row is a
+ *  card instead (`.row-card`, 9 Nov 2026), as on `ModelTable`. */
+const MIN_WIDTH = "lg:min-w-[61rem]";
 
 export function AngleRackTable({
   views,
@@ -94,11 +95,12 @@ export function AngleRackTable({
           {t("racksEmpty")}
         </p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="lg:overflow-x-auto">
           <div className={`${MIN_WIDTH} space-y-3`}>
+            {/* From `lg` only: a card names each figure itself. */}
             <div
               style={{ gridTemplateColumns: COLUMNS }}
-              className="grid gap-x-2 px-3 font-body text-[10px] font-medium uppercase tracking-widest text-stone"
+              className="hidden gap-x-2 px-3 font-body text-[10px] font-medium uppercase tracking-widest text-stone lg:grid"
             >
               <span>{t("colHeight")}</span>
               <span>{t("colShelves")}</span>
@@ -133,9 +135,14 @@ export function AngleRackTable({
 }
 
 /** A figure, or an em dash where its part has left the rate card, so a retired
- *  footprint shows as a gap rather than a zero that looks like a real price. */
-function Cell({ children }: { children: React.ReactNode }) {
-  return <span className="font-body text-sm tabular-nums text-forest">{children ?? "—"}</span>;
+ *  footprint shows as a gap rather than a zero that looks like a real price.
+ *  `label` is its column's heading, shown over it on a phone card. */
+function Cell({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <RowCell label={label} className="font-body text-sm tabular-nums text-forest">
+      {children ?? "—"}
+    </RowCell>
+  );
 }
 
 function AngleRackRow({ view }: { view: AngleRackView }) {
@@ -168,7 +175,7 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
   return (
     <div
       style={{ gridTemplateColumns: COLUMNS }}
-      className={`grid items-center gap-x-2 gap-y-2 rounded-xl border px-3 py-3 ${
+      className={`row-card grid items-center gap-x-2 gap-y-2 rounded-xl border px-3 py-3 ${
         unpriceable
           ? "border-terracotta/40 bg-terracotta/5"
           : isStale
@@ -176,44 +183,51 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
             : "border-forest/12 bg-cream"
       }`}
     >
-      <Cell>{model.config.heightFt}</Cell>
-      <Cell>{model.config.shelves}</Cell>
-      <Cell>
+      <Cell label={t("colHeight")}>{model.config.heightFt}</Cell>
+      <Cell label={t("colShelves")}>{model.config.shelves}</Cell>
+      <Cell label={t("colShelfSize")}>
         {view.depthFt !== null && view.lengthFt !== null
           ? t("frameSize", { depth: view.depthFt, length: view.lengthFt })
           : null}
       </Cell>
-      <Cell>{view.thicknessMm}</Cell>
+      <Cell label={t("colAngle")}>{view.thicknessMm}</Cell>
 
       {/* The grade's colours, not the rack's: every rack built on a grade can
           be had in any of them, so publishing one model per colour would be
           three identical rows at one price. Swatches rather than names — at
           three they do not fit the column. Names stay in the `title`. */}
-      <span className="flex min-w-0 items-center gap-1">
-        {view.colours.length === 0 ? (
-          <span className="font-body text-sm text-stone">—</span>
-        ) : (
-          view.colours.map((slug) => <Swatch key={slug} slug={slug} title={colourName(slug)} />)
-        )}
-      </span>
+      <RowCell label={t("colColour")}>
+        <span className="flex min-w-0 items-center gap-1">
+          {view.colours.length === 0 ? (
+            <span className="font-body text-sm text-stone">—</span>
+          ) : (
+            view.colours.map((slug) => <Swatch key={slug} slug={slug} title={colourName(slug)} />)
+          )}
+        </span>
+      </RowCell>
 
-      <Cell>{view.angleFt}</Cell>
-      <Cell>{view.grams === null ? null : t("weightKg", { kg: Math.round(view.grams / 100) / 10 })}</Cell>
-      <Cell>{costNow === null ? null : t("rupees", { amount: costNow })}</Cell>
+      <Cell label={t("colAngleFt")}>{view.angleFt}</Cell>
+      <Cell label={t("colWeight")}>
+        {view.grams === null ? null : t("weightKg", { kg: Math.round(view.grams / 100) / 10 })}
+      </Cell>
+      <Cell label={t("colCostNow")}>{costNow === null ? null : t("rupees", { amount: costNow })}</Cell>
 
       {/* Worked out, never typed (the owner, 3 Oct 2026: "sell price is
           based on cost + margin") — every rate and margin edit reprices it. */}
-      <Cell>{t("rupees", { amount: model.price })}</Cell>
-      <span className="font-body text-sm tabular-nums text-stone">
+      <Cell label={t("colPrice")}>{t("rupees", { amount: model.price })}</Cell>
+      <RowCell label={t("colMargin")} className="font-body text-sm tabular-nums text-stone">
         {margin === null ? "—" : t("marginValue", margin)}
-      </span>
+      </RowCell>
 
       <form action={toggleAngleRack} className="contents">
         <input type="hidden" name="id" value={model.id} />
         {/* Where the press goes, not "flip it" — see `switchTo`. */}
         <input type="hidden" name="to" value={model.active ? "off" : "on"} />
+        {/* On a phone card the controls start a line of their own (9 Nov
+            2026), said here because the `+ .row-action` rule in globals.css
+            cannot see past this form's hidden inputs to the figure before. */}
         <button
-          className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
+          className={`row-action rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors max-lg:!col-[1/span_2] ${
             model.active
               ? "bg-sage text-forest hover:bg-forest hover:text-cream"
               : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
@@ -231,7 +245,7 @@ function AngleRackRow({ view }: { view: AngleRackView }) {
           message={t("rackDeleteConfirm")}
           confirmLabel={tc("confirmDelete")}
           cancelLabel={tc("cancel")}
-          className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
+          className="row-action font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
         />
       </form>
 

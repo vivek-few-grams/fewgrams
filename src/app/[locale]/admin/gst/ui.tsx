@@ -49,7 +49,22 @@ export function Section({
 /**
  * A plain figures table. The first column reads left, the rest are numbers
  * and read right. `rows` already formatted; an empty table says so.
+ *
+ * The first column stays put while the rest scroll sideways (9 Nov 2026): on
+ * a phone only the first month or head fits, and scrolling took the row
+ * names away with it, leaving figures nobody could read. Its ground is
+ * opaque, mixed to match the tinted header, so figures pass under it. Below
+ * `md` only: from there the tables fit and the column needs no divider.
  */
+const STICKY = "max-md:sticky max-md:left-0 max-md:shadow-[1px_0_0_rgb(3_57_35/0.08)]";
+const STICKY_BODY = `${STICKY} max-md:bg-cream`;
+const STICKY_HEAD = `${STICKY} max-md:bg-[color-mix(in_srgb,var(--color-forest)_5%,var(--color-cream))]`;
+
+/** Narrow on a phone, so a long row name ("Credit this quarter (after
+ *  reversals)") wraps instead of leaving the figures a sliver beside it. */
+function FirstCell({ children }: { children: React.ReactNode }) {
+  return <span className="block max-w-[9.5rem] sm:max-w-none">{children}</span>;
+}
 export function Figures({
   head,
   rows,
@@ -70,8 +85,11 @@ export function Figures({
         <thead className="bg-forest/5">
           <tr className="text-[11px] uppercase tracking-wider text-stone">
             {head.map((h, i) => (
-              <th key={i} className={`px-4 py-2.5 font-medium ${i === 0 ? "text-left" : "text-right"}`}>
-                {h}
+              <th
+                key={i}
+                className={`px-4 py-2.5 font-medium ${i === 0 ? `text-left ${STICKY_HEAD}` : "text-right"}`}
+              >
+                {i === 0 ? <FirstCell>{h}</FirstCell> : h}
               </th>
             ))}
           </tr>
@@ -80,8 +98,11 @@ export function Figures({
           {rows.map((r, i) => (
             <tr key={i} className="border-t border-forest/10 align-top">
               {r.map((c, j) => (
-                <td key={j} className={`px-4 py-2.5 ${j === 0 ? "text-left" : "text-right tabular-nums"}`}>
-                  {c}
+                <td
+                  key={j}
+                  className={`px-4 py-2.5 ${j === 0 ? `text-left ${STICKY_BODY}` : "text-right tabular-nums"}`}
+                >
+                  {j === 0 ? <FirstCell>{c}</FirstCell> : c}
                 </td>
               ))}
             </tr>
@@ -91,8 +112,11 @@ export function Figures({
           <tfoot className="border-t border-forest/25 font-semibold text-forest">
             <tr>
               {foot.map((c, j) => (
-                <td key={j} className={`px-4 py-2.5 ${j === 0 ? "text-left" : "text-right tabular-nums"}`}>
-                  {c}
+                <td
+                  key={j}
+                  className={`px-4 py-2.5 ${j === 0 ? `text-left ${STICKY_BODY}` : "text-right tabular-nums"}`}
+                >
+                  {j === 0 ? <FirstCell>{c}</FirstCell> : c}
                 </td>
               ))}
             </tr>

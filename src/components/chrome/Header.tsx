@@ -3,6 +3,7 @@ import { ShoppingBag, User } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { brand } from "@/lib/brand";
+import { MobileMenu } from "./MobileMenu";
 import { NavLinks } from "./NavLinks";
 import { CURTAIN_ATTR } from "./curtain-anchor";
 import { LocaleSwitch } from "./LocaleSwitch";
@@ -15,13 +16,20 @@ import { hasActivePacks } from "@/lib/packs/catalogue";
 /**
  * Global header — SPEC §18.1.
  *
- * DECISION (15 Sep 2026): four persistent items, identical on mobile and
- * desktop. No full-screen overlay, no hamburger, nothing behind a click.
- * Reasoning in SPEC §18.2.
+ * From 1100px the section links sit in the bar, persistent, as decided on
+ * 15 Sep 2026 (SPEC §18.2). Below that they are behind a menu button that
+ * opens a panel from the right (`MobileMenu`) — the owner, 9 Nov 2026: on a
+ * phone the row scrolled sideways under the logo with "Weekly plans" cut in
+ * half, which did not look professional.
+ *
+ * **1100px, not `lg`.** Five links, the utilities and the `ml-12` between
+ * them need 1084px in English; from 1024 to 1083 the row wrapped and the bar
+ * grew to 121px (since the starter packs gave the nav its fifth item,
+ * 30 Oct 2026). Every class in the bar, `NavLinks` and `MobileMenu` switches
+ * at the same `min-[1100px]`, so the row never shows where it cannot fit.
  *
  * Layout: the logo owns the left edge, everything else is grouped on the
- * right. On a narrow screen the nav drops to its own row under the logo
- * rather than collapsing into a menu.
+ * right.
  */
 
 /**
@@ -78,24 +86,16 @@ export async function Header({
       {/* Solid white on every page (the owner, 3 Oct 2026): it was a
           translucent cream, which read as one colour over the cream pages
           and another over the white cart and checkout. */}
-      {/* Grid below `lg`, flex from `lg` up. **No vertical padding** — the
+      {/* Grid below 1100px, flex from there up. **No vertical padding** — the
           logo's own height is the bar's height, which is what lets the lockup
           fill it rather than float in a padded box. Restores the pre-logo bar
           height exactly: 80px inner, 81px with the border.
-          
-          The switch is at `lg`, not `md`: between 768 and about 880px the
-          single flex row does not fit (logo + nav + utilities + the `ml-12`
-          separation), so it wrapped, took the logo off centre again and pushed
-          the bar to 125px. The grid handles those widths correctly.
 
-          Why not one wrapping flex row: below that the nav takes its own line
-          (SPEC §18.2 — it never collapses into a menu), and in a wrapped flex
-          container each line's cross-axis size is its own. So the logo centred
-          only within line 1 and sat 16px high in a 109px band, which is exactly
-          what it looked like. A grid lets the logo span both rows and centre
-          across the whole bar, and it drops the mobile header to ~76px because
-          the nav now sits beside the logo rather than under it. */}
-      <div className="mx-auto grid max-w-[1400px] grid-cols-[auto_1fr] items-center gap-x-5 gap-y-1.5 px-6 md:px-12 lg:flex lg:flex-wrap lg:gap-x-6 lg:gap-y-2">
+          Below 1100px the bar is one row — logo, then the utilities and the
+          menu button — since the section links moved into the menu panel
+          (9 Nov 2026). Until then they took a second row beside the logo,
+          which the logo spanned (`row-span-2`) to stay centred. */}
+      <div className="mx-auto grid max-w-[1400px] grid-cols-[auto_1fr] items-center gap-x-5 px-6 md:px-12 min-[1100px]:flex min-[1100px]:flex-wrap min-[1100px]:gap-x-6 min-[1100px]:gap-y-2">
         {/* The logo lockup, not the text wordmark. `unoptimized` because the
             source is an SVG: Next's optimiser would need `dangerouslyAllowSVG`
             and has nothing to gain on vector art. Sized by height with `w-auto`
@@ -112,10 +112,7 @@ export async function Header({
              is a picture of. From the home page it stays quiet anyway — the
              same-pathname rule catches it. */
           {...{ [CURTAIN_ATTR]: "" }}
-          /* `row-span-2` + `self-center` is the whole point: the logo occupies
-             both grid rows and centres across them, so the nav sitting on row 2
-             cannot push it upward. */
-          className="col-start-1 row-span-2 row-start-1 flex shrink-0 items-center self-center transition-opacity hover:opacity-80 lg:order-1 lg:row-span-1"
+          className="col-start-1 row-start-1 flex shrink-0 items-center self-center transition-opacity hover:opacity-80 min-[1100px]:order-1"
         >
           <Image
             src={brand.logo.src}
@@ -134,7 +131,7 @@ export async function Header({
             left of it, utilities on the right. Without it the container's own
             gap runs them together and HOW WE GROW reads as a sibling of the
             cart. */}
-        <div className="col-start-2 row-start-1 flex items-center justify-self-end gap-4 lg:order-3 lg:ml-12 lg:gap-5">
+        <div className="col-start-2 row-start-1 flex items-center justify-self-end gap-4 min-[1100px]:order-3 min-[1100px]:ml-12 min-[1100px]:gap-5">
           {/* The search pill, from 1200px: first among the shop's tools, where
               people look for search (the owner, 20 Oct 2026 — beside the logo
               it read as part of the brand). 1152px was the first width with
@@ -190,6 +187,13 @@ export async function Header({
               />
             )}
           </Link>
+
+          {/* Below 1100px only: the section links, the language and help. */}
+          <MobileMenu
+            showMicrogreens={showMicrogreens}
+            showPacks={showPacks}
+            account={account && { href: account.href, key: account.key }}
+          />
         </div>
       </div>
     </header>

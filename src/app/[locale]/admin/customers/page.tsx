@@ -121,8 +121,10 @@ export default async function CustomersAdmin({ searchParams }: PageProps<"/[loca
       {rows.length === 0 ? (
         <p className="font-body text-sm text-stone">{q ? t("noMatch") : t("empty")}</p>
       ) : (
-        <div className="overflow-x-auto rounded-2xl border border-forest/15">
-          <table className="w-full min-w-[48rem] border-collapse text-left">
+        /* Cards below `lg` (`.stack-table`, globals.css): each cell's
+           `data-label` is the heading it sits under. */
+        <div className="lg:overflow-x-auto lg:rounded-2xl lg:border lg:border-forest/15">
+          <table className="stack-table w-full min-w-[48rem] border-collapse text-left">
             <thead>
               <tr className="border-b border-forest/15 bg-sand/50">
                 {[
@@ -156,13 +158,19 @@ export default async function CustomersAdmin({ searchParams }: PageProps<"/[loca
                     )}
                     {c.name && c.email && <span className="block text-xs text-stone">{c.email}</span>}
                   </td>
-                  <td className={`${td} tabular-nums text-forest`}>{c.phone ? formatPhone(c.phone) : "—"}</td>
-                  <td className={`${td} tabular-nums text-forest`}>{format.number(c.orders)}</td>
-                  <td className={`${td} tabular-nums text-forest`}>{c.orders ? money(c.spent) : "—"}</td>
-                  <td className={`${td} text-forest`}>
+                  <td data-label={t("colPhone")} className={`${td} tabular-nums text-forest`}>
+                    {c.phone ? formatPhone(c.phone) : "—"}
+                  </td>
+                  <td data-label={t("colOrders")} className={`${td} tabular-nums text-forest`}>
+                    {format.number(c.orders)}
+                  </td>
+                  <td data-label={t("colSpent")} className={`${td} tabular-nums text-forest`}>
+                    {c.orders ? money(c.spent) : "—"}
+                  </td>
+                  <td data-label={t("colLast")} className={`${td} text-forest`}>
                     {c.last ? format.dateTime(new Date(c.last), { dateStyle: "medium" }) : "—"}
                   </td>
-                  <td className={`${td} tabular-nums text-forest`}>
+                  <td data-label={t("colPlans")} className={`${td} tabular-nums text-forest`}>
                     {c.plans ? format.number(c.plans) : "—"}
                   </td>
                 </tr>

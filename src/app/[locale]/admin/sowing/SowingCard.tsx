@@ -109,8 +109,10 @@ export function SowingCard({
               onDone={() => setEditing(false)}
             />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[36rem] font-body text-sm">
+            /* Cards below `lg` (`.stack-table`, globals.css): each cell's
+               `data-label` is the heading it sits under (9 Nov 2026). */
+            <div className="lg:overflow-x-auto">
+              <table className="stack-table w-full min-w-[36rem] font-body text-sm">
                 <thead>
                   <tr className="text-left text-[11px] uppercase tracking-wider text-stone">
                     <th className="pb-2 pr-3 font-medium">{t("variety")}</th>
@@ -131,25 +133,31 @@ export function SowingCard({
                         <td className="py-2 pr-3 font-semibold">
                           {names[line.varietyKey] ?? line.varietyKey}
                           {isHarvested(line) && !countsForYield(line) && (
-                            <span className="block text-[11px] font-normal text-terracotta">{t("notCounted")}</span>
+                            <span className="block text-[11px] font-normal text-terracotta">
+                              {t("notCounted")}
+                            </span>
                           )}
                         </td>
-                        <td className="py-2 pr-3 text-right">{t("grams", { grams: line.seedGrams })}</td>
-                        <td className="py-2 pr-3 text-right">{line.trays ?? t("none")}</td>
-                        <td className="py-2 pr-3 text-right">
+                        <td data-label={t("seedGrams")} className="py-2 pr-3 text-right">
+                          {t("grams", { grams: line.seedGrams })}
+                        </td>
+                        <td data-label={t("trays")} className="py-2 pr-3 text-right">
+                          {line.trays ?? t("none")}
+                        </td>
+                        <td data-label={t("harvestGrams")} className="py-2 pr-3 text-right">
                           {isHarvested(line) ? (
                             t("grams", { grams: line.harvestGrams })
                           ) : (
                             <span className="text-stone">{t("growing")}</span>
                           )}
                         </td>
-                        <td className="py-2 pr-3 text-right font-semibold">
+                        <td data-label={t("colRatio")} className="py-2 pr-3 text-right font-semibold">
                           {ratio === null ? t("none") : t("ratio", { ratio })}
                         </td>
-                        <td className="py-2 pr-3 text-right">
+                        <td data-label={t("colPerTray")} className="py-2 pr-3 text-right">
                           {perTray === null ? t("none") : t("grams", { grams: perTray })}
                         </td>
-                        <td className="py-2 text-right">
+                        <td data-label={t("colDays")} className="py-2 text-right">
                           {isHarvested(line)
                             ? t("days", {
                                 days: daysBetween(sowing.sowDate, line.harvestedOn),

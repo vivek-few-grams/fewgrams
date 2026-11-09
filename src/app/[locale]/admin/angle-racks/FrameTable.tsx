@@ -6,7 +6,7 @@ import { ConfirmSubmit } from "@/components/ui/ConfirmSubmit";
 import { IDLE, type FormState } from "@/lib/forms";
 import type { FrameSize } from "@/lib/types";
 import { addFrame, removeFrame, toggleFrame } from "./actions";
-import { CheckField, NumberField } from "../fields";
+import { RowCell, CheckField, NumberField } from "../fields";
 
 /**
  * Shelf footprints for the open-frame range.
@@ -32,16 +32,18 @@ import { CheckField, NumberField } from "../fields";
  */
 const COLUMNS = "minmax(4.5rem, 1fr) minmax(4.5rem, 1fr) minmax(6rem, 1.3fr) 6rem 5.5rem 4rem";
 
-/** Below this the rows scroll sideways inside their own box rather than
- *  widening the page.
+/** From `lg`, below this the rows scroll sideways inside their own box
+ *  rather than widening the page.
  *
  *  Not cosmetic: the row's tracks come from an inline `gridTemplateColumns`,
- *  which applies at every width, and a compact row's inputs carry their label
- *  only as an `aria-label` — so stacking them into one column would give an
- *  operator three unlabelled boxes. Without this wrapper the Save, Active and
+ *  which applies at every width. Without this wrapper the Save, Active and
  *  Delete controls pushed the whole document 200px wide on a 414px viewport,
- *  taking the nav rail with them. */
-const MIN_WIDTH = "min-w-[44rem]";
+ *  taking the nav rail with them.
+ *
+ *  Below `lg` each row is a card instead (`.row-card`, 9 Nov 2026), with each
+ *  figure's name over it — stacking was refused here while a compact row's
+ *  cells carried their label only as an `aria-label`. */
+const MIN_WIDTH = "lg:min-w-[44rem]";
 
 /** Duplicated from `frameFeetPerShelf` rather than imported: pulling the pure
  *  pricing module into a client component would ship the vendor seed with it.
@@ -62,7 +64,7 @@ export function FrameTable({ frames }: { frames: FrameSize[] }) {
       ) : (
         /* The add form sits outside this, so it never slides sideways with
            the rows. */
-        <div className="overflow-x-auto">
+        <div className="lg:overflow-x-auto">
           <div className={`${MIN_WIDTH} space-y-3`}>
             <div
               style={{ gridTemplateColumns: COLUMNS }}
@@ -98,35 +100,44 @@ function FrameRow({ frame }: { frame: FrameSize }) {
   return (
     <div
       style={{ gridTemplateColumns: COLUMNS }}
-      className="grid items-center gap-x-3 gap-y-2 rounded-xl border border-forest/12 bg-cream px-4 py-3 lg:gap-y-0"
+      className="row-card grid items-center gap-x-3 gap-y-2 rounded-xl border border-forest/12 bg-cream px-4 py-3 lg:gap-y-0"
     >
       {/* Text, not inputs, and no Save (31 Oct 2026): the footprint is in the
           SKU of every rack built on it, which packs and carts name, so it is
           fixed once added. A footprint is nothing but its size and its
           switch, so that leaves nothing to save. A different size is a new
           row. */}
-      <span className="px-3 font-body text-sm tabular-nums text-forest">{frame.depthFt}</span>
-      <span className="px-3 font-body text-sm tabular-nums text-forest">{frame.lengthFt}</span>
+      <RowCell label={t("colDepth")} className="px-3 font-body text-sm tabular-nums text-forest max-lg:px-0">
+        {frame.depthFt}
+      </RowCell>
+      <RowCell label={t("colLength")} className="px-3 font-body text-sm tabular-nums text-forest max-lg:px-0">
+        {frame.lengthFt}
+      </RowCell>
 
-      <span className="font-body text-sm tabular-nums text-stone">
+      <RowCell label={t("colFrameFeet")} className="font-body text-sm tabular-nums text-stone">
         {t("frameFeetValue", {
           feet: feetPerShelf(frame.depthFt, frame.lengthFt),
           length: frame.lengthFt,
           depth: frame.depthFt,
         })}
-      </span>
+      </RowCell>
 
-      {/* The Save column, kept so the row lines up with the plated tables. */}
-      <span />
+      {/* The Save column, kept so the row lines up with the plated tables.
+          Not on a phone card, where an empty cell is only a gap. */}
+      <span className="max-lg:hidden" />
 
       <form action={toggleFrame} className="contents">
         <input type="hidden" name="id" value={frame.id} />
         {/* Where the press goes, not "flip it" — see `switchTo`. */}
         <input type="hidden" name="to" value={frame.active ? "off" : "on"} />
         {/* Hover moves in the direction of what the click does: greener when
-            it will switch on, plain when off. */}
+            it will switch on, plain when off.
+
+            On a phone card the controls start a line of their own (9 Nov
+            2026), said here because the `+ .row-action` rule in globals.css
+            cannot see past this form's hidden inputs to the field before. */}
         <button
-          className={`rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors ${
+          className={`row-action rounded-full px-3 py-1 font-body text-xs font-semibold transition-colors max-lg:!col-[1/span_2] ${
             frame.active
               ? "bg-sage text-forest hover:bg-forest hover:text-cream"
               : "bg-forest/10 text-stone hover:bg-sage hover:text-forest"
@@ -144,7 +155,7 @@ function FrameRow({ frame }: { frame: FrameSize }) {
           message={t("frameDeleteConfirm")}
           confirmLabel={tc("confirmDelete")}
           cancelLabel={tc("cancel")}
-          className="font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
+          className="row-action font-body text-xs text-terracotta underline underline-offset-2 hover:text-terracotta/80"
         />
       </form>
 
@@ -221,10 +232,14 @@ function AddFrameForm() {
           type="submit"
           disabled={pending}
           style={{ gridColumn: "span 3" }}
+          /* `max-lg:!col-span-full` (9 Nov 2026): below `lg` the grid is one
+             or two columns, and the inline span of three made the grid add
+             columns of its own for it, so the fields beside it fell into
+             slivers with their labels overlapping. */
           /* `text-sm`, not `text-xs`, so the button is the same 38px as the
              fields beside it. At `text-xs` its line-height made it 34px and,
              with `items-end` aligning bottoms, its top sat 4px low. */
-          className="rounded-full border border-forest/25 px-4 py-2 font-body text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60"
+          className="rounded-full border border-forest/25 px-4 py-2 font-body text-sm font-semibold text-forest transition-colors hover:bg-forest hover:text-cream disabled:opacity-60 max-lg:!col-span-full"
         >
           {t("addFrame")}
         </button>
