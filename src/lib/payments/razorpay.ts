@@ -166,9 +166,12 @@ export class RazorpayProvider implements PaymentProvider {
     const path = `/orders/${encodeURIComponent(ref.providerOrderId)}`;
 
     let [order, payments] = await this.readOrder(path);
-    const toCapture = payments.filter(
-      (p) => p.status === "authorized" && p.amount === order.amount && p.currency === order.currency,
-    );
+    const toCapture =
+      ref.capture === false
+        ? []
+        : payments.filter(
+            (p) => p.status === "authorized" && p.amount === order.amount && p.currency === order.currency,
+          );
     if (toCapture.length > 0) {
       for (const p of toCapture) {
         try {

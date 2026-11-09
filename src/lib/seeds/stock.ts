@@ -54,7 +54,19 @@ export type SeedSourcing = "shelf" | "vendor";
  */
 export function seedMaxUnits(stockGrams: number): number {
   if (!Number.isFinite(stockGrams) || stockGrams <= 0) return 0;
-  return Math.min(Math.floor(stockGrams / GRAMS_PER_UNIT), MAX_UNITS_PER_LINE);
+  return Math.min(Math.floor(roundGrams(stockGrams) / GRAMS_PER_UNIT), MAX_UNITS_PER_LINE);
+}
+
+/**
+ * A gram figure to the hundredth. Sowings are typed in decimals (12.5 g), and
+ * subtracting them in floating point drifts: 200 − 0.3 − 99.7 is
+ * 99.99999999999999, which floored to no 100 g pack and showed a seed sold
+ * out with "100 g" on the admin screen beside it (found 8 Nov 2026). Every
+ * figure computed from the shelf is rounded here before it is stored or
+ * compared, and figures already stored with the drift read correctly.
+ */
+export function roundGrams(grams: number): number {
+  return Math.round(grams * 100) / 100;
 }
 
 /** Under one 100 g unit on the shelf. */
@@ -77,5 +89,5 @@ export function seedReadyDate(now: Date = new Date()): Date {
  */
 export function shelfPacks(stockGrams: number): number {
   if (!Number.isFinite(stockGrams) || stockGrams <= 0) return 0;
-  return Math.floor(stockGrams / SEED_MIN_ORDER_GRAMS);
+  return Math.floor(roundGrams(stockGrams) / SEED_MIN_ORDER_GRAMS);
 }

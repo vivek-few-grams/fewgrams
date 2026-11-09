@@ -235,22 +235,14 @@ export function gstr1Csv(g: Gstr1, table: Gstr1CsvTable): string {
           ]),
       ]);
     case "docs":
+      /* A row per series; "Total Number" is the whole range and "Cancelled"
+         the numbers in it never issued (`docSeries`) — the tool works out
+         the net issued from the two. Bills of supply share the invoice
+         series and go under "Invoices for outward supply". */
       return toCsv([
         ["Nature of Document", "Sr. No. From", "Sr. No. To", "Total Number", "Cancelled"],
-        ...(g.docs.invoices
-          ? [
-              [
-                "Invoices for outward supply",
-                g.docs.invoices.from,
-                g.docs.invoices.to,
-                g.docs.invoices.count,
-                0,
-              ],
-            ]
-          : []),
-        ...(g.docs.creditNotes
-          ? [["Credit Note", g.docs.creditNotes.from, g.docs.creditNotes.to, g.docs.creditNotes.count, 0]]
-          : []),
+        ...g.docs.invoices.map((d) => ["Invoices for outward supply", d.from, d.to, d.total, d.cancelled]),
+        ...g.docs.creditNotes.map((d) => ["Credit Note", d.from, d.to, d.total, d.cancelled]),
       ]);
   }
 }

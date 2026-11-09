@@ -4,18 +4,29 @@ import { Link } from "@/i18n/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { istDateISO } from "@/lib/delivery-date";
 import { isMonthId, monthOfDate } from "@/lib/gst/period";
-import { billStatus, billTotals, owesPayBy, payBy, type BillStatus } from "@/lib/purchases/bill";
+import {
+  billStatus,
+  isCreditNote,
+  owesPayBy,
+  payBy,
+  signedTotals,
+  type BillStatus,
+} from "@/lib/purchases/bill";
 import { daysBetween } from "@/lib/purchases/dates";
+import { decodeShortfall } from "@/lib/purchases/shortfall";
 import { listBills } from "@/lib/repo/purchases";
+import { stockItemNames } from "./load";
+import { ShortfallNotice } from "./ShortfallNotice";
 
 export const dynamic = "force-dynamic";
 
-const STATUSES: BillStatus[] = ["waiting", "mismatch", "claimed", "reverseCharge", "noGst"];
+const STATUSES: BillStatus[] = ["waiting", "mismatch", "claimed", "withdrawn", "reverseCharge", "noGst"];
 
 const CHIP: Record<BillStatus, string> = {
   waiting: "bg-sand text-forest",
   mismatch: "bg-terracotta/15 text-terracotta",
   claimed: "bg-forest text-cream",
+  withdrawn: "bg-stone/15 text-stone",
   reverseCharge: "bg-forest/80 text-cream",
   noGst: "bg-sand text-stone",
 };
@@ -27,7 +38,15 @@ const CHIP: Record<BillStatus, string> = {
  * carrying no GST at all. Filter by bill month or by that standing.
  *
  * Two warnings ride on the list: a bill the vendor has still not filed, and
- * one not yet paid as its 180 days run out (CGST Act s.16(2)).
+ * one not yet paid as its 180 days run out (CGST Act s.16(2)). After a
+ * delete, a third: stock the bill could not take back off the shelf, carried
+ * here as `?short=` because the bill's own page is gone — or, with `saved`,
+ * stock a new credit note could not take off.
+ *
+ * A vendor's credit note is listed among the bills, said to be one, its
+ * amounts with a minus and counted against the totals. One the portal does
+ * not show yet is its own note: nothing to chase, but its GST has not come
+ * off the credit yet. A claim withdrawn by hand is neither.
  */
 export default async function PurchasesAdmin({ searchParams }: PageProps<"/[locale]/admin/purchases">) {
   await requireRole("admin");
@@ -40,7 +59,8 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
       ? (sp.status as BillStatus)
       : "";
 
-  const all = await listBills();
+  const short = decodeShortfall(typeof sp.short === "string" ? sp.short : null);
+  const [all, names] = await Promise.all([listBills(), short.length ? stockItemNames() : null]);
   const today = istDateISO(new Date());
   const bills = all.filter(
     (b) => (!month || monthOfDate(b.date) === month) && (!status || billStatus(b) === status),
@@ -54,12 +74,14 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
 
   const sum = bills.reduce(
     (a, b) => {
-      const x = billTotals(b.lines);
+      const x = signedTotals(b);
       return { taxable: a.taxable + x.taxable, tax: a.tax + x.igst + x.cgst + x.sgst };
     },
     { taxable: 0, tax: 0 },
   );
-  const waiting = all.filter((b) => billStatus(b) === "waiting").length;
+  const notes = bills.filter(isCreditNote).length;
+  const waiting = all.filter((b) => billStatus(b) === "waiting" && !isCreditNote(b)).length;
+  const waitingNotes = all.filter((b) => billStatus(b) === "waiting" && isCreditNote(b)).length;
   const unpaidSoon = all.filter((b) => owesPayBy(b) && !b.paidOn && daysBetween(today, payBy(b)) <= 30);
 
   const filterLink = (q: { month?: string; status?: string }) => {
@@ -83,16 +105,34 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
           <h1 className="font-display text-2xl font-bold text-forest">{t("title")}</h1>
           <p className="mt-2 max-w-3xl font-body text-sm text-stone">{t("intro")}</p>
         </div>
-        <Link
-          href="/admin/purchases/new"
-          className="inline-flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
-        >
-          <Plus aria-hidden size={16} strokeWidth={2} />
-          {t("newBill")}
-        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/admin/purchases/new?doc=creditNote"
+            className="inline-flex items-center gap-2 rounded-full border border-forest/25 px-5 py-2.5 font-body text-sm font-semibold text-forest transition-colors hover:bg-forest/5"
+          >
+            <Plus aria-hidden size={16} strokeWidth={2} />
+            {t("newNote")}
+          </Link>
+          <Link
+            href="/admin/purchases/new"
+            className="inline-flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep"
+          >
+            <Plus aria-hidden size={16} strokeWidth={2} />
+            {t("newBill")}
+          </Link>
+        </div>
       </section>
 
-      {(waiting > 0 || unpaidSoon.length > 0) && (
+      {short.length > 0 && (
+        <ShortfallNotice
+          title={sp.saved === "1" ? t("shortfall.savedNew") : t("shortfall.deleted")}
+          lines={short.map((s) =>
+            t("shortfall.line", { item: names?.[s.kind][s.key] ?? s.key, kind: s.kind, short: s.short }),
+          )}
+        />
+      )}
+
+      {(waiting > 0 || waitingNotes > 0 || unpaidSoon.length > 0) && (
         <section className="space-y-2">
           {waiting > 0 && (
             <p className="rounded-xl bg-sand/60 px-4 py-3 font-body text-sm text-forest">
@@ -103,6 +143,11 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
               >
                 {t("showThem")}
               </Link>
+            </p>
+          )}
+          {waitingNotes > 0 && (
+            <p className="rounded-xl bg-sand/40 px-4 py-3 font-body text-sm text-forest">
+              {t("waitingNotesNote", { count: waitingNotes })}
             </p>
           )}
           {unpaidSoon.map((b) => (
@@ -160,8 +205,9 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
             </thead>
             <tbody className="text-forest">
               {bills.map((b) => {
-                const x = billTotals(b.lines);
+                const x = signedTotals(b);
                 const s = billStatus(b);
+                const note = isCreditNote(b);
                 return (
                   <tr key={b.id} className="border-t border-forest/10 align-top">
                     <td className="whitespace-nowrap px-4 py-2.5 tabular-nums">{day(b.date)}</td>
@@ -179,12 +225,19 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
                           .join(", ")}
                       </span>
                     </td>
-                    <td className="px-4 py-2.5 tabular-nums">{b.number}</td>
+                    <td className="px-4 py-2.5 tabular-nums">
+                      {b.number}
+                      {note && (
+                        <span className="mt-1 block w-fit rounded-full border border-terracotta/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-terracotta">
+                          {t("noteChip")}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-4 py-2.5 text-right tabular-nums">{money(x.taxable)}</td>
                     <td className="px-4 py-2.5 text-right tabular-nums">{money(x.igst + x.cgst + x.sgst)}</td>
                     <td className="px-4 py-2.5">
                       <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${CHIP[s]}`}>
-                        {t(`status.${s}`)}
+                        {note ? t(`noteStatus.${s}`) : t(`status.${s}`)}
                       </span>
                       {b.claim && (
                         <span className="mt-1 block text-[11px] text-stone">
@@ -198,7 +251,7 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
                       ) : owesPayBy(b) ? (
                         <span className="text-stone">{t("payBy", { date: day(payBy(b)) })}</span>
                       ) : (
-                        <span className="text-stone">{t("unpaid")}</span>
+                        <span className="text-stone">{note ? t("notSettled") : t("unpaid")}</span>
                       )}
                     </td>
                     <td className="px-4 py-2.5 text-right">
@@ -222,7 +275,7 @@ export default async function PurchasesAdmin({ searchParams }: PageProps<"/[loca
             <tfoot className="border-t border-forest/25 font-semibold text-forest">
               <tr>
                 <td className="px-4 py-2.5" colSpan={3}>
-                  {t("totalFor", { count: bills.length })}
+                  {t("totalFor", { count: bills.length - notes, notes })}
                 </td>
                 <td className="px-4 py-2.5 text-right tabular-nums">{money(sum.taxable)}</td>
                 <td className="px-4 py-2.5 text-right tabular-nums">{money(sum.tax)}</td>

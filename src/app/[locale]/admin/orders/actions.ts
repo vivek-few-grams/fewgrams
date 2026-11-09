@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { assertRole } from "@/lib/auth/guard";
 import { cancelOrder as cancel } from "@/lib/orders/cancel";
 import { issueCreditNote, markOrderRefunded, owesCreditNote } from "@/lib/orders/refund";
+import { finishStalledOrder } from "@/lib/orders/settle";
 import { TRACKING_NUMBER, canAdvance, canMarkRefunded, isOrderId } from "@/lib/orders/order";
 import { advanceOrderStatus, getOrder, setPlaceOfSupply, setShipmentTracking } from "@/lib/repo/orders";
 import { listFilings } from "@/lib/repo/gst";
@@ -60,6 +61,20 @@ export async function cancelOrder(fd: FormData): Promise<void> {
   /* False means it moved on first — out for delivery, or cancelled by a
      second press; the refreshed page shows which. */
   await cancel(order);
+  revalidateOrder(id);
+}
+
+/**
+ * Finish a paid order whose after-payment work — invoice number, stock,
+ * confirmation email — stopped part-way (`finishStalledOrder`). Does
+ * nothing while another run still holds the lease; the refreshed page says
+ * so.
+ */
+export async function finishOrder(fd: FormData): Promise<void> {
+  await assertRole("admin");
+  const id = String(fd.get("id") ?? "");
+  if (!isOrderId(id)) throw new Error("Bad finish request");
+  await finishStalledOrder(id);
   revalidateOrder(id);
 }
 

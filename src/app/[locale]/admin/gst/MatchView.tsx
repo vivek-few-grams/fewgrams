@@ -1,9 +1,9 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { matchStatement } from "@/lib/gst/gstr2b";
+import { matchStatement, type MatchResult, type PortalInvoice } from "@/lib/gst/gstr2b";
 import { monthOfDate } from "@/lib/gst/period";
 import type { QuarterView } from "@/lib/gst/quarter";
-import { billTotals, billStatus, type PurchaseBill } from "@/lib/purchases/bill";
+import { billTotals, billStatus, signedTotals, type PurchaseBill } from "@/lib/purchases/bill";
 import type { StoredGstr2b } from "@/lib/repo/gst";
 import { Figures, Section, formatters } from "./ui";
 import { UploadForm } from "./UploadForm";
@@ -29,8 +29,11 @@ export async function MatchView({
   const { money, month: monthLabel, date } = await formatters();
   const lastDay = `${view.months[2]}-31`;
   const results = statements.map((s) => ({ s, r: matchStatement(s, bills) }));
+  /* Signed: a vendor's credit note claimed this quarter takes credit away,
+     so it reads as a minus here as it does in the return (8 Nov 2026). The
+     mismatch table below compares magnitudes, as the portal lists them. */
   const tax = (b: PurchaseBill) => {
-    const x = billTotals(b.lines);
+    const x = signedTotals(b);
     return x.igst + x.cgst + x.sgst;
   };
 
@@ -42,6 +45,25 @@ export async function MatchView({
       {b.vendor.name}
     </Link>
   );
+  /* A portal invoice two bills answer to is left unmatched rather than
+     guessed; say so, or it reads as a bill still to be entered. */
+  const sameNumber = (r: MatchResult, u: PortalInvoice) => {
+    const bills = r.ambiguous.find((a) => a.invoice === u)?.bills;
+    if (!bills) return null;
+    return (
+      <span className="mt-1 block text-xs text-terracotta">
+        {t("match.ambiguous", { count: bills.length })}{" "}
+        {bills.map((b, i) => (
+          <span key={b.id}>
+            {i > 0 && ", "}
+            <Link href={`/admin/purchases/${b.id}`} className="underline underline-offset-4">
+              {date(b.date)}
+            </Link>
+          </span>
+        ))}
+      </span>
+    );
+  };
 
   return (
     <div className="space-y-10">
@@ -130,7 +152,10 @@ export async function MatchView({
           empty={t("match.none")}
           rows={results.flatMap(({ s, r }) =>
             r.unknown.map((u) => [
-              `${u.name || u.gstin} (${u.gstin})${u.note ? ` · ${t("match.vendorNote")}` : ""}`,
+              <>
+                {`${u.name || u.gstin} (${u.gstin})${u.note ? ` · ${t("match.vendorNote")}` : ""}`}
+                {sameNumber(r, u)}
+              </>,
               u.number,
               date(u.date),
               money(u.taxable),

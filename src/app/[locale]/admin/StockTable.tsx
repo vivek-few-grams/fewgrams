@@ -61,7 +61,7 @@ export function StockTable({
   actions,
 }: {
   namespace: "admin.trays" | "admin.growMedia";
-  items: Array<{ item: Item; name: string | null; bills: number; picker: Picker }>;
+  items: Array<{ item: Item; name: string | null; bills: number; held: number; picker: Picker }>;
   actions: Actions;
 }) {
   const t = useTranslations(namespace);
@@ -102,13 +102,14 @@ export function StockTable({
             </tr>
           </thead>
           <tbody>
-            {items.map(({ item, name, bills, picker }) => (
+            {items.map(({ item, name, bills, held, picker }) => (
               <Row
                 key={item.id}
                 namespace={namespace}
                 item={item}
                 name={name}
                 bills={bills}
+                held={held}
                 picker={picker}
                 actions={actions}
               />
@@ -136,6 +137,7 @@ function Row({
   item,
   name,
   bills,
+  held,
   picker,
   actions,
 }: {
@@ -143,6 +145,7 @@ function Row({
   item: Item;
   name: string | null;
   bills: number;
+  held: number;
   picker: Picker;
   actions: Actions;
 }) {
@@ -231,7 +234,7 @@ function Row({
             : "—"}
         </td>
         <td className={`${CELL} px-3 py-2`}>
-          <StockCount id={item.id} value={stock} unit="packs" correct={actions.correct} />
+          <StockCount id={item.id} value={stock} unit="packs" held={held} correct={actions.correct} />
         </td>
         {PACKING_FIELDS.map((f) => (
           <td key={f} className={`${CELL} p-0`}>

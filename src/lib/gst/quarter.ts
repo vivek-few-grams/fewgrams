@@ -1,10 +1,25 @@
-import { claimable, isIntraPurchase, type PurchaseBill } from "@/lib/purchases/bill";
+import {
+  claimable,
+  isCreditNote,
+  isIntraPurchase,
+  signedBy,
+  signedTotals,
+  type PurchaseBill,
+} from "@/lib/purchases/bill";
 import type { TaxRow } from "@/lib/tax/order-tax";
 import { buildGstr1, type Gstr1 } from "./gstr1";
 import { buildGstr3b, settle, type ExemptInward, type Gstr3b, type ItcLine, type Settlement } from "./gstr3b";
-import { ZERO, addHeads, type Heads } from "./ledger";
-import { monthOfDate, monthsOf, quarterOf, quartersSince, type MonthId, type QuarterId } from "./period";
-import { docValue, type CreditDoc, type SaleDoc } from "./sales";
+import { ZERO, addHeads, sumHeads, type Heads } from "./ledger";
+import {
+  GST_FROM_DATE,
+  monthOfDate,
+  monthsOf,
+  quarterOf,
+  quartersSince,
+  type MonthId,
+  type QuarterId,
+} from "./period";
+import { credited, docValue, type CreditDoc, type SaleDoc } from "./sales";
 
 /**
  * One quarter's GST, worked out from the books — SPEC §26.5. Pure: the
@@ -38,8 +53,10 @@ export type GstFiling = {
   quarter: QuarterId;
   gstr1: FiledReturn | null;
   gstr3b: FiledReturn | null;
-  /** The ledgers as GSTR-3B left them, frozen when it was marked filed. */
-  closing: { credit: Heads; cash: Heads } | null;
+  /** The ledgers as GSTR-3B left them, frozen when it was marked filed —
+   *  and the Negative Liability Statement's balance, absent on quarters
+   *  filed before 8 Nov 2026 and read as zero. */
+  closing: { credit: Heads; cash: Heads; negative?: Heads } | null;
   updatedAt: string;
 };
 
@@ -53,6 +70,9 @@ export type GstBooks = {
 
 const inMonths = (months: readonly MonthId[], date: string) => months.includes(monthOfDate(date));
 
+/** The claimed credit, line by line, in its claim month. A vendor's credit
+ *  note claimed there is negative (`signedBy`): the portal shows a month's
+ *  GSTR-2B net of the credit notes in it, in 4A. */
 function itcLines(bills: PurchaseBill[], months: readonly MonthId[]): ItcLine[] {
   return bills
     .filter((b) => b.claim && months.includes(b.claim.month) && claimable(b))
@@ -60,8 +80,8 @@ function itcLines(bills: PurchaseBill[], months: readonly MonthId[]): ItcLine[] 
       b.lines
         .filter((l) => l.igst + l.cgst + l.sgst > 0)
         .map((l) => ({
-          taxable: l.taxable,
-          heads: { igst: l.igst, cgst: l.cgst, sgst: l.sgst },
+          taxable: signedBy(b, l.taxable),
+          heads: { igst: signedBy(b, l.igst), cgst: signedBy(b, l.cgst), sgst: signedBy(b, l.sgst) },
           credit: l.credit,
           reverseCharge: b.reverseCharge,
           imported: b.vendor.kind === "foreign",
@@ -71,17 +91,23 @@ function itcLines(bills: PurchaseBill[], months: readonly MonthId[]): ItcLine[] 
 
 /**
  * The lines of a bill that GSTR-3B table 5 reports — exempt purchases from a
- * registered vendor — which it groups by the **bill date**, not by a claim.
- * The one figure in a return a bill reaches through its date, so the one
- * `isLockedBill` has to check the date for.
+ * registered vendor, dated on or after registration (`GST_FROM_DATE`, the
+ * cut `claimable` makes for credit: a bill from before it is in no return) —
+ * which it groups by the **bill date**, not by a claim. The one figure in a
+ * return a bill reaches through its date, so the one `isLockedBill` has to
+ * check the date for; both read this, so they cannot disagree.
  */
-const exemptLines = (b: Pick<PurchaseBill, "vendor" | "lines">) =>
-  b.vendor.kind === "registered" ? b.lines.filter((l) => l.rate === 0) : [];
+const exemptLines = (b: Pick<PurchaseBill, "vendor" | "lines" | "date">) =>
+  b.vendor.kind === "registered" && b.date >= GST_FROM_DATE ? b.lines.filter((l) => l.rate === 0) : [];
 
+/* Net of vendors' credit notes: exempt goods sent back come off the month of
+   the note's date. */
 function exemptInward(bills: PurchaseBill[], months: readonly MonthId[]): ExemptInward[] {
   return bills
     .filter((b) => inMonths(months, b.date))
-    .flatMap((b) => exemptLines(b).map((l) => ({ value: l.taxable, intra: isIntraPurchase(b.vendor) })));
+    .flatMap((b) =>
+      exemptLines(b).map((l) => ({ value: signedBy(b, l.taxable), intra: isIntraPurchase(b.vendor) })),
+    );
 }
 
 export type PeriodFigures = {
@@ -105,23 +131,25 @@ export function periodFigures(books: GstBooks, months: readonly MonthId[]): Peri
 const deposits = (books: GstBooks, months: readonly MonthId[]): Heads =>
   addHeads(ZERO, ...books.payments.filter((p) => months.includes(p.month)).map((p) => p.heads));
 
-export type Opening = { credit: Heads; cash: Heads };
+/** The ledgers at the start of a quarter, and the negative liability
+ *  brought in (`setOff`). */
+export type Opening = { credit: Heads; cash: Heads; negative: Heads };
 
 /** The ledgers at the start of `quarter`. */
 export function openingFor(books: GstBooks, quarter: QuarterId): Opening {
-  let opening: Opening = { credit: ZERO, cash: ZERO };
+  let opening: Opening = { credit: ZERO, cash: ZERO, negative: ZERO };
   for (const q of quartersSince(monthsOf(quarter)[0] + "-01")) {
     if (q === quarter) break;
     const filed = books.filings.find((f) => f.quarter === q)?.closing;
     if (filed) {
-      opening = filed;
+      opening = { credit: filed.credit, cash: filed.cash, negative: filed.negative ?? ZERO };
       continue;
     }
     const months = monthsOf(q);
     const s = settle(periodFigures(books, months).gstr3b, opening, deposits(books, months));
     /* Worked out as if the balance had been paid: what was owed and not
        deposited is still owed, not carried as a negative. */
-    opening = { credit: s.closingCredit, cash: s.closingCash };
+    opening = { credit: s.closingCredit, cash: s.closingCash, negative: s.negative.closing };
   }
   return opening;
 }
@@ -147,8 +175,10 @@ export type MonthSummary = {
   taxable: number;
   exempt: number;
   tax: Heads;
+  /** Bills dated in the month — not vendors' credit notes. */
   bills: number;
-  /** Purchases dated in the month, before tax, and their GST. */
+  /** Purchases dated in the month, before tax, and their GST — net of
+   *  vendors' credit notes dated in it. */
   purchases: number;
   purchaseTax: number;
   /** Credit claimed in the month (its GSTR-2B). */
@@ -180,7 +210,7 @@ function summarise(books: GstBooks, month: MonthId): MonthSummary {
     for (const r of rows) byCategory[categoryOf(r)] = (byCategory[categoryOf(r)] ?? 0) + sign * r.gross;
   };
   for (const d of f.sales) count(d.rows, 1);
-  for (const c of f.credits) count(c.invoice.rows, -1);
+  for (const c of f.credits) count(credited(c).rows, -1);
   const bills = books.bills.filter((b) => monthOfDate(b.date) === month);
   const claimed = itcLines(books.bills, [month]);
   return {
@@ -188,16 +218,30 @@ function summarise(books: GstBooks, month: MonthId): MonthSummary {
     invoices: f.sales.length,
     creditNotes: f.credits.length,
     sales:
-      f.sales.reduce((a, d) => a + docValue(d), 0) - f.credits.reduce((a, c) => a + docValue(c.invoice), 0),
+      f.sales.reduce((a, d) => a + docValue(d), 0) - f.credits.reduce((a, c) => a + docValue(credited(c)), 0),
     byCategory,
     taxable: f.gstr3b.outward.taxable,
     exempt: f.gstr3b.exempt,
     tax: { igst: f.gstr3b.outward.igst, cgst: f.gstr3b.outward.cgst, sgst: f.gstr3b.outward.sgst },
-    bills: bills.length,
-    purchases: bills.reduce((a, b) => a + b.lines.reduce((x, l) => x + l.taxable, 0), 0),
-    purchaseTax: bills.reduce((a, b) => a + b.lines.reduce((x, l) => x + l.igst + l.cgst + l.sgst, 0), 0),
+    /* Bills only; a vendor's credit note is in the figures below, net. */
+    bills: bills.filter((b) => !isCreditNote(b)).length,
+    purchases: bills.reduce((a, b) => a + signedTotals(b).taxable, 0),
+    purchaseTax: bills.reduce((a, b) => a + sumHeads(signedTotals(b)), 0),
     credit: addHeads(ZERO, ...claimed.map((l) => l.heads)),
   };
+}
+
+/**
+ * The categories, of `categories` and in its order, that any month has a
+ * figure for. Not the quarter's total: a tray sold in October and refunded
+ * in November nets to nothing, but each month still has a figure, and
+ * without its row the months' columns stop adding up to their sales.
+ */
+export function categoriesWithSales<C extends string>(
+  summaries: Pick<MonthSummary, "byCategory">[],
+  categories: readonly C[],
+): C[] {
+  return categories.filter((c) => summaries.some((m) => (m.byCategory[c] ?? 0) !== 0));
 }
 
 export function quarterView(books: GstBooks, quarter: QuarterId): QuarterView {

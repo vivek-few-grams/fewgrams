@@ -249,6 +249,8 @@
       "againstValue": "{number} of {date}",
       "creditTotal": "Total refunded",
       "creditReason": "The order was cancelled and the full amount refunded.",
+      "creditKindSubscription": "Reverses what was refunded on a cancelled subscription's bill",
+      "creditReasonSubscription": "The subscription was cancelled and the amount above refunded.",
       "subscription": "Subscription",
       "boxesQuantity": "{count, plural, one {# box} other {# boxes}} a week",
       "fileInvoice": "Fewgrams invoice {number}",

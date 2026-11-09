@@ -86,6 +86,16 @@ function flag(name, fallback = null) {
   return value ?? true;
 }
 
+/** The tray row's packing fields (`TrayEntity`), kept across a re-run. */
+const PACKING = [
+  "packPieces",
+  "pieceLengthCm",
+  "pieceWidthCm",
+  "pieceHeightCm",
+  "pieceStackCm",
+  "pieceGrams",
+];
+
 async function main() {
   const dry = flag("dry") !== null;
   const markup = Number(flag("markup", 0));
@@ -118,6 +128,13 @@ async function main() {
 
   for (const { key, listed, price, source } of PRICE_LIST) {
     const prior = existing.get(key);
+    /* A row a purchase bill has costed is the bill's (SPEC §26.6.1): a re-run
+       dropped the link to the bill and the packing figures (8 Nov 2026), as
+       seeds-fill.mjs already refused to. */
+    if (prior?.costBill) {
+      console.log(`${key.padEnd(22)} skip    costed by bill ${prior.costBill.number}`);
+      continue;
+    }
     /* Each row's own margin, blank as cost to the rupee — `NO_MARGIN`. */
     const margin = {
       markupPercent: prior?.markupPercent ?? 0,
@@ -128,11 +145,15 @@ async function main() {
       contentKey: key,
       price: prior?.cost !== undefined ? retailPrice(prior.cost, margin) : shelfPrice(price, markup),
       ...(prior?.cost !== undefined ? { cost: prior.cost } : {}),
+      ...(prior?.openingCost !== undefined ? { openingCost: prior.openingCost } : {}),
       ...(prior?.markupPercent !== undefined ? { markupPercent: prior.markupPercent } : {}),
       ...(prior?.roundUpToNearest !== undefined ? { roundUpToNearest: prior.roundUpToNearest } : {}),
       /* Kept, not reset: the count is what the owner last typed on admin. */
       stockPacks: prior?.stockPacks ?? 0,
       active: prior?.active ?? true,
+      /* The courier packing figures typed on admin → trays, kept as
+         grow-media-fill.mjs keeps them; the whole-row put dropped them. */
+      ...Object.fromEntries(PACKING.filter((f) => prior?.[f] !== undefined).map((f) => [f, prior[f]])),
     };
 
     const change = prior

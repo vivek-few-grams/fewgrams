@@ -134,6 +134,11 @@ from it, and grams held. Admin → seeds has no text input at all.
   route. The price is **per 100 g** (`pricePer100g`; the owner, 3 Oct 2026 — it was per 50 g
   from 25 Sep). Do not re-derive `Math.floor(grams / 100)` or compare grams to stock at a call
   site.
+- **Grams are rounded to the hundredth** (`roundGrams`, 8 Nov 2026). Sowings are typed in decimals
+  and floating-point subtraction drifted a seed to 99.99999999999999 g — "100 g" on admin and sold
+  out on the site. Every shelf figure is rounded before it is stored or compared, and
+  `takeFromShelf` reads the row by id with a consistent read (the catalogue index lagged a second
+  take of the same seed in one order — a seed line plus a starter pack — and it threw).
 - **Priced from cost, one margin for the shelf** (3 Oct 2026). Each seed holds `costPer100g` —
   since 18 Oct 2026 **set by its latest purchase bill**, never typed (the vendor's per-kg invoice
   price ÷ 10 before then) — and its price is `retailPrice(cost, margin)` with the seeds markup and
@@ -165,11 +170,17 @@ DynamoDB holds **two numbers**: the price of the pack and the packs held
   Oct 2026): hold 1, sell 3, it reads -2, and the bill for the two brought in
   puts it back to 0. It stopped at zero until then, which left a bill showing
   packs that had already shipped. The count is never shown to a customer.
+- **A stocktake counts what paid orders are holding too** (8 Nov 2026). Payment takes stock off
+  before the goods leave, so the pencil opens at the figure plus what orders still on the
+  premises hold (`heldForOrders` in `src/lib/orders/held-stock.ts`: paid, picked or ready, less
+  parcels with a tracking number) and saves the count less that (`countedToStored`). Saving the
+  bare count forgot packs owed and put packed ones back on sale. Seeds, trays and cocopeat alike.
 - **A cancel puts back exactly what payment took** — `order.stockTaken`, one
   entry per `stockMoves` move, written as each move lands (`restock` in
   `src/lib/orders/cancel.ts`). Never restock from the order lines: that put
   three blocks back where one came off. Orders paid before 31 Oct 2026 have no
-  record and fall back to the lines.
+  record (no `finishingAt`) and fall back to the lines; a later order whose
+  payment work took nothing yet puts back nothing.
 - **The rule lives in one module.** `src/lib/trays/lead-time.ts` owns
   `fromShelf`, `heldReadyDate` and `RESTOCK_EXTRA_DAYS`. Do not compare units
   to stock at a call site.
@@ -187,7 +198,9 @@ DynamoDB holds **two numbers**: the price of the pack and the packs held
 - **A rounded price over ₹300 ends in 9** (the owner, 4 Oct 2026). `retailPrice` rounds up to
   the step as before; if that is over ₹300 (`CHARM_PRICE_ABOVE`) it lands one rupee under
   instead — ₹339, ₹2,599 — never below the marked-up price, so ₹1,100 exactly becomes ₹1,199.
-  At or under ₹300 it stays round (₹230). Typed prices follow the same line by hand: plans
+  At or under ₹300 it stays round (₹230). **Worked in whole paise** (8 Nov 2026): `100 * 1.1` is
+  110.00000000000001 in floating point and priced ₹100 at 10% to the nearest 10 at ₹120.
+  `scripts/racks-fill.mjs` mirrors it. Typed prices follow the same line by hand: plans
   ₹1,199 / ₹1,799. Microgreens are no longer typed (19 Oct 2026) — their margin's rounding
   sets them.
 - **Never write the price or a dispatch day into copy.** The price is printed
@@ -769,6 +782,19 @@ payload.
   unfinished with a stale lease (`FINISH_LEASE_MS`) claims it and finishes it.
   Subscriptions do the same for their invoice and email. A refunded order left
   owing its credit note gets one from its admin page (`owesCreditNote`).
+- **An unfinished order keeps the gateway retrying, and cannot be cancelled**
+  (8 Nov 2026). The webhook answers 503 while a paid order is unfinished
+  (`isUnfinished`), because the return page swallows its own failure and a
+  webhook answered 200 inside the lease was the last call that ever came. The
+  admin order page shows "Paid, but not finished" with **Finish it now**
+  (`finishStalledOrder`) once the lease is stale. `cancelBlock` returns
+  `finishing` until it is done, and a resumed run for a cancelled or refunded
+  order takes no stock and sends no email.
+- **A payment authorised after the window is not taken** (8 Nov 2026).
+  Razorpay orders never expire, so `fetchOrder` is asked not to capture once
+  `latePaymentRefused` (window plus `LATE_PAYMENT_GRACE_MINUTES`), and the
+  gateway refunds the authorisation; the customer had been told the order
+  expired. One the gateway captured itself is still honoured.
 - **Two transactional emails, server-side copy only.** Order and subscription
   confirmations (`src/lib/notify/order-email.ts`, `subscription-email.ts`),
   sent from the finish step, never throwing, printed to the terminal locally.
@@ -790,25 +816,50 @@ the tax is backed out of them.
 - **HSN and rate per cart kind live in `src/lib/tax/classes.ts`**, a `Record` so a new kind is a
   type error until it is classified. No admin screen: a rate is law, changed in a reviewed diff.
 - **Karnataka is CGST + SGST, everywhere else IGST**, decided by `placeOfSupply` — the PIN settles
-  Karnataka. Never compare a state name at a call site.
+  Karnataka. Never compare a state name at a call site. **CGST and SGST are always equal**
+  (`splitInclusive`, 8 Nov 2026): the half is rounded and the taxable value is what is left, as
+  the portal works each head; rows stored before then keep their odd paisa.
 - **The delivery charge follows the goods in its parcel** (composite supply), as `delivery` rows.
 - **Invoice and credit-note numbers are drawn only behind the winning conditional write**
   (`markOrderPaid`, `markSubscriptionPaid`, `markOrderRefunded`), one series per financial year.
+  A credit note's draw takes a lease first (`claimCreditNote`, `claimSubscriptionRefund`), so a
+  double press or a second tab cannot burn a number. GSTR-1 table 13 counts a number missing
+  inside a series' range as cancelled (`docSeries`).
 - **Every tax document renders through `TaxDocument`** — invoice, bill of supply and credit note —
   so they cannot drift apart.
 - **Returns are worked out, never stored** (SPEC §26.5): `quarterView` in `src/lib/gst/quarter.ts`
   reads sales off orders and subscriptions, credit off bills by the month of the GSTR-2B that showed
   them (`bill.claim`), never by bill date. A filed GSTR-3B (`GstFiling`) locks its quarter — check
-  `isLockedMonth` before any write that would change a filed figure.
+  `isLockedMonth` before any write that would change a filed figure. Each status partition is
+  read separately, so `latestById` keeps one copy of an order that moved between two reads.
+- **A quarter whose credit notes exceed its sales carries the excess** (8 Nov 2026), head by head,
+  as the portal's Negative Liability Statement: 3.1 reports 0, and `setOff` uses the balance
+  against the same head's later liability before any credit or cash. It is frozen with a filed
+  quarter's closing balances. The exact portal mechanics are for the CA to confirm.
 - **A GSTR-2B claim lasts only while the bill matches** (`claimAfterMatch`): a bill that disagrees
   with its vendor's return is never claimed for more than the portal shows. Saving an unclaimed bill
   matches it against statements already uploaded. A foreign vendor's credit is 4A(2), import of
-  services; other reverse charge 4A(3). A buyer cannot give our own GSTIN (`OUR_GSTIN`).
+  services; other reverse charge 4A(3). A buyer cannot give our own GSTIN (`OUR_GSTIN`), and
+  neither can a vendor. A bill matches its portal invoice by GSTIN, number **and financial year**,
+  head by head (IGST against CGST + SGST is a mismatch); two bills answering one invoice match
+  neither. A changed GSTIN or number drops a GSTR-2B claim (`carriedStanding`). A claim
+  withdrawn by hand records `withdrawnAt`, and neither a save nor an upload claims it again.
+- **One vendor invoice, one bill** (`duplicateBill`, 8 Nov 2026): the same vendor, number (as
+  `invoiceKey` normalises it), kind and financial year is refused — entered twice it added its
+  stock and its credit twice.
+- **A vendor's credit note is a purchase document** (`doc: "creditNote"`, 8 Nov 2026). Typed
+  positive, it counts negative everywhere: its stock lines take goods off (`documentStockChange`),
+  its GST reduces credit in its claim month, it matches only portal notes, and it **never sets a
+  cost** (`latestCosts` skips it). The 180-day rule does not apply.
 - **Purchases add stock** (the owner, 17 Oct 2026) through `applyStockChange`, by the difference an
-  edit makes.
+  edit makes. A correction that cannot take seed back off the shelf (it never goes below zero)
+  saves with a notice naming what is short. Costs are worked out from the bill just written, not
+  from the index alone (`CostOverrides`), which can lag the write.
 - **The latest bill sets a stocked product's cost** (the owner, 18 Oct 2026; SPEC §26.6.1) — seed,
-  tray, cocopeat — GST included and the bill's shipping (`freight` lines) shared in by value
-  (`billCosts`, `latestCosts`). `costFromBills` writes cost, price and `costBill` after every bill
+  tray, cocopeat — GST included and the bill's shipping (`freight` lines) shared across the
+  bill's **goods** lines by value before GST (`IS_GOODS`: stock, rack, growing, packaging, other),
+  only the stock lines' shares added to their cost (`billCosts`, `latestCosts`; 8 Nov 2026 — it
+  went all onto the stock lines). `costFromBills` writes cost, price and `costBill` after every bill
   save or delete; the product screens show it read-only. Do not add a cost input back to those
   rows, and do not price a stocked product from anything else. Racks keep their rate-card costs.
 - **Stocked products are added from a bill** ("+ New product…", `addStockItem`, which ticks the
@@ -836,7 +887,14 @@ page behind `ConfirmSubmit`. **Not while a parcel is with a courier** (31 Oct
 button and says to cancel the shipment in the courier's dashboard and clear
 the tracking number first. A booked parcel can be collected while the order
 still reads "ready for delivery", and cancelling then restocked goods that
-were on a van.
+were on a van. The cancel write is conditional on the order's `updatedAt` as
+well, so a booking that lands between its read and its write wins.
+
+**A cancelled subscription's refund is recorded with its amount** (8 Nov 2026):
+after refunding in the dashboard, the admin subscription page records the
+rupees refunded (at most what was paid) and issues a credit note for that part
+— its rows the invoice's scaled in whole paise — so exempt turnover comes off
+the returns.
 
 ## Booking a courier spends money, so it is locked and switched
 

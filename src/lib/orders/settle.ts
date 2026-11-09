@@ -14,7 +14,15 @@ import { takeFromStock as takeTraysFromStock } from "@/lib/repo/trays";
 import { takeFromStock as takeMediaFromStock } from "@/lib/repo/grow-media";
 import { financialYear, formatInvoiceNo, invoiceCounter } from "@/lib/tax/order-tax";
 import { sendOrderConfirmation } from "@/lib/notify/order-email";
-import { settlementFor, shiftForPaymentDay, type Order, type StockTaken } from "./order";
+import type { OrderStatus } from "@/lib/types";
+import {
+  isUnfinished,
+  latePaymentRefused,
+  settlementFor,
+  shiftForPaymentDay,
+  type Order,
+  type StockTaken,
+} from "./order";
 import { stockMoves } from "./stock-moves";
 
 /**
@@ -45,7 +53,11 @@ export async function settleOrder(
      a gateway that has never heard of it. */
   if (order.provider !== provider.name) return order;
 
-  const gateway = await provider.fetchOrder({ orderId, providerOrderId: order.providerOrderId });
+  const gateway = await provider.fetchOrder({
+    orderId,
+    providerOrderId: order.providerOrderId,
+    capture: !latePaymentRefused(order),
+  });
   for (const attempt of gateway.attempts) await recordPayment(attempt, source, provider.name);
 
   const settlement = settlementFor(order, gateway);
@@ -89,6 +101,24 @@ async function resumeFinishing(order: Order, now: Date = new Date()): Promise<Or
 }
 
 /**
+ * Finish a paid order whose after-payment work stopped part-way — the admin
+ * order page's button (8 Nov 2026), for when no webhook retry comes: the
+ * return page swallows its own failure so the customer is not stranded, and
+ * a webhook that arrived while the run still held its lease was answered
+ * before it died. "running" while the lease is still fresh.
+ */
+export async function finishStalledOrder(
+  orderId: string,
+  now: Date = new Date(),
+): Promise<"finished" | "running" | "nothing"> {
+  const order = await getOrder(orderId, { consistent: true });
+  if (!order || !isUnfinished(order)) return "nothing";
+  if (now.getTime() - Date.parse(order.finishingAt!) < FINISH_LEASE_MS) return "running";
+  const done = await resumeFinishing(order, now);
+  return done && !isUnfinished(done) ? "finished" : "running";
+}
+
+/**
  * The once-per-order work after payment, by whoever holds the lease: the
  * invoice number, the stock, the confirmation email. Each step records what
  * it did before the next, so a resumed run picks up where the last stopped.
@@ -111,8 +141,14 @@ async function finishPaidOrder(order: Order): Promise<Order | null> {
      what is held, and go below zero by what is owed (SPEC §22.2, §23.1).
      A starter pack's parts move the same way (`stockMoves`, SPEC §29.5).
      What came off is recorded move by move, for a cancel and for a retry. */
+  /* An order cancelled or refunded before this run — possible only for one
+     left unfinished before 8 Nov 2026, when a cancel stopped being allowed
+     mid-way (`cancelBlock`) — keeps its invoice, which its credit note
+     reverses, but takes nothing more off the shelf and is not confirmed to
+     the customer: the cancel already put back what had come off. */
+  const live = !WITHDRAWN.includes(order.status);
   const taken: StockTaken[] = [...(order.stockTaken ?? [])];
-  const moves = stockMoves(order.lines);
+  const moves = live ? stockMoves(order.lines) : [];
   for (const move of moves.slice(taken.length)) {
     if (move.kind === "seed") {
       const grams = await takeFromShelf(move.key, move.grams);
@@ -127,11 +163,17 @@ async function finishPaidOrder(order: Order): Promise<Order | null> {
     await recordStockTaken(order.id, taken);
   }
 
-  const finished = (await getOrder(order.id)) ?? { ...order, invoiceNo, stockTaken: taken };
-  await sendOrderConfirmation(finished);
+  /* Read consistently: the invoice number was written a moment ago, and an
+     eventually consistent read could send the email without it. */
+  const finished = (await getOrder(order.id, { consistent: true })) ?? { ...order, invoiceNo, stockTaken: taken };
+  if (live) await sendOrderConfirmation(finished);
   await markOrderFinished(order.id, new Date().toISOString());
   return getOrder(order.id);
 }
+
+/** Statuses an order reaches by being called off, after which payment's
+ *  work must not take stock or confirm it. */
+const WITHDRAWN: readonly OrderStatus[] = ["cancelled", "refunded"];
 
 /**
  * The next invoice number for the financial year `paidAt` falls in — SPEC

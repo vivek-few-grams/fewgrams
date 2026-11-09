@@ -1,5 +1,5 @@
 import { err, type FormState } from "@/lib/forms";
-import { gstinStateCode, isValidGstin, normaliseGstin } from "@/lib/tax/gstin";
+import { gstinStateCode, isValidGstin, normaliseGstin, OUR_GSTIN } from "@/lib/tax/gstin";
 import { gstStateByCode, type GstState } from "@/lib/tax/states";
 import type { VendorKind, VendorSnapshot } from "./bill";
 
@@ -59,6 +59,9 @@ export function readVendor(fd: FormData): { ok: true; value: VendorInput } | { o
   if (kind === "registered") {
     gstin = normaliseGstin(String(fd.get("gstin") ?? ""));
     if (!isValidGstin(gstin)) return { ok: false, state: err("gstinInvalid", "gstin") };
+    /* Ours passes the check digit, and a bill entered against it would
+       claim credit on our own GSTIN — as checkout refuses it for a buyer. */
+    if (gstin === OUR_GSTIN) return { ok: false, state: err("gstinOurs", "gstin") };
     state = gstStateByCode(gstinStateCode(gstin));
     if (!state) return { ok: false, state: err("gstinInvalid", "gstin") };
   }

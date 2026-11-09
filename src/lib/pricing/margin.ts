@@ -21,13 +21,22 @@ import type { Margin } from "@/lib/types";
  * price: it is the smallest such price at or above it, so ₹390 exactly
  * becomes ₹399, not ₹389. At ₹300 or under the price stays round — ₹230, not
  * ₹229. Step 1 is no rounding.
+ *
+ * **The marked-up figure is taken to the paisa first**, and rounded up in
+ * whole paise. `100 * 1.1` is `110.00000000000001` in floating point, and
+ * `Math.ceil` read that sliver as "over ₹110": ₹100 at 10% to the nearest 10
+ * priced at ₹120, a whole step over (found 8 Nov 2026; ₹50 at 10% to the
+ * nearest 5 gave ₹60, not ₹55). Nothing is priced finer than a paisa, so the
+ * rounding loses nothing real. A stored price moves only when its row is
+ * next repriced.
  */
 export function retailPrice(cost: number, margin: Margin): number {
-  const marked = cost * (1 + margin.markupPercent / 100);
-  const step = margin.roundUpToNearest;
-  if (step <= 1) return Math.ceil(marked);
-  const round = Math.ceil(marked / step) * step;
-  return round > CHARM_PRICE_ABOVE ? Math.ceil((marked + 1) / step) * step - 1 : round;
+  /* `cost × (100 + markup)` is the marked-up price in paise. */
+  const marked = Math.round(cost * (100 + margin.markupPercent));
+  const step = Math.max(1, margin.roundUpToNearest) * 100;
+  const round = (Math.ceil(marked / step) * step) / 100;
+  if (margin.roundUpToNearest <= 1) return round;
+  return round > CHARM_PRICE_ABOVE ? (Math.ceil((marked + 100) / step) * step) / 100 - 1 : round;
 }
 
 /** A rounded price over this ends in 9; at or under it stays round. */

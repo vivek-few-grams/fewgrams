@@ -63,19 +63,53 @@ describe("splitInclusive", () => {
     expect(splitInclusive(10000, 0, true)).toEqual({ taxable: 10000, cgst: 0, sgst: 0, igst: 0 });
   });
 
-  it("halves it within Karnataka, the odd paisa to CGST", () => {
-    expect(splitInclusive(10000, 18, true)).toEqual({ taxable: 8475, cgst: 763, sgst: 762, igst: 0 });
+  it("gives CGST and SGST each the half-rate on one taxable value, never an odd paisa", () => {
+    expect(splitInclusive(10000, 18, true)).toEqual({ taxable: 8474, cgst: 763, sgst: 763, igst: 0 });
+    expect(splitInclusive(33900, 18, true)).toEqual({ taxable: 28728, cgst: 2586, sgst: 2586, igst: 0 });
+    expect(splitInclusive(21000, 5, true)).toEqual({ taxable: 20000, cgst: 500, sgst: 500, igst: 0 });
+    /* Each head is what the portal works out from the taxable value. */
+    for (const [gross, rate] of [
+      [10000, 18],
+      [33900, 18],
+      [21000, 5],
+      [23900, 18],
+      [120000, 12],
+    ]) {
+      const s = splitInclusive(gross, rate, true);
+      expect(Math.round((s.taxable * rate) / 200)).toBe(s.cgst);
+    }
   });
 
-  it("always adds back to the gross", () => {
+  it("always adds back to the gross, with CGST equal to SGST", () => {
     for (let gross = 1; gross < 50000; gross += 37) {
-      for (const rate of [0, 5, 18]) {
+      for (const rate of [0, 0.25, 3, 5, 12, 18, 28]) {
         for (const intra of [true, false]) {
           const s = splitInclusive(gross, rate, intra);
           expect(s.taxable + s.cgst + s.sgst + s.igst).toBe(gross);
+          expect(s.cgst).toBe(s.sgst);
+          expect(Math.min(s.taxable, s.cgst, s.igst)).toBeGreaterThanOrEqual(0);
+          if (intra) expect(s.igst).toBe(0);
+          else expect(s.cgst).toBe(0);
         }
       }
     }
+  });
+
+  it("matches the portal's taxable × rate ÷ 2 whenever any taxable value can", () => {
+    /* Gross = T + 2·round(T × rate ÷ 200) for some T, or for none — then no
+       split can agree with the portal to the paisa, and this one is a paisa
+       off in each head. */
+    for (const rate of [5, 12, 18, 28]) {
+      const reachable = new Set<number>();
+      for (let t = 0; t < 21000; t++) reachable.add(t + 2 * Math.round((t * rate) / 200));
+      for (let gross = 1; gross < 20000; gross++) {
+        const s = splitInclusive(gross, rate, true);
+        const agrees = Math.round((s.taxable * rate) / 200) === s.cgst;
+        expect(agrees).toBe(reachable.has(gross));
+        if (!agrees) expect(Math.abs((s.taxable * rate) / 200 - s.cgst)).toBeLessThanOrEqual(1);
+      }
+    }
+    expect(splitInclusive(59, 18, true)).toEqual({ taxable: 49, cgst: 5, sgst: 5, igst: 0 });
   });
 });
 
@@ -103,8 +137,34 @@ describe("orderTax", () => {
     const rows = orderTax(lines, shipments, HOME_STATE);
     expect(taxTotals(rows).gross).toBe((240 + 339 + 210 + 30 + 79) * 100);
     const tray = rows.find((r) => r.source === "line" && r.line === "tray:tray-pair")!;
-    expect(tray).toMatchObject({ hsn: "3926", rate: 18, gross: 33900, taxable: 28729 });
-    expect(tray.cgst + tray.sgst).toBe(5171);
+    expect(tray).toMatchObject({
+      hsn: "3926",
+      rate: 18,
+      gross: 33900,
+      taxable: 28728,
+      cgst: 2586,
+      sgst: 2586,
+    });
+  });
+
+  it("never splits a row's CGST and SGST unevenly, delivery shares included", () => {
+    for (const charge of [0, 1, 29, 79, 101]) {
+      for (const tray of [1, 99, 339, 1299]) {
+        const rows = orderTax(
+          [
+            { kind: "tray", key: "tray-pair", lineTotal: tray },
+            { kind: "media", key: "horti-coir", lineTotal: 211 },
+          ],
+          [{ lines: ["tray:tray-pair", "media:horti-coir"], charge }],
+          HOME_STATE,
+        );
+        for (const r of rows) {
+          expect(r.cgst).toBe(r.sgst);
+          expect(r.taxable + r.cgst + r.sgst + r.igst).toBe(r.gross);
+        }
+        expect(taxTotals(rows).gross).toBe((tray + 211 + charge) * 100);
+      }
+    }
   });
 
   it("gives the own run's fee the greens' exemption and a courier parcel its goods' rates", () => {

@@ -15,6 +15,7 @@ import { ParcelBooking } from "../ParcelBooking";
 import { orderCreditNote, orderInvoice } from "@/components/tax/docs";
 import { PrintDoc } from "@/components/tax/TaxDocument";
 import { OrderCancel } from "../OrderCancel";
+import { OrderUnfinished } from "../OrderUnfinished";
 import { OrderSteps } from "../OrderSteps";
 import { requireRole } from "@/lib/auth/guard";
 
@@ -152,6 +153,8 @@ export default async function OrderAdmin({ params }: PageProps<"/[locale]/admin/
           </div>
         </div>
       </section>
+
+      <OrderUnfinished order={order} />
 
       <section className="rounded-2xl border border-forest/15 p-6">
         <h2 className="font-display text-lg font-semibold text-forest">{t("itemsHeading")}</h2>

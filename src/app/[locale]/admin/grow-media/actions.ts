@@ -8,6 +8,8 @@ import { deleteGrowMedium, getGrowMedium, patchGrowMedium, setGrowMediumStock } 
 import { marginOf, retailPrice } from "@/lib/pricing/margin";
 import { count, err, optionalPositive, switchTo, zeroOrMore, type FormState } from "@/lib/forms";
 import { isValidStockPacks } from "@/lib/grow-media/lead-time";
+import { countedToStored } from "@/lib/orders/held-stock";
+import { listHeldStock } from "@/lib/repo/orders";
 import { packUsing } from "../pack-usage";
 import type { GrowMedium } from "@/lib/types";
 
@@ -108,15 +110,17 @@ export async function updateGrowMedium(_prev: FormState, fd: FormData): Promise<
   return { status: "saved" };
 }
 
-/** A stocktake — the blocks counted. Zero is a real count; an empty field is
- *  not. */
+/** A stocktake — the blocks counted on the shelf, packed for orders or not.
+ *  Zero is a real count; an empty field is not. What paid orders still here
+ *  are holding comes back off it (`countedToStored`, 8 Nov 2026). */
 export async function correctGrowMediumStock(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   const medium = await getGrowMedium(String(fd.get("id") ?? ""));
   if (!medium) return err("notFound");
   const packs = zeroOrMore(fd, "count");
   if (packs === null || !isValidStockPacks(packs)) return err("packsInvalid", "count");
-  await setGrowMediumStock(medium.id, packs);
+  const held = (await listHeldStock()).get(`media:${medium.contentKey}`) ?? 0;
+  await setGrowMediumStock(medium.id, countedToStored(packs, held, "packs"));
   refresh();
   return { status: "saved" };
 }

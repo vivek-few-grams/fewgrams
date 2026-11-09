@@ -1506,6 +1506,9 @@ export const OrderEntity = new Entity(
           issuedAt: { type: "string", required: true },
         },
       },
+      /** The lease on drawing `creditNote`'s number (8 Nov 2026): taken by a
+       *  conditional write before the draw, so only one press draws. */
+      creditNoteClaimedAt: { type: "string" },
       deliveryDate: { type: "string", required: true },
       address: {
         type: "map",
@@ -1706,6 +1709,27 @@ export const SubscriptionEntity = new Entity(
        *  confirmation email are done when `finishedAt` is set. */
       finishingAt: { type: "string" },
       finishedAt: { type: "string" },
+      /** A cancelled subscription's refund, recorded from admin (8 Nov 2026),
+       *  with the rows its credit note credits — paise, scaled from `tax`
+       *  once, when recorded. Absent on every row from before. */
+      refund: {
+        type: "map",
+        properties: {
+          amount: { type: "number", required: true },
+          rows: { ...TAX_ROWS, required: true },
+          recordedAt: { type: "string", required: true },
+        },
+      },
+      /** Its credit note, from the orders' `CN/` series (SPEC §26.3), and the
+       *  lease on drawing the number (`src/lib/subscriptions/refund.ts`). */
+      creditNote: {
+        type: "map",
+        properties: {
+          number: { type: "string", required: true },
+          issuedAt: { type: "string", required: true },
+        },
+      },
+      creditNoteClaimedAt: { type: "string" },
       createdAt: { type: "string", required: true },
       updatedAt: { type: "string", required: true },
       expiresAt: { type: "string", required: true },
@@ -1946,6 +1970,18 @@ export const PurchaseBillEntity = new Entity(
     model: { ...model, entity: "purchase" },
     attributes: {
       id: { type: "string", required: true },
+      /** A bill or a vendor's credit note (8 Nov 2026). Absent on every row
+       *  written before then, which reads as a bill (`docOf`). */
+      doc: { type: ["bill", "creditNote"] as const },
+      /** A credit note's original bill, copied when it was picked. */
+      against: {
+        type: "map",
+        properties: {
+          id: { type: "string", required: true },
+          number: { type: "string", required: true },
+          date: { type: "string", required: true },
+        },
+      },
       vendor: {
         type: "map",
         required: true,
@@ -2003,6 +2039,8 @@ export const PurchaseBillEntity = new Entity(
           source: { type: ["gstr2b", "manual", "reverseCharge"] as const, required: true },
         },
       },
+      /** When a claim was withdrawn by hand — no GSTR-2B claims it again. */
+      withdrawnAt: { type: "string" },
       match: {
         type: "map",
         properties: {
@@ -2173,6 +2211,9 @@ export const GstFilingEntity = new Entity(
         properties: {
           credit: { ...HEADS_MAP, required: true },
           cash: { ...HEADS_MAP, required: true },
+          /** The Negative Liability Statement's balance (8 Nov 2026). Absent
+           *  on quarters filed before; read as zero. */
+          negative: HEADS_MAP,
         },
       },
       updatedAt: { type: "string", required: true },

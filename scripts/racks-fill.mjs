@@ -50,13 +50,15 @@ export function shelvesForHeight(heightFt) {
 
 /** Retail rounds **up**; over ₹300 to one rupee under the step (₹2,599 at a
  *  step of 100), at or under ₹300 to the step itself. Rounding to nearest
- *  would put a ₹2,310 rack at ₹2,300 — below cost. Mirrors `retailPrice`. */
+ *  would put a ₹2,310 rack at ₹2,300 — below cost. The marked-up figure is
+ *  taken to the paisa first, so `100 * 1.1` (110.00000000000001) is not read
+ *  as over ₹110. Mirrors `retailPrice`. */
 export function retailPrice(cost, margin) {
-  const marked = cost * (1 + margin.markupPercent / 100);
-  const step = margin.roundUpToNearest;
-  if (step <= 1) return Math.ceil(marked);
-  const round = Math.ceil(marked / step) * step;
-  return round > 300 ? Math.ceil((marked + 1) / step) * step - 1 : round;
+  const marked = Math.round(cost * (100 + margin.markupPercent)); // paise
+  const step = Math.max(1, margin.roundUpToNearest) * 100;
+  const round = (Math.ceil(marked / step) * step) / 100;
+  if (margin.roundUpToNearest <= 1) return round;
+  return round > 300 ? (Math.ceil((marked + 100) / step) * step) / 100 - 1 : round;
 }
 
 /** Each range's markup and rounding, from raw DynamoDB items: its own

@@ -8,6 +8,8 @@ import { deleteTray, getTray, patchTray, setTrayStock } from "@/lib/repo/trays";
 import { marginOf, retailPrice } from "@/lib/pricing/margin";
 import { count, err, optionalPositive, switchTo, zeroOrMore, type FormState } from "@/lib/forms";
 import { isValidStockPacks } from "@/lib/trays/lead-time";
+import { countedToStored } from "@/lib/orders/held-stock";
+import { listHeldStock } from "@/lib/repo/orders";
 import { packUsing } from "../pack-usage";
 import type { Tray } from "@/lib/types";
 
@@ -119,15 +121,18 @@ export async function updateTray(_prev: FormState, fd: FormData): Promise<FormSt
   return { status: "saved" };
 }
 
-/** A stocktake — the packs counted. Zero is a real count; an empty field is
- *  not. */
+/** A stocktake — the packs counted on the shelf, packed for orders or not.
+ *  Zero is a real count; an empty field is not. What paid orders still here
+ *  are holding comes back off it (`countedToStored`, 8 Nov 2026), so packs
+ *  owed stay owed. */
 export async function correctTrayStock(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   const tray = await getTray(String(fd.get("id") ?? ""));
   if (!tray) return err("notFound");
   const packs = zeroOrMore(fd, "count");
   if (packs === null || !isValidStockPacks(packs)) return err("packsInvalid", "count");
-  await setTrayStock(tray.id, packs);
+  const held = (await listHeldStock()).get(`tray:${tray.contentKey}`) ?? 0;
+  await setTrayStock(tray.id, countedToStored(packs, held, "packs"));
   refresh();
   return { status: "saved" };
 }

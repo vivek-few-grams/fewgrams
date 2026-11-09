@@ -7,7 +7,17 @@ import { formatDeliveryDate, fromIstDateISO, istDateISO } from "@/lib/delivery-d
 import { subscriptionOpening } from "@/lib/subscriptions/opening";
 import { documentNo } from "@/lib/orders/order";
 import { GATEWAY_LABEL } from "@/lib/payments/provider";
+import { monthOf } from "@/lib/gst/period";
+import { isSalesLockedMonth } from "@/lib/gst/quarter";
+import { listFilings } from "@/lib/repo/gst";
 import { getSubscription } from "@/lib/repo/subscriptions";
+import {
+  CREDIT_NOTE_LEASE_MS,
+  canRecordRefund,
+  owesSubscriptionCreditNote,
+  paidPaise,
+  undeliveredValue,
+} from "@/lib/subscriptions/refund";
 import {
   boxesPerWeek,
   cancelDeliveries,
@@ -18,20 +28,28 @@ import {
   subscriptionState,
   undeliveredSaturdays,
 } from "@/lib/subscriptions/subscription";
-import { subscriptionInvoice } from "@/components/tax/docs";
+import { subscriptionCreditNote, subscriptionInvoice } from "@/components/tax/docs";
 import { PrintDoc } from "@/components/tax/TaxDocument";
 import { StepSubmit } from "../../orders/StepSubmit";
-import { cancelSubscription, pauseSubscription, resumeSubscription, skipSaturday } from "../actions";
+import {
+  cancelSubscription,
+  finishCreditNote,
+  pauseSubscription,
+  resumeSubscription,
+  skipSaturday,
+} from "../actions";
+import { RefundForm } from "./RefundForm";
 import { requireRole } from "@/lib/auth/guard";
 
 export const dynamic = "force-dynamic";
 
 /**
  * `/admin/subscriptions/[id]` — one subscription, and the four things the
- * owner can do to it (27 Sep 2026): skip a Saturday, pause, resume, cancel.
- * Each is offered only when `subscription.ts` would allow it, by asking the
- * same function the action will call — so a button can never be shown for a
- * move the server then refuses.
+ * owner can do to it (27 Sep 2026): skip a Saturday, pause, resume, cancel;
+ * once cancelled, record the refund and issue its credit note (8 Nov 2026).
+ * Each is offered only when `subscription.ts` or `refund.ts` would allow it,
+ * by asking the same function the action will call — so a button can never
+ * be shown for a move the server then refuses.
  */
 export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]/admin/subscriptions/[id]">) {
   await requireRole("admin");
@@ -43,6 +61,7 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
   const t = await getTranslations("admin.subscriptions");
   /* SPEC §26.3 — straight to the print dialog, as on the customer's page. */
   const invoice = await subscriptionInvoice(sub);
+  const creditNote = await subscriptionCreditNote(sub);
   const format = await getFormatter();
   const now = new Date();
   const today = istDateISO(now);
@@ -60,6 +79,15 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
   const canCancel = cancelDeliveries(sub, now) !== null;
   const owed = undeliveredSaturdays(sub, now);
   const lastDate = sub.deliveries.at(-1)?.date;
+  const rupees = (paise: number) => paise / 100;
+  /* The refund after a cancel, and its credit note (`refund.ts`). Refused
+     while this month's return is filed, so the page says so instead of
+     offering a press that would be refused. */
+  const refundable = canRecordRefund(sub);
+  const owesNote = owesSubscriptionCreditNote(sub);
+  const salesLocked = (refundable || owesNote) && isSalesLockedMonth(await listFilings(), monthOf(now));
+  const drawing =
+    owesNote && now.getTime() - Date.parse(sub.creditNoteClaimedAt ?? "") < CREDIT_NOTE_LEASE_MS;
 
   const outline =
     "rounded-full border border-forest/25 px-4 py-2 font-body text-sm font-semibold text-forest transition-colors hover:bg-forest/5";
@@ -87,6 +115,7 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
               then the moves. */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-3 md:justify-end">
             {invoice && <PrintDoc {...invoice} id="invoice" label={t("detail.invoice")} />}
+            {creditNote && <PrintDoc {...creditNote} id="credit-note" label={t("detail.creditNote")} />}
             {canResume && (
               <form action={resumeSubscription}>
                 <input type="hidden" name="id" value={sub.id} />
@@ -138,9 +167,48 @@ export default async function SubscriptionAdmin({ params }: PageProps<"/[locale]
         </p>
       )}
       {sub.status === "cancelled" && (
-        <p className="rounded-2xl bg-sand/60 p-4 font-body text-sm text-forest">
-          {t("detail.cancelledNote", { gateway })}
-        </p>
+        <div className="rounded-2xl bg-sand/60 p-4 font-body text-sm text-forest">
+          <p>{t("detail.cancelledNote", { gateway })}</p>
+          {sub.refund && (
+            <p className="mt-2">
+              {t("detail.refund.recorded", {
+                amount: rupees(sub.refund.amount),
+                date: format.dateTime(new Date(sub.refund.recordedAt), {
+                  dateStyle: "medium",
+                  timeZone: "Asia/Kolkata",
+                }),
+              })}
+              {sub.creditNote && ` ${t("detail.refund.creditNoteNo", { number: sub.creditNote.number })}`}
+            </p>
+          )}
+          {refundable &&
+            (salesLocked ? (
+              <p className="mt-2 text-stone">{t("detail.refund.locked")}</p>
+            ) : (
+              <RefundForm
+                id={sub.id}
+                gateway={gateway}
+                suggested={rupees(undeliveredValue(sub)).toFixed(2)}
+                hint={t("detail.refund.hint", {
+                  paid: rupees(paidPaise(sub)),
+                  count: sub.deliveries.length,
+                  value: rupees(undeliveredValue(sub)),
+                })}
+              />
+            ))}
+          {owesNote &&
+            (drawing ? (
+              <p className="mt-2 text-stone">{t("detail.refund.drawing")}</p>
+            ) : salesLocked ? (
+              <p className="mt-2 text-stone">{t("detail.refund.locked")}</p>
+            ) : (
+              <form action={finishCreditNote} className="mt-3 flex flex-col items-start gap-1.5">
+                <input type="hidden" name="id" value={sub.id} />
+                <StepSubmit label={t("detail.refund.issueCreditNote")} primary />
+                <span className="text-xs text-stone">{t("detail.refund.owed")}</span>
+              </form>
+            ))}
+        </div>
       )}
 
       <div className="grid gap-6 lg:grid-cols-2">

@@ -62,7 +62,7 @@ vi.mock("@/lib/notify/order-email", () => ({
 }));
 vi.mock("@/lib/payments", () => ({ paymentProvider: () => null }));
 
-const { settleOrder, FINISH_LEASE_MS } = await import("./settle");
+const { settleOrder, finishStalledOrder, FINISH_LEASE_MS } = await import("./settle");
 
 const line = (kind: OrderLine["kind"], key: string, units: number, grams: number | null = null): OrderLine => ({
   kind,
@@ -178,5 +178,77 @@ describe("settleOrder — after payment", () => {
     await settleOrder("FG3", "webhook", gateway("FG3"));
     expect(db.shelf.get("tray:pair")).toBe(5);
     expect(db.counter).toBe(0);
+  });
+
+  it("finishes an order cancelled mid-way without taking more stock or confirming it", async () => {
+    db.orders.set("FG4", pending("FG4", [line("tray", "pair", 1), line("media", "coir", 2)]));
+    db.shelf.set("tray:pair", 5);
+    db.shelf.set("media:coir", 5);
+    db.failOnce.add("coir");
+    await expect(settleOrder("FG4", "webhook", gateway("FG4"))).rejects.toThrow();
+
+    // Cancelled (before 8 Nov 2026 nothing stopped this) and the tray put back.
+    const row = db.orders.get("FG4")!;
+    row.status = "cancelled";
+    db.shelf.set("tray:pair", 5);
+
+    row.finishingAt = new Date(Date.now() - FINISH_LEASE_MS - 1000).toISOString();
+    const done = await settleOrder("FG4", "webhook", gateway("FG4"));
+    expect(done!.finishedAt).not.toBeNull();
+    expect(done!.invoiceNo).toMatch(/\/00001$/);
+    expect(db.shelf.get("tray:pair")).toBe(5);
+    expect(db.shelf.get("media:coir")).toBe(5);
+    expect(db.emails).toEqual([]);
+  });
+});
+
+describe("settleOrder — a payment authorised after the window", () => {
+  it("asks the gateway not to capture once the window and its grace have passed", async () => {
+    const seen: (boolean | undefined)[] = [];
+    const spy = (): PaymentProvider =>
+      ({
+        name: "razorpay",
+        fetchOrder: async (ref: { capture?: boolean }) => {
+          seen.push(ref.capture);
+          return { status: "active", attempts: [] };
+        },
+      }) as unknown as PaymentProvider;
+
+    db.orders.set("FG7", { ...pending("FG7", [line("tray", "pair", 1)]), expiresAt: new Date(Date.now() + 60_000).toISOString() });
+    await settleOrder("FG7", "webhook", spy());
+    db.orders.get("FG7")!.expiresAt = new Date(Date.now() - 5 * 60_000).toISOString();
+    await settleOrder("FG7", "webhook", spy());
+    db.orders.get("FG7")!.expiresAt = new Date(Date.now() - 20 * 60_000).toISOString();
+    await settleOrder("FG7", "webhook", spy());
+
+    // Open, within the grace, past it.
+    expect(seen).toEqual([true, true, false]);
+    expect(db.orders.get("FG7")!.status).toBe("pending_payment");
+  });
+});
+
+describe("finishStalledOrder — the admin button", () => {
+  it("does nothing while the run still holds its lease, and finishes it once stale", async () => {
+    db.orders.set("FG5", pending("FG5", [line("tray", "pair", 1), line("media", "coir", 2)]));
+    db.shelf.set("tray:pair", 5);
+    db.shelf.set("media:coir", 5);
+    db.failOnce.add("coir");
+    await expect(settleOrder("FG5", "return", gateway("FG5"))).rejects.toThrow();
+
+    expect(await finishStalledOrder("FG5")).toBe("running");
+    expect(db.shelf.get("media:coir")).toBe(5);
+
+    const later = new Date(Date.now() + FINISH_LEASE_MS + 1000);
+    expect(await finishStalledOrder("FG5", later)).toBe("finished");
+    expect(db.shelf.get("tray:pair")).toBe(4);
+    expect(db.shelf.get("media:coir")).toBe(3);
+    expect(db.emails).toHaveLength(1);
+    expect(await finishStalledOrder("FG5", later)).toBe("nothing");
+  });
+
+  it("leaves a finished order and one paid before the lease alone", async () => {
+    db.orders.set("FG6", { ...pending("FG6", [line("tray", "pair", 1)]), status: "paid" });
+    expect(await finishStalledOrder("FG6")).toBe("nothing");
+    expect(await finishStalledOrder("FG-missing")).toBe("nothing");
   });
 });

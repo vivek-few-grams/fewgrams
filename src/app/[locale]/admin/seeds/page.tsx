@@ -9,6 +9,7 @@ import { SeedTable } from "./SeedTable";
 import { requireRole } from "@/lib/auth/guard";
 import { billsPerItem } from "@/lib/purchases/cost";
 import { listBills } from "@/lib/repo/purchases";
+import { listHeldStock } from "@/lib/repo/orders";
 
 export const dynamic = "force-dynamic";
 
@@ -52,11 +53,12 @@ export default async function SeedsAdmin() {
   await requireRole("admin");
   const t = await getTranslations("admin.seeds");
 
-  const [rows, margin, picker, bills] = await Promise.all([
+  const [rows, margin, picker, bills, held] = await Promise.all([
     listSeeds(),
     getSeedMargin(),
     pickerData(),
     listBills(),
+    listHeldStock(),
   ]);
   const onBills = billsPerItem(bills);
   const withContent = await attachSeedContent(rows, routing.defaultLocale);
@@ -95,6 +97,7 @@ export default async function SeedsAdmin() {
           },
           name: s.content?.text.name ?? null,
           bills: onBills.get(`seed:${s.contentKey}`) ?? 0,
+          held: held.get(`seed:${s.contentKey}`) ?? 0,
           picker: {
             supplyKey: `seed:${s.contentKey}`,
             vendors: picker.vendorsFor(`seed:${s.contentKey}`),

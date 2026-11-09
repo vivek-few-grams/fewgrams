@@ -19,8 +19,9 @@ import { HOME_STATE, type GstState } from "@/lib/tax/states";
 export const PURCHASE_CATEGORIES = [
   /** Trays, mats, cocopeat or seeds put on the shelf to sell — adds stock. */
   "stock",
-  /** Shipping charged on the bill — shared into the cost of its stock lines
-   *  (`billCosts`, the owner, 18 Oct 2026). */
+  /** Shipping charged on the bill — shared across its goods by value before
+   *  GST, and a stock line's share added to its cost (`billCosts`, the owner,
+   *  18 Oct 2026; across every goods line since 8 Nov 2026). */
   "freight",
   /** A rack the vendor built and shipped straight to a customer. */
   "rack",
@@ -34,6 +35,50 @@ export const PURCHASE_CATEGORIES = [
   "other",
 ] as const;
 export type PurchaseCategory = (typeof PURCHASE_CATEGORIES)[number];
+
+/**
+ * Which categories are goods — what a bill's shipping brought. The one list
+ * both `billCosts` (whose value the shipping is shared across) and
+ * `freightCredit` (whose credit it takes) read, so they cannot disagree. A
+ * `Record`, so a new category is a type error until it decides. Courier,
+ * gateway fees, software and rent are services that arrive without a parcel;
+ * shipping is the shipping.
+ */
+export const IS_GOODS: Record<PurchaseCategory, boolean> = {
+  stock: true,
+  freight: false,
+  rack: true,
+  growing: true,
+  packaging: true,
+  courier: false,
+  gateway: false,
+  software: false,
+  rent: false,
+  other: true,
+};
+
+/**
+ * What a purchase document is — SPEC §26.6. A vendor's **bill**, or a
+ * vendor's **credit note** (8 Nov 2026): goods sent back, a price cut, a
+ * refund. A credit note is typed as printed, in positive amounts, and counts
+ * **negative** everywhere a document's amounts are summed (`docSign`): its
+ * stock lines take goods off the shelf, and its GST comes off our credit in
+ * the month its GSTR-2B shows it.
+ */
+export const PURCHASE_DOCS = ["bill", "creditNote"] as const;
+export type PurchaseDoc = (typeof PURCHASE_DOCS)[number];
+
+/** A bill unless it says otherwise: every row from before credit notes has
+ *  no `doc`, and reads as the bill it is. */
+export const docOf = (b: { doc?: PurchaseDoc } | null | undefined): PurchaseDoc => b?.doc ?? "bill";
+export const isCreditNote = (b: { doc?: PurchaseDoc } | null | undefined): boolean =>
+  docOf(b) === "creditNote";
+/** What a document's amounts are multiplied by wherever they are summed. */
+export const docSign = (b: { doc?: PurchaseDoc } | null | undefined): 1 | -1 => (isCreditNote(b) ? -1 : 1);
+/** `n` as document `b` counts it — negative on a credit note, and never
+ *  `-0`, which `Intl` prints as "-₹0.00". */
+export const signedBy = (b: { doc?: PurchaseDoc } | null | undefined, n: number): number =>
+  isCreditNote(b) ? 0 - n : n;
 
 /**
  * How much of a line's GST can be claimed (CGST Act s.17, CGST Rules 42):
@@ -62,15 +107,17 @@ export const DEFAULT_CREDIT: Record<PurchaseCategory, CreditUse> = {
 };
 
 /**
- * The credit on a bill's shipping: the credit of the goods it brought. Seed
- * is exempt and goes only to exempt sales, so shipping on a seed bill is
- * `none`; on trays for resale it is `full`; on a mixed bill, `shared`.
+ * The credit on a bill's shipping: the credit of the goods it brought
+ * (`IS_GOODS` — the lines its cost is shared across). Seed is exempt and goes
+ * only to exempt sales, so shipping on a seed bill is `none`; on trays for
+ * resale it is `full`; on a mixed bill, `shared`. A service on the same bill
+ * (software, a courier) came without the parcel and has no say.
  */
 export function freightCredit(
   lines: ReadonlyArray<Pick<PurchaseLine, "category" | "rate" | "credit">>,
 ): CreditUse {
   const uses = new Set(
-    lines.filter((l) => l.category !== "freight").map((l) => (l.rate === 0 ? "none" : l.credit)),
+    lines.filter((l) => IS_GOODS[l.category]).map((l) => (l.rate === 0 ? "none" : l.credit)),
   );
   return uses.size === 1 ? [...uses][0]! : DEFAULT_CREDIT.freight;
 }
@@ -140,13 +187,23 @@ export type BillMatch = {
 };
 
 export type BillClaim = {
-  /** The month whose return the credit is claimed in. */
+  /** The month whose return the credit is claimed in — for a credit note,
+   *  the month its GST comes off the credit. */
   month: MonthId;
   source: "gstr2b" | "manual" | "reverseCharge";
 };
 
+/** The bill a credit note is against, as it was when picked — so the note
+ *  can still say so if that bill is corrected or deleted later. */
+export type BillRef = { id: string; number: string; date: string };
+
 export type PurchaseBill = {
   id: string;
+  /** A bill when absent — every row from before credit notes (`docOf`). */
+  doc?: PurchaseDoc;
+  /** A credit note's original bill, when it names one. Optional: a vendor may
+   *  issue one note against several bills. */
+  against?: BillRef | null;
   vendor: VendorSnapshot;
   /** The vendor's invoice number, exactly as printed — it is how the bill is
    *  matched to GSTR-2B. */
@@ -160,6 +217,14 @@ export type PurchaseBill = {
    *  invoice date (CGST Act s.16(2), second proviso). */
   paidOn: string | null;
   claim: BillClaim | null;
+  /**
+   * When a claim was withdrawn by hand (`setClaim` with no month). While set,
+   * no GSTR-2B claims it again — neither a save's look through the statements
+   * on file nor an upload (`claimFromMatch`) — until it is claimed by hand, or
+   * its GSTIN or number changes and it names another invoice
+   * (`carriedStanding`). Absent on every row written before 8 Nov 2026.
+   */
+  withdrawnAt?: string | null;
   match: BillMatch | null;
   file: BillFile | null;
   notes: string;
@@ -195,6 +260,8 @@ export function claimable(bill: Pick<PurchaseBill, "vendor" | "reverseCharge" | 
 
 export type BillTotals = { taxable: number; gross: number } & Heads;
 
+/** The lines' totals as typed — a credit note's positive, as printed and as
+ *  the portal reports it. What it counts for is `signedTotals`. */
 export function billTotals(lines: PurchaseLine[]): BillTotals {
   const t: BillTotals = { taxable: 0, gross: 0, igst: 0, cgst: 0, sgst: 0 };
   for (const l of lines) {
@@ -207,12 +274,26 @@ export function billTotals(lines: PurchaseLine[]): BillTotals {
   return t;
 }
 
+/** A document's totals as they count wherever documents are summed: a
+ *  credit note's negative (`docSign`). */
+export function signedTotals(bill: Pick<PurchaseBill, "lines"> & { doc?: PurchaseDoc }): BillTotals {
+  const t = billTotals(bill.lines);
+  const s = (n: number) => signedBy(bill, n);
+  return { taxable: s(t.taxable), gross: s(t.gross), igst: s(t.igst), cgst: s(t.cgst), sgst: s(t.sgst) };
+}
+
 /**
  * What saving a bill does to stock: the change per catalogue row between the
  * lines before and after (`kind:key` → packs, blocks or grams). A new bill is
- * `stockChange([], lines)`; a deleted one `stockChange(lines, [])`.
+ * `stockChange([], lines)`; a deleted one `stockChange(lines, [])`. `signs`
+ * says which way each side's lines move the shelf — a credit note's take
+ * goods off (`documentStockChange`).
  */
-export function stockChange(before: PurchaseLine[], after: PurchaseLine[]): Map<string, number> {
+export function stockChange(
+  before: PurchaseLine[],
+  after: PurchaseLine[],
+  signs: { before?: 1 | -1; after?: 1 | -1 } = {},
+): Map<string, number> {
   const m = new Map<string, number>();
   const add = (lines: PurchaseLine[], sign: 1 | -1) => {
     for (const l of lines) {
@@ -221,19 +302,38 @@ export function stockChange(before: PurchaseLine[], after: PurchaseLine[]): Map<
       m.set(k, (m.get(k) ?? 0) + sign * l.quantity);
     }
   };
-  add(before, -1);
-  add(after, 1);
+  add(before, signs.before === -1 ? 1 : -1);
+  add(after, signs.after ?? 1);
   for (const [k, v] of m) if (v === 0) m.delete(k);
   return m;
+}
+
+type StockDoc = Pick<PurchaseBill, "lines"> & { doc?: PurchaseDoc };
+
+/**
+ * What saving a document does to stock: a bill's stock lines put goods on the
+ * shelf, a credit note's take them off — goods sent back to the vendor. `null`
+ * for no document: before a new one, after a deleted one. So an edit moves the
+ * difference and a delete reverses what the document did, whichever kind it
+ * is (and a bill corrected into a credit note takes its goods off twice over:
+ * once for the bill that no longer is, once for the note).
+ */
+export function documentStockChange(before: StockDoc | null, after: StockDoc | null): Map<string, number> {
+  return stockChange(before?.lines ?? [], after?.lines ?? [], {
+    before: docSign(before),
+    after: docSign(after),
+  });
 }
 
 /** The last day the vendor can be paid without the credit being reversed. */
 export const payBy = (bill: Pick<PurchaseBill, "date">) => addDaysISO(bill.date, 180);
 /** Whether the 180-day rule applies: credit claimed on a bill paid to the
  *  vendor. Reverse charge is outside it (s. 16(2), second proviso) — the tax
- *  is ours, paid to the government, not to them. */
-export const owesPayBy = (bill: Pick<PurchaseBill, "vendor" | "reverseCharge" | "lines" | "date">) =>
-  claimable(bill) && !bill.reverseCharge;
+ *  is ours, paid to the government, not to them — and so is a credit note,
+ *  which is nobody's to pay: it takes credit away. */
+export const owesPayBy = (
+  bill: Pick<PurchaseBill, "vendor" | "reverseCharge" | "lines" | "date"> & { doc?: PurchaseDoc },
+) => claimable(bill) && !bill.reverseCharge && !isCreditNote(bill);
 
 export type BillStatus =
   /** Nothing to claim: an unregistered vendor, or only exempt goods. */
@@ -242,11 +342,17 @@ export type BillStatus =
   | "reverseCharge"
   | "claimed"
   | "mismatch"
-  | "waiting";
+  | "waiting"
+  /** Its claim was withdrawn by hand, and no GSTR-2B will claim it again
+   *  (`withdrawnAt`) — not waiting for anything. */
+  | "withdrawn";
 
+/** Where a document's credit stands. For a credit note, "claimed" means its
+ *  GST has come off the credit, and "waiting" that no GSTR-2B shows it yet. */
 export function billStatus(bill: PurchaseBill): BillStatus {
   if (!claimable(bill)) return "noGst";
   if (bill.reverseCharge) return "reverseCharge";
+  if (!bill.claim && bill.withdrawnAt) return "withdrawn";
   if (bill.match?.status === "mismatch" && !bill.claim) return "mismatch";
   if (bill.claim) return "claimed";
   return "waiting";

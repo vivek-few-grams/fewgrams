@@ -6,6 +6,8 @@ import type { MonthId } from "@/lib/gst/period";
 import type { GstBooks, GstFiling, GstPayment } from "@/lib/gst/quarter";
 import {
   creditFromOrder,
+  creditFromSubscription,
+  latestById,
   saleFromOrder,
   saleFromSubscription,
   type CreditDoc,
@@ -39,17 +41,21 @@ const PAID_SUBSCRIPTION: readonly SubscriptionStatus[] = ["active", "paused", "c
 /**
  * Every invoice and credit note since registration. Reads each paid status
  * partition whole — fine at this volume; when it is not, the place to
- * change is here, with an index on the invoice date.
+ * change is here, with an index on the invoice date. The partitions are read
+ * at once, so a document that changes status between two reads is in both:
+ * `latestById` keeps one.
  */
 export async function listSalesDocs(): Promise<{ sales: SaleDoc[]; credits: CreditDoc[] }> {
   const [orders, subs] = await Promise.all([
-    Promise.all(PAID_ORDER.map(listOrdersByStatus)).then((xs) => xs.flat()),
-    Promise.all(PAID_SUBSCRIPTION.map(listSubscriptionsByStatus)).then((xs) => xs.flat()),
+    Promise.all(PAID_ORDER.map(listOrdersByStatus)).then((xs) => latestById(xs.flat())),
+    Promise.all(PAID_SUBSCRIPTION.map(listSubscriptionsByStatus)).then((xs) => latestById(xs.flat())),
   ]);
   const sales = [...orders.map(saleFromOrder), ...subs.map(saleFromSubscription)].filter(
     (d): d is SaleDoc => d !== null,
   );
-  const credits = orders.map(creditFromOrder).filter((c): c is CreditDoc => c !== null);
+  const credits = [...orders.map(creditFromOrder), ...subs.map(creditFromSubscription)].filter(
+    (c): c is CreditDoc => c !== null,
+  );
   return { sales, credits };
 }
 

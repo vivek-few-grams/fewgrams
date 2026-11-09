@@ -14,6 +14,9 @@ type Row = EntityItem<typeof PurchaseBillEntity>;
 function fromRow(r: Row): PurchaseBill {
   return {
     id: r.id,
+    /* A row from before credit notes has no `doc`, and is a bill. */
+    doc: r.doc ?? "bill",
+    against: r.against ? { id: r.against.id, number: r.against.number, date: r.against.date } : null,
     vendor: {
       id: r.vendor.id,
       name: r.vendor.name,
@@ -41,6 +44,7 @@ function fromRow(r: Row): PurchaseBill {
     })),
     paidOn: r.paidOn ?? null,
     claim: r.claim ?? null,
+    withdrawnAt: r.withdrawnAt ?? null,
     match: r.match
       ? {
           month: r.match.month,
@@ -58,6 +62,8 @@ function fromRow(r: Row): PurchaseBill {
 function toRow(b: PurchaseBill) {
   return {
     id: b.id,
+    doc: b.doc ?? "bill",
+    ...(b.against ? { against: { id: b.against.id, number: b.against.number, date: b.against.date } } : {}),
     vendor: {
       id: b.vendor.id,
       name: b.vendor.name,
@@ -82,6 +88,7 @@ function toRow(b: PurchaseBill) {
     })),
     ...(b.paidOn ? { paidOn: b.paidOn } : {}),
     ...(b.claim ? { claim: b.claim } : {}),
+    ...(b.withdrawnAt ? { withdrawnAt: b.withdrawnAt } : {}),
     ...(b.match ? { match: { month: b.match.month, status: b.match.status, ...b.match.portal } } : {}),
     ...(b.file ? { file: b.file } : {}),
     ...(b.notes ? { notes: b.notes } : {}),

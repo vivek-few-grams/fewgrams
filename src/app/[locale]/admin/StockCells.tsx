@@ -62,19 +62,30 @@ export function OnBills({ count }: { count: number }) {
  * quantity of trays or cocopeat, so selling 3 with 1 held leaves −2 — two
  * packs owed to customers until a bill brings them in. That reads "2 owed",
  * never a bare minus. A stocktake is the count on the shelf, never below
- * zero, so the box opens at 0 for a row that owes. Seed grams never go below
- * zero.
+ * zero. Seed grams never go below zero.
+ *
+ * **The count includes what paid orders are holding** (8 Nov 2026). Payment
+ * takes stock off before the goods leave, so the shelf holds more than the
+ * figure says while orders wait to go. The box opens at what should be on the
+ * shelf — the figure plus what is `held` — and says how much of it is packed
+ * for orders; the action takes that back off (`countedToStored`). It opened at
+ * the bare figure (0 for a row that owed) and saved the count outright, which
+ * forgot packs owed and put packed ones back on sale.
  */
 export function StockCount({
   id,
   value,
   unit,
   correct,
+  held = 0,
   align = "end",
 }: {
   id: string;
   value: number;
   unit: "grams" | "packs";
+  /** Taken off `value` by paid orders whose goods are still here
+   *  (`heldForOrders`) — on the shelf to be counted. */
+  held?: number;
   correct: (prev: FormState, fd: FormData) => Promise<FormState>;
   /** Which side of its cell it sits on — the side its column heading is. */
   align?: "start" | "end";
@@ -108,7 +119,7 @@ export function StockCount({
         <button
           type="button"
           onClick={() => {
-            setTyped(String(Math.max(0, value)));
+            setTyped(String(Math.max(0, Math.round((value + held) * 100) / 100)));
             setEditing(true);
           }}
           aria-label={t("correctLabel")}
@@ -163,6 +174,11 @@ export function StockCount({
           <X aria-hidden size={12} strokeWidth={2.5} />
         </button>
       </span>
+      {held > 0 && (
+        <span className={`max-w-56 font-body text-[11px] text-stone ${align === "end" ? "text-right" : ""}`}>
+          {t(unit === "grams" ? "heldGrams" : "heldPacks", { count: held })}
+        </span>
+      )}
       {error && (
         <span role="alert" className="font-body text-[11px] text-terracotta">
           {error}

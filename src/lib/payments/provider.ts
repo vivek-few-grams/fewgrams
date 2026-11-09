@@ -82,7 +82,17 @@ export type CreatedOrder = {
 
 /** Which order to ask about: ours, and the gateway's own id for it — Cashfree
  *  is asked by ours, Razorpay only knows its own. */
-export type ProviderOrderRef = { orderId: string; providerOrderId: string | null };
+export type ProviderOrderRef = {
+  orderId: string;
+  providerOrderId: string | null;
+  /** False once the payment window has closed (`latePaymentRefused`): an
+   *  authorised payment is then left uncaptured, for the gateway to refund on
+   *  its own, rather than taken for an order the customer was told had
+   *  expired (8 Nov 2026). A payment the gateway already captured is still
+   *  reported — the money has moved. Gateways that capture at payment and
+   *  stop taking it at expiry (Cashfree) ignore it. Default true. */
+  capture?: boolean;
+};
 
 /** The gateway's verdict on the order as a whole. Only `paid` lets an order
  *  be fulfilled; the attempts are then checked for the amount. */

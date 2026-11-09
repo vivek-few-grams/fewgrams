@@ -9,17 +9,22 @@ import { setClaim } from "./actions";
 /**
  * Claim a bill's credit in a month by hand, or withdraw the claim. For a bill
  * the GSTR-2B upload could not match — the vendor typed the number
- * differently — but which the portal's statement does show.
+ * differently — but which the portal's statement does show. For a credit
+ * note (`note`), the month its GST comes off the credit. A withdrawal is
+ * recorded, so no upload or save claims it again (`setClaim`).
  */
 export function ClaimForm({
   billId,
   months,
   current,
+  note = false,
 }: {
   billId: string;
   /** `{ value: "2026-10", label: "October 2026" }`, open months only. */
   months: { value: string; label: string }[];
   current: string | null;
+  /** A vendor's credit note: worded as credit taken off, not claimed. */
+  note?: boolean;
 }) {
   const t = useTranslations("admin.purchases");
   const [state, action, pending] = useActionState<FormState, FormData>(setClaim, IDLE);
@@ -39,7 +44,7 @@ export function ClaimForm({
       <input type="hidden" name="id" value={billId} />
       <label className="block">
         <span className="font-body text-xs font-medium uppercase tracking-wider text-stone">
-          {t("claimMonth")}
+          {note ? t("claimMonthNote") : t("claimMonth")}
         </span>
         <select
           name="month"
@@ -47,7 +52,7 @@ export function ClaimForm({
           onChange={(e) => setMonth(e.target.value)}
           className="mt-1.5 block rounded-lg border border-forest/25 bg-cream px-3 py-2 font-body text-sm text-forest outline-none focus:border-forest"
         >
-          <option value="">{t("notClaimed")}</option>
+          <option value="">{note ? t("notClaimedNote") : t("notClaimed")}</option>
           {months.map((m) => (
             <option key={m.value} value={m.value}>
               {m.label}

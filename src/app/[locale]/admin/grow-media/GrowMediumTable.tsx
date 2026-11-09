@@ -22,13 +22,21 @@ export function GrowMediumTable({
     name: string | null;
     /** Bills that name it — none, and it can be deleted. */
     bills: number;
+    /** Held for paid orders still here (`heldForOrders`), for the stocktake. */
+    held: number;
     picker: { supplyKey: string; vendors: VendorChoice[]; selected: string[] };
   }>;
 }) {
   return (
     <StockTable
       namespace="admin.growMedia"
-      items={media.map(({ medium, name, bills, picker }) => ({ item: medium, name, bills, picker }))}
+      items={media.map(({ medium, name, bills, held, picker }) => ({
+        item: medium,
+        name,
+        bills,
+        held,
+        picker,
+      }))}
       actions={{
         update: updateGrowMedium,
         correct: correctGrowMediumStock,

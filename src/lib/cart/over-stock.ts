@@ -1,5 +1,6 @@
 import { GRAMS_PER_UNIT, lineId, type CartKind } from "./cart";
 import type { PackPart } from "@/lib/types";
+import { roundGrams } from "@/lib/seeds/stock";
 
 /**
  * Which cart lines ask for more seed than the shelf holds — and, when a
@@ -57,7 +58,7 @@ export function overStockLines(items: readonly StockLine[], seeds: readonly Shel
   const packs = items.filter((i) => i.pack);
   if (packs.length === 0) return { lines: [...over], seeds: {} };
 
-  const held = new Map(seeds.map((s) => [s.contentKey, s.stockGrams]));
+  const held = new Map(seeds.map((s) => [s.contentKey, roundGrams(s.stockGrams)]));
   const nameOf = new Map(seeds.map((s) => [s.contentKey, s.name]));
   const add = (into: Map<string, number>, key: string, grams: number) =>
     into.set(key, (into.get(key) ?? 0) + grams);

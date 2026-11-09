@@ -1,5 +1,5 @@
 import { paymentProvider, type PaymentProvider } from "@/lib/payments";
-import { settlementFor } from "@/lib/orders/order";
+import { latePaymentRefused, settlementFor } from "@/lib/orders/order";
 import { FINISH_LEASE_MS, drawInvoiceNo } from "@/lib/orders/settle";
 import { recordPayment } from "@/lib/repo/orders";
 import {
@@ -37,7 +37,11 @@ export async function settleSubscription(
   if (sub.status !== "pending_payment") return resumeFinishing(sub);
   if (!provider || sub.provider !== provider.name) return sub;
 
-  const gateway = await provider.fetchOrder({ orderId: id, providerOrderId: sub.providerOrderId });
+  const gateway = await provider.fetchOrder({
+    orderId: id,
+    providerOrderId: sub.providerOrderId,
+    capture: !latePaymentRefused(sub),
+  });
   for (const attempt of gateway.attempts) await recordPayment(attempt, source, provider.name);
 
   const settlement = settlementFor(sub, gateway);
@@ -74,7 +78,9 @@ async function finishPaidSubscription(sub: Subscription): Promise<Subscription |
     await setSubscriptionInvoiceNo(sub.id, await drawInvoiceNo(new Date(sub.paidAt ?? Date.now())));
   }
   const paid = await getSubscription(sub.id);
-  if (paid) await sendSubscriptionConfirmation(paid);
+  /* One cancelled before a late retry finished it keeps its invoice but is
+     not confirmed to the customer (8 Nov 2026). */
+  if (paid && paid.status !== "cancelled") await sendSubscriptionConfirmation(paid);
   await markSubscriptionFinished(sub.id, new Date().toISOString());
   return getSubscription(sub.id);
 }

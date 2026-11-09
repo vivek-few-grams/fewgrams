@@ -1,3 +1,4 @@
+import { HOLDING_STATUSES, heldForOrders } from "@/lib/orders/held-stock";
 import type { EntityItem } from "electrodb";
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import { CounterEntity, OrderEntity, PaymentEntity } from "@/lib/db/entities";
@@ -116,8 +117,10 @@ export async function createOrder(order: Order): Promise<void> {
   await OrderEntity.create(toRow(order)).go();
 }
 
-export async function getOrder(id: string): Promise<Order | null> {
-  const { data } = await OrderEntity.get({ id }).go(READ_OPTS);
+/** `consistent` for a read straight after a write this caller depends on —
+ *  a GetItem is eventually consistent unless asked. */
+export async function getOrder(id: string, opts: { consistent?: boolean } = {}): Promise<Order | null> {
+  const { data } = await OrderEntity.get({ id }).go({ ...READ_OPTS, ...(opts.consistent && { consistent: true }) });
   return data ? toOrder(data) : null;
 }
 
@@ -258,11 +261,37 @@ export async function markOrderFinished(id: string, at: string): Promise<void> {
 }
 
 /** Set the credit note once; false when the order already has one. */
-export async function setCreditNote(id: string, creditNote: CreditNote): Promise<boolean> {
+/**
+ * Take the lease on drawing an order's credit note number — true for one
+ * caller. Conditional on there being no note and no live lease (one older
+ * than `staleBefore` is a press that died before it drew), so two presses, or
+ * two tabs, draw one number and leave no gap in the series (8 Nov 2026: the
+ * number was drawn first and a losing press burnt it).
+ */
+export async function claimCreditNote(id: string, at: string, staleBefore: string): Promise<boolean> {
+  try {
+    await OrderEntity.patch({ id })
+      .set({ creditNoteClaimedAt: at })
+      .where(
+        (attr, { lt, notExists }) =>
+          `${notExists(attr.creditNote)} AND (${notExists(attr.creditNoteClaimedAt)} OR ${lt(attr.creditNoteClaimedAt, staleBefore)})`,
+      )
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
+}
+
+/** Set the credit note once, by the holder of the lease `claimedAt`. */
+export async function setCreditNote(id: string, creditNote: CreditNote, claimedAt: string): Promise<boolean> {
   try {
     await OrderEntity.patch({ id })
       .set({ creditNote, updatedAt: new Date().toISOString() })
-      .where((attr, { notExists }) => notExists(attr.creditNote))
+      .where(
+        (attr, { eq, notExists }) => `${notExists(attr.creditNote)} AND ${eq(attr.creditNoteClaimedAt, claimedAt)}`,
+      )
       .go();
     return true;
   } catch (e) {
@@ -308,7 +337,15 @@ export async function nextSequence(name: string): Promise<number> {
  * Operator status move, conditional on the status still being `from` — two
  * admins pressing "picked" at once move it once.
  */
-export async function advanceOrderStatus(order: Order, from: OrderStatus, to: OrderStatus): Promise<boolean> {
+export async function advanceOrderStatus(
+  order: Order,
+  from: OrderStatus,
+  to: OrderStatus,
+  /** Also refuse when anything else wrote to the order since it was read —
+   *  a cancel passes it, so a courier booking that locked the parcel between
+   *  the cancel's read and its write wins (8 Nov 2026). */
+  opts: { unchangedSince?: string } = {},
+): Promise<boolean> {
   try {
     await OrderEntity.patch({ id: order.id })
       .set({
@@ -318,7 +355,11 @@ export async function advanceOrderStatus(order: Order, from: OrderStatus, to: Or
         createdAt: order.createdAt,
         updatedAt: new Date().toISOString(),
       })
-      .where(({ status }, { eq }) => eq(status, from))
+      .where(({ status, updatedAt }, { eq }) =>
+        opts.unchangedSince
+          ? `${eq(status, from)} AND ${eq(updatedAt, opts.unchangedSince)}`
+          : eq(status, from),
+      )
       .go();
     return true;
   } catch (e) {
@@ -413,6 +454,13 @@ export async function listOrdersForUser(userId: string): Promise<OrderSummary[]>
 export async function listOrdersByStatus(status: OrderStatus): Promise<Order[]> {
   const { data } = await OrderEntity.query.byStatus({ status }).go({ ...LIST_OPTS, order: "desc" });
   return data.map(toOrder);
+}
+
+/** Stock paid orders took that is still on the premises (`heldForOrders`) —
+ *  what a stocktake's count includes and the stored figure does not. */
+export async function listHeldStock(): Promise<Map<string, number>> {
+  const lists = await Promise.all(HOLDING_STATUSES.map(listOrdersByStatus));
+  return heldForOrders(lists.flat());
 }
 
 /*

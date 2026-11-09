@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { Plus, X } from "lucide-react";
 import { useRouter } from "@/i18n/navigation";
 import { IDLE, type FormState } from "@/lib/forms";
@@ -11,19 +11,24 @@ import {
   DEFAULT_CREDIT,
   PURCHASE_CATEGORIES,
   freightCredit,
+  isCreditNote,
   lineTax,
   stockLineDefaults,
   type CreditUse,
   type PurchaseBill,
   type PurchaseCategory,
+  type PurchaseDoc,
   type StockKind,
 } from "@/lib/purchases/bill";
 import { billCosts } from "@/lib/purchases/cost";
-import { PURCHASE_RATES } from "@/lib/purchases/read";
+import { isIsoDate } from "@/lib/purchases/dates";
+import { PURCHASE_RATES, describeOnPick } from "@/lib/purchases/read";
+import { decodeShortfall } from "@/lib/purchases/shortfall";
 import { HOME_STATE } from "@/lib/tax/states";
 import { NumberField, SelectField, TextField } from "../fields";
 import { saveBill } from "./actions";
 import { NewItemDialog } from "./NewItemDialog";
+import { ShortfallNotice } from "./ShortfallNotice";
 
 export type VendorOption = {
   id: string;
@@ -34,6 +39,8 @@ export type VendorOption = {
   supplies: string[];
 };
 export type ItemOption = { value: string; label: string; kind: StockKind };
+/** A bill a credit note can say it is against (`billFormOptions`). */
+export type BillOption = { id: string; vendorId: string; number: string; date: string };
 
 /** The item list's last option, which opens "+ New product" instead of
  *  picking. Not a valid `kind:key`, so it can never be posted as one. */
@@ -128,26 +135,46 @@ const paise = (s: string) => {
  * Each stock line shows the cost it will set on its product — tax and its
  * share of the shipping included (`billCosts`, 18 Oct 2026) — before the
  * bill is saved, so a slipped digit shows up as a strange price.
+ *
+ * The same form enters a vendor's credit note (8 Nov 2026), with the box at
+ * its head ticked: the same lines, typed positive as printed, counted
+ * negative once saved. A credit note sets no cost, so its lines preview none,
+ * and it may name the bill it is against.
  */
 export function BillEditor({
   vendors,
   items: initialItems,
   suggestions,
+  bills,
   bill,
+  initialDoc = "bill",
   today,
 }: {
   vendors: VendorOption[];
   items: ItemOption[];
   /** Content keys with no row yet, per kind, for "+ New product". */
   suggestions: Record<StockKind, string[]>;
+  /** Every bill in the register, for the one a credit note is against. */
+  bills: BillOption[];
   bill?: PurchaseBill;
+  /** What a new document starts as — "Enter a credit note" opens the form
+   *  with the box ticked. */
+  initialDoc?: PurchaseDoc;
   today: string;
 }) {
   const t = useTranslations("admin.purchases");
   const tc = useTranslations("admin.common");
+  const format = useFormatter();
   const router = useRouter();
   const [state, action, pending] = useActionState<FormState, FormData>(saveBill, IDLE);
   const [vendorId, setVendorId] = useState(bill?.vendor.id ?? "");
+  const [creditNote, setCreditNote] = useState(bill ? isCreditNote(bill) : initialDoc === "creditNote");
+  /* Only a bill still in the register can be picked; a note whose bill has
+     since been deleted starts untied rather than posting an id that is
+     refused. */
+  const [against, setAgainst] = useState(() =>
+    bill?.against && bills.some((b) => b.id === bill.against!.id) ? bill.against.id : "",
+  );
   const [number, setNumber] = useState(bill?.number ?? "");
   const [date, setDate] = useState(bill?.date ?? today);
   const [paidOn, setPaidOn] = useState(bill?.paidOn ?? "");
@@ -164,12 +191,18 @@ export function BillEditor({
   /* A new bill goes back to the register once saved. Navigating is a side
      effect, so it runs after render, never during it. An edited bill stays,
      and its file is stored now: the form is not reset (`keepFields`), so the
-     picker is emptied or the next save would upload it again. */
+     picker is emptied or the next save would upload it again. A new credit
+     note can find the shelf short of the goods it sends back; the register
+     says so, from `?short=`. */
   const fileInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (state.status !== "saved") return;
-    if (!bill) router.push("/admin/purchases");
-    else if (fileInput.current) fileInput.current.value = "";
+    if (!bill) {
+      const short = state.notice?.code === "stockShort" ? state.notice.values?.short : undefined;
+      router.push(
+        short ? `/admin/purchases?${new URLSearchParams({ short, saved: "1" })}` : "/admin/purchases",
+      );
+    } else if (fileInput.current) fileInput.current.value = "";
   }, [state, bill, router]);
 
   const vendor = vendors.find((v) => v.id === vendorId);
@@ -189,10 +222,25 @@ export function BillEditor({
     (vendor?.kind === "registered" && vendor.stateCode === HOME_STATE.code) ||
     (vendor?.kind === "unregistered" && rc);
 
+  const day = (iso: string) => format.dateTime(new Date(`${iso}T00:00:00+05:30`), { dateStyle: "medium" });
+  /* An error that names another bill carries its date as `YYYY-MM-DD`; it
+     is printed the way the register prints dates. */
+  const values = (v: Record<string, string> = {}) =>
+    v.date && isIsoDate(v.date) ? { ...v, date: day(v.date) } : v;
+  /* The vendor's bills a credit note can be against, newest first. */
+  const againstOptions = bills.filter((b) => b.vendorId === vendorId && b.id !== bill?.id);
+  /* A credit note's figures are typed positive and count negative; its
+     totals say so (`0 - x`, so an empty one reads ₹0.00, not -₹0.00). */
+  const signed = (paise: number) => (creditNote ? 0 - paise : paise);
   const errorFor = (field: string) =>
     state.status === "error" && state.field === field
-      ? t(`errors.${state.code}`, state.values ?? {})
+      ? t(`errors.${state.code}`, values(state.values))
       : undefined;
+  /* Stock a correction down could not take back off the shelf. */
+  const short =
+    state.status === "saved" && state.notice?.code === "stockShort"
+      ? decodeShortfall(state.notice.values?.short)
+      : [];
   const set = (uid: number, patch: Partial<Row>) =>
     setRows((rs) => rs.map((r) => (r.uid === uid ? { ...r, ...patch } : r)));
   /* A new value or rate makes any GST typed for the old one wrong — and a
@@ -259,19 +307,44 @@ export function BillEditor({
           );
           setLinked((ls) => [...ls, item.value]);
           const row = rows.find((r) => r.uid === adding);
-          if (row) set(row.uid, { item: item.value, description: item.label, ...itemDefaults(row, item) });
+          if (row) {
+            const before = items.find((x) => x.value === row.item)?.label;
+            set(row.uid, {
+              item: item.value,
+              description: describeOnPick(row.description, before, item.label),
+              ...itemDefaults(row, item),
+            });
+          }
           setAdding(null);
         }}
       />
       <form action={action} onSubmit={keepFields(action)} noValidate className="space-y-6">
         {bill && <input type="hidden" name="id" value={bill.id} />}
 
+        <label className="flex items-start gap-2 font-body text-sm text-forest">
+          <input
+            type="checkbox"
+            name="creditNote"
+            checked={creditNote}
+            onChange={(e) => setCreditNote(e.target.checked)}
+            className="mt-0.5 size-4"
+          />
+          <span>
+            {t("creditNote")}
+            <span className="block text-xs text-stone">{t("creditNoteHint")}</span>
+          </span>
+        </label>
+
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <SelectField
             label={t("vendor")}
             name="vendorId"
             value={vendorId}
-            onChange={(e) => setVendorId(e.target.value)}
+            onChange={(e) => {
+              setVendorId(e.target.value);
+              /* Another vendor's bill is no bill of this one's. */
+              setAgainst("");
+            }}
             options={[
               { value: "", label: t("vendorPick") },
               ...vendors.map((v) => ({ value: v.id, label: v.name })),
@@ -280,7 +353,7 @@ export function BillEditor({
             error={errorFor("vendorId")}
           />
           <TextField
-            label={t("number")}
+            label={creditNote ? t("noteNumber") : t("number")}
             name="number"
             value={number}
             onChange={(e) => setNumber(e.target.value)}
@@ -289,7 +362,7 @@ export function BillEditor({
             error={errorFor("number")}
           />
           <label className="block">
-            <span className={label}>{t("date")}</span>
+            <span className={label}>{creditNote ? t("noteDate") : t("date")}</span>
             <input
               type="date"
               name="date"
@@ -303,7 +376,7 @@ export function BillEditor({
             )}
           </label>
           <label className="block">
-            <span className={label}>{t("paidOn")}</span>
+            <span className={label}>{creditNote ? t("settledOn") : t("paidOn")}</span>
             <input
               type="date"
               name="paidOn"
@@ -315,10 +388,30 @@ export function BillEditor({
             <span
               className={`mt-1 block font-body text-[11px] ${errorFor("paidOn") ? "text-terracotta" : "text-stone"}`}
             >
-              {errorFor("paidOn") ?? t("paidOnHint")}
+              {errorFor("paidOn") ?? (creditNote ? t("settledOnHint") : t("paidOnHint"))}
             </span>
           </label>
         </div>
+
+        {creditNote && vendor && (
+          <div className="max-w-md">
+            <SelectField
+              label={t("against")}
+              name="against"
+              value={against}
+              onChange={(e) => setAgainst(e.target.value)}
+              options={[
+                { value: "", label: t("againstNone") },
+                ...againstOptions.map((b) => ({
+                  value: b.id,
+                  label: t("againstOption", { number: b.number, date: day(b.date) }),
+                })),
+              ]}
+              hint={t("againstHint")}
+              error={errorFor("against")}
+            />
+          </div>
+        )}
 
         {vendor && vendor.kind !== "foreign" && (
           <label className="flex items-start gap-2 font-body text-sm text-forest">
@@ -339,7 +432,9 @@ export function BillEditor({
         {noGst && <p className="font-body text-sm text-stone">{t("unregisteredNote")}</p>}
 
         <fieldset className="space-y-3">
-          <legend className="font-display text-base font-semibold text-forest">{t("lines")}</legend>
+          <legend className="font-display text-base font-semibold text-forest">
+            {creditNote ? t("noteLines") : t("lines")}
+          </legend>
           {rows.some((r) => r.category === "stock") && (!vendor || suppliesNothing) && (
             <p className="font-body text-xs text-stone">
               {vendor ? t("suppliesNothing", { vendor: vendor.name }) : t("vendorFirst")}
@@ -384,9 +479,14 @@ export function BillEditor({
                           return;
                         }
                         const picked = items.find((x) => x.value === e.target.value);
+                        const before = items.find((x) => x.value === row.item)?.label;
+                        /* A description the last item filled in follows the
+                           new one; one the owner typed stays. */
                         set(row.uid, {
                           item: e.target.value,
-                          ...(row.description === "" && picked ? { description: picked.label } : {}),
+                          ...(picked
+                            ? { description: describeOnPick(row.description, before, picked.label) }
+                            : {}),
                           ...(picked ? itemDefaults(row, picked) : {}),
                         });
                       }}
@@ -515,7 +615,7 @@ export function BillEditor({
                     <input type="hidden" name="credit" value="none" />
                   )}
                 </div>
-                {stock && kind && costs.has(row.item) && (
+                {stock && kind && !creditNote && costs.has(row.item) && (
                   <p className="mt-2 font-body text-[11px] text-forest">
                     {t("costPreview", {
                       amount: costs.get(row.item)! / 100,
@@ -524,7 +624,9 @@ export function BillEditor({
                   </p>
                 )}
                 {row.category === "freight" && (
-                  <p className="mt-2 font-body text-[11px] text-stone">{t("freightHint")}</p>
+                  <p className="mt-2 font-body text-[11px] text-stone">
+                    {creditNote ? t("freightHintNote") : t("freightHint")}
+                  </p>
                 )}
                 {rowError[i] && <p className="mt-2 font-body text-[11px] text-terracotta">{rowError[i]}</p>}
               </div>
@@ -543,25 +645,29 @@ export function BillEditor({
 
         <dl className="ml-auto grid max-w-xs grid-cols-[1fr_auto] gap-x-6 gap-y-1 font-body text-sm text-forest">
           <dt className="text-stone">{t("totalTaxable")}</dt>
-          <dd className="text-right tabular-nums">{money(totals.taxable)}</dd>
+          <dd className="text-right tabular-nums">{money(signed(totals.taxable))}</dd>
           {/* Under reverse charge the vendor's bill carries no GST: it totals
               the value, and the tax is ours to pay the government, apart. */}
           {rc ? (
             <>
-              <dt className="border-t border-forest/20 pt-1 font-semibold">{t("total")}</dt>
+              <dt className="border-t border-forest/20 pt-1 font-semibold">
+                {creditNote ? t("noteTotal") : t("total")}
+              </dt>
               <dd className="border-t border-forest/20 pt-1 text-right font-semibold tabular-nums">
-                {money(totals.taxable)}
+                {money(signed(totals.taxable))}
               </dd>
               <dt className="text-stone">{t("totalTaxRc")}</dt>
-              <dd className="text-right tabular-nums text-stone">{money(totals.tax)}</dd>
+              <dd className="text-right tabular-nums text-stone">{money(signed(totals.tax))}</dd>
             </>
           ) : (
             <>
               <dt className="text-stone">{t("totalTax")}</dt>
-              <dd className="text-right tabular-nums">{money(totals.tax)}</dd>
-              <dt className="border-t border-forest/20 pt-1 font-semibold">{t("total")}</dt>
+              <dd className="text-right tabular-nums">{money(signed(totals.tax))}</dd>
+              <dt className="border-t border-forest/20 pt-1 font-semibold">
+                {creditNote ? t("noteTotal") : t("total")}
+              </dt>
               <dd className="border-t border-forest/20 pt-1 text-right font-semibold tabular-nums">
-                {money(totals.taxable + totals.tax)}
+                {money(signed(totals.taxable + totals.tax))}
               </dd>
             </>
           )}
@@ -614,19 +720,31 @@ export function BillEditor({
             disabled={pending}
             className="rounded-full bg-forest px-6 py-2.5 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep disabled:opacity-60"
           >
-            {bill ? tc("save") : t("saveNew")}
+            {bill ? tc("save") : creditNote ? t("saveNewNote") : t("saveNew")}
           </button>
           {bill && state.status === "saved" && !pending && (
             <p role="status" className="font-body text-sm text-forest">
-              {t("saved")}
+              {creditNote ? t("noteSaved") : t("saved")}
             </p>
           )}
           {state.status === "error" && !state.field && (
             <p role="alert" className="font-body text-sm text-terracotta">
-              {t(`errors.${state.code}`, state.values ?? {})}
+              {t(`errors.${state.code}`, values(state.values))}
             </p>
           )}
         </div>
+        {short.length > 0 && !pending && (
+          <ShortfallNotice
+            title={t("shortfall.saved")}
+            lines={short.map((s) =>
+              t("shortfall.line", {
+                item: items.find((x) => x.value === `${s.kind}:${s.key}`)?.label ?? s.key,
+                kind: s.kind,
+                short: s.short,
+              }),
+            )}
+          />
+        )}
       </form>
     </>
   );

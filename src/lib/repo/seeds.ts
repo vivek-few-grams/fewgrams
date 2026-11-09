@@ -3,6 +3,7 @@ import type { EntityItem } from "electrodb";
 import { SeedEntity, SeedSettingsEntity } from "@/lib/db/entities";
 import { NO_MARGIN, retailPrice } from "@/lib/pricing/margin";
 import type { ItemCost } from "@/lib/purchases/cost";
+import { roundGrams } from "@/lib/seeds/stock";
 import type { Margin, Seed } from "@/lib/types";
 
 type Row = EntityItem<typeof SeedEntity>;
@@ -157,16 +158,27 @@ export async function setSeedCost(
  * once; the caller logs it. Conditional on
  * the figure read, so two orders paid at once cannot both take the same
  * grams; the loser re-reads and takes from what is left.
+ *
+ * **The figure is read from the row itself, consistently** (8 Nov 2026). It
+ * was read through the catalogue index, which can lag a write by moments: a
+ * paid order with a seed line and a starter pack holding the same seed takes
+ * that seed twice in quick succession, and the second take kept reading the
+ * figure from before the first, failed its condition five times and threw —
+ * leaving the order's stock half taken. The index now only finds the row.
  */
 export async function takeFromShelf(contentKey: string, grams: number): Promise<number> {
+  const found = await getSeedByKey(contentKey);
+  if (!found) return 0;
   for (let attempt = 0; attempt < 5; attempt++) {
-    const seed = await getSeedByKey(contentKey);
-    if (!seed || seed.stockGrams <= 0) return 0;
-    const take = Math.min(grams, seed.stockGrams);
+    const { data } = await SeedEntity.get({ id: found.id }).go({ ...READ_OPTS, consistent: true });
+    if (!data) return 0;
+    const held = roundGrams(data.stockGrams);
+    if (held <= 0) return 0;
+    const take = roundGrams(Math.min(grams, held));
     try {
-      await SeedEntity.patch({ id: seed.id })
-        .set({ stockGrams: seed.stockGrams - take })
-        .where(({ stockGrams }, { eq }) => eq(stockGrams, seed.stockGrams))
+      await SeedEntity.patch({ id: found.id })
+        .set({ stockGrams: Math.max(0, roundGrams(held - take)) })
+        .where(({ stockGrams }, { eq }) => eq(stockGrams, data.stockGrams))
         .go();
       return take;
     } catch (e) {

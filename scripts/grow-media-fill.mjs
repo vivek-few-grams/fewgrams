@@ -105,11 +105,19 @@ async function main() {
 
   for (const { key, listed, cost, source } of PRICE_LIST) {
     const prior = existing.get(key);
+    /* A row a purchase bill has costed is the bill's (SPEC §26.6.1): a re-run
+       put the quotation's cost back over it and dropped the link to the bill
+       (8 Nov 2026), as seeds-fill.mjs already refused to. */
+    if (prior?.costBill) {
+      console.log(`${key.padEnd(20)} skip    costed by bill ${prior.costBill.number}`);
+      continue;
+    }
     const margin = marginFrom(prior);
     const row = {
       id: prior?.id ?? randomUUID(),
       contentKey: key,
       cost,
+      ...(prior?.openingCost !== undefined ? { openingCost: prior.openingCost } : {}),
       ...(prior?.markupPercent !== undefined ? { markupPercent: prior.markupPercent } : {}),
       ...(prior?.roundUpToNearest !== undefined ? { roundUpToNearest: prior.roundUpToNearest } : {}),
       price: retailPrice(cost, margin),

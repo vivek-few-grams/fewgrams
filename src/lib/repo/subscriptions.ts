@@ -1,10 +1,12 @@
 import type { EntityItem } from "electrodb";
 import { LIST_OPTS, READ_OPTS, isConditionFailure } from "@/lib/db/client";
 import { SubscriptionEntity } from "@/lib/db/entities";
+import type { CreditNote } from "@/lib/orders/order";
 import type {
   ScheduleChange,
   Subscription,
   SubscriptionDelivery,
+  SubscriptionRefund,
   SubscriptionStatus,
 } from "@/lib/subscriptions/subscription";
 
@@ -37,6 +39,17 @@ function toSubscription(row: Row): Subscription {
     paidAt: row.paidAt ?? null,
     finishingAt: row.finishingAt ?? null,
     finishedAt: row.finishedAt ?? null,
+    ...(row.refund && {
+      refund: {
+        amount: row.refund.amount,
+        rows: row.refund.rows.map((r) => ({ ...r })),
+        recordedAt: row.refund.recordedAt,
+      },
+    }),
+    ...(row.creditNote && {
+      creditNote: { number: row.creditNote.number, issuedAt: row.creditNote.issuedAt },
+    }),
+    ...(row.creditNoteClaimedAt && { creditNoteClaimedAt: row.creditNoteClaimedAt }),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     expiresAt: row.expiresAt,
@@ -124,7 +137,80 @@ export async function claimSubscriptionFinishing(sub: Subscription, now: string)
   try {
     await SubscriptionEntity.patch({ id: sub.id })
       .set({ finishingAt: now })
-      .where((attr, { eq, notExists }) => `${eq(attr.finishingAt, sub.finishingAt!)} AND ${notExists(attr.finishedAt)}`)
+      .where(
+        (attr, { eq, notExists }) =>
+          `${eq(attr.finishingAt, sub.finishingAt!)} AND ${notExists(attr.finishedAt)}`,
+      )
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
+}
+
+/**
+ * Record a cancelled subscription's refund, and with it the lease on drawing
+ * its credit note number — **true for exactly one caller**. Conditional on
+ * it being cancelled, invoiced, and with no refund or credit note yet, so a
+ * double press or a second tab records one refund and draws one number
+ * (`recordSubscriptionRefund`).
+ */
+export async function claimSubscriptionRefund(
+  sub: Subscription,
+  refund: SubscriptionRefund,
+): Promise<boolean> {
+  try {
+    await SubscriptionEntity.patch({ id: sub.id })
+      .set({ refund, creditNoteClaimedAt: refund.recordedAt, updatedAt: refund.recordedAt })
+      .where(
+        (attr, { eq, exists, notExists }) =>
+          `${eq(attr.status, "cancelled")} AND ${exists(attr.invoiceNo)} AND ${notExists(attr.refund)} AND ${notExists(attr.creditNote)}`,
+      )
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
+}
+
+/**
+ * Take over the lease on a credit note number whose draw stalled — the refund
+ * is recorded and no note was set. Conditional on the lease still being the
+ * one `sub` was read with, so of two presses on a stale lease one wins.
+ */
+export async function retakeSubscriptionCreditNote(sub: Subscription, now: string): Promise<boolean> {
+  if (!sub.creditNoteClaimedAt) return false;
+  try {
+    await SubscriptionEntity.patch({ id: sub.id })
+      .set({ creditNoteClaimedAt: now })
+      .where(
+        (attr, { eq, notExists }) =>
+          `${eq(attr.creditNoteClaimedAt, sub.creditNoteClaimedAt!)} AND ${notExists(attr.creditNote)}`,
+      )
+      .go();
+    return true;
+  } catch (e) {
+    if (isConditionFailure(e)) return false;
+    throw e;
+  }
+}
+
+/** Set the credit note once, by the holder of the lease `claimedAt`; false
+ *  when it already has one or the lease has passed to another press. */
+export async function setSubscriptionCreditNote(
+  id: string,
+  creditNote: CreditNote,
+  claimedAt: string,
+): Promise<boolean> {
+  try {
+    await SubscriptionEntity.patch({ id })
+      .set({ creditNote, updatedAt: creditNote.issuedAt })
+      .where(
+        (attr, { eq, notExists }) =>
+          `${notExists(attr.creditNote)} AND ${eq(attr.creditNoteClaimedAt, claimedAt)}`,
+      )
       .go();
     return true;
   } catch (e) {

@@ -125,7 +125,9 @@ describe("retailPrice", () => {
     for (let cost = 1; cost < 3000; cost += 7.3) {
       const p = retailPrice(cost, ten);
       expect(p % 10).toBe(p > CHARM_PRICE_ABOVE ? 9 : 0);
-      expect(p).toBeGreaterThanOrEqual(cost);
+      /* To the paisa: `cost += 7.3` carries float noise (220.0000000000001),
+         and a price is never finer than a paisa (`retailPrice`, 8 Nov 2026). */
+      expect(p).toBeGreaterThanOrEqual(Math.round(cost * 100) / 100);
     }
   });
 });

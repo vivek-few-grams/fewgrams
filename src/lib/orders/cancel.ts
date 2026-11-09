@@ -2,8 +2,12 @@ import { advanceOrderStatus } from "@/lib/repo/orders";
 import { returnToShelf } from "@/lib/repo/seeds";
 import { returnToStock as returnTraysToStock } from "@/lib/repo/trays";
 import { returnToStock as returnMediaToStock } from "@/lib/repo/grow-media";
-import { canCancelOrder, type Order, type StockTaken } from "./order";
-import { stockMoves } from "./stock-moves";
+import { canCancelOrder, type Order } from "./order";
+import { restock } from "./stock-moves";
+
+/* Pure, so it lives with `stockMoves` and the held-stock count can use it
+   without importing the repo; re-exported for the callers that know it here. */
+export { restock };
 
 /**
  * Cancel a paid order before it leaves — the owner's call from admin (27 Sep
@@ -19,7 +23,8 @@ import { stockMoves } from "./stock-moves";
  */
 export async function cancelOrder(order: Order): Promise<boolean> {
   if (!canCancelOrder(order)) return false;
-  if (!(await advanceOrderStatus(order, order.status, "cancelled"))) return false;
+  if (!(await advanceOrderStatus(order, order.status, "cancelled", { unchangedSince: order.updatedAt })))
+    return false;
 
   for (const back of restock(order)) {
     try {
@@ -34,19 +39,4 @@ export async function cancelOrder(order: Order): Promise<boolean> {
     }
   }
   return true;
-}
-
-/**
- * What a cancel puts back: exactly what payment recorded taking
- * (`stockTaken`). Returning the ordered quantity instead put three blocks
- * back where one came off (31 Oct 2026). An order paid before the record
- * existed falls back to its lines, as it always did.
- */
-export function restock(order: Pick<Order, "lines" | "stockTaken">): StockTaken[] {
-  if (order.stockTaken) return order.stockTaken;
-  return stockMoves(order.lines).map((m) =>
-    m.kind === "seed"
-      ? { kind: "seed", key: m.key, amount: m.grams }
-      : { kind: m.kind, key: m.key, amount: m.units },
-  );
 }

@@ -88,3 +88,27 @@ export async function subscriptionInvoice(sub: Subscription): Promise<SheetProps
     hasSeeds: false,
   };
 }
+
+/**
+ * The credit note for a cancelled subscription's refund (8 Nov 2026): the
+ * bill's plans with the rows stored when the refund was recorded — the
+ * bill's own, scaled to the amount refunded — so its total is what went
+ * back. No quantity: the refund is an amount, not a count of boxes.
+ */
+export async function subscriptionCreditNote(sub: Subscription): Promise<SheetProps | null> {
+  const invoice = await subscriptionInvoice(sub);
+  if (!invoice || !sub.refund || !sub.creditNote) return null;
+  const rows = sub.refund.rows;
+  return {
+    ...invoice,
+    kind: "creditNote",
+    number: sub.creditNote.number,
+    issuedAt: sub.creditNote.issuedAt,
+    against: { number: invoice.number, issuedAt: invoice.issuedAt },
+    lines: invoice.lines.flatMap((l) => {
+      const row = rows.find((r) => r.line === l.key);
+      return row ? [{ ...l, quantity: null, row }] : [];
+    }),
+    tax: rows,
+  };
+}

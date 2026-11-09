@@ -195,23 +195,32 @@ export async function Gstr1View({ view }: { view: QuarterView }) {
 
       <Section title={t("gstr1.docsTitle")} hint={t("gstr1.docsHint")} action={csv("docs")}>
         <Figures
-          head={[t("gstr1.docKind"), t("gstr1.from"), t("gstr1.to"), t("gstr1.count"), t("gstr1.cancelled")]}
+          head={[
+            t("gstr1.docKind"),
+            t("gstr1.from"),
+            t("gstr1.to"),
+            t("gstr1.count"),
+            t("gstr1.cancelled"),
+            t("gstr1.netIssued"),
+          ]}
           empty={t("gstr1.none")}
           rows={[
-            ...(g.docs.invoices
-              ? [[t("gstr1.docInvoices"), g.docs.invoices.from, g.docs.invoices.to, g.docs.invoices.count, 0]]
-              : []),
-            ...(g.docs.creditNotes
-              ? [
-                  [
-                    t("gstr1.docCreditNotes"),
-                    g.docs.creditNotes.from,
-                    g.docs.creditNotes.to,
-                    g.docs.creditNotes.count,
-                    0,
-                  ],
-                ]
-              : []),
+            ...g.docs.invoices.map((d) => [
+              t("gstr1.docInvoices"),
+              d.from,
+              d.to,
+              d.total,
+              d.cancelled,
+              d.issued,
+            ]),
+            ...g.docs.creditNotes.map((d) => [
+              t("gstr1.docCreditNotes"),
+              d.from,
+              d.to,
+              d.total,
+              d.cancelled,
+              d.issued,
+            ]),
           ]}
         />
       </Section>

@@ -3,13 +3,17 @@ import {
   CREDIT_USES,
   PURCHASE_CATEGORIES,
   STOCK_KINDS,
+  isCreditNote,
   isIntraPurchase,
   lineTax,
   type CreditUse,
   type PurchaseCategory,
+  type PurchaseBill,
+  type PurchaseDoc,
   type PurchaseLine,
   type StockKind,
 } from "./bill";
+import { billItems } from "./cost";
 import { isIsoDate } from "./dates";
 import type { Vendor } from "./vendor";
 
@@ -20,7 +24,8 @@ import type { Vendor } from "./vendor";
  * Money is typed in rupees and kept in paise. Each line's tax is worked out
  * from its value and rate unless the bill's own figures are typed over it;
  * those must agree with the worked figure to within a rupee per head, which
- * allows the vendor's rounding and catches a slipped digit.
+ * allows the vendor's rounding and catches a slipped digit. A head that does
+ * not apply to the line takes no figure at all (`appliesTo`).
  */
 
 /** Every GST rate in force for goods and services, in percent. */
@@ -29,7 +34,50 @@ export const PURCHASE_RATES = [0, 0.25, 1.5, 3, 5, 12, 18, 28, 40] as const;
 export const MAX_BILL_LINES = 40;
 const TOLERANCE = 100;
 
+/**
+ * Which heads a line's GST can be in: none at 0% (and so none on an
+ * unregistered vendor's bill, whose rate is 0), CGST + SGST from a Karnataka
+ * vendor, IGST from anywhere else. Decided by rate and state, never by the
+ * worked figure — a line of a few paise rounds a head that applies to 0.
+ */
+export function appliesTo(rate: number, intra: boolean): Record<"igst" | "cgst" | "sgst", boolean> {
+  const taxed = rate > 0;
+  return { igst: taxed && !intra, cgst: taxed && intra, sgst: taxed && intra };
+}
+
+/**
+ * The items a bill being edited may keep although its vendor does not supply
+ * them: those already on it, so an old bill can still be corrected — but only
+ * while it is still that vendor's bill. Switching the vendor would otherwise
+ * carry the old vendor's items past "only what this vendor supplies".
+ */
+export function itemsKeptOnEdit(
+  current: Pick<PurchaseBill, "vendor" | "lines"> | null,
+  postedVendorId: string,
+): Set<string> {
+  return current && current.vendor.id === postedVendorId ? new Set(billItems(current.lines)) : new Set();
+}
+
+/**
+ * A line's description once its item is picked: the new item's name when the
+ * description is empty or still the name the last item filled in, and what
+ * the owner typed otherwise. Picking radish after alfalfa saved a radish
+ * line described as "Alfalfa" until 8 Nov 2026.
+ */
+export function describeOnPick(
+  description: string,
+  previousLabel: string | undefined,
+  label: string,
+): string {
+  return description === "" || description === previousLabel ? label : description;
+}
+
 export type BillInput = {
+  /** The `creditNote` box ticked, or a bill. */
+  doc: PurchaseDoc;
+  /** A credit note's original bill, by id — one of the same vendor's bills,
+   *  or null. Always null on a bill. */
+  against: string | null;
   vendorId: string;
   number: string;
   date: string;
@@ -52,8 +100,11 @@ export function readBill(
     /** `kind:key` of every catalogue row a stock line may add to. */
     stockItems: ReadonlySet<string>;
     /** Items already on the bill being edited — kept even if the vendor no
-     *  longer supplies them, so an old bill can still be corrected. */
+     *  longer supplies them, so an old bill can still be corrected. Only
+     *  while it is still that vendor's bill: `itemsKeptOnEdit`. */
     onBill?: ReadonlySet<string>;
+    /** The register, for the bill a credit note names (`against`). */
+    bills?: ReadonlyArray<Pick<PurchaseBill, "id" | "vendor" | "doc">>;
     /** `YYYY-MM-DD`, IST. */
     today: string;
   },
@@ -65,6 +116,19 @@ export function readBill(
 
   const vendor = ctx.vendors.get(String(fd.get("vendorId") ?? ""));
   if (!vendor) return fail("vendorRequired", "vendorId");
+
+  /* Typed in positive amounts like a bill; which way they count is the
+     document's (`docSign`), never a minus typed into a line. */
+  const doc: PurchaseDoc = fd.get("creditNote") !== null ? "creditNote" : "bill";
+  /* The bill a credit note is against, if it names one: that vendor's, and
+     a bill — a note against a note is not a thing a vendor issues. */
+  const againstRaw = doc === "creditNote" ? String(fd.get("against") ?? "").trim() : "";
+  if (againstRaw) {
+    const original = ctx.bills?.find((b) => b.id === againstRaw);
+    if (!original || original.vendor.id !== vendor.id || isCreditNote(original)) {
+      return fail("againstInvalid", "against");
+    }
+  }
 
   const number = String(fd.get("number") ?? "").trim();
   if (!number) return fail("numberRequired", "number");
@@ -147,9 +211,17 @@ export function readBill(
     const worked = lineTax(taxable, rate, intra);
     const typed = { igst: toPaise(at("igst")), cgst: toPaise(at("cgst")), sgst: toPaise(at("sgst")) };
     const heads = { ...worked };
+    const applies = appliesTo(rate, intra);
     for (const h of ["igst", "cgst", "sgst"] as const) {
       const v = typed[h];
       if (v === null) continue;
+      /* The form posts a head that does not apply empty; only a hand-edited
+         one sends a figure, and the rupee's leeway would let it put IGST on
+         a Karnataka line or make an exempt seed bill claimable. */
+      if (!applies[h]) {
+        if (v !== 0) return lineFail("taxWrongHead", h);
+        continue;
+      }
       if (v < 0 || Math.abs(v - worked[h]) > TOLERANCE) return lineFail("taxOff", h);
       heads[h] = v;
     }
@@ -165,6 +237,8 @@ export function readBill(
   return {
     ok: true,
     value: {
+      doc,
+      against: againstRaw || null,
       vendorId: vendor.id,
       number,
       date,

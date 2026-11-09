@@ -249,6 +249,8 @@
       "againstValue": "{date} ರ {number}",
       "creditTotal": "ಮರುಪಾವತಿಸಿದ ಒಟ್ಟು ಮೊತ್ತ",
       "creditReason": "ಆರ್ಡರ್ ರದ್ದಾಗಿದೆ ಮತ್ತು ಪೂರ್ತಿ ಮೊತ್ತವನ್ನು ಮರುಪಾವತಿಸಲಾಗಿದೆ.",
+      "creditKindSubscription": "ರದ್ದಾದ ಚಂದಾದಾರಿಕೆಯ ಬಿಲ್‌ನಲ್ಲಿ ಮರುಪಾವತಿಸಿದ ಮೊತ್ತವನ್ನು ರದ್ದುಗೊಳಿಸುತ್ತದೆ",
+      "creditReasonSubscription": "ಚಂದಾದಾರಿಕೆ ರದ್ದಾಗಿದೆ ಮತ್ತು ಮೇಲಿನ ಮೊತ್ತವನ್ನು ಮರುಪಾವತಿಸಲಾಗಿದೆ.",
       "subscription": "ಚಂದಾದಾರಿಕೆ",
       "boxesQuantity": "ವಾರಕ್ಕೆ {count, plural, one {# ಬಾಕ್ಸ್} other {# ಬಾಕ್ಸ್}}",
       "fileInvoice": "ಫ್ಯೂಗ್ರಾಮ್ಸ್ ಇನ್‌ವಾಯ್ಸ್ {number}",

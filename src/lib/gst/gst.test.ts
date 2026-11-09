@@ -4,7 +4,15 @@ import { billStatus, lineTax, payBy, stockChange } from "@/lib/purchases/bill";
 import { orderTax, subscriptionTax } from "@/lib/tax/order-tax";
 import { HOME_STATE, gstStateFor } from "@/lib/tax/states";
 import { B2CL_ABOVE, buildGstr1 } from "./gstr1";
-import { claimAfterMatch, claimFromMatch, invoiceKey, matchStatement, parseGstr2b } from "./gstr2b";
+import {
+  claimAfterMatch,
+  claimFromMatch,
+  invoiceKey,
+  matchStatement,
+  parseGstr2b,
+  type Gstr2b,
+  type PortalInvoice,
+} from "./gstr2b";
 import { buildGstr3b, settle } from "./gstr3b";
 import { ZERO, setOff, sumHeads } from "./ledger";
 import {
@@ -16,8 +24,15 @@ import {
   quartersSince,
   returnPeriod,
 } from "./period";
-import { isLockedBill, isSalesLockedMonth, openingFor, quarterView, type GstBooks } from "./quarter";
-import type { CreditDoc, SaleDoc } from "./sales";
+import {
+  categoriesWithSales,
+  isLockedBill,
+  isSalesLockedMonth,
+  openingFor,
+  quarterView,
+  type GstBooks,
+} from "./quarter";
+import { latestById, type CreditDoc, type SaleDoc } from "./sales";
 
 const KERALA = gstStateFor("Kerala")!;
 
@@ -129,10 +144,11 @@ describe("GSTR-1", () => {
     const g = buildGstr1([sale()], []);
     expect(g.b2b).toEqual([]);
     expect(g.b2cs).toHaveLength(1);
-    expect(g.b2cs[0]).toMatchObject({ rate: 18, intra: true, taxable: 28729 });
-    expect(g.b2cs[0].cgst + g.b2cs[0].sgst).toBe(5171);
+    expect(g.b2cs[0]).toMatchObject({ rate: 18, intra: true, taxable: 28728, cgst: 2586, sgst: 2586 });
     expect(g.nil).toEqual([{ intra: true, registered: false, exempt: 24000 }]);
-    expect(g.docs.invoices).toEqual({ from: "FG/2627/00001", to: "FG/2627/00001", count: 1 });
+    expect(g.docs.invoices).toEqual([
+      { series: "FG/2627/", from: "FG/2627/00001", to: "FG/2627/00001", total: 1, cancelled: 0, issued: 1 },
+    ]);
   });
 
   it("gives a GSTIN buyer a table 4 entry and registered exempt rows", () => {
@@ -141,7 +157,7 @@ describe("GSTR-1", () => {
     expect(g.b2b[0]).toMatchObject({
       gstin: "29HTUPS6000Q1ZI",
       value: 57900,
-      items: [{ rate: 18, taxable: 28729 }],
+      items: [{ rate: 18, taxable: 28728 }],
     });
     expect(g.b2cs).toEqual([]);
     expect(g.nil[0]).toMatchObject({ registered: true });
@@ -165,7 +181,7 @@ describe("GSTR-1", () => {
     expect(g.nil).toEqual([]);
     expect(g.hsn).toEqual([]);
     expect(g.cdnr).toEqual([]);
-    expect(g.docs.creditNotes?.count).toBe(1);
+    expect(g.docs.creditNotes.map((d) => d.issued)).toEqual([1]);
   });
 
   it("puts a B2B credit note in table 9B", () => {
@@ -202,8 +218,9 @@ describe("GSTR-1", () => {
 describe("GSTR-3B", () => {
   it("reports sales, exempt sales and inter-state consumer sales", () => {
     const r = buildGstr3b([sale(), sale({ pos: KERALA, number: "FG/2627/00002" })], [], [], []);
-    expect(r.outward.taxable).toBe(28729 * 2);
-    expect(r.outward.igst).toBe(5171);
+    /* Within Karnataka the heads are halves; outside, IGST is what is left. */
+    expect(r.outward.taxable).toBe(28728 + 28729);
+    expect(r.outward).toMatchObject({ cgst: 2586, sgst: 2586, igst: 5171 });
     expect(r.exempt).toBe(48000);
     expect(r.interStateB2c).toEqual([{ pos: KERALA, taxable: 28729, igst: 5171 }]);
   });
@@ -237,7 +254,7 @@ describe("GSTR-3B", () => {
       ],
       [],
     );
-    const share = 24000 / (24000 + 28729);
+    const share = 24000 / (24000 + 28728);
     expect(r.rule42.share).toBeCloseTo(share, 6);
     expect(r.itc.reversed.igst).toBe(Math.round(180 * share));
     expect(r.itc.reversed.cgst).toBe(90);
@@ -309,7 +326,7 @@ describe("the quarter", () => {
   it("carries unused credit into the next quarter", () => {
     const big = bill({ claim: { month: "2026-10", source: "gstr2b" } });
     const opening = openingFor(books({ bills: [big] }), "2627-Q4");
-    expect(opening.credit.cgst + opening.credit.sgst).toBe(18000 - 5171);
+    expect(opening.credit.cgst + opening.credit.sgst).toBe(18000 - 5172);
   });
 
   it("uses a filed quarter's own closing balances", () => {
@@ -376,6 +393,38 @@ describe("the quarter", () => {
       expect(isLockedBill(filed(true, true), local)).toBe(false);
     });
 
+    it("leaves a seed bill from before registration out of table 5, and free", () => {
+      const early = bill({ id: "early", lines: [seed], date: "2026-10-16" });
+      const first = bill({ id: "first", lines: [seed], date: "2026-10-17" });
+      const v = quarterView(books({ bills: [early, first] }), "2627-Q3");
+      expect(v.figures.gstr3b.exemptInward).toEqual({ intra: 100000, inter: 0 });
+      expect(isLockedBill(filed(true, true), early)).toBe(false);
+      expect(isLockedBill(filed(true, true), first)).toBe(true);
+    });
+
+    it("locks a bill by its date exactly when table 5 counts it", () => {
+      const vendors = [
+        bill().vendor,
+        {
+          id: "v2",
+          name: "Seed Co",
+          kind: "registered" as const,
+          gstin: "27AAPFU0939F1ZV",
+          state: gstStateFor("Maharashtra"),
+        },
+        { id: "v3", name: "Market", kind: "unregistered" as const, gstin: null, state: null },
+      ];
+      const lineSets = [[seed], [line()], [seed, line({ category: "freight" })]];
+      const dates = ["2026-09-30", "2026-10-16", "2026-10-17", "2026-12-31", "2027-01-05"];
+      for (const vendor of vendors)
+        for (const lines of lineSets)
+          for (const date of dates) {
+            const b = bill({ vendor, lines, date });
+            const t5 = quarterView(books({ bills: [b] }), "2627-Q3").figures.gstr3b.exemptInward;
+            expect(isLockedBill(filed(true, true), b)).toBe(t5.intra + t5.inter !== 0);
+          }
+    });
+
     it("closes a sale's place of supply once either return is filed", () => {
       expect(isSalesLockedMonth(filed(false, false), "2026-11")).toBe(false);
       expect(isSalesLockedMonth(filed(true, false), "2026-11")).toBe(true);
@@ -391,14 +440,38 @@ describe("the quarter", () => {
       month: "2026-10",
       paidOn: "2026-11-20",
       reference: "C1",
-      heads: { igst: 0, cgst: 2586, sgst: 2585 },
+      heads: { igst: 0, cgst: 2586, sgst: 2586 },
       createdAt: "",
     };
     const v = quarterView(books({ sales: [sale(), nov], payments: [paid] }), "2627-Q3");
-    expect(sumHeads(v.monthly[0].settlement.toPay)).toBe(5171);
-    expect(sumHeads(v.monthly[0].paid)).toBe(5171);
-    expect(sumHeads(v.monthly[1].settlement.toPay)).toBe(5171);
+    expect(sumHeads(v.monthly[0].settlement.toPay)).toBe(5172);
+    expect(sumHeads(v.monthly[0].paid)).toBe(5172);
+    expect(v.monthly[1].settlement.toPay).toEqual({ igst: 0, cgst: 2586, sgst: 2586 });
     expect(v.summaries[0].byCategory).toMatchObject({ variety: 24000, tray: 33900 });
+  });
+
+  it("shows a category sold in one month and refunded in the next, so the columns add up", () => {
+    const oct = sale();
+    const refund: CreditDoc = { number: "CN/2627/00001", date: "2026-11-02", invoice: oct };
+    const v = quarterView(books({ sales: [oct], credits: [refund] }), "2627-Q3");
+    const all = ["variety", "plan", "seed", "tray", "media", "rack", "pack", "delivery"] as const;
+    const shown = categoriesWithSales(v.summaries, all);
+    expect(shown).toEqual(["variety", "tray"]);
+    expect(v.summaries[1].byCategory).toEqual({ variety: -24000, tray: -33900 });
+    for (const m of v.summaries) expect(shown.reduce((a, c) => a + (m.byCategory[c] ?? 0), 0)).toBe(m.sales);
+    expect(categoriesWithSales([{ byCategory: { tray: 0 } }], all)).toEqual([]);
+  });
+});
+
+describe("reading the books", () => {
+  it("keeps one copy of an order two status reads both returned, the later one", () => {
+    const paid = { id: "FG1", status: "paid", updatedAt: "2026-10-20T10:00:00.000Z" };
+    const picked = { id: "FG1", status: "picked", updatedAt: "2026-10-20T10:05:00.000Z" };
+    const other = { id: "FG2", status: "paid", updatedAt: "2026-10-19T00:00:00.000Z" };
+    expect(latestById([paid, other, picked])).toEqual([picked, other]);
+    expect(latestById([picked, other, paid])).toEqual([picked, other]);
+    expect(latestById([other])).toEqual([other]);
+    expect(latestById([])).toEqual([]);
   });
 });
 
@@ -492,6 +565,85 @@ describe("GSTR-2B", () => {
     });
     const agreed = matchStatement(r.statement, [bill({ claim: null })]).matched[0];
     expect(claimAfterMatch(agreed)).toEqual({ month: r.statement.month, source: "gstr2b" });
+  });
+
+  /** A statement with one invoice from Tray Co, as billed by `bill()` unless
+   *  told otherwise. */
+  const statementOf = (month: string, over: Partial<PortalInvoice> = {}): Gstr2b => ({
+    month,
+    gstin: "29HTUPS6000Q1ZI",
+    invoices: [
+      {
+        gstin: "29AAPFU0939F1ZV",
+        name: "Tray Co",
+        number: "12",
+        date: "2026-11-10",
+        value: 118000,
+        taxable: 100000,
+        igst: 0,
+        cgst: 9000,
+        sgst: 9000,
+        itcAvailable: true,
+        reverseCharge: false,
+        note: false,
+        ...over,
+      },
+    ],
+  });
+
+  it("tells a vendor's invoice 12 of one financial year from their 12 of the next", () => {
+    const nov = bill({
+      id: "nov",
+      number: "12",
+      date: "2026-11-10",
+      claim: { month: "2026-11", source: "gstr2b" },
+    });
+    const may = bill({ id: "may", number: "12", date: "2027-05-08" });
+    /* Either order: the last bill read used to win whatever its year. */
+    for (const bills of [
+      [nov, may],
+      [may, nov],
+    ]) {
+      const inMay = matchStatement(statementOf("2027-05", { date: "2027-05-08" }), bills);
+      expect(inMay.matched.map((m) => m.bill.id)).toEqual(["may"]);
+      expect(claimAfterMatch(inMay.matched[0])).toEqual({ month: "2027-05", source: "gstr2b" });
+      const inNov = matchStatement(statementOf("2026-11"), bills);
+      expect(inNov.matched.map((m) => m.bill.id)).toEqual(["nov"]);
+    }
+    /* 31 March and 1 April are different years. */
+    const march = bill({ number: "12", date: "2027-03-31" });
+    expect(matchStatement(statementOf("2027-04", { date: "2027-04-01" }), [march]).matched).toEqual([]);
+  });
+
+  it("matches neither of two bills with one number in one year, and says so", () => {
+    const a = bill({ id: "a", number: "12", date: "2026-11-10" });
+    const b = bill({ id: "b", number: "12 ", date: "2027-02-01" });
+    const m = matchStatement(statementOf("2026-11"), [a, b]);
+    expect(m.matched).toEqual([]);
+    expect(m.unknown).toHaveLength(1);
+    expect(m.ambiguous).toHaveLength(1);
+    expect(m.ambiguous[0].bills.map((x) => x.id)).toEqual(["a", "b"]);
+  });
+
+  it("leaves a portal invoice with no readable date unmatched", () => {
+    const m = matchStatement(statementOf("2026-11", { date: "10/11/2026" }), [bill({ number: "12" })]);
+    expect(m.matched).toEqual([]);
+    expect(m.unknown).toHaveLength(1);
+    expect(m.ambiguous).toEqual([]);
+  });
+
+  it("compares IGST and CGST + SGST head by head, not as one total", () => {
+    const ours = bill({ number: "12", date: "2026-11-10" });
+    const status = (over: Partial<PortalInvoice>) =>
+      matchStatement(statementOf("2026-11", over), [ours]).matched[0].match.status;
+    expect(status({})).toBe("matched");
+    /* The same ₹180 of tax, in the wrong ledger. */
+    expect(status({ igst: 18000, cgst: 0, sgst: 0 })).toBe("mismatch");
+    /* The vendor's own paisa split between CGST and SGST is theirs. */
+    expect(status({ cgst: 9050, sgst: 8950 })).toBe("matched");
+    expect(status({ cgst: 9100, sgst: 9001 })).toBe("mismatch");
+    expect(status({ taxable: 100100 })).toBe("matched");
+    expect(status({ taxable: 100101 })).toBe("mismatch");
   });
 });
 

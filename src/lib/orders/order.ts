@@ -216,6 +216,25 @@ export function paymentWindowClosed(order: Pick<Order, "expiresAt">, now: Date =
   return Date.parse(order.expiresAt) < now.getTime();
 }
 
+/**
+ * How long after the window closes an authorisation is still taken. A
+ * payment finished in the checkout's last seconds can be authorised by the
+ * bank a little after; UPI collect requests can be approved much later.
+ */
+export const LATE_PAYMENT_GRACE_MINUTES = 15;
+
+/**
+ * True when a payment authorised now is too late to take (8 Nov 2026). By
+ * then the customer's order page says the time to pay ran out and to place it
+ * again, so capturing it charged them for an order they were told was gone —
+ * twice, if they had re-ordered. Razorpay orders never expire on their own,
+ * so this is the only thing that stops it; the uncaptured authorisation is
+ * refunded by the gateway. Orders and subscriptions alike.
+ */
+export function latePaymentRefused(doc: { expiresAt: string }, now: Date = new Date()): boolean {
+  return Date.parse(doc.expiresAt) + LATE_PAYMENT_GRACE_MINUTES * 60_000 < now.getTime();
+}
+
 /** Crockford base32: no I, L, O or U, so an id read aloud over the phone
  *  cannot be misheard as another. */
 const ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
@@ -374,9 +393,14 @@ export function canCancel(from: OrderStatus): boolean {
  * shipment in the courier's dashboard and clears the tracking number first.
  */
 export function cancelBlock(
-  order: Pick<Order, "shipments">,
+  order: Pick<Order, "shipments"> & Partial<Pick<Order, "finishingAt" | "finishedAt">>,
   now: Date = new Date(),
-): "booked" | "booking" | null {
+): "booked" | "booking" | "finishing" | null {
+  /* The after-payment work — invoice, stock, email — has not finished (8 Nov
+     2026). Cancelling then put back only what it had taken so far, and a
+     retry that finished later took the rest off the shelf for an order that
+     no longer existed. `isUnfinished` says how it gets finished. */
+  if (isUnfinished(order)) return "finishing";
   if (order.shipments.some((x) => x.trackingNumber)) return "booked";
   /* Only a booking still in flight. One older than that is "stuck"
      (`bookingState`) — the page already says to check the courier's
@@ -391,8 +415,23 @@ export function cancelBlock(
 /** A courier booking call takes seconds; past this it has died. */
 export const BOOKING_IN_FLIGHT_MS = 5 * 60 * 1000;
 
-/** Cancellable now: the status allows it and no parcel is booked. */
-export function canCancelOrder(order: Pick<Order, "status" | "shipments">, now: Date = new Date()): boolean {
+/**
+ * Paid, and its after-payment work (invoice, stock, email) started but never
+ * finished — the run died part-way. A webhook retry finishes it once the
+ * lease is stale (`settleOrder`), and the admin order page offers to. Orders
+ * paid before the lease existed (31 Oct 2026) carry neither field and are
+ * never unfinished.
+ */
+export function isUnfinished(order: Partial<Pick<Order, "finishingAt" | "finishedAt">>): boolean {
+  return Boolean(order.finishingAt) && !order.finishedAt;
+}
+
+/** Cancellable now: the status allows it, no parcel is booked and payment's
+ *  own work is done. */
+export function canCancelOrder(
+  order: Pick<Order, "status" | "shipments"> & Partial<Pick<Order, "finishingAt" | "finishedAt">>,
+  now: Date = new Date(),
+): boolean {
   return canCancel(order.status) && cancelBlock(order, now) === null;
 }
 

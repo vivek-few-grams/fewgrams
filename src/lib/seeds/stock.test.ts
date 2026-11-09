@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { GRAMS_PER_UNIT, MAX_UNITS_PER_LINE } from "@/lib/cart/cart";
-import { SEED_MIN_ORDER_GRAMS, seedMaxUnits, seedReadyDate, seedSoldOut, shelfPacks } from "./stock";
+import {
+  SEED_MIN_ORDER_GRAMS,
+  roundGrams,
+  seedMaxUnits,
+  seedReadyDate,
+  seedSoldOut,
+  shelfPacks,
+} from "./stock";
 import { istDateISO } from "@/lib/delivery-date";
 
 /** A moment in IST, expressed as one. */
@@ -61,5 +68,23 @@ describe("shelfPacks — the admin's derived column", () => {
     expect(shelfPacks(250)).toBe(2);
     expect(shelfPacks(0)).toBe(0);
     expect(shelfPacks(-5)).toBe(0);
+  });
+});
+
+describe("roundGrams — sowings in decimals must not drift a seed to sold out", () => {
+  it("reads a figure left by floating-point subtraction as the grams it means", () => {
+    const drifted = 200 - 0.3 - 99.7; // 99.99999999999999, found 8 Nov 2026
+    expect(drifted).not.toBe(100);
+    expect(roundGrams(drifted)).toBe(100);
+    expect(seedMaxUnits(drifted)).toBe(1);
+    expect(seedSoldOut(drifted)).toBe(false);
+    expect(shelfPacks(drifted)).toBe(1);
+    expect(roundGrams(300 - 0.1 - 99.9)).toBe(200);
+  });
+
+  it("keeps a real fraction of a gram", () => {
+    expect(roundGrams(12.5)).toBe(12.5);
+    expect(roundGrams(99.94)).toBe(99.94);
+    expect(seedMaxUnits(99.94)).toBe(0);
   });
 });

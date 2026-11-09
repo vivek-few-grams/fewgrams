@@ -7,11 +7,13 @@ import { billFormOptions } from "../load";
 
 export const dynamic = "force-dynamic";
 
-/** `/admin/purchases/new` — enter a vendor's bill (SPEC §26.6). */
-export default async function NewBill() {
+/** `/admin/purchases/new` — enter a vendor's bill (SPEC §26.6), or with
+ *  `?doc=creditNote` a vendor's credit note: the same form, its box ticked. */
+export default async function NewBill({ searchParams }: PageProps<"/[locale]/admin/purchases/new">) {
   await requireRole("admin");
   const t = await getTranslations("admin.purchases");
-  const { vendors, items, suggestions } = await billFormOptions();
+  const note = (await searchParams).doc === "creditNote";
+  const { vendors, items, suggestions, bills } = await billFormOptions();
 
   return (
     <div className="space-y-6">
@@ -22,8 +24,12 @@ export default async function NewBill() {
         {t("back")}
       </Link>
       <section>
-        <h1 className="font-display text-2xl font-bold text-forest">{t("newTitle")}</h1>
-        <p className="mt-2 max-w-3xl font-body text-sm text-stone">{t("newHint")}</p>
+        <h1 className="font-display text-2xl font-bold text-forest">
+          {note ? t("newNoteTitle") : t("newTitle")}
+        </h1>
+        <p className="mt-2 max-w-3xl font-body text-sm text-stone">
+          {note ? t("newNoteHint") : t("newHint")}
+        </p>
       </section>
       {vendors.length === 0 ? (
         <p className="font-body text-sm text-terracotta">
@@ -37,6 +43,8 @@ export default async function NewBill() {
           vendors={vendors}
           items={items}
           suggestions={suggestions}
+          bills={bills}
+          initialDoc={note ? "creditNote" : "bill"}
           today={istDateISO(new Date())}
         />
       )}

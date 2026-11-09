@@ -40,20 +40,55 @@ export const floorHeads = (h: Heads): Heads => ({
   sgst: Math.max(0, h.sgst),
 });
 
+/** A figure per head, from a function of the head. */
+export const mapHeads = (f: (h: Head) => number): Heads => ({
+  igst: f("igst"),
+  cgst: f("cgst"),
+  sgst: f("sgst"),
+});
+
 /** How much of each credit head paid each tax head — GSTR-3B table 6.1. */
 export type Utilisation = Record<Head, Heads>;
 
 export type SetOff = {
   /** `used.igst.cgst` is IGST credit spent on CGST. */
   used: Utilisation;
+  /** Negative liability brought in, set off against its own head before
+   *  any credit is spent (GSTR-3B 6.1, "adjustment of negative liability"). */
+  negativeUsed: Heads;
+  /** This period's own negative liability: how far `liability` was below
+   *  zero, head by head. */
+  negativeArising: Heads;
+  /** Negative liability carried forward: what was brought in and not used,
+   *  plus `negativeArising`. */
+  negative: Heads;
   /** Tax left to pay in cash. */
   cash: Heads;
   /** Credit carried forward. */
   leftover: Heads;
 };
 
-export function setOff(liability: Heads, credit: Heads): SetOff {
-  const L = floorHeads(liability);
+/**
+ * Pay `liability` — the period's outward tax, head by head, which credit
+ * notes can take below zero — first from `negative`, the negative liability
+ * brought in, then from `credit`, and the rest in cash.
+ *
+ * **The Negative Liability Statement** (8 Nov 2026). GSTR-3B takes no
+ * negative figure in 3.1: when a quarter's credit notes exceed its sales in
+ * a head, the portal reports that head as 0 and records the excess in the
+ * statement, and it is set off against the same head's liability in the
+ * periods after, before any credit or cash. Head by head — negative CGST
+ * reduces only CGST — and only against outward tax, never reverse charge,
+ * which is paid in cash whatever is held. Until then the excess was floored
+ * away, and the next quarter's cash overstated by it. How the portal applies
+ * the statement — in particular to PMT-06 by self-assessment, which this
+ * also feeds — is for the owner's CA to confirm.
+ */
+export function setOff(liability: Heads, credit: Heads, negative: Heads = ZERO): SetOff {
+  const N = floorHeads(negative);
+  const owed = floorHeads(liability);
+  const negativeUsed = mapHeads((h) => Math.min(N[h], owed[h]));
+  const L = subHeads(owed, negativeUsed);
   const C = floorHeads(credit);
   const used: Utilisation = { igst: { ...ZERO }, cgst: { ...ZERO }, sgst: { ...ZERO } };
   const spend = (from: Head, to: Head, cap = Infinity) => {
@@ -75,5 +110,13 @@ export function setOff(liability: Heads, credit: Heads): SetOff {
   spend("sgst", "sgst");
   spend("sgst", "igst");
 
-  return { used, cash: L, leftover: C };
+  const own = mapHeads((h) => Math.max(0, -liability[h]));
+  return {
+    used,
+    negativeUsed,
+    negativeArising: own,
+    negative: addHeads(subHeads(N, negativeUsed), own),
+    cash: L,
+    leftover: C,
+  };
 }

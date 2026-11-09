@@ -123,7 +123,14 @@ async function TaxDocument({ id, ...p }: SheetProps & { id: string }) {
      one follows it. */
   const bill = isBillOfSupply(p.tax);
   const title = credit ? t("creditHeading") : bill ? t("billOfSupply") : t("heading");
-  const subtitle = credit ? t("creditKind") : !bill && hasExempt ? t("kind") : null;
+  /* An order's credit note reverses its whole invoice; a subscription's
+     credits what was refunded after a cancel (8 Nov 2026), and says so. */
+  const ofSubscription = p.reference.label === "subscription";
+  const subtitle = credit
+    ? t(ofSubscription ? "creditKindSubscription" : "creditKind")
+    : !bill && hasExempt
+      ? t("kind")
+      : null;
   const a = p.address;
   const street = [a.line1, a.line2, a.landmark].filter(Boolean).join(", ");
 
@@ -287,7 +294,7 @@ async function TaxDocument({ id, ...p }: SheetProps & { id: string }) {
         <section>
           <h2 className="font-semibold text-ink">{t("notesHeading")}</h2>
           <ul className="mt-1 space-y-0.5">
-            {credit && <li>{t("creditReason")}</li>}
+            {credit && <li>{t(ofSubscription ? "creditReasonSubscription" : "creditReason")}</li>}
             {!bill && <li>{t("inclusive")}</li>}
             {hasExempt && <li>{t("exemptNote")}</li>}
             {delivery?.taxed && (

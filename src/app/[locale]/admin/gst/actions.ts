@@ -147,9 +147,9 @@ export async function removePayment(fd: FormData): Promise<void> {
 
 /**
  * Record a return as filed, with the date and the portal's ARN. Marking
- * GSTR-3B filed freezes the ledgers it left — the next quarter opens from
- * them — and closes the quarter: its bills, claims and payments stop
- * changing.
+ * GSTR-3B filed freezes the ledgers it left, and the negative liability it
+ * carried forward — the next quarter opens from them — and closes the
+ * quarter: its bills, claims and payments stop changing.
  */
 export async function markFiled(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
@@ -171,8 +171,16 @@ export async function markFiled(_prev: FormState, fd: FormData): Promise<FormSta
   await putFiling({
     ...current,
     ...(which === "gstr1" ? { gstr1: filed } : { gstr3b: filed }),
+    /* The ledgers, and the Negative Liability Statement's balance, as the
+       return left them: the next quarter opens from these. */
     ...(which === "gstr3b"
-      ? { closing: { credit: view.settlement.closingCredit, cash: view.settlement.closingCash } }
+      ? {
+          closing: {
+            credit: view.settlement.closingCredit,
+            cash: view.settlement.closingCash,
+            negative: view.settlement.negative.closing,
+          },
+        }
       : {}),
     updatedAt: new Date().toISOString(),
   });

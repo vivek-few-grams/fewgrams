@@ -35,6 +35,13 @@ describe("restock", () => {
       { kind: "tray", key: "pair", amount: 2 },
     ]);
   });
+
+  it("puts back nothing for a leased order whose payment work took nothing yet", () => {
+    // Paid since 31 Oct 2026 (it has `finishingAt`), but the run died before
+    // its first move: falling back to the lines put a whole order back.
+    const lines = [line("tray", "pair", 2), line("seed", "dill", 1, 100)];
+    expect(restock({ lines, stockTaken: null, finishingAt: "2026-11-08T10:00:00Z" })).toEqual([]);
+  });
 });
 
 describe("cancelBlock", () => {
@@ -48,6 +55,15 @@ describe("cancelBlock", () => {
   it("does not block on a booking that died, or the order could never be cancelled", () => {
     const later = new Date("2026-10-31T11:00:00Z");
     expect(cancelBlock({ shipments: [parcel({ bookingStartedAt: "2026-10-31T10:00:00Z" })] }, later)).toBeNull();
+  });
+
+  it("refuses a cancel while payment's own work is unfinished", () => {
+    const unfinished = { shipments: [parcel()], finishingAt: "2026-11-08T10:00:00Z", finishedAt: null };
+    expect(cancelBlock(unfinished)).toBe("finishing");
+    expect(canCancelOrder({ status: "paid", ...unfinished })).toBe(false);
+    expect(cancelBlock({ ...unfinished, finishedAt: "2026-11-08T10:00:01Z" })).toBeNull();
+    // Paid before the lease existed: neither field, never unfinished.
+    expect(cancelBlock({ shipments: [parcel()], finishingAt: null, finishedAt: null })).toBeNull();
   });
 
   it("allows it once the tracking number is cleared", () => {

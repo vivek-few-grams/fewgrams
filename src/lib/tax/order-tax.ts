@@ -42,20 +42,36 @@ export type Buyer = { gstin: string; name: string };
 export const paise = (rupees: number) => Math.round(rupees * 100);
 
 /**
- * Split a tax-inclusive amount. The taxable value is rounded to the paisa
- * and the tax is whatever is left, so the two always add back to `gross`;
- * CGST and SGST take half each, the odd paisa going to CGST.
+ * Split a tax-inclusive amount into whole paise that always add back to
+ * `gross`.
+ *
+ * - **Inter-state:** the taxable value is rounded to the paisa and IGST is
+ *   whatever is left.
+ * - **Within Karnataka:** CGST and SGST are each the half-rate on the same
+ *   taxable value, so they are **always equal** — the portal, the GSTR-1
+ *   Offline Tool and GSTR-3B all work each head as taxable × rate ÷ 2. The
+ *   half is rounded to the paisa and the taxable value is what is left after
+ *   two of them. Until 8 Nov 2026 the taxable value was rounded instead and
+ *   the odd paisa of tax went to CGST, so CGST ran a paisa above SGST on
+ *   about half of all rows; rows stored before then keep that split, because
+ *   an issued invoice is never recomputed.
+ *
+ * Where a taxable value exists whose half-rate rounds back to a half that
+ * adds up to `gross`, this finds it. For some grosses none does (₹0.58 and
+ * ₹0.59 at 18%: no taxable value lands on either), and the head is then a
+ * paisa off taxable × rate ÷ 2 — equally in both heads.
  */
 export function splitInclusive(
   gross: number,
   rate: number,
   intraState: boolean,
 ): Pick<TaxRow, "taxable" | "cgst" | "sgst" | "igst"> {
-  const taxable = Math.round((gross * 100) / (100 + rate));
-  const tax = gross - taxable;
-  if (!intraState) return { taxable, cgst: 0, sgst: 0, igst: tax };
-  const cgst = Math.ceil(tax / 2);
-  return { taxable, cgst, sgst: tax - cgst, igst: 0 };
+  if (!intraState) {
+    const taxable = Math.round((gross * 100) / (100 + rate));
+    return { taxable, cgst: 0, sgst: 0, igst: gross - taxable };
+  }
+  const half = Math.round((gross * rate) / (2 * (100 + rate)));
+  return { taxable: gross - 2 * half, cgst: half, sgst: half, igst: 0 };
 }
 
 /**

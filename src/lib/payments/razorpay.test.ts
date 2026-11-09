@@ -178,6 +178,37 @@ describe("API calls", () => {
     expect(result.attempts[0].status).toBe("pending");
   });
 
+  it("leaves a late authorisation uncaptured, for Razorpay to refund", async () => {
+    const calls = stub({
+      "GET /orders/order_1": { id: "order_1", amount: 45000, currency: "INR", status: "attempted" },
+      "GET /orders/order_1/payments": {
+        items: [{ id: "pay_1", amount: 45000, currency: "INR", status: "authorized" }],
+      },
+    });
+    const result = await provider.fetchOrder({
+      orderId: "FGABC123",
+      providerOrderId: "order_1",
+      capture: false,
+    });
+    expect(calls.some((c) => c.method === "POST")).toBe(false);
+    expect(result.status).toBe("active");
+  });
+
+  it("still reports a late payment the gateway captured itself — the money has moved", async () => {
+    stub({
+      "GET /orders/order_1": { id: "order_1", amount: 45000, currency: "INR", status: "paid" },
+      "GET /orders/order_1/payments": {
+        items: [{ id: "pay_1", amount: 45000, currency: "INR", status: "captured", created_at: 1758860000 }],
+      },
+    });
+    const result = await provider.fetchOrder({
+      orderId: "FGABC123",
+      providerOrderId: "order_1",
+      capture: false,
+    });
+    expect(result.status).toBe("paid");
+  });
+
   it("treats an order with no Razorpay id as open and asks nothing", async () => {
     const calls = stub({});
     expect(await provider.fetchOrder({ orderId: "FGABC123", providerOrderId: null })).toEqual({

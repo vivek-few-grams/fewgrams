@@ -1,5 +1,5 @@
 import { GRAMS_PER_UNIT } from "@/lib/cart/cart";
-import type { OrderLine } from "./order";
+import type { Order, OrderLine, StockTaken } from "./order";
 
 /**
  * What an order takes off the shelf — seed grams, tray and cocopeat packs —
@@ -38,4 +38,27 @@ export function stockMoves(lines: readonly OrderLine[]): StockMove[] {
       }
     }
   });
+}
+
+/**
+ * What a cancel puts back: exactly what payment recorded taking
+ * (`stockTaken`). Returning the ordered quantity instead put three blocks
+ * back where one came off (31 Oct 2026). An order paid before the record
+ * existed falls back to its lines, as it always did.
+ *
+ * "Before the record existed" is an order with no `finishingAt`, not one
+ * whose `stockTaken` is empty (8 Nov 2026): an order paid since whose
+ * after-payment work died before its first move took nothing, and falling
+ * back to its lines put a whole order back on the shelf.
+ */
+export function restock(
+  order: Pick<Order, "lines" | "stockTaken"> & Partial<Pick<Order, "finishingAt">>,
+): StockTaken[] {
+  if (order.finishingAt) return order.stockTaken ?? [];
+  if (order.stockTaken) return order.stockTaken;
+  return stockMoves(order.lines).map((m) =>
+    m.kind === "seed"
+      ? { kind: "seed", key: m.key, amount: m.grams }
+      : { kind: m.kind, key: m.key, amount: m.units },
+  );
 }

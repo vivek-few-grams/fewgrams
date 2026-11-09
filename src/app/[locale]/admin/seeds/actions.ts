@@ -8,6 +8,8 @@ import { deleteSeed, getSeed, listSeeds, patchSeed, putSeedMargin, setSeedStock 
 import { retailPrice } from "@/lib/pricing/margin";
 import { repriceVarieties } from "@/lib/varieties/reprice";
 import { count, err, switchTo, zeroOrMore, type FormState } from "@/lib/forms";
+import { countedToStored } from "@/lib/orders/held-stock";
+import { listHeldStock } from "@/lib/repo/orders";
 
 /**
  * Seed mutations — SPEC §22.3.
@@ -39,8 +41,10 @@ function refresh() {
   revalidatePath("/[locale]/shop", "page");
 }
 
-/** A stocktake — the grams counted on the shelf. Zero is a real answer (sold
- *  out); an empty field is not. */
+/** A stocktake — the grams counted on the shelf, packed for orders or not.
+ *  Zero is a real answer (sold out); an empty field is not. What paid orders
+ *  still here are holding comes back off it (`countedToStored`, 8 Nov 2026),
+ *  so their seed is not sold a second time. */
 export async function correctSeedStock(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
   const seed = await getSeed(String(fd.get("id") ?? ""));
@@ -48,7 +52,8 @@ export async function correctSeedStock(_prev: FormState, fd: FormData): Promise<
   const grams = zeroOrMore(fd, "count");
   /* Not whole grams only: a sowing can take 12.5 g, so the shelf can hold it. */
   if (grams === null) return err("countInvalid", "count");
-  await setSeedStock(seed.id, grams);
+  const held = (await listHeldStock()).get(`seed:${seed.contentKey}`) ?? 0;
+  await setSeedStock(seed.id, countedToStored(grams, held, "grams"));
   refresh();
   return { status: "saved" };
 }

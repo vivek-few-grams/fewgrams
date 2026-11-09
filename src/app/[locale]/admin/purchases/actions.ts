@@ -7,22 +7,21 @@ import { routing } from "@/i18n/routing";
 import { assertRole } from "@/lib/auth/guard";
 import { istDateISO } from "@/lib/delivery-date";
 import { err, type FormState } from "@/lib/forms";
-import { claimFromMatch, MATCH_TOLERANCE, matchStatement } from "@/lib/gst/gstr2b";
+import { claimFromMatch, matchStatement } from "@/lib/gst/gstr2b";
 import { isMonthId, monthOf, monthOfDate, nextMonth, type MonthId } from "@/lib/gst/period";
 import { isLockedBill, isLockedMonth, type GstFiling } from "@/lib/gst/quarter";
 import {
   STOCK_KINDS,
-  billTotals,
   claimable,
-  stockChange,
-  type BillMatch,
+  documentStockChange,
   type PurchaseBill,
-  type PurchaseLine,
   type StockKind,
 } from "@/lib/purchases/bill";
 import { billItems } from "@/lib/purchases/cost";
-import { readBill } from "@/lib/purchases/read";
+import { carriedStanding, duplicateBill, rematch } from "@/lib/purchases/portal";
+import { itemsKeptOnEdit, readBill } from "@/lib/purchases/read";
 import { costFromBills } from "@/lib/purchases/reprice";
+import { encodeShortfall } from "@/lib/purchases/shortfall";
 import { applyStockChange, type StockShortfall } from "@/lib/purchases/stock";
 import { vendorSnapshot } from "@/lib/purchases/vendor";
 import { isValidContentKey } from "@/lib/content/content-key";
@@ -37,6 +36,7 @@ import {
   deleteBill,
   deleteBillFile,
   getBill,
+  listBills,
   putBill,
   putBillFile,
 } from "@/lib/repo/purchases";
@@ -46,7 +46,9 @@ import { getVendor, listVendors, putVendor } from "@/lib/repo/vendors";
 
 /**
  * Purchase-bill mutations — `/admin/purchases`, SPEC §26.6. Each asserts the
- * admin role itself.
+ * admin role itself. A vendor's credit note is saved, deleted and claimed by
+ * the same three, its sign applied where amounts and stock are summed
+ * (`docSign`, `documentStockChange`).
  *
  * **A filed quarter is closed.** Once its GSTR-3B is marked filed, a bill
  * in it — claimed in it, or dated in it with a 0% line its table 5 reports
@@ -85,6 +87,7 @@ function firstOpen(month: MonthId, filings: GstFiling[]): MonthId {
   return m;
 }
 
+/** Logged as well as shown: the notice is gone once the page is left. */
 function logShort(billId: string, short: StockShortfall[]) {
   for (const s of short) {
     console.warn(
@@ -107,17 +110,6 @@ async function restoreBill(current: PurchaseBill | null, written: PurchaseBill):
   else if (!current && written.file) await deleteBillFile(written.id);
 }
 
-/** A stored GSTR-2B match, re-judged against edited lines. */
-function rematch(match: BillMatch | null, lines: PurchaseLine[]): BillMatch | null {
-  if (!match) return null;
-  const t = billTotals(lines);
-  const p = match.portal;
-  const ok =
-    Math.abs(t.taxable - p.taxable) <= MATCH_TOLERANCE &&
-    Math.abs(t.igst + t.cgst + t.sgst - (p.igst + p.cgst + p.sgst)) <= MATCH_TOLERANCE;
-  return { ...match, status: ok ? "matched" : "mismatch" };
-}
-
 async function stockItems(): Promise<Set<string>> {
   const [trays, media, seeds] = await Promise.all([listTrays(), listGrowMedia(), listSeeds()]);
   return new Set([
@@ -127,11 +119,18 @@ async function stockItems(): Promise<Set<string>> {
   ]);
 }
 
-/** Add a bill, or save one (`id` set): its lines, its file, and the stock
- *  it moves. */
+/** Add a bill or a vendor's credit note, or save one (`id` set): its lines,
+ *  its file, and the stock it moves. Saved with a notice naming any stock a
+ *  correction down, or a credit note's goods going back, could not take off
+ *  the shelf. */
 export async function saveBill(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
-  const [vendors, items, filings] = await Promise.all([listVendors(), stockItems(), listFilings()]);
+  const [vendors, items, filings, bills] = await Promise.all([
+    listVendors(),
+    stockItems(),
+    listFilings(),
+    listBills(),
+  ]);
   const today = istDateISO(new Date());
   const id = String(fd.get("id") ?? "");
   const current = id ? await getBill(id) : null;
@@ -140,7 +139,8 @@ export async function saveBill(_prev: FormState, fd: FormData): Promise<FormStat
   const read = readBill(fd, {
     vendors: new Map(vendors.map((v) => [v.id, v])),
     stockItems: items,
-    onBill: new Set(billItems(current?.lines ?? [])),
+    onBill: itemsKeptOnEdit(current, String(fd.get("vendorId") ?? "")),
+    bills,
     today,
   });
   if (!read.ok) return read.state;
@@ -153,9 +153,33 @@ export async function saveBill(_prev: FormState, fd: FormData): Promise<FormStat
   if (file && file.size > BILL_FILE_MAX) return err("fileTooBig", "file");
 
   const vendor = vendors.find((v) => v.id === input.vendorId)!;
+  /* One vendor invoice, one bill: entered twice it adds its stock twice and
+     can be claimed twice. Read off the index, so two saves of the same bill
+     within a moment of each other can both pass — this catches the paper
+     bill entered again another day, which is the mistake that happens. */
+  const clash = duplicateBill(
+    {
+      id: current?.id ?? "",
+      doc: input.doc,
+      vendor: vendorSnapshot(vendor),
+      number: input.number,
+      date: input.date,
+    },
+    bills,
+  );
+  if (clash) {
+    return err("duplicateNumber", "number", { number: clash.number, date: clash.date, doc: input.doc });
+  }
+  /* A changed GSTIN or number names a different invoice on the portal, so
+     a GSTR-2B claim and match for the old one do not carry over — nor does
+     a claim withdrawn by hand, which was about that invoice. */
+  const held = carriedStanding(current, { gstin: vendor.gstin, number: input.number, doc: input.doc });
+  const original = input.against ? bills.find((b) => b.id === input.against) : undefined;
   const now = new Date().toISOString();
   const draft: PurchaseBill = {
     id: current?.id ?? crypto.randomUUID(),
+    doc: input.doc,
+    against: original ? { id: original.id, number: original.number, date: original.date } : null,
     /* Re-copied on every save: correcting a vendor's GSTIN and re-saving
        an unfiled bill is how a wrong one is put right. */
     vendor: vendorSnapshot(vendor),
@@ -165,7 +189,8 @@ export async function saveBill(_prev: FormState, fd: FormData): Promise<FormStat
     lines: input.lines,
     paidOn: input.paidOn,
     claim: null,
-    match: rematch(current?.match ?? null, input.lines),
+    withdrawnAt: held.withdrawnAt,
+    match: rematch(held.match, input.lines),
     file: current?.file ?? null,
     notes: input.notes,
     createdAt: current?.createdAt ?? now,
@@ -176,15 +201,22 @@ export async function saveBill(_prev: FormState, fd: FormData): Promise<FormStat
   if (isLockedBill(filings, draft)) return err("lockedDate", "date");
   /* Reverse-charge credit needs no vendor's return: it is claimed in the
      month of the bill, or the first open month after it. Any other claim
-     comes from GSTR-2B (or by hand) and survives an edit. */
+     comes from GSTR-2B (or by hand) and survives an edit — one from GSTR-2B
+     only while the GSTIN and number are unchanged (`carriedStanding`). */
   if (claimable(draft)) {
     if (draft.reverseCharge)
       draft.claim = { month: firstOpen(monthOfDate(draft.date), filings), source: "reverseCharge" };
-    else if (current?.claim && current.claim.source !== "reverseCharge") draft.claim = current.claim;
+    else if (held.claim && held.claim.source !== "reverseCharge") draft.claim = held.claim;
   }
+  /* Only a claim the owner could withdraw stays withdrawn: reverse charge
+     claims itself, and a bill with no GST has nothing to claim. */
+  if (!claimable(draft) || draft.reverseCharge) draft.withdrawnAt = null;
   /* An unclaimed bill that a GSTR-2B already on file shows — entered after
      the upload, or corrected to agree with it — is matched and claimed as
-     that upload would have, rather than left waiting for the next one. */
+     that upload would have, rather than left waiting for the next one. A
+     credit note is looked for among the statement's notes, a bill among its
+     invoices (`matchStatement`); one whose claim was withdrawn by hand gets
+     its match recorded but is not claimed again (`claimFromMatch`). */
   if (claimable(draft) && !draft.reverseCharge && !draft.claim && draft.vendor.gstin) {
     for (let m = monthOfDate(draft.date); m <= monthOfDate(today); m = nextMonth(m)) {
       const statement = await getGstr2b(m);
@@ -211,20 +243,31 @@ export async function saveBill(_prev: FormState, fd: FormData): Promise<FormStat
   }
 
   if (!(await putBill(draft, current?.updatedAt ?? null))) return err("conflict");
+  let short: StockShortfall[];
   try {
-    logShort(draft.id, (await applyStockChange(stockChange(current?.lines ?? [], draft.lines))).short);
+    short = (await applyStockChange(documentStockChange(current, draft))).short;
   } catch (e) {
     console.error(`[stock] bill ${draft.id}: the stock did not move, so the bill is put back`, e);
     await restoreBill(current, draft);
     return err("stockFailed");
   }
-  await costFromBills([...billItems(current?.lines ?? []), ...billItems(draft.lines)]);
+  logShort(draft.id, short);
+  /* A credit note never sets a cost (`latestCosts`), but the items on it are
+     re-costed all the same: a bill corrected into a note hands its items'
+     cost back to the bill before it. */
+  await costFromBills([...billItems(current?.lines ?? []), ...billItems(draft.lines)], { written: draft });
   refresh(draft.id);
   refreshCatalogue();
-  return { status: "saved" };
+  /* Stock comes off the shelf on a correction down, or as a credit note's
+     goods go back. An edit stays on its page and shows the notice there; a
+     new credit note's editor carries it to the register (`?short=`). */
+  return short.length
+    ? { status: "saved", notice: { code: "stockShort", values: { short: encodeShortfall(short) } } }
+    : { status: "saved" };
 }
 
-/** Delete a bill, taking its stock back off the shelf. */
+/** Delete a bill, taking its stock back off the shelf — or a credit note,
+ *  putting the goods it took off back on. */
 export async function removeBill(fd: FormData): Promise<void> {
   await assertRole("admin");
   const bill = await getBill(String(fd.get("id") ?? ""));
@@ -233,21 +276,26 @@ export async function removeBill(fd: FormData): Promise<void> {
   /* Conditional on the bill as read: a second press, or a save landing at
      the same moment, is refused here before any stock goes back. */
   if (!(await deleteBill(bill.id, bill.updatedAt))) throw new Error("This bill changed — reload the page");
+  let short: StockShortfall[];
   try {
-    logShort(bill.id, (await applyStockChange(stockChange(bill.lines, []))).short);
+    short = (await applyStockChange(documentStockChange(bill, null))).short;
   } catch (e) {
     /* The stock is as it was, so the bill comes back as it was. */
     await putBill(bill, null);
     throw e;
   }
+  logShort(bill.id, short);
   if (bill.file) await deleteBillFile(bill.id);
   /* After the delete, so the cost falls back to the bill before it. */
-  await costFromBills(billItems(bill.lines));
+  await costFromBills(billItems(bill.lines), { deletedId: bill.id });
   refresh();
   refreshCatalogue();
   const raw = String(fd.get("locale") ?? "");
+  /* The register says what could not come back off the shelf; this page
+     is gone, so the shortfall goes with the redirect. */
+  const enc = encodeShortfall(short);
   redirect({
-    href: "/admin/purchases",
+    href: enc ? { pathname: "/admin/purchases", query: { short: enc } } : "/admin/purchases",
     locale: hasLocale(routing.locales, raw) ? raw : routing.defaultLocale,
   });
 }
@@ -255,7 +303,13 @@ export async function removeBill(fd: FormData): Promise<void> {
 /**
  * Claim a bill's credit in a month by hand — for one the GSTR-2B upload
  * could not match (a vendor who typed the number differently) but which is
- * in the portal's statement — or, with an empty month, withdraw a claim.
+ * in the portal's statement — or, with an empty month, withdraw a claim. For
+ * a credit note, the month its GST comes off the credit.
+ *
+ * **A withdrawal is recorded** (`withdrawnAt`), so it holds: until 8 Nov 2026
+ * the next save of the bill — adding the paid-on date — found the GSTR-2B on
+ * file and claimed it straight back, and so did re-uploading that month.
+ * Claiming by hand clears it.
  */
 export async function setClaim(_prev: FormState, fd: FormData): Promise<FormState> {
   await assertRole("admin");
@@ -266,17 +320,24 @@ export async function setClaim(_prev: FormState, fd: FormData): Promise<FormStat
   if (bill.reverseCharge) return err("reverseChargeClaim");
 
   const month = String(fd.get("month") ?? "");
+  const now = new Date().toISOString();
   let claim: PurchaseBill["claim"] = null;
+  /* "Not claimed" on a bill with no claim leaves it as it was — waiting, or
+     already withdrawn. Only taking a claim away is a withdrawal. */
+  let withdrawnAt = bill.withdrawnAt ?? null;
   if (month !== "") {
     if (!isMonthId(month)) return err("monthInvalid", "month");
     if (!claimable(bill)) return err("notClaimable");
     if (month < monthOfDate(bill.date) || month > monthOf(new Date())) return err("monthInvalid", "month");
     if (isLockedMonth(filings, month)) return err("locked", "month");
     claim = { month, source: "manual" };
+    withdrawnAt = null;
+  } else if (bill.claim) {
+    withdrawnAt = now;
   }
   /* Conditional, so a claim set from a stale read cannot write back lines a
      save has just changed — and moved stock for. */
-  if (!(await putBill({ ...bill, claim, updatedAt: new Date().toISOString() }, bill.updatedAt))) {
+  if (!(await putBill({ ...bill, claim, withdrawnAt, updatedAt: now }, bill.updatedAt))) {
     return err("conflict");
   }
   refresh(bill.id);

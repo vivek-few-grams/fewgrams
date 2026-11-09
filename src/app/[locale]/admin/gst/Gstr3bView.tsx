@@ -1,4 +1,5 @@
 import { getTranslations } from "next-intl/server";
+import { reportedOutward } from "@/lib/gst/gstr3b";
 import { HEADS, sumHeads, type Head } from "@/lib/gst/ledger";
 import type { QuarterView } from "@/lib/gst/quarter";
 import { Figures, Section, formatters, headCells } from "./ui";
@@ -16,6 +17,15 @@ export async function Gstr3bView({ view }: { view: QuarterView }) {
   const s = view.settlement;
   const zero = money(0);
   const used = (from: Head, to: Head) => money(s.setOff.used[from][to]);
+  /* 3.1 takes no negative figure: a head credit notes took below zero is
+     reported as 0 and goes to the Negative Liability Statement below. */
+  const out = reportedOutward(r.outward);
+  const neg = s.negative;
+  const hasNegative = [neg.opening, neg.arising, neg.closing].some((h) => sumHeads(h) !== 0) || r.exempt < 0;
+  /* 6.1's payable, as `setOff` paid it — the statement, then each credit,
+     then cash — so the row always adds up, whatever `settle` charged. */
+  const payable = (h: Head) =>
+    neg.used[h] + HEADS.reduce((a, from) => a + s.setOff.used[from][h], 0) + s.setOff.cash[h];
 
   return (
     <div className="space-y-10">
@@ -26,15 +36,9 @@ export async function Gstr3bView({ view }: { view: QuarterView }) {
           head={[t("gstr3b.nature"), t("gstr3b.taxable"), t("igst"), t("cgst"), t("sgst")]}
           empty=""
           rows={[
-            [
-              t("gstr3b.t31a"),
-              money(r.outward.taxable),
-              money(r.outward.igst),
-              money(r.outward.cgst),
-              money(r.outward.sgst),
-            ],
+            [t("gstr3b.t31a"), money(out.taxable), money(out.igst), money(out.cgst), money(out.sgst)],
             [t("gstr3b.t31b"), zero, zero, zero, zero],
-            [t("gstr3b.t31c"), money(r.exempt), "", "", ""],
+            [t("gstr3b.t31c"), money(Math.max(0, r.exempt)), "", "", ""],
             [
               t("gstr3b.t31d"),
               money(r.reverseCharge.taxable),
@@ -46,6 +50,27 @@ export async function Gstr3bView({ view }: { view: QuarterView }) {
           ]}
         />
       </Section>
+
+      {hasNegative && (
+        <Section title={t("gstr3b.negativeTitle")} hint={t("gstr3b.negativeHint")}>
+          <Figures
+            head={["", t("igst"), t("cgst"), t("sgst"), t("total")]}
+            empty=""
+            rows={[
+              [t("gstr3b.negativeOpening"), ...headCells(neg.opening, money)],
+              [t("gstr3b.negativeArising"), ...headCells(neg.arising, money)],
+              [t("gstr3b.negativeUsed"), ...headCells(neg.used, money)],
+            ]}
+            foot={[t("gstr3b.negativeClosing"), ...headCells(neg.closing, money)]}
+          />
+          {r.exempt < 0 && (
+            <p className="font-body text-xs text-stone">
+              {t("gstr3b.negativeExempt", { amount: -r.exempt / 100 })}
+            </p>
+          )}
+          <p className="font-body text-xs text-stone">{t("gstr3b.negativeNote")}</p>
+        </Section>
+      )}
 
       <Section title={t("gstr3b.t32Title")} hint={t("gstr3b.t32Hint")}>
         <Figures
@@ -101,10 +126,11 @@ export async function Gstr3bView({ view }: { view: QuarterView }) {
 
       <Section title={t("gstr3b.t61Title")} hint={t("gstr3b.t61Hint")}>
         <Figures
-          minWidth="52rem"
+          minWidth="60rem"
           head={[
             t("gstr3b.head"),
             t("gstr3b.payable"),
+            t("gstr3b.byNegative"),
             t("gstr3b.byIgst"),
             t("gstr3b.byCgst"),
             t("gstr3b.bySgst"),
@@ -113,7 +139,8 @@ export async function Gstr3bView({ view }: { view: QuarterView }) {
           empty=""
           rows={HEADS.map((h) => [
             t(h),
-            money(r.outward[h]),
+            money(payable(h)),
+            money(neg.used[h]),
             used("igst", h),
             used("cgst", h),
             used("sgst", h),
@@ -122,6 +149,7 @@ export async function Gstr3bView({ view }: { view: QuarterView }) {
           foot={[
             t("gstr3b.reverseChargeCash"),
             money(sumHeads(r.reverseCharge)),
+            "",
             "",
             "",
             "",

@@ -1,4 +1,4 @@
-import { advanceOrderStatus, nextSequence, setCreditNote } from "@/lib/repo/orders";
+import { advanceOrderStatus, claimCreditNote, nextSequence, setCreditNote } from "@/lib/repo/orders";
 import { creditNoteCounter, financialYear, formatCreditNoteNo } from "@/lib/tax/order-tax";
 import { canMarkRefunded, type Order } from "./order";
 
@@ -29,13 +29,21 @@ export function owesCreditNote(order: Pick<Order, "status" | "tax" | "invoiceNo"
   return order.status === "refunded" && Boolean(order.tax && order.invoiceNo) && !order.creditNote;
 }
 
+/** How long a press holds the right to draw the note before another may. */
+export const CREDIT_NOTE_LEASE_MS = 2 * 60 * 1000;
+
 /** Draw and set the credit note, once. Called by the refund itself and, for
- *  an order left owing one, from its admin page. */
+ *  an order left owing one, from its admin page. The number is drawn only by
+ *  the press that took the lease (`claimCreditNote`), so none is burnt. */
 export async function issueCreditNote(order: Order, now: Date = new Date()): Promise<void> {
   if (!order.tax || !order.invoiceNo || order.creditNote) return;
+  const at = now.toISOString();
+  const staleBefore = new Date(now.getTime() - CREDIT_NOTE_LEASE_MS).toISOString();
+  if (!(await claimCreditNote(order.id, at, staleBefore))) return;
   const fy = financialYear(now);
-  await setCreditNote(order.id, {
-    number: formatCreditNoteNo(fy, await nextSequence(creditNoteCounter(fy))),
-    issuedAt: now.toISOString(),
-  });
+  await setCreditNote(
+    order.id,
+    { number: formatCreditNoteNo(fy, await nextSequence(creditNoteCounter(fy))), issuedAt: at },
+    at,
+  );
 }

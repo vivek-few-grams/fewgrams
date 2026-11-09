@@ -18,13 +18,15 @@ export function TrayTable({
     name: string | null;
     /** Bills that name it — none, and it can be deleted. */
     bills: number;
+    /** Held for paid orders still here (`heldForOrders`), for the stocktake. */
+    held: number;
     picker: { supplyKey: string; vendors: VendorChoice[]; selected: string[] };
   }>;
 }) {
   return (
     <StockTable
       namespace="admin.trays"
-      items={trays.map(({ tray, name, bills, picker }) => ({ item: tray, name, bills, picker }))}
+      items={trays.map(({ tray, name, bills, held, picker }) => ({ item: tray, name, bills, held, picker }))}
       actions={{
         update: updateTray,
         correct: correctTrayStock,

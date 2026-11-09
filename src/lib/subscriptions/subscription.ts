@@ -2,7 +2,7 @@ import type { TaxRow } from "@/lib/tax/order-tax";
 import type { GstState } from "@/lib/tax/states";
 import { randomBytes } from "node:crypto";
 import { fromIstDateISO, istDateISO } from "@/lib/delivery-date";
-import type { OrderAddress } from "@/lib/orders/order";
+import type { CreditNote, OrderAddress } from "@/lib/orders/order";
 import type { GatewayName } from "@/lib/payments/provider";
 import { rotationWeek, subscriptionSchedule } from "./rotation";
 
@@ -84,9 +84,31 @@ export type Subscription = {
    *  subscriptions paid before 31 Oct 2026. */
   finishingAt: string | null;
   finishedAt: string | null;
+  /** The refund made in the gateway after a cancel, as recorded from admin
+   *  (8 Nov 2026) — `refund.ts`. Absent until then, and on every
+   *  subscription from before. */
+  refund?: SubscriptionRefund;
+  /** The credit note for `refund`, from the orders' yearly series. Absent
+   *  until drawn — briefly after the refund is recorded, or for good if the
+   *  run died in between, which the admin page offers to finish. */
+  creditNote?: CreditNote;
+  /** The lease on drawing that number: set by the press whose refund record
+   *  landed, and by one that finishes a stalled draw (`refund.ts`). */
+  creditNoteClaimedAt?: string;
   createdAt: string;
   updatedAt: string;
   expiresAt: string;
+};
+
+export type SubscriptionRefund = {
+  /** Paise returned in the gateway's dashboard: more than 0, at most what
+   *  was paid. */
+  amount: number;
+  /** The invoice's rows scaled to `amount` (`creditRows`) — what the credit
+   *  note credits. Worked out once, when the refund is recorded, and stored,
+   *  like every tax row (SPEC §26.2). */
+  rows: TaxRow[];
+  recordedAt: string;
 };
 
 export { MAX_BOXES_PER_PLAN } from "./limits";

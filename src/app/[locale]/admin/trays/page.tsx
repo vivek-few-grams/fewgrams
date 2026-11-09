@@ -7,6 +7,7 @@ import { TrayTable } from "./TrayTable";
 import { requireRole } from "@/lib/auth/guard";
 import { billsPerItem } from "@/lib/purchases/cost";
 import { listBills } from "@/lib/repo/purchases";
+import { listHeldStock } from "@/lib/repo/orders";
 
 export const dynamic = "force-dynamic";
 
@@ -49,7 +50,12 @@ export default async function TraysAdmin() {
   await requireRole("admin");
   const t = await getTranslations("admin.trays");
 
-  const [rows, picker, bills] = await Promise.all([listTrays(), pickerData(), listBills()]);
+  const [rows, picker, bills, held] = await Promise.all([
+    listTrays(),
+    pickerData(),
+    listBills(),
+    listHeldStock(),
+  ]);
   const onBills = billsPerItem(bills);
   const withContent = await attachTrayContent(rows, routing.defaultLocale);
 
@@ -75,6 +81,7 @@ export default async function TraysAdmin() {
           tray,
           name: content?.text.name ?? null,
           bills: onBills.get(`tray:${tray.contentKey}`) ?? 0,
+          held: held.get(`tray:${tray.contentKey}`) ?? 0,
           picker: {
             supplyKey: `tray:${tray.contentKey}`,
             vendors: picker.vendorsFor(`tray:${tray.contentKey}`),

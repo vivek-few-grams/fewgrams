@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
-import { ZERO, addHeads, sumHeads } from "@/lib/gst/ledger";
-import type { MonthSummary, QuarterView } from "@/lib/gst/quarter";
+import { reportedOutward } from "@/lib/gst/gstr3b";
+import { ZERO, addHeads, sumHeads, type Heads } from "@/lib/gst/ledger";
+import { categoriesWithSales, type MonthSummary, type QuarterView } from "@/lib/gst/quarter";
 import { Figures, Section, formatters, headCells } from "./ui";
 
 /** The categories a sale is split into, in the order they are listed. */
@@ -48,6 +49,10 @@ export async function SummaryView({ view }: { view: QuarterView }) {
     },
   );
   const cols = [...s, total];
+  /* The Negative Liability Statement's rows, only in a quarter that has one. */
+  const neg = view.settlement.negative;
+  const hasNegative = [neg.opening, neg.arising, neg.closing].some((h) => sumHeads(h) !== 0);
+  const negativeRow = (label: string, h: Heads) => (hasNegative ? [[label, ...headCells(h, money)]] : []);
   const row = (label: string, f: (m: MonthSummary) => string | number) => [label, ...cols.map(f)];
 
   return (
@@ -60,7 +65,7 @@ export async function SummaryView({ view }: { view: QuarterView }) {
             row(t("summary.invoices"), (m) => m.invoices),
             row(t("summary.creditNotes"), (m) => m.creditNotes),
             row(t("summary.sales"), (m) => money(m.sales)),
-            ...CATEGORIES.filter((c) => total.byCategory[c]).map((c) =>
+            ...categoriesWithSales(s, CATEGORIES).map((c) =>
               row(t(`summary.category.${c}`), (m) => money(m.byCategory[c] ?? 0)),
             ),
             row(t("summary.taxable"), (m) => money(m.taxable)),
@@ -92,12 +97,17 @@ export async function SummaryView({ view }: { view: QuarterView }) {
           empty=""
           rows={[
             [t("summary.openingCredit"), ...headCells(view.opening.credit, money)],
+            ...negativeRow(t("summary.openingNegative"), neg.opening),
             [t("summary.netCredit"), ...headCells(view.figures.gstr3b.itc.net, money)],
-            [t("summary.taxDue"), ...headCells(view.figures.gstr3b.outward, money)],
+            /* As 3.1 reports it: a head below zero is 0 here, and its excess
+               is carried in the Negative Liability Statement. */
+            [t("summary.taxDue"), ...headCells(reportedOutward(view.figures.gstr3b.outward), money)],
+            ...negativeRow(t("summary.negativeUsed"), neg.used),
             [t("summary.reverseCharge"), ...headCells(view.figures.gstr3b.reverseCharge, money)],
             [t("summary.deposited"), ...headCells(view.settlement.cashHeld, money)],
             [t("summary.toPay"), ...headCells(view.settlement.toPay, money)],
             [t("summary.closingCredit"), ...headCells(view.settlement.closingCredit, money)],
+            ...negativeRow(t("summary.closingNegative"), neg.closing),
           ]}
         />
       </Section>

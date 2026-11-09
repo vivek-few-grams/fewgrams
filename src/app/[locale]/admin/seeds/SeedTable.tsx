@@ -68,7 +68,7 @@ const MIN_WIDTH = "min-w-[64rem]";
 export function SeedTable({
   seeds,
 }: {
-  seeds: Array<{ seed: Seed; name: string | null; bills: number; picker: Picker }>;
+  seeds: Array<{ seed: Seed; name: string | null; bills: number; held: number; picker: Picker }>;
 }) {
   const t = useTranslations("admin.seeds");
   const [query, setQuery] = useState("");
@@ -160,8 +160,8 @@ export function SeedTable({
               ))}
             </div>
 
-            {shown.map(({ seed, name, bills, picker }) => (
-              <SeedRow key={seed.id} seed={seed} name={name} bills={bills} picker={picker} />
+            {shown.map(({ seed, name, bills, held, picker }) => (
+              <SeedRow key={seed.id} seed={seed} name={name} bills={bills} held={held} picker={picker} />
             ))}
           </div>
         </div>
@@ -174,12 +174,15 @@ function SeedRow({
   seed,
   name,
   bills,
+  held,
   picker,
 }: {
   seed: Seed;
   name: string | null;
   /** Bills that name it — none, and it can be deleted. */
   bills: number;
+  /** Grams held for paid orders still here (`heldForOrders`). */
+  held: number;
   picker: Picker;
 }) {
   const t = useTranslations("admin.seeds");
@@ -215,6 +218,7 @@ function SeedRow({
         id={seed.id}
         value={seed.stockGrams}
         unit="grams"
+        held={held}
         correct={correctSeedStock}
         align="start"
       />

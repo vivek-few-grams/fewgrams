@@ -1,7 +1,7 @@
 import { HSN_INFO } from "@/lib/tax/classes";
 import type { TaxRow } from "@/lib/tax/order-tax";
 import { HOME_STATE, type GstState } from "@/lib/tax/states";
-import { docValue, type CreditDoc, type SaleDoc } from "./sales";
+import { credited, docValue, type CreditDoc, type SaleDoc } from "./sales";
 
 /**
  * GSTR-1 for a period — SPEC §26.5. Every table the portal asks a seller of
@@ -22,7 +22,8 @@ import { docValue, type CreditDoc, type SaleDoc } from "./sales";
  *   period it is issued, and the exempt part of any credit note is netted
  *   in table 8; neither has a credit-note table of its own.
  * - **Table 12** — the HSN summary, split B2B and B2C, net of credit notes.
- * - **Table 13** — the invoice and credit-note numbers issued.
+ * - **Table 13** — the invoice and credit-note numbers issued, per series
+ *   (`docSeries`).
  */
 
 /** Table 5's line: an inter-state consumer invoice above this is "large". */
@@ -59,7 +60,25 @@ export type HsnRow = RateAmounts & {
   value: number;
   b2b: boolean;
 };
-export type DocRange = { from: string; to: string; count: number } | null;
+/**
+ * One row of table 13: the numbers of one series dated in the period.
+ * `From` is the lowest, `To` the highest, and every number between them that
+ * was never issued is **cancelled** — a number can be drawn and lost (a
+ * stalled payment run taken over draws another, `src/lib/orders/settle.ts`),
+ * and the portal wants the gap declared rather than the range overstated.
+ */
+export type DocSeries = {
+  /** What comes before the running number: `FG/2627/`. */
+  series: string;
+  from: string;
+  to: string;
+  /** To − From + 1. */
+  total: number;
+  /** Numbers in the range not issued. */
+  cancelled: number;
+  /** Total − Cancelled: the documents themselves. */
+  issued: number;
+};
 
 export type Gstr1 = {
   b2b: B2bEntry[];
@@ -69,7 +88,7 @@ export type Gstr1 = {
   cdnr: CdnrEntry[];
   cdnur: NoteEntry[];
   hsn: HsnRow[];
-  docs: { invoices: DocRange; creditNotes: DocRange };
+  docs: { invoices: DocSeries[]; creditNotes: DocSeries[] };
   /** Sales whose state could not be placed: the portal needs a place of
    *  supply for every one, so these must be corrected before filing. */
   unplaced: SaleDoc[];
@@ -100,10 +119,40 @@ export function saleKind(d: SaleDoc): "b2b" | "b2cl" | "b2cs" {
   return "b2cs";
 }
 
-function range(numbers: string[]): DocRange {
-  if (numbers.length === 0) return null;
-  const sorted = [...numbers].sort();
-  return { from: sorted[0], to: sorted[sorted.length - 1], count: sorted.length };
+/**
+ * Table 13 for one kind of document: a row per series, each from its lowest
+ * number to its highest, with the numbers between them that are missing
+ * counted as cancelled. A series is the number up to its running digits —
+ * `FG/2627/` — so a new financial year is a new row.
+ *
+ * Only the period's own numbers are seen, so a number lost after one
+ * period's last document and before the next period's first is in neither
+ * range, and one lost before a year's first document is in none: both are
+ * left for the owner's CA if they ever happen.
+ */
+export function docSeries(numbers: string[]): DocSeries[] {
+  const bySeries = new Map<string, Map<number, string>>();
+  for (const number of numbers) {
+    const m = /^(.*?)(\d+)$/.exec(number);
+    const series = m ? m[1] : number;
+    const seen = bySeries.get(series) ?? new Map<number, string>();
+    seen.set(m ? Number(m[2]) : 0, number);
+    bySeries.set(series, seen);
+  }
+  return [...bySeries.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([series, seen]) => {
+      const ns = [...seen.keys()].sort((a, b) => a - b);
+      const total = ns[ns.length - 1] - ns[0] + 1;
+      return {
+        series,
+        from: seen.get(ns[0])!,
+        to: seen.get(ns[ns.length - 1])!,
+        total,
+        cancelled: total - ns.length,
+        issued: ns.length,
+      };
+    });
 }
 
 export function buildGstr1(sales: SaleDoc[], credits: CreditDoc[]): Gstr1 {
@@ -196,13 +245,16 @@ export function buildGstr1(sales: SaleDoc[], credits: CreditDoc[]): Gstr1 {
   }
 
   for (const c of credits) {
+    /* The table follows the invoice; the amounts are what the note credits,
+       which for a part refund is less than the invoice (`credited`). */
     const d = c.invoice;
     const kind = saleKind(d);
-    const items = byRate(d.rows);
+    const credit = credited(c);
+    const items = byRate(credit.rows);
     const note: NoteEntry = {
       number: c.number,
       date: c.date,
-      value: docValue(d),
+      value: docValue(credit),
       pos: d.pos,
       invoice: { number: d.number, date: d.date },
       items,
@@ -210,9 +262,9 @@ export function buildGstr1(sales: SaleDoc[], credits: CreditDoc[]): Gstr1 {
     if (kind === "b2b" && items.length > 0)
       cdnr.push({ ...note, gstin: d.buyer!.gstin, name: d.buyer!.name });
     else if (kind === "b2cl" && items.length > 0) cdnur.push(note);
-    else if (kind === "b2cs") addB2cs(d, -1);
-    addNil(d, -1);
-    addHsn(d, -1);
+    else if (kind === "b2cs") addB2cs(credit, -1);
+    addNil(credit, -1);
+    addHsn(credit, -1);
   }
 
   const byNumber = <T extends { number: string }>(xs: T[]) =>
@@ -229,7 +281,13 @@ export function buildGstr1(sales: SaleDoc[], credits: CreditDoc[]): Gstr1 {
     hsn: [...hsn.values()]
       .filter((r) => r.value !== 0 || r.qty !== 0)
       .sort((a, b) => Number(a.b2b) - Number(b.b2b) || a.hsn.localeCompare(b.hsn) || b.rate - a.rate),
-    docs: { invoices: range(sales.map((d) => d.number)), creditNotes: range(credits.map((c) => c.number)) },
+    /* Orders' and subscriptions' invoices and bills of supply share one
+       series, so all are reported as "Invoices for outward supply" — table
+       13 has no row for a bill of supply. For the owner's CA to confirm. */
+    docs: {
+      invoices: docSeries(sales.map((d) => d.number)),
+      creditNotes: docSeries(credits.map((c) => c.number)),
+    },
     unplaced: sales.filter((d) => d.pos === null),
   };
 }

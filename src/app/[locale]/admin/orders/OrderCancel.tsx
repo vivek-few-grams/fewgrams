@@ -4,6 +4,7 @@ import { cancelBlock, canCancel, canMarkRefunded, type Order } from "@/lib/order
 import { owesCreditNote } from "@/lib/orders/refund";
 import { GATEWAY_LABEL } from "@/lib/payments/provider";
 import { cancelOrder, markRefunded } from "./actions";
+import { StepSubmit } from "./StepSubmit";
 
 /**
  * Cancel, then mark refunded — the order page only, never the board, and
@@ -26,7 +27,13 @@ export async function OrderCancel({ order }: { order: Order }) {
   if (blocked) {
     return (
       <p className="max-w-xs font-body text-xs text-stone md:text-right">
-        {t(blocked === "booked" ? "cancelOrder.blockedBooked" : "cancelOrder.blockedBooking")}
+        {t(
+          blocked === "booked"
+            ? "cancelOrder.blockedBooked"
+            : blocked === "booking"
+              ? "cancelOrder.blockedBooking"
+              : "cancelOrder.blockedFinishing",
+        )}
       </p>
     );
   }
@@ -47,14 +54,15 @@ export async function OrderCancel({ order }: { order: Order }) {
     );
   }
 
-  /* Refunded, but the credit note never landed: one press issues it. */
+  /* Refunded, but the credit note never landed: one press issues it. The
+     button disables itself while the write is in flight — a second press
+     drew a second number from the series before losing the conditional
+     write, leaving a gap (8 Nov 2026). */
   if (owed) {
     return (
       <form action={markRefunded} className="flex flex-col items-start gap-1.5 md:items-end">
         <input type="hidden" name="id" value={order.id} />
-        <button className="rounded-full bg-forest px-4 py-2 font-body text-sm font-semibold text-cream transition-colors hover:bg-forest-deep">
-          {t("refund.issueCreditNote")}
-        </button>
+        <StepSubmit label={t("refund.issueCreditNote")} primary />
         <span className="font-body text-xs text-stone">{t("refund.creditNoteOwed")}</span>
       </form>
     );

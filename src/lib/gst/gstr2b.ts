@@ -1,5 +1,8 @@
+import { fromIstDateISO } from "@/lib/delivery-date";
 import type { BillClaim, BillMatch, PurchaseBill } from "@/lib/purchases/bill";
-import { billTotals } from "@/lib/purchases/bill";
+import { billTotals, isCreditNote } from "@/lib/purchases/bill";
+import { isIsoDate } from "@/lib/purchases/dates";
+import { financialYear } from "@/lib/tax/order-tax";
 import { monthFromReturnPeriod, type MonthId } from "./period";
 
 /**
@@ -28,7 +31,9 @@ export type PortalInvoice = {
   /** "N" in the file: the portal says this credit is not available. */
   itcAvailable: boolean;
   reverseCharge: boolean;
-  /** A vendor's credit note reduces our credit. */
+  /** A vendor's credit note: it reduces our credit, and is matched to a
+   *  credit note in the register, never to a bill. Its amounts are kept
+   *  positive, as the note prints them and as the register types them. */
   note: boolean;
 };
 
@@ -72,7 +77,7 @@ export function parseGstr2b(raw: string): { ok: true; statement: Gstr2b } | { ok
   if (!month || !r.docdata) return { ok: false, code: "notGstr2b" };
 
   const invoices: PortalInvoice[] = [];
-  const read = (section: unknown, docsKey: "inv" | "nt", note: boolean) => {
+  const read = (section: unknown, docsKey: "inv" | "nt", notes: boolean) => {
     if (!Array.isArray(section)) return;
     for (const supplier of section as Record<string, unknown>[]) {
       const gstin = str(supplier.ctin).toUpperCase();
@@ -81,16 +86,25 @@ export function parseGstr2b(raw: string): { ok: true; statement: Gstr2b } | { ok
       if (!Array.isArray(docs)) continue;
       for (const d of docs as Record<string, unknown>[]) {
         const sums = sumItems(d.items);
+        /* The notes section holds debit notes as well ("D"): a debit note
+           adds to the credit as an invoice does, and is entered as a bill.
+           Anything else there is a credit note. Its amounts are read as
+           magnitudes, whichever sign a version of the file gives them. */
+        const debit = notes && str(d.typ ?? d.ntty).toUpperCase() === "D";
+        const abs = (n: number) => (notes ? Math.abs(n) : n);
         invoices.push({
           gstin,
           name,
           number: str(d.inum ?? d.ntnum),
           date: isoDate(str(d.dt)),
-          value: paise(d.val),
-          ...sums,
+          value: abs(paise(d.val)),
+          taxable: abs(sums.taxable),
+          igst: abs(sums.igst),
+          cgst: abs(sums.cgst),
+          sgst: abs(sums.sgst),
           itcAvailable: str(d.itcavl).toUpperCase() !== "N",
           reverseCharge: str(d.rev).toUpperCase() === "Y",
-          note,
+          note: notes && !debit,
         });
       }
     }
@@ -98,6 +112,9 @@ export function parseGstr2b(raw: string): { ok: true; statement: Gstr2b } | { ok
   read(r.docdata.b2b, "inv", false);
   read(r.docdata.b2ba, "inv", false);
   read(r.docdata.cdnr, "nt", true);
+  /* Amended notes, as `b2ba` is read for amended invoices: the corrected
+     note under its current number, which is how it is entered (8 Nov 2026). */
+  read(r.docdata.cdnra, "nt", true);
   return { ok: true, statement: { month, gstin: str(r.gstin).toUpperCase(), invoices } };
 }
 
@@ -110,34 +127,74 @@ export const invoiceKey = (gstin: string, number: string) =>
 /** Rounding differences between a bill and the vendor's return. */
 export const MATCH_TOLERANCE = 100;
 
+/**
+ * The financial year a `YYYY-MM-DD` date falls in (`2627`), or null for one
+ * that is not a date — a portal field read defensively can come back empty.
+ */
+const yearOf = (date: string): string | null =>
+  isIsoDate(date) ? financialYear(fromIstDateISO(date)) : null;
+
+/** Invoices answer only to bills, and credit notes only to credit notes: a
+ *  vendor numbers the two in separate series, so "12" may be both. */
+const docKey = (note: boolean) => (note ? "note" : "invoice");
+
 export type MatchResult = {
-  /** Bills found in the statement, with how they compare. */
+  /** Bills — and credit notes — found in the statement, with how they compare. */
   matched: { bill: PurchaseBill; match: BillMatch; invoice: PortalInvoice }[];
-  /** Portal invoices with no bill in the register. */
+  /** Portal invoices with no bill in the register — including every one in
+   *  `ambiguous`, so `matched` and `unknown` still account for each invoice
+   *  in the statement once. */
   unknown: PortalInvoice[];
+  /** Portal invoices that more than one bill answers to — same GSTIN, same
+   *  kind, same number, same financial year. Neither bill is matched:
+   *  guessing could withdraw the right bill's claim or claim one invoice
+   *  twice. */
+  ambiguous: { invoice: PortalInvoice; bills: PurchaseBill[] }[];
 };
 
 /**
- * Match a statement against the register. A bill is `matched` when its
- * taxable value and its total tax each agree within a rupee, `mismatch`
- * otherwise — the vendor reported it, but not as billed.
+ * Match a statement against the register. A bill is the portal invoice with
+ * its vendor's GSTIN and number **in the same financial year**: a vendor's
+ * series restarts each April, so "12" from November and "12" from May are
+ * two invoices. A vendor's credit note on the portal is matched the same way
+ * to a credit note in the register (8 Nov 2026), and only to one — and a bill
+ * only to an invoice.
+ *
+ * It is `matched` when its taxable value, its IGST and its CGST + SGST each
+ * agree within a rupee, `mismatch` otherwise — the vendor reported it, but
+ * not as billed. Heads are compared, not the total: IGST reported against a
+ * bill charged CGST + SGST is a different credit, in a different ledger. A
+ * credit note is compared the same way, amount for amount: both sides hold
+ * it positive, and its sign is applied where documents are summed.
  */
 export function matchStatement(statement: Gstr2b, bills: PurchaseBill[]): MatchResult {
-  const byKey = new Map<string, PurchaseBill>();
-  for (const b of bills) if (b.vendor.gstin) byKey.set(invoiceKey(b.vendor.gstin, b.number), b);
+  const byKey = new Map<string, PurchaseBill[]>();
+  for (const b of bills) {
+    const year = yearOf(b.date);
+    if (!b.vendor.gstin || !year) continue;
+    const k = `${invoiceKey(b.vendor.gstin, b.number)}|${year}|${docKey(isCreditNote(b))}`;
+    byKey.set(k, [...(byKey.get(k) ?? []), b]);
+  }
 
   const matched: MatchResult["matched"] = [];
   const unknown: PortalInvoice[] = [];
+  const ambiguous: MatchResult["ambiguous"] = [];
   for (const inv of statement.invoices) {
-    const bill = inv.note ? undefined : byKey.get(invoiceKey(inv.gstin, inv.number));
-    if (!bill) {
+    const year = yearOf(inv.date);
+    const found = !year
+      ? []
+      : (byKey.get(`${invoiceKey(inv.gstin, inv.number)}|${year}|${docKey(inv.note)}`) ?? []);
+    if (found.length !== 1) {
       unknown.push(inv);
+      if (found.length > 1) ambiguous.push({ invoice: inv, bills: found });
       continue;
     }
+    const bill = found[0];
     const t = billTotals(bill.lines);
     const ok =
       Math.abs(t.taxable - inv.taxable) <= MATCH_TOLERANCE &&
-      Math.abs(t.igst + t.cgst + t.sgst - (inv.igst + inv.cgst + inv.sgst)) <= MATCH_TOLERANCE;
+      Math.abs(t.igst - inv.igst) <= MATCH_TOLERANCE &&
+      Math.abs(t.cgst + t.sgst - (inv.cgst + inv.sgst)) <= MATCH_TOLERANCE;
     matched.push({
       bill,
       invoice: inv,
@@ -148,7 +205,7 @@ export function matchStatement(statement: Gstr2b, bills: PurchaseBill[]): MatchR
       },
     });
   }
-  return { matched, unknown };
+  return { matched, unknown, ambiguous };
 }
 
 /**
@@ -158,7 +215,8 @@ export function matchStatement(statement: Gstr2b, bills: PurchaseBill[]): MatchR
  * reported differently is not claimed for more than the portal shows — it
  * waits under "Reported differently" until they agree or it is claimed by
  * hand (found 18 Oct 2026: an edited bill kept its claim at ₹288 against
- * the portal's ₹270).
+ * the portal's ₹270). One whose claim was withdrawn by hand stays withdrawn
+ * however often the statement is uploaded (`claimFromMatch`).
  */
 export function claimAfterMatch(found: MatchResult["matched"][number]): BillClaim | null {
   const held = found.bill.claim;
@@ -173,9 +231,19 @@ export function claimAfterMatch(found: MatchResult["matched"][number]): BillClai
  * is not reverse charge (that claims itself). Null otherwise — claimed by
  * hand once the vendor amends. Shared by the upload and by a bill saved
  * after its month's statement was already uploaded.
+ *
+ * For a credit note the "claim" is the month its GST comes off the credit —
+ * the month the portal nets it out of 4A — given on the same terms.
+ *
+ * Never for a bill whose claim was withdrawn by hand (`withdrawnAt`): that
+ * was the owner's call, and the next save or re-upload of the same statement
+ * claimed it straight back until 8 Nov 2026. A claim by hand clears it.
  */
 export function claimFromMatch(found: MatchResult["matched"][number]): BillClaim | null {
-  return found.match.status === "matched" && found.invoice.itcAvailable && !found.bill.reverseCharge
+  return found.match.status === "matched" &&
+    found.invoice.itcAvailable &&
+    !found.bill.reverseCharge &&
+    !found.bill.withdrawnAt
     ? { month: found.match.month, source: "gstr2b" }
     : null;
 }
